@@ -84,18 +84,24 @@ Ne pas charger ou enchaîner un skill hors du périmètre demandé.
 Pour les validations et le build, utiliser les commandes existantes plutôt qu'une commande équivalente :
 
 ```bash
-npm run test:types [-- <chemin...>]
+npm run test:types
+npm run test:types:target [-- <fichier...>]
 npm run test:lint [-- <chemin...>]
 npm run test:lint:fix [-- <chemin...>]
 npm run test:tu [-- <fichier-ou-filtre...>]
 npm run build
 ```
 
-Sans argument, les commandes exécutent une validation globale. Avec un ou plusieurs chemins, elles ciblent uniquement les éléments indiqués.
+`test:types` exécute une validation globale. `test:types:target` exécute une validation ciblée avec `tsconfig.test.json`.
+
+Les autres commandes acceptent un ou plusieurs chemins lorsqu'un ciblage est utile.
+
+Cette restriction ne concerne pas les commandes de lecture ou d'inspection comme `rg`, `sed`, `ls` ou `git diff`.
 
 Ordre d’utilisation :
 
-Utiliser librement `test:types` pendant le développement, de préférence avec un chemin ciblé.
+Utiliser librement `test:types:target` pendant le développement, de préférence avec un ou plusieurs fichiers ciblés.
+Utiliser `test:types` seulement lorsqu'une validation globale est nécessaire.
 Utiliser `test:lint:fix` sur les fichiers modifiés pour corriger et vérifier les conventions mécaniques.
 Utiliser `test:lint` sans fix seulement lorsqu'un contrôle final ou un diagnostic sans modification est utile.
 Lancer `test:tu` uniquement sur les tests concernés.

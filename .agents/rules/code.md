@@ -250,7 +250,7 @@ Toute fonction publique doit être réexportée par les fichiers `index` concern
 
 ## 11. Utiliser TypeScript pendant la conception
 
-Pour une fonction ou un type complexe, créer des cas d’usage localisés et utiliser `tsc` afin de vérifier rapidement :
+Pour une fonction ou un type complexe, créer des cas d’usage localisés et utiliser le test de type ciblé afin de vérifier rapidement :
 
 - les appels valides ;
 - les appels invalides ;

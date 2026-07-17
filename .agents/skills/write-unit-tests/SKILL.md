@@ -181,7 +181,7 @@ Ne pas modifier l'implémentation ou affaiblir les assertions uniquement pour at
 
 ## Validation
 
-1. Lancer le test de type ciblé si le fichier contient des vérifications d'inférence complexes.
+1. Lancer `npm run test:types:target -- <fichier>` si le test contient des vérifications d'inférence complexes.
 2. Lancer le lint avec fix sur le fichier de test.
 3. Lancer le test Vitest ciblé :
 

@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-tsc -p tsconfig.test.json "$@"
+tscw "$@" -p tsconfig.test.json
