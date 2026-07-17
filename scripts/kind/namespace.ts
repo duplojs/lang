@@ -17,9 +17,9 @@ export function createNamespace<
 		GenericKindValue extends unknown = unknown,
 	>(
 		name: (
-			& GenericNamespace
+			& GenericName
 			& DString.ForbiddenContain<
-				GenericNamespace,
+				GenericName,
 				ForbiddenKindNameCharacter
 			>
 		),
