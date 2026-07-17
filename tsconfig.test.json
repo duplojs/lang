@@ -12,7 +12,5 @@
 	"tests/**/*.ts",
 	"scripts/**/*.ts", 
 	"integrations/**/*.ts",
-	"rolldown.config.ts", 
-	"oxlint.config.ts"
   ],
 }
