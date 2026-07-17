@@ -24,5 +24,7 @@ export default defineConfig({
 	ignorePatterns: [
 		"coverage/**",
 		"dist/**",
+		".commands/**",
+		".agents/**",
 	],
 });

@@ -1,7 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-ARGUMENTS="$@"
-
-vitest --coverage $ARGUMENTS
+vitest --coverage "$@"
