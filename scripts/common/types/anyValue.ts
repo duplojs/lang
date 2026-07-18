@@ -1,5 +1,4 @@
-
-import { type AnyFunction } from "./anyFunction";
+import type { AnyFunction } from "./anyFunction";
 
 export type AnyValue = string
 	| number

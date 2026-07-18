@@ -1,4 +1,4 @@
-import { type Handler, type KeySymbol, type Kind } from "../base";
+import type { Handler, KeySymbol, Kind } from "../base";
 
 export type GetValue<
 	GenericKindHandler extends Handler,

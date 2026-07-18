@@ -1,4 +1,4 @@
-import { type IsEqual } from "./isEqual";
+import type { IsEqual } from "./isEqual";
 
 export type NeverCoalescing<
 	GenericValue extends unknown,

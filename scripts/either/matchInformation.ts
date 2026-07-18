@@ -1,0 +1,111 @@
+import * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
+import type * as DObject from "@scripts/object";
+import { informationKind } from "./kind";
+import type { Right } from "./right";
+import type { Left } from "./left";
+
+type Either = Right | Left;
+
+type ComputeMatcher<
+	GenericEither extends Either,
+> = Extract<
+	{
+		[
+		Prop in DKind.GetValue<
+			typeof informationKind,
+			GenericEither
+		>
+		]: (
+			value: DCommon.Unwrap<
+				Extract<
+					GenericEither,
+					DKind.Kind<
+						typeof informationKind,
+						Prop
+					>
+				>
+			>,
+		) => unknown
+	},
+	any
+>;
+
+type ForbiddenMoreKey<
+	GenericInput extends unknown,
+	GenericMatcher extends ComputeMatcher<
+		Extract<GenericInput, Either>
+	>,
+> = DObject.ForbiddenKey<
+	GenericMatcher,
+	Extract<
+		Exclude<
+			keyof GenericMatcher,
+			DKind.GetValue<
+				typeof informationKind,
+				Extract<GenericInput, Either>
+			>
+		>,
+		string
+	>
+>;
+
+/**
+ * {@include either/matchInformation/index.md}
+ */
+export function matchInformation<
+	GenericInput extends unknown,
+	GenericMatcher extends ComputeMatcher<
+		Extract<GenericInput, Either>
+	>,
+	GenericError extends ForbiddenMoreKey<GenericInput, GenericMatcher>,
+>(
+	matcher: (
+		& ComputeMatcher<
+			Extract<NoInfer<GenericInput>, Either>
+		>
+		& GenericMatcher
+		& NoInfer<GenericError>
+	),
+): (input: GenericInput) => (
+	| ReturnType<NoInfer<GenericMatcher[keyof GenericMatcher]>>
+	| Exclude<NoInfer<GenericInput>, Either>
+);
+
+export function matchInformation<
+	GenericInput extends unknown,
+	GenericMatcher extends ComputeMatcher<
+		Extract<GenericInput, Either>
+	>,
+>(
+	input: GenericInput,
+	matcher: DCommon.FixDeepFunctionInfer<
+		ComputeMatcher<
+			Extract<GenericInput, Either>
+		>,
+		GenericMatcher
+	>
+	& ForbiddenMoreKey<GenericInput, GenericMatcher>,
+): (
+	| ReturnType<GenericMatcher[keyof GenericMatcher]>
+	| Exclude<GenericInput, Either>
+);
+
+export function matchInformation(
+	...args:
+		| [input: unknown, matcher: object]
+		| [matcher: object]
+): any {
+	if (args.length === 1) {
+		const [matcher] = args;
+		return (input: unknown) => matchInformation(input, matcher);
+	}
+
+	const [input, matcher] = args;
+
+	if (!informationKind.has(input)) {
+		return input;
+	}
+
+	return (matcher[informationKind.getValue(input)] as DCommon.AnyFunction)(DCommon.unwrap(input));
+}

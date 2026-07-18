@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/max-params */
-import { type BreakGenericLink } from "./types";
-import { type AnyFunction } from "./types/anyFunction";
-import { type AnyValue } from "./types/anyValue";
+import type { BreakGenericLink, AnyFunction, AnyValue } from "./types";
 
 /**
  * {@include common/pipe/index.md}

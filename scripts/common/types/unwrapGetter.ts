@@ -1,5 +1,5 @@
-import { type AnyFunction } from "./anyFunction";
-import { type MayBeGetter } from "./maybeGetter";
+import type { AnyFunction } from "./anyFunction";
+import type { MayBeGetter } from "./maybeGetter";
 
 export type UnwrapGetter<
 	GenericGetter extends MayBeGetter<any>,

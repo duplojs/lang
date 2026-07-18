@@ -28,3 +28,5 @@ export * from "./simplifyTypeForce";
 export * from "./unionContain";
 export * from "./unionToIntersection";
 export * from "./unwrapGetter";
+export * from "./escapeVoid";
+export * from "./fixDeepFunctionInfer";

@@ -1,4 +1,4 @@
-import { type IsEqual } from "./isEqual";
+import type { IsEqual } from "./isEqual";
 
 export type UnionContain<
 	GenericUnion extends unknown,
