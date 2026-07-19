@@ -6,8 +6,7 @@ export type FundamentalTypeTheStringSymbol = typeof FundamentalTypeTheStringSymb
 
 export interface TheString extends FundamentalType<
 	FundamentalTypeTheStringSymbol,
-	string,
-	never
+	string
 > {}
 
 export const TheString = createFundamentalType<

@@ -16,7 +16,7 @@ export interface Constraint<
 }
 
 export interface CreateConstraintConstructorParams<
-	GenericKindHandler extends DKind.Handler,
+	GenericKindHandler extends DKind.Handler = DKind.Handler,
 > {
 	init<
 		GenericConstraint extends (
@@ -54,7 +54,7 @@ export function createConstraint<
 	) => GenericConstructor,
 ): GenericConstructor {
 	return createConstructor({
-		init(rest, executeCheck) {
+		init: (rest, executeCheck) => {
 			const self: DKind.Remove<Constraint> = {
 				...rest,
 				executeCheck: (data: unknown) => executeCheck(self as never, data),

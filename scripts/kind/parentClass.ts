@@ -7,8 +7,8 @@ export type KindClass<
 > = (
 	& (
 		new<
-			GenericParentInstance extends InstanceType<GenericParent> = InstanceType<GenericParent>,
 			GenericKindValue extends GenericKindHandler["definition"]["value"] = GenericKindHandler["definition"]["value"],
+			GenericParentInstance extends InstanceType<GenericParent> = InstanceType<GenericParent>,
 		>(
 			kindValue: GenericKindValue,
 			...args: DCommon.NeverCoalescing<ConstructorParameters<GenericParent>, []>

@@ -1,8 +1,8 @@
-import { createStructure } from "../structure";
+import { TypeStructure } from "../structure";
 import { StringType } from "../type";
 
 export function string() {
-	return createStructure(
+	return TypeStructure(
 		StringType(),
 	);
 }

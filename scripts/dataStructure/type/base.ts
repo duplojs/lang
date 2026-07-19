@@ -1,27 +1,22 @@
 import type * as DKind from "@scripts/kind";
-import type * as DCommon from "@scripts/common";
-import { type fundamentalTypeKind, type FundamentalType } from "../fundamentalType";
+import * as DCommon from "@scripts/common";
+import { type FundamentalType, type FundamentalTypeValue } from "../fundamentalType";
 import { createKind } from "../kind";
-import { type SuccessSymbol, type ErrorSymbol } from "../common";
+import { ErrorSymbol, type SuccessSymbol } from "../common";
 
 export const typeKind = createKind("type");
 
 export interface Type<
 	GenericFundamentalType extends FundamentalType = FundamentalType,
-	GenericValue extends DKind.GetValue<
-		typeof fundamentalTypeKind,
+	GenericValue extends FundamentalTypeValue<
 		GenericFundamentalType
-	>["includedType"] = DKind.GetValue<
-		typeof fundamentalTypeKind,
-		GenericFundamentalType
-	>["includedType"],
+	> = FundamentalTypeValue<GenericFundamentalType>,
 > extends DKind.Kind<typeof typeKind, GenericValue> {
 	readonly fundamentalType: GenericFundamentalType;
 	executeCheck(
-		data: DKind.GetValue<
-			typeof fundamentalTypeKind,
+		data: FundamentalTypeValue<
 			GenericFundamentalType
-		>["includedType"]
+		>
 	): DCommon.MaybePromise<
 		| SuccessSymbol
 		| ErrorSymbol
@@ -29,8 +24,8 @@ export interface Type<
 }
 
 export interface CreateTypeConstructorParams<
-	GenericFundamentalType extends FundamentalType,
-	GenericKindHandler extends DKind.Handler,
+	GenericFundamentalType extends FundamentalType = FundamentalType,
+	GenericKindHandler extends DKind.Handler = DKind.Handler,
 > {
 	init<
 		GenericType extends (
@@ -43,10 +38,9 @@ export interface CreateTypeConstructorParams<
 		>,
 		executeCheck: (
 			self: GenericType,
-			data: DKind.GetValue<
-				typeof fundamentalTypeKind,
+			data: FundamentalTypeValue<
 				GenericFundamentalType
-			>["includedType"],
+			>,
 		) => DCommon.MaybePromise<
 			| SuccessSymbol
 			| ErrorSymbol
@@ -74,10 +68,15 @@ export function createType<
 	) => GenericConstructor,
 ): GenericConstructor {
 	return createConstructor({
-		init(rest, executeCheck) {
+		init: (rest, executeCheck) => {
 			const self: DKind.Remove<Type> = {
 				...rest,
-				executeCheck: (data: unknown) => executeCheck(self as never, data),
+				executeCheck: (data: unknown) => DCommon.callThen(
+					fundamentalType.executeCheck(data),
+					(result) => result === ErrorSymbol
+						? ErrorSymbol
+						: executeCheck(self as never, data),
+				),
 				fundamentalType,
 				[typeKind.runTimeKey]: null,
 				[kindHandler.runTimeKey]: null,

@@ -1,12 +1,11 @@
-import { createStructure } from "../structure";
-import { ObjectType, type ShapeObjectType } from "../type";
+import { ObjectStructure, type ShapeObjectStructure } from "../structure";
 
 export function object<
-	GenericShape extends ShapeObjectType,
+	GenericShape extends ShapeObjectStructure,
 >(
 	shape: GenericShape,
 ) {
-	return createStructure(
-		ObjectType(shape),
+	return ObjectStructure(
+		shape,
 	);
 }
