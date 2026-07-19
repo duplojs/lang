@@ -17,9 +17,6 @@ export interface Error<
 
 }
 
-/**
- * {@include either/error/index.md}
- */
 export function error<
 	const GenericValue extends unknown,
 >(

@@ -5,9 +5,6 @@ import type { Left } from "./create";
 
 type Either = Right | Left;
 
-/**
- * {@include either/whenIsLeftOtherwise/index.md}
- */
 export function whenIsLeftOtherwise<
 	const GenericInput extends unknown,
 	const GenericOutput1 extends DCommon.AnyValue | DCommon.EscapeVoid,

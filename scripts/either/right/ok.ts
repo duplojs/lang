@@ -13,9 +13,6 @@ export interface Ok extends _Ok {
 
 }
 
-/**
- * {@include either/ok/index.md}
- */
 export function ok(): Ok;
 
 export function ok() {

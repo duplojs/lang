@@ -1,8 +1,5 @@
 import { memo } from "./memo";
 
-/**
- * {@include common/memoObject/index.md}
- */
 export function memoObject<
 	GenericOutput extends object,
 >(

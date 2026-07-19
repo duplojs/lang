@@ -38,9 +38,6 @@ type RightAsyncPipeResult<
 	)
 );
 
-/**
- * {@include either/rightAsyncPipe/index.md}
- */
 export function rightAsyncPipe<
 	const GenericInput extends unknown,
 	const GenericOutputPipe1 extends unknown,

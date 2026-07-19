@@ -26,9 +26,6 @@ type ComputeSafeCallbackResult<
 	| SafeCallbackError
 );
 
-/**
- * {@include either/safeCallback/index.md}
- */
 export function safeCallback<
 	const GenericOutput extends unknown,
 >(

@@ -1,9 +1,6 @@
 import type * as DCommon from "@scripts/common";
 import { type AssignObjects } from "./types";
 
-/**
- * {@include object/assign/index.md}
- */
 export function assign<
 	GenericInput extends object,
 	GenericValue extends Partial<Record<keyof GenericInput, unknown>> & DCommon.AnyObject,

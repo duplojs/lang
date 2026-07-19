@@ -19,9 +19,6 @@ type ComputeSafeCallbackResult<
 	any
 >;
 
-/**
- * {@include either/asyncSafeCallback/index.md}
- */
 export function asyncSafeCallback<
 	const GenericOutput extends unknown,
 >(

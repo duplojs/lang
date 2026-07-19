@@ -2,9 +2,6 @@ import * as DCommon from "@scripts/common";
 import type { Left } from "./create";
 import { isLeft } from "./is";
 
-/**
- * {@include either/unwrapLeft/index.md}
- */
 export function unwrapLeft<
 	GenericInput extends unknown,
 >(

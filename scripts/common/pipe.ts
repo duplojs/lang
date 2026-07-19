@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/max-params */
 import type { BreakGenericLink, AnyFunction, AnyValue } from "./types";
 
-/**
- * {@include common/pipe/index.md}
- */
 export function pipe<
 	const GenericInput extends unknown,
 	const GenericOutputPipe1 extends unknown,

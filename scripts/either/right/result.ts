@@ -22,9 +22,6 @@ export interface Result<
 
 }
 
-/**
- * {@include either/result/index.md}
- */
 export function result<
 	GenericInformation extends string,
 	const GenericValue extends unknown = undefined,

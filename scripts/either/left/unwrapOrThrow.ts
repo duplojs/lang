@@ -15,9 +15,6 @@ export class NotLeftError extends DKind.parentClass(
 	}
 }
 
-/**
- * {@include either/unwrapLeftOrThrow/index.md}
- */
 export function unwrapLeftOrThrow<
 	GenericInput extends unknown,
 >(

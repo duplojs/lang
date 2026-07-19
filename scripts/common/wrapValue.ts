@@ -8,9 +8,6 @@ export interface WrappedValue<
 	[SymbolWrappedValue]: GenericValue;
 }
 
-/**
- * {@include common/wrapValue/index.md}
- */
 export function wrapValue<
 	const GenericValue extends unknown,
 >(
@@ -21,9 +18,6 @@ export function wrapValue<
 	} as never;
 }
 
-/**
- * {@include common/isWrappedValue/index.md}
- */
 export function isWrappedValue<
 	GenericInput extends unknown,
 >(
@@ -32,9 +26,6 @@ export function isWrappedValue<
 	return !!input && typeof input === "object" && keyWrappedValue in input;
 }
 
-/**
- * {@include common/isRuntimeWrappedValueKey/index.md}
- */
 export function isRuntimeWrappedValueKey(
 	value: string,
 ) {

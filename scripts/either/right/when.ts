@@ -2,9 +2,6 @@ import * as DCommon from "@scripts/common";
 import type { Right } from "./create";
 import { isRight } from "./is";
 
-/**
- * {@include either/whenIsRight/index.md}
- */
 export function whenIsRight<
 	const GenericInput extends unknown,
 	const GenericOutput extends DCommon.AnyValue | DCommon.EscapeVoid,

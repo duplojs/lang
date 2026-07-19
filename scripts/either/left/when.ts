@@ -2,9 +2,6 @@ import * as DCommon from "@scripts/common";
 import type { Left } from "./create";
 import { isLeft } from "./is";
 
-/**
- * {@include either/whenIsLeft/index.md}
- */
 export function whenIsLeft<
 	const GenericInput extends unknown,
 	const GenericOutput extends DCommon.AnyValue | DCommon.EscapeVoid,

@@ -15,9 +15,6 @@ export class NotRightError extends DKind.parentClass(
 	}
 }
 
-/**
- * {@include either/unwrapRightOrThrow/index.md}
- */
 export function unwrapRightOrThrow<
 	GenericInput extends unknown,
 >(

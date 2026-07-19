@@ -36,9 +36,6 @@ type ForbiddenMoreKey<
 	>
 >;
 
-/**
- * {@include either/unwrapSelectionOrThrow/index.md}
- */
 export function unwrapSelectionOrThrow<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<

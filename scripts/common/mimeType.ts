@@ -4,9 +4,6 @@ export interface MimeTypeStore {
 	set(extensionName: string, mimeType: string): void;
 }
 
-/**
- * {@include common/mimeType/index.md}
- */
 export const mimeType: MimeTypeStore = (() => {
 	const types: Record<string, string[]> = {
 		"application/andrew-inset": ["ez"],

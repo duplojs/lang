@@ -24,9 +24,6 @@ type ForbiddenMoreKey<
 	>
 >;
 
-/**
- * {@include either/whenIsSelected/index.md}
- */
 export function whenIsSelected<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<

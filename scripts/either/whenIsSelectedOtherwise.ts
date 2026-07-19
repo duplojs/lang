@@ -41,9 +41,6 @@ type CallbackSelectedKind<
 	>
 >;
 
-/**
- * {@include either/whenIsSelectedOtherwise/index.md}
- */
 export function whenIsSelectedOtherwise<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<

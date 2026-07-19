@@ -50,9 +50,6 @@ type ForbiddenMoreKey<
 	>
 >;
 
-/**
- * {@include either/matchInformationOtherwise/index.md}
- */
 export function matchInformationOtherwise<
 	GenericInput extends unknown,
 	GenericMatcher extends ComputeMatcher<

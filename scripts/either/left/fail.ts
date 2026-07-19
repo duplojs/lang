@@ -13,9 +13,6 @@ export interface Fail extends _Fail {
 
 }
 
-/**
- * {@include either/fail/index.md}
- */
 export function fail(): Fail;
 
 export function fail() {

@@ -53,9 +53,6 @@ type SelectedInput<
 	| Exclude<GenericInput, Either>
 );
 
-/**
- * {@include either/forwardAssertsSelection/index.md}
- */
 export function forwardAssertsSelection<
 	GenericInput extends unknown,
 	GenericSelector extends Record<

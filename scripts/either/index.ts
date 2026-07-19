@@ -1,6 +1,3 @@
-/**
- * {@include either/index.md}
- */
 export * from "./left";
 export * from "./right";
 export * from "./whenHasInformation";

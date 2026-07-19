@@ -2,9 +2,6 @@ import * as DCommon from "@scripts/common";
 import type { Right } from "./create";
 import { isRight } from "./is";
 
-/**
- * {@include either/unwrapRight/index.md}
- */
 export function unwrapRight<
 	GenericInput extends unknown,
 >(

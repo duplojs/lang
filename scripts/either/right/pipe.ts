@@ -32,9 +32,6 @@ type RightPipeResult<
 	>
 );
 
-/**
- * {@include either/rightPipe/index.md}
- */
 export function rightPipe<
 	const GenericInput extends unknown,
 	const GenericOutputPipe1 extends unknown,
