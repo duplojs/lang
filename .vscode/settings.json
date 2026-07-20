@@ -27,6 +27,7 @@
 	"js/ts.updateImportsOnFileMove.enabled": "prompt",
 
 	"cSpell.words": [
+		"chrono",
 		"oxlint"
 	],
 	"cSpell.language": "en",
