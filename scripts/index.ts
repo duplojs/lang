@@ -1,6 +1,6 @@
 // oxlint-disable id-length
 
-export * as C from "./common";
+export * from "./common";
 export * as DCommon from "./common";
 
 export * as K from "./kind";
@@ -16,4 +16,16 @@ export * as E from "./either";
 export * as DEither from "./either";
 
 export * as DS from "./dataStructure";
-export * as DDdataStructure from "./dataStructure";
+export * as DDataStructure from "./dataStructure";
+
+export * as A from "./array";
+export * as DArray from "./array";
+
+export * as C from "./chrono";
+export * as DChrono from "./chrono";
+
+export * as T from "./tuple";
+export * as DTuple from "./tuple";
+
+export * as N from "./number";
+export * as DNumber from "./number";
