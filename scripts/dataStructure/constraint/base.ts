@@ -5,14 +5,32 @@ import { type SuccessSymbol, type ErrorSymbol } from "../common";
 
 export const constraintKind = createKind("constraint");
 
+export interface ConstraintDefinition {}
+
 export interface Constraint<
 	GenericInput extends unknown = unknown,
 	GenericChecked extends GenericInput = GenericInput,
+	GenericDefinition extends ConstraintDefinition = ConstraintDefinition,
 > extends DKind.Kind<typeof constraintKind, GenericChecked> {
+	readonly definition: GenericDefinition;
 	executeCheck(input: GenericInput): DCommon.MaybePromise<
 		| SuccessSymbol
 		| ErrorSymbol
 	>;
+	isAsynchronous(): boolean;
+}
+
+export interface CreateConstraintInitParams<
+	GenericConstraint extends Constraint = Constraint,
+> {
+	executeCheck(
+		self: GenericConstraint,
+		data: Parameters<GenericConstraint["executeCheck"]>[0],
+	): DCommon.MaybePromise<
+		| SuccessSymbol
+		| ErrorSymbol
+	>;
+	isAsynchronous(self: GenericConstraint): boolean;
 }
 
 export interface CreateConstraintConstructorParams<
@@ -24,16 +42,8 @@ export interface CreateConstraintConstructorParams<
 			& DKind.Kind<GenericKindHandler>
 		),
 	>(
-		rest: DCommon.SimplifyTopLevel<
-			Omit<GenericConstraint, keyof Constraint>
-		>,
-		executeCheck: (
-			self: GenericConstraint,
-			data: Parameters<GenericConstraint["executeCheck"]>[0],
-		) => DCommon.MaybePromise<
-			| SuccessSymbol
-			| ErrorSymbol
-		>
+		definition: GenericConstraint["definition"],
+		params: CreateConstraintInitParams<GenericConstraint>,
 	): GenericConstraint;
 }
 
@@ -54,10 +64,17 @@ export function createConstraint<
 	) => GenericConstructor,
 ): GenericConstructor {
 	return createConstructor({
-		init: (rest, executeCheck) => {
+		init: (
+			definition,
+			{
+				executeCheck,
+				isAsynchronous,
+			},
+		) => {
 			const self: DKind.Remove<Constraint> = {
-				...rest,
+				definition,
 				executeCheck: (data: unknown) => executeCheck(self as never, data),
+				isAsynchronous: () => isAsynchronous(self as never),
 				[constraintKind.runTimeKey]: null,
 				[kindHandler.runTimeKey]: null,
 			};

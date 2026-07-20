@@ -1,9 +1,10 @@
 import type * as DKind from "@scripts/kind";
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
 import { type Constraint } from "../../constraint";
 import { type TypeValue, type Type } from "../../type";
 import { createStructure, type StructureDefinition, type Structure } from "../base";
 import { createKind } from "../../kind";
+import { ErrorSymbol } from "../../common";
 
 export const typeStructureKind = createKind("type-structure");
 
@@ -54,6 +55,40 @@ export const TypeStructure = createStructure(
 			type,
 			constraints: constraints,
 		},
-		(self, data) => self.definition.type.executeCheck(data),
+		{
+			executeCheck: (self, data) => self.definition.type.executeCheck(data),
+			executeEncode: (self, codecContext, data) => DCommon.callThen(
+				self.executeCheck(data),
+				(result) => {
+					if (result === ErrorSymbol) {
+						return ErrorSymbol;
+					}
+
+					const codec = codecContext.get(self.definition.type.fundamentalType);
+
+					return codec
+						? codec.encode(data)
+						: data;
+				},
+			),
+			executeDecode: (self, codecContext, data) => {
+				const codec = codecContext.get(self.definition.type.fundamentalType);
+
+				return DCommon.callThen(
+					codec
+						? codec.decode(data)
+						: data,
+					(decodedData) => decodedData === ErrorSymbol
+						? ErrorSymbol
+						: DCommon.callThen(
+							self.executeCheck(decodedData),
+							(result) => result === ErrorSymbol
+								? ErrorSymbol
+								: decodedData,
+						),
+				);
+			},
+			isAsynchronous: (self) => self.definition.type.isAsynchronous(),
+		},
 	),
 );

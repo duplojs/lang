@@ -1,21 +1,27 @@
 import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import { createKind } from "../../kind";
-import { createConstraint, type Constraint } from "../base";
-import { ErrorSymbol, SuccessSymbol } from "@scripts/dataStructure/common";
+import { type ConstraintDefinition, createConstraint, type Constraint } from "../base";
+import { ErrorSymbol, SuccessSymbol } from "../../common";
 
 export const stringMinConstraintKind = createKind("string-min-constraint");
+
+export interface StringMinConstraintDefinition<
+	GenericMin extends number = number,
+> extends ConstraintDefinition {
+	readonly min: GenericMin;
+}
 
 export interface StringMinConstraint<
 	GenericMin extends number = number,
 > extends DCommon.UnionToIntersection<
 		& Constraint<
 			string,
-			string
+			string,
+			StringMinConstraintDefinition<GenericMin>
 		>
 		& DKind.Kind<typeof stringMinConstraintKind>
 	> {
-	min: GenericMin;
 }
 
 export const StringMinConstraint = createConstraint(
@@ -26,7 +32,11 @@ export const StringMinConstraint = createConstraint(
 		StringMinConstraint<GenericMin>
 	>(
 		{ min },
-		(self, data) => data.length >= self.min ? SuccessSymbol : ErrorSymbol,
+		{
+			executeCheck: (self, data) => data.length >= self.definition.min
+				? SuccessSymbol
+				: ErrorSymbol,
+			isAsynchronous: () => false,
+		},
 	),
 );
-

@@ -4,13 +4,13 @@ import type * as DObject from "@scripts/object";
 import { type Constraint } from "../../constraint";
 import { createStructure, type StructureDefinition, type Structure } from "../base";
 import { createKind } from "../../kind";
+import { type StructureValue } from "../types";
+import { ErrorSymbol, SuccessSymbol } from "../../common";
 
 import "../../codec";
-import { type StructureValue } from "../types";
-import { ErrorSymbol, SuccessSymbol } from "@scripts/dataStructure/common";
 
 declare module "../../codec" {
-	interface EncodedComposedStructure<
+	interface EncodeStructure<
 		GenericValue extends unknown,
 		GenericCodec extends Codec,
 	> {
@@ -112,35 +112,124 @@ export const ObjectStructure = createStructure(
 			),
 			constraints: constraints,
 		},
-		(self, data) => {
-			if (
-				typeof data !== "object"
+		{
+			executeCheck: (self, data) => {
+				if (
+					typeof data !== "object"
 				|| data === null
 				|| (
 					data.constructor !== undefined
 					&& data.constructor.name !== "Object"
 				)
 				|| Object.getOwnPropertySymbols(data).length !== 0
-			) {
-				return ErrorSymbol;
-			}
+				) {
+					return ErrorSymbol;
+				}
 
-			return self.definition.shape.value.reduce<
-				DCommon.MaybePromise<SuccessSymbol | ErrorSymbol>
-			>(
-				(accumulator, entry) => DCommon.callThen(
-					accumulator,
+				return self.definition.shape.value.reduce<
+					DCommon.MaybePromise<SuccessSymbol | ErrorSymbol>
+				>(
+					(accumulator, entry) => DCommon.callThen(
+						accumulator,
+						(result) => result === ErrorSymbol
+							? ErrorSymbol
+							: DCommon.callThen(
+								entry.value.executeCheck(data[entry.key as never]),
+								(result) => result === ErrorSymbol
+									? ErrorSymbol
+									: SuccessSymbol,
+							),
+					),
+					SuccessSymbol,
+				);
+			},
+			executeEncode: (self, codecContext, data) => {
+				if (
+					typeof data !== "object"
+				|| data === null
+				|| (
+					data.constructor !== undefined
+					&& data.constructor.name !== "Object"
+				)
+				|| Object.getOwnPropertySymbols(data).length !== 0
+				) {
+					return ErrorSymbol;
+				}
+
+				const encodedData = self.definition.shape.value.reduce<unknown>(
+					(accumulator, entry) => DCommon.callThen(
+						accumulator,
+						(awaitedAccumulator) => DCommon.callThen(
+							entry.value.executeEncode(codecContext, data[entry.key as never]),
+							(encodedData) => {
+								if (encodedData === ErrorSymbol || awaitedAccumulator === ErrorSymbol) {
+									return ErrorSymbol;
+								}
+
+								(awaitedAccumulator as Record<string, unknown>)[entry.key] = encodedData;
+
+								return awaitedAccumulator;
+							},
+						),
+					),
+					{},
+				);
+
+				if (encodedData === ErrorSymbol) {
+					return ErrorSymbol;
+				}
+
+				return DCommon.callThen(
+					self.executeConstraints(data),
 					(result) => result === ErrorSymbol
 						? ErrorSymbol
-						: DCommon.callThen(
-							entry.value.executeCheck(data[entry.key as never]),
-							(result) => result === ErrorSymbol
-								? ErrorSymbol
-								: SuccessSymbol,
+						: encodedData,
+				);
+			},
+			executeDecode: (self, codecContext, data) => {
+				if (
+					typeof data !== "object"
+				|| data === null
+				|| (
+					data.constructor !== undefined
+					&& data.constructor.name !== "Object"
+				)
+				|| Object.getOwnPropertySymbols(data).length !== 0
+				) {
+					return ErrorSymbol;
+				}
+
+				const decodedData = self.definition.shape.value.reduce<unknown>(
+					(accumulator, entry) => DCommon.callThen(
+						accumulator,
+						(awaitedAccumulator) => DCommon.callThen(
+							entry.value.executeDecode(codecContext, data[entry.key as never]),
+							(decodedData) => {
+								if (decodedData === ErrorSymbol || awaitedAccumulator === ErrorSymbol) {
+									return ErrorSymbol;
+								}
+
+								(awaitedAccumulator as Record<string, unknown>)[entry.key] = decodedData;
+
+								return awaitedAccumulator;
+							},
 						),
-				),
-				SuccessSymbol,
-			);
+					),
+					{},
+				);
+
+				if (decodedData === ErrorSymbol) {
+					return ErrorSymbol;
+				}
+
+				return DCommon.callThen(
+					self.executeConstraints(decodedData),
+					(result) => result === ErrorSymbol
+						? ErrorSymbol
+						: decodedData,
+				);
+			},
+			isAsynchronous: (self) => self.definition.shape.value.some((entry) => entry.value.isAsynchronous()),
 		},
 	),
 );

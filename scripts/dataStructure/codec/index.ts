@@ -1,8 +1,10 @@
 import type * as DKind from "@scripts/kind";
+import * as DCommon from "@scripts/common";
 import { type FundamentalTypeValue, type FundamentalType } from "../fundamentalType";
 import { type StructureValue, type Structure } from "../structure";
 import { createKind } from "../kind";
 import { type UnionToIntersection, type NeverCoalescing } from "@scripts/common";
+import { ErrorSymbol } from "../common";
 
 export const codecKind = createKind("codec");
 
@@ -12,8 +14,14 @@ export interface Codec<
 > extends DKind.Kind<typeof codecKind> {
 	fundamentalType: GenericFundamentalType;
 	encodedStructure: GenericEncodedStructure;
-	encode(data: GenericFundamentalType): StructureValue<GenericEncodedStructure>;
-	decode(data: StructureValue<GenericEncodedStructure>): GenericFundamentalType;
+	encode(data: FundamentalTypeValue<GenericFundamentalType>): DCommon.MaybePromise<
+		| StructureValue<GenericEncodedStructure>
+		| ErrorSymbol
+	>;
+	decode(data: StructureValue<GenericEncodedStructure>): DCommon.MaybePromise<
+		| FundamentalTypeValue<GenericFundamentalType>
+		| ErrorSymbol
+	>;
 }
 
 export type CodecContext = Map<FundamentalType, Codec>;
@@ -26,10 +34,16 @@ export function createCodec<
 	encodedStructure: GenericEncodedStructure,
 	encode: (
 		data: GenericFundamentalType,
-	) => StructureValue<GenericEncodedStructure>,
+	) => DCommon.MaybePromise<
+		| StructureValue<GenericEncodedStructure>
+		| ErrorSymbol
+	>,
 	decode: (
 		data: StructureValue<GenericEncodedStructure>,
-	) => GenericFundamentalType,
+	) => DCommon.MaybePromise<
+		| FundamentalTypeValue<GenericFundamentalType>
+		| ErrorSymbol
+	>,
 ): Codec<
 	GenericFundamentalType,
 	GenericEncodedStructure
@@ -37,8 +51,24 @@ export function createCodec<
 	const self: DKind.Remove<Codec> = {
 		fundamentalType,
 		encodedStructure,
-		encode,
-		decode,
+		encode: (data) => DCommon.callThen(
+			encode(data as never),
+			(encodedData) => encodedData === ErrorSymbol
+				? ErrorSymbol
+				: DCommon.callThen(
+					encodedStructure.executeCheck(encodedData),
+					(result) => result === ErrorSymbol
+						? ErrorSymbol
+						: encodedData,
+				),
+
+		),
+		decode: (data) => DCommon.callThen(
+			encodedStructure.executeCheck(data),
+			(result) => result === ErrorSymbol
+				? ErrorSymbol
+				: decode(data as never),
+		),
 		[codecKind.runTimeKey]: null,
 	};
 
