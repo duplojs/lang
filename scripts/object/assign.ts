@@ -2,30 +2,37 @@ import type * as DCommon from "@scripts/common";
 import { type AssignObjects } from "./types";
 
 export function assign<
-	GenericInput extends object,
-	GenericValue extends Partial<Record<keyof GenericInput, unknown>> & DCommon.AnyObject,
+	GenericObject extends object,
+	GenericValue extends Partial<Record<keyof GenericObject, unknown>> & DCommon.AnyObject,
 >(
 	value: GenericValue,
-): (input: GenericInput) => AssignObjects<GenericInput, GenericValue>;
+): (
+	object: GenericObject,
+) => AssignObjects<GenericObject, GenericValue>;
 
 export function assign<
-	GenericInput extends object,
-	GenericValue extends Partial<Record<keyof GenericInput, unknown>> & DCommon.AnyObject,
+	GenericObject extends object,
+	GenericValue extends Partial<Record<keyof GenericObject, unknown>> & DCommon.AnyObject,
 >(
-	input: GenericInput,
+	object: GenericObject,
 	value: GenericValue,
-): AssignObjects<GenericInput, GenericValue>;
+): AssignObjects<GenericObject, GenericValue>;
 
-export function assign(...args: [object, object] | [object]) {
+export function assign(
+	...args:
+		| [value: object]
+		| [object: object, value: object]
+): any {
 	if (args.length === 1) {
 		const [value] = args;
 
-		return (input: object) => assign(input, value);
+		return (object: object) => assign(object, value);
 	}
 
-	const [input, value] = args;
+	const [object, value] = args;
+
 	return {
-		...input,
+		...object,
 		...value,
-	} as never;
+	};
 }

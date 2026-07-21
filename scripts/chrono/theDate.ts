@@ -1,5 +1,5 @@
 import * as DKind from "@scripts/kind";
-import { createChronoKind } from "./kind";
+import { createKind } from "./kind";
 import type { SerializedTheDate } from "./types";
 import { makeSafeTimestamp } from "./makeSafeTimestamp";
 import { serialize } from "./serialize";
@@ -7,7 +7,7 @@ import { serialize } from "./serialize";
 const defaultKindValue = {};
 
 export class TheDate extends DKind.parentClass(
-	createChronoKind("the-date"),
+	createKind("the-date"),
 	Date,
 ) {
 	private constructor(timestamp: number) {

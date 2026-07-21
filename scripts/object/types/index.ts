@@ -1,7 +1,7 @@
-export * from "./assignObjects";
-export * from "./forbiddenKey";
-export * from "./getPropsWithValue";
-export * from "./getPropsWithValueExtends";
-export * from "./partialKeys";
-export * from "./requireAtLeastOne";
-export * from "./requiredKeys";
+export type * from "./assignObjects";
+export type * from "./forbiddenKey";
+export type * from "./getPropsWithValue";
+export type * from "./getPropsWithValueExtends";
+export type * from "./partialKeys";
+export type * from "./requireAtLeastOne";
+export type * from "./requiredKeys";
