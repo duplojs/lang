@@ -1,8 +1,12 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import { isRight, type Right } from "./right";
 import { isLeft, type Left } from "./left";
-import { informationKind } from "./kind";
+import { informationKind, valueKind } from "./kind";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -10,20 +14,17 @@ export function whenHasInformation<
 	const GenericInput extends unknown,
 	GenericInformation extends(
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, Extract<GenericInput, Either>>
+			? GetInformation<Extract<GenericInput, Either>>
 			: never
 	),
 	const GenericOutput extends unknown,
 >(
 	information: GenericInformation | readonly GenericInformation[],
 	theFunction: (
-		value: DCommon.Unwrap<
+		value: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
-				(
-					& DKind.Kind<typeof informationKind, GenericInformation>
-					& DCommon.WrappedValue
-				)
+				Either & DKind.Kind<typeof informationKind, GenericInformation>
 			>
 		>,
 	) => GenericOutput,
@@ -39,7 +40,7 @@ export function whenHasInformation<
 	const GenericInput extends unknown,
 	GenericInformation extends(
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, Extract<GenericInput, Either>>
+			? GetInformation<Extract<GenericInput, Either>>
 			: never
 	),
 	const GenericOutput extends unknown,
@@ -47,13 +48,10 @@ export function whenHasInformation<
 	input: GenericInput,
 	information: GenericInformation | readonly GenericInformation[],
 	theFunction: (
-		value: DCommon.Unwrap<
+		value: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
-				(
-					& DKind.Kind<typeof informationKind, GenericInformation>
-					& DCommon.WrappedValue
-				)
+				Either & DKind.Kind<typeof informationKind, GenericInformation>
 			>
 		>,
 	) => GenericOutput,
@@ -101,7 +99,7 @@ export function whenHasInformation(
 			informationKind.getValue(input),
 		)
 	) {
-		return theFunction(DCommon.unwrap(input));
+		return theFunction(valueKind.getValue(input));
 	}
 
 	return input;

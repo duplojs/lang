@@ -1,8 +1,8 @@
-import * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 import type { Right } from "./create";
 import { isRight } from "./is";
-import { createKind } from "../kind";
+import { createKind, valueKind } from "../kind";
+import type { GetValue } from "../types";
 
 export class NotRightError extends DKind.parentClass(
 	createKind("not-right-error"),
@@ -19,13 +19,13 @@ export function unwrapRightOrThrow<
 	GenericInput extends unknown,
 >(
 	input: GenericInput,
-): DCommon.Unwrap<Extract<GenericInput, Right>>;
+): GetValue<Extract<GenericInput, Right>>;
 
 export function unwrapRightOrThrow(
 	input: unknown,
 ) {
 	if (isRight(input)) {
-		return DCommon.unwrap(input);
+		return valueKind.getValue(input);
 	}
 
 	throw new NotRightError(input);

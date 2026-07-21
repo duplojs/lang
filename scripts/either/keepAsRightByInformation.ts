@@ -1,9 +1,13 @@
 import type * as DKind from "@scripts/kind";
-import * as DCommon from "@scripts/common";
-import { informationKind } from "./kind";
+import type * as DCommon from "@scripts/common";
+import { informationKind, valueKind } from "./kind";
 import { isLeft, left, type Left } from "./left";
 import { isRight, right, type Right } from "./right";
 import { hasInformation } from "./hasInformation";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -11,7 +15,7 @@ export function keepAsRightByInformation<
 	GenericInput extends unknown,
 	const GenericInformation extends (
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, GenericInput>
+			? GetInformation<GenericInput>
 			: never
 	),
 >(
@@ -23,12 +27,12 @@ export function keepAsRightByInformation<
 		? GenericInput extends Right
 			? GenericInput
 			: Right<
-				DKind.GetValue<typeof informationKind, GenericInput>,
-				DCommon.Unwrap<GenericInput>
+				GetInformation<GenericInput>,
+				GetValue<GenericInput>
 			>
 		: Left<
-			DKind.GetValue<typeof informationKind, GenericInput>,
-			DCommon.Unwrap<GenericInput>
+			GetInformation<GenericInput>,
+			GetValue<GenericInput>
 		>
 	: GenericInput;
 
@@ -36,7 +40,7 @@ export function keepAsRightByInformation<
 	GenericInput extends unknown,
 	const GenericInformation extends (
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, GenericInput>
+			? GetInformation<GenericInput>
 			: never
 	),
 >(
@@ -47,12 +51,12 @@ export function keepAsRightByInformation<
 		? GenericInput extends Right
 			? GenericInput
 			: Right<
-				DKind.GetValue<typeof informationKind, GenericInput>,
-				DCommon.Unwrap<GenericInput>
+				GetInformation<GenericInput>,
+				GetValue<GenericInput>
 			>
 		: Left<
-			DKind.GetValue<typeof informationKind, GenericInput>,
-			DCommon.Unwrap<GenericInput>
+			GetInformation<GenericInput>,
+			GetValue<GenericInput>
 		>
 	: GenericInput;
 
@@ -76,7 +80,7 @@ export function keepAsRightByInformation(
 		if (isLeft(input)) {
 			return right(
 				informationKind.getValue(input),
-				DCommon.unwrap(input),
+				valueKind.getValue(input),
 			);
 		}
 
@@ -86,7 +90,7 @@ export function keepAsRightByInformation(
 	if (isRight(input)) {
 		return left(
 			informationKind.getValue(input),
-			DCommon.unwrap(input),
+			valueKind.getValue(input),
 		);
 	}
 

@@ -1,5 +1,4 @@
-import * as DCommon from "@scripts/common";
-import { informationKind } from "../kind";
+import { informationKind, valueKind } from "../kind";
 import { rightKind, type Right } from "./create";
 
 export function isRight<
@@ -13,5 +12,5 @@ export function isRight(
 ) {
 	return rightKind.has(input)
 		&& informationKind.has(input)
-		&& DCommon.isWrappedValue(input);
+		&& valueKind.has(input);
 }

@@ -3,7 +3,11 @@ import * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import type { Left } from "./left";
 import type { Right } from "./right";
-import { createKind, informationKind } from "./kind";
+import { createKind, informationKind, valueKind } from "./kind";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 export class HasNotSelectedInformationError extends DKind.parentClass(
 	createKind("has-not-selected-information-error"),
@@ -27,10 +31,7 @@ type ForbiddenMoreKey<
 	Extract<
 		Exclude<
 			keyof GenericSelector,
-			DKind.GetValue<
-				typeof informationKind,
-				Extract<GenericInput, Either>
-			>
+			GetInformation<Extract<GenericInput, Either>>
 		>,
 		string
 	>
@@ -39,21 +40,15 @@ type ForbiddenMoreKey<
 export function unwrapSelectionOrThrow<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<
-			typeof informationKind,
-			Extract<
-				GenericInput,
-				Either
-			>
-		>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 >(
 	selector: GenericSelector & ForbiddenMoreKey<GenericInput, GenericSelector>,
-): (input: GenericInput) => DCommon.Unwrap<
+): (input: GenericInput) => GetValue<
 	Extract<
 		GenericInput,
-		DKind.Kind<
+		Either & DKind.Kind<
 			typeof informationKind,
 			Extract<
 				| DObject.GetPropsWithValue<GenericSelector, true>
@@ -67,22 +62,16 @@ export function unwrapSelectionOrThrow<
 export function unwrapSelectionOrThrow<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<
-			typeof informationKind,
-			Extract<
-				GenericInput,
-				Either
-			>
-		>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 >(
 	input: GenericInput,
 	selector: GenericSelector & ForbiddenMoreKey<GenericInput, GenericSelector>,
-): DCommon.Unwrap<
+): GetValue<
 	Extract<
 		GenericInput,
-		DKind.Kind<
+		Either & DKind.Kind<
 			typeof informationKind,
 			Extract<
 				| DObject.GetPropsWithValue<GenericSelector, true>
@@ -108,9 +97,10 @@ export function unwrapSelectionOrThrow(
 
 	if (
 		informationKind.has(input)
+		&& valueKind.has(input)
 		&& selector[informationKind.getValue(input)] === true
 	) {
-		return DCommon.unwrap(input);
+		return valueKind.getValue(input);
 	}
 
 	throw new HasNotSelectedInformationError(input, selector);

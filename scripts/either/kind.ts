@@ -8,3 +8,7 @@ export const informationKind = createKind<
 	"information",
 	string
 >("information");
+
+export const valueKind = createKind<
+	"value"
+>("value");

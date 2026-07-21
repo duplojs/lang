@@ -1,13 +1,15 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type { Right } from "./create";
 import { isRight } from "./is";
+import { valueKind } from "../kind";
+import type { GetValue } from "../types";
 
 export function whenIsRight<
 	const GenericInput extends unknown,
 	const GenericOutput extends DCommon.AnyValue | DCommon.EscapeVoid,
 >(
 	theFunction: (
-		eitherValue: DCommon.Unwrap<
+		eitherValue: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
 				Right
@@ -28,7 +30,7 @@ export function whenIsRight<
 >(
 	input: GenericInput,
 	theFunction: (
-		eitherValue: DCommon.Unwrap<
+		eitherValue: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
 				Right
@@ -57,7 +59,7 @@ export function whenIsRight(
 	const [input, theFunction] = args;
 
 	if (isRight(input)) {
-		return theFunction(DCommon.unwrap(input));
+		return theFunction(valueKind.getValue(input));
 	}
 
 	return input;

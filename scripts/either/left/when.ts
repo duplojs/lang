@@ -1,13 +1,15 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type { Left } from "./create";
 import { isLeft } from "./is";
+import { valueKind } from "../kind";
+import type { GetValue } from "../types";
 
 export function whenIsLeft<
 	const GenericInput extends unknown,
 	const GenericOutput extends DCommon.AnyValue | DCommon.EscapeVoid,
 >(
 	theFunction: (
-		eitherValue: DCommon.Unwrap<
+		eitherValue: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
 				Left
@@ -28,7 +30,7 @@ export function whenIsLeft<
 >(
 	input: GenericInput,
 	theFunction: (
-		eitherValue: DCommon.Unwrap<
+		eitherValue: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
 				Left
@@ -57,7 +59,7 @@ export function whenIsLeft(
 	const [input, theFunction] = args;
 
 	if (isLeft(input)) {
-		return theFunction(DCommon.unwrap(input));
+		return theFunction(valueKind.getValue(input));
 	}
 
 	return input;

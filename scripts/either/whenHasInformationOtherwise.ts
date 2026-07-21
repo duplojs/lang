@@ -1,8 +1,12 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import type { Left } from "./left";
 import type { Right } from "./right";
-import { informationKind } from "./kind";
+import { informationKind, valueKind } from "./kind";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -10,7 +14,7 @@ export function whenHasInformationOtherwise<
 	const GenericInput extends unknown,
 	GenericInformation extends(
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, Extract<GenericInput, Either>>
+			? GetInformation<Extract<GenericInput, Either>>
 			: never
 	),
 	const GenericOutput extends unknown,
@@ -18,13 +22,10 @@ export function whenHasInformationOtherwise<
 >(
 	information: GenericInformation | readonly GenericInformation[],
 	theFunction: (
-		value: DCommon.Unwrap<
+		value: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
-				(
-					& DKind.Kind<typeof informationKind, GenericInformation>
-					& DCommon.WrappedValue
-				)
+				Either & DKind.Kind<typeof informationKind, GenericInformation>
 			>
 		>,
 	) => GenericOutput,
@@ -40,7 +41,7 @@ export function whenHasInformationOtherwise<
 	const GenericInput extends unknown,
 	GenericInformation extends(
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, Extract<GenericInput, Either>>
+			? GetInformation<Extract<GenericInput, Either>>
 			: never
 	),
 	const GenericOutput extends unknown,
@@ -49,13 +50,10 @@ export function whenHasInformationOtherwise<
 	input: GenericInput,
 	information: GenericInformation | readonly GenericInformation[],
 	theFunction: (
-		value: DCommon.Unwrap<
+		value: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
-				(
-					& DKind.Kind<typeof informationKind, GenericInformation>
-					& DCommon.WrappedValue
-				)
+				Either & DKind.Kind<typeof informationKind, GenericInformation>
 			>
 		>,
 	) => GenericOutput,
@@ -99,9 +97,10 @@ export function whenHasInformationOtherwise(
 
 	if (
 		informationKind.has(input)
+		&& valueKind.has(input)
 		&& formattedInformation.includes(informationKind.getValue(input))
 	) {
-		return theFunction(DCommon.unwrap(input));
+		return theFunction(valueKind.getValue(input));
 	}
 
 	return otherwiseFunction(input);

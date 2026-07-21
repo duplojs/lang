@@ -4,6 +4,8 @@ import type { Right } from "./create";
 import { isLeft, type Left } from "../left";
 import { success, type Success } from "./success";
 import { isRight } from "./is";
+import { valueKind } from "../kind";
+import type { GetValue } from "../types";
 
 type Either = Right | Left;
 
@@ -12,7 +14,9 @@ type RightPipeFunction<
 	GenericOutput extends unknown,
 > = (
 	input: GenericInput extends Either
-		? DCommon.Unwrap<Exclude<GenericInput, Left>>
+		? GetValue<
+			Exclude<GenericInput, Left>
+		>
 		: GenericInput,
 ) => GenericOutput;
 
@@ -567,13 +571,13 @@ export function rightPipe(
 	}
 
 	let acc: unknown = isRight(input)
-		? DCommon.unwrap(input)
+		? valueKind.getValue(input)
 		: input;
 
 	for (const pipe of pipes) {
 		acc = pipe(
 			isRight(acc)
-				? DCommon.unwrap(acc)
+				? valueKind.getValue(acc)
 				: acc,
 		);
 

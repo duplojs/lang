@@ -1,6 +1,5 @@
-import * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
-import { createKind, informationKind } from "../kind";
+import { createKind, informationKind, valueKind } from "../kind";
 
 export const rightKind = createKind("right");
 
@@ -13,7 +12,10 @@ type _Right<
 		typeof informationKind,
 		GenericInformation
 	>
-	& DCommon.WrappedValue<GenericValue>
+	& DKind.Kind<
+		typeof valueKind,
+		GenericValue
+	>
 );
 
 export interface Right<
@@ -38,11 +40,9 @@ export function right(
 	information: string,
 	value: unknown = undefined,
 ) {
-	return rightKind.setTo(
-		informationKind.setTo(
-			DCommon.wrapValue(value),
-			information,
-		),
-		null,
-	);
+	return {
+		[rightKind.runTimeKey]: null,
+		[informationKind.runTimeKey]: information,
+		[valueKind.runTimeKey]: value,
+	} as never;
 }

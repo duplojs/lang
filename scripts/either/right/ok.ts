@@ -1,6 +1,6 @@
 import type * as DKind from "@scripts/kind";
-import { createKind } from "../kind";
-import { right, type Right } from "./create";
+import { createKind, informationKind, valueKind } from "../kind";
+import { rightKind, type Right } from "./create";
 
 export const okKind = createKind("ok");
 
@@ -16,8 +16,10 @@ export interface Ok extends _Ok {
 export function ok(): Ok;
 
 export function ok() {
-	return okKind.setTo(
-		right("ok", undefined),
-		null,
-	);
+	return {
+		[rightKind.runTimeKey]: null,
+		[informationKind.runTimeKey]: "ok",
+		[valueKind.runTimeKey]: undefined,
+		[okKind.runTimeKey]: null,
+	} as never;
 }

@@ -9,6 +9,5 @@ export * from "./whenOtherwise";
 export * from "./result";
 export * from "./unwrapOrThrow";
 export * from "./unwrap";
-
-// export * from "./group";
+export * from "./group";
 // export * from "./asyncGroup";

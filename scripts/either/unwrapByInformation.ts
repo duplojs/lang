@@ -1,9 +1,13 @@
 import type * as DKind from "@scripts/kind";
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type { Left } from "./left";
 import type { Right } from "./right";
-import type { informationKind } from "./kind";
+import { valueKind, type informationKind } from "./kind";
 import { hasInformation } from "./hasInformation";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -11,7 +15,7 @@ export function unwrapByInformation<
 	GenericInput extends unknown,
 	const GenericInformation extends (
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, GenericInput>
+			? GetInformation<GenericInput>
 			: never
 	),
 >(
@@ -19,21 +23,21 @@ export function unwrapByInformation<
 ): (
 	input: GenericInput,
 ) => GenericInput extends DKind.Kind<typeof informationKind, GenericInformation>
-	? DCommon.Unwrap<GenericInput>
+	? GetValue<Extract<GenericInput, Either>>
 	: GenericInput;
 
 export function unwrapByInformation<
 	GenericInput extends unknown,
 	GenericInformation extends(
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, GenericInput>
+			? GetInformation<GenericInput>
 			: never
 	),
 >(
 	input: GenericInput,
 	information: GenericInformation | GenericInformation[],
 ): GenericInput extends DKind.Kind<typeof informationKind, GenericInformation>
-	? DCommon.Unwrap<GenericInput>
+	? GetValue<Extract<GenericInput, Either>>
 	: GenericInput;
 
 export function unwrapByInformation(
@@ -53,7 +57,7 @@ export function unwrapByInformation(
 	const [input, information] = args;
 
 	if (hasInformation(input, information as never)) {
-		return DCommon.unwrap(input);
+		return valueKind.getValue(input);
 	}
 
 	return input;

@@ -9,3 +9,6 @@ export * from "./mimeType";
 export * from "./pipe";
 export * from "./unwrap";
 export * from "./wrapValue";
+export * from "./whenNot";
+export * from "./isType";
+export * from "./when";

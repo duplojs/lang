@@ -1,7 +1,9 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type { Right } from "../right";
 import { isLeft } from "./is";
 import type { Left } from "./create";
+import { valueKind } from "../kind";
+import type { GetValue } from "../types";
 
 type Either = Right | Left;
 
@@ -11,7 +13,7 @@ export function whenIsLeftOtherwise<
 	const GenericOutput2 extends DCommon.AnyValue | DCommon.EscapeVoid,
 >(
 	theFunction: (
-		value: DCommon.Unwrap<
+		value: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
 				Left
@@ -39,7 +41,7 @@ export function whenIsLeftOtherwise<
 >(
 	input: GenericInput,
 	theFunction: (
-		value: DCommon.Unwrap<
+		value: GetValue<
 			Extract<
 				DCommon.BreakGenericLink<GenericInput>,
 				Left
@@ -85,7 +87,7 @@ export function whenIsLeftOtherwise(
 	const [input, theFunction, otherwiseFunction] = args;
 
 	if (isLeft(input)) {
-		return theFunction(DCommon.unwrap(input));
+		return theFunction(valueKind.getValue(input));
 	}
 
 	return otherwiseFunction(input);

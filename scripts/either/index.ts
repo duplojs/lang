@@ -1,3 +1,5 @@
+export type * from "./types";
+
 export * from "./left";
 export * from "./right";
 export * from "./whenHasInformation";

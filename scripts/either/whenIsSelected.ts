@@ -1,9 +1,13 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import type { Left } from "./left";
 import type { Right } from "./right";
-import { informationKind } from "./kind";
+import { informationKind, valueKind } from "./kind";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -27,23 +31,17 @@ type ForbiddenMoreKey<
 export function whenIsSelected<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<
-			typeof informationKind,
-			Extract<
-				GenericInput,
-				Either
-			>
-		>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 	const GenericOutput extends unknown,
 >(
 	selector: GenericSelector & ForbiddenMoreKey<GenericInput, GenericSelector>,
 	theFunction: (
-		value: DCommon.Unwrap<
+		value: GetValue<
 			Extract<
 				GenericInput,
-				DKind.Kind<
+				Either & DKind.Kind<
 					typeof informationKind,
 					Extract<
 						(
@@ -73,13 +71,7 @@ export function whenIsSelected<
 export function whenIsSelected<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<
-			typeof informationKind,
-			Extract<
-				GenericInput,
-				Either
-			>
-		>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 	const GenericOutput extends unknown,
@@ -87,10 +79,10 @@ export function whenIsSelected<
 	input: GenericInput,
 	selector: GenericSelector & ForbiddenMoreKey<GenericInput, GenericSelector>,
 	theFunction: (
-		value: DCommon.Unwrap<
+		value: GetValue<
 			Extract<
 				GenericInput,
-				DKind.Kind<
+				Either & DKind.Kind<
 					typeof informationKind,
 					Extract<
 						(
@@ -143,9 +135,10 @@ export function whenIsSelected(
 
 	if (
 		informationKind.has(input)
+		&& valueKind.has(input)
 		&& selector[informationKind.getValue(input)] === true
 	) {
-		return theFunction(DCommon.unwrap(input));
+		return theFunction(valueKind.getValue(input));
 	}
 
 	return input;

@@ -1,9 +1,13 @@
 import type * as DKind from "@scripts/kind";
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type * as DObject from "@scripts/object";
-import { informationKind } from "./kind";
+import { informationKind, valueKind } from "./kind";
 import { isLeft, left, type Left } from "./left";
 import { isRight, right, type Right } from "./right";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -15,10 +19,7 @@ type ForbiddenMoreKey<
 	Extract<
 		Exclude<
 			keyof GenericSelector,
-			DKind.GetValue<
-				typeof informationKind,
-				Extract<GenericInput, Either>
-			>
+			GetInformation<Extract<GenericInput, Either>>
 		>,
 		string
 	>
@@ -27,13 +28,7 @@ type ForbiddenMoreKey<
 export function keepAsRightSelection<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<
-			typeof informationKind,
-			Extract<
-				GenericInput,
-				Either
-			>
-		>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 >(
@@ -52,25 +47,19 @@ export function keepAsRightSelection<
 		? GenericInput extends Right
 			? GenericInput
 			: Right<
-				DKind.GetValue<typeof informationKind, GenericInput>,
-				DCommon.Unwrap<GenericInput>
+				GetInformation<GenericInput>,
+				GetValue<GenericInput>
 			>
 		: Left<
-			DKind.GetValue<typeof informationKind, GenericInput>,
-			DCommon.Unwrap<GenericInput>
+			GetInformation<GenericInput>,
+			GetValue<GenericInput>
 		>
 	: GenericInput;
 
 export function keepAsRightSelection<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<
-			typeof informationKind,
-			Extract<
-				GenericInput,
-				Either
-			>
-		>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 >(
@@ -88,12 +77,12 @@ export function keepAsRightSelection<
 		? GenericInput extends Right
 			? GenericInput
 			: Right<
-				DKind.GetValue<typeof informationKind, GenericInput>,
-				DCommon.Unwrap<GenericInput>
+				GetInformation<GenericInput>,
+				GetValue<GenericInput>
 			>
 		: Left<
-			DKind.GetValue<typeof informationKind, GenericInput>,
-			DCommon.Unwrap<GenericInput>
+			GetInformation<GenericInput>,
+			GetValue<GenericInput>
 		>
 	: GenericInput;
 
@@ -110,7 +99,10 @@ export function keepAsRightSelection(
 
 	const [input, selector] = args;
 
-	if (!informationKind.has(input)) {
+	if (
+		!informationKind.has(input)
+		|| !valueKind.has(input)
+	) {
 		return input;
 	}
 
@@ -118,14 +110,14 @@ export function keepAsRightSelection(
 
 	if (selector[information] === true) {
 		if (isLeft(input)) {
-			return right(information, DCommon.unwrap(input));
+			return right(information, valueKind.getValue(input));
 		}
 
 		return input;
 	}
 
 	if (isRight(input)) {
-		return left(information, DCommon.unwrap(input));
+		return left(information, valueKind.getValue(input));
 	}
 
 	return input;

@@ -1,6 +1,6 @@
 import type * as DKind from "@scripts/kind";
-import { createKind } from "../kind";
-import { right, type Right } from "./create";
+import { createKind, informationKind, valueKind } from "../kind";
+import { rightKind, type Right } from "./create";
 
 export const resultKind = createKind("result");
 
@@ -56,8 +56,10 @@ export function result(
 
 	const [information, value] = args;
 
-	return resultKind.setTo(
-		right(information, value),
-		null,
-	);
+	return {
+		[rightKind.runTimeKey]: null,
+		[informationKind.runTimeKey]: information,
+		[valueKind.runTimeKey]: value,
+		[resultKind.runTimeKey]: null,
+	} as never;
 }

@@ -1,9 +1,13 @@
 import * as DKind from "@scripts/kind";
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type { Left } from "./left";
 import type { Right } from "./right";
-import { createKind, type informationKind } from "./kind";
+import { createKind, valueKind, type informationKind } from "./kind";
 import { hasInformation } from "./hasInformation";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 export class HasNotInformationError extends DKind.parentClass(
 	createKind("has-not-information-error"),
@@ -27,17 +31,17 @@ export function unwrapByInformationOrThrow<
 	GenericInput extends unknown,
 	const GenericInformation extends (
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, GenericInput>
+			? GetInformation<GenericInput>
 			: never
 	),
 >(
 	information: GenericInformation | GenericInformation[],
 ): (
 	input: GenericInput,
-) => DCommon.Unwrap<
+) => GetValue<
 	Extract<
 		GenericInput,
-		DKind.Kind<typeof informationKind, GenericInformation>
+		Either & DKind.Kind<typeof informationKind, GenericInformation>
 	>
 >;
 
@@ -45,16 +49,16 @@ export function unwrapByInformationOrThrow<
 	GenericInput extends unknown,
 	GenericInformation extends(
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, GenericInput>
+			? GetInformation<GenericInput>
 			: never
 	),
 >(
 	input: GenericInput,
 	information: GenericInformation | GenericInformation[],
-): DCommon.Unwrap<
+): GetValue<
 	Extract<
 		GenericInput,
-		DKind.Kind<typeof informationKind, GenericInformation>
+		Either & DKind.Kind<typeof informationKind, GenericInformation>
 	>
 >;
 
@@ -75,7 +79,7 @@ export function unwrapByInformationOrThrow(
 	const [input, information] = args;
 
 	if (hasInformation(input, information as never)) {
-		return DCommon.unwrap(input);
+		return valueKind.getValue(input);
 	}
 
 	throw new HasNotInformationError(input, information);

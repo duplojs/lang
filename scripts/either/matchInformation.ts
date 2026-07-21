@@ -1,9 +1,13 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
-import { informationKind } from "./kind";
+import { informationKind, valueKind } from "./kind";
 import type { Right } from "./right";
 import type { Left } from "./left";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -12,12 +16,9 @@ type ComputeMatcher<
 > = Extract<
 	{
 		[
-		Prop in DKind.GetValue<
-			typeof informationKind,
-			GenericEither
-		>
+		Prop in GetInformation<GenericEither>
 		]: (
-			value: DCommon.Unwrap<
+			value: GetValue<
 				Extract<
 					GenericEither,
 					DKind.Kind<
@@ -41,10 +42,7 @@ type ForbiddenMoreKey<
 	Extract<
 		Exclude<
 			keyof GenericMatcher,
-			DKind.GetValue<
-				typeof informationKind,
-				Extract<GenericInput, Either>
-			>
+			GetInformation<Extract<GenericInput, Either>>
 		>,
 		string
 	>
@@ -100,9 +98,12 @@ export function matchInformation(
 
 	const [input, matcher] = args;
 
-	if (!informationKind.has(input)) {
+	if (
+		!informationKind.has(input)
+		|| !valueKind.has(input)
+	) {
 		return input;
 	}
 
-	return (matcher[informationKind.getValue(input)] as DCommon.AnyFunction)(DCommon.unwrap(input));
+	return (matcher[informationKind.getValue(input)] as DCommon.AnyFunction)(valueKind.getValue(input));
 }

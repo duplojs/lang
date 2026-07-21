@@ -3,7 +3,11 @@ import type * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import type { Right } from "./right";
 import type { Left } from "./left";
-import { informationKind } from "./kind";
+import { informationKind, valueKind } from "./kind";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -15,10 +19,7 @@ type ForbiddenMoreKey<
 	Extract<
 		Exclude<
 			keyof GenericSelector,
-			DKind.GetValue<
-				typeof informationKind,
-				Extract<GenericInput, Either>
-			>
+			GetInformation<Extract<GenericInput, Either>>
 		>,
 		string
 	>
@@ -27,22 +28,16 @@ type ForbiddenMoreKey<
 export function unwrapSelection<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<
-			typeof informationKind,
-			Extract<
-				GenericInput,
-				Either
-			>
-		>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 >(
 	selector: GenericSelector & ForbiddenMoreKey<GenericInput, GenericSelector>,
 ): (input: GenericInput) => (
-	| DCommon.Unwrap<
+	| GetValue<
 		Extract<
 			GenericInput,
-			DKind.Kind<
+			Either & DKind.Kind<
 				typeof informationKind,
 				Extract<
 					| DObject.GetPropsWithValue<GenericSelector, true>
@@ -67,23 +62,17 @@ export function unwrapSelection<
 export function unwrapSelection<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<
-			typeof informationKind,
-			Extract<
-				GenericInput,
-				Either
-			>
-		>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 >(
 	input: GenericInput,
 	selector: GenericSelector & ForbiddenMoreKey<GenericInput, GenericSelector>,
 ): (
-	| DCommon.Unwrap<
+	| GetValue<
 		Extract<
 			GenericInput,
-			DKind.Kind<
+			Either & DKind.Kind<
 				typeof informationKind,
 				Extract<
 					| DObject.GetPropsWithValue<GenericSelector, true>
@@ -118,11 +107,14 @@ export function unwrapSelection(
 
 	const [input, selector] = args;
 
-	if (!informationKind.has(input)) {
+	if (
+		!informationKind.has(input)
+		|| !valueKind.has(input)
+	) {
 		return input;
 	}
 
 	return selector[informationKind.getValue(input)] === true
-		? DCommon.unwrap(input)
+		? valueKind.getValue(input)
 		: input;
 }

@@ -1,9 +1,11 @@
 /* oxlint-disable @typescript-eslint/max-params */
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type { Right } from "./create";
 import { isLeft, type Left } from "../left";
 import { success, type Success } from "./success";
 import { isRight } from "./is";
+import { valueKind } from "../kind";
+import type { GetValue } from "../types";
 
 type Either = Right | Left;
 
@@ -13,7 +15,9 @@ type RightAsyncPipeFunction<
 > = (
 	input: Awaited<GenericInput> extends infer InferredInput
 		? InferredInput extends Either
-			? DCommon.Unwrap<Exclude<InferredInput, Left>>
+			? GetValue<
+				Exclude<InferredInput, Left>
+			>
 			: InferredInput
 		: never,
 ) => GenericOutput;
@@ -604,13 +608,13 @@ export async function rightAsyncPipe(
 	}
 
 	let acc: unknown = isRight(awaitedInput)
-		? DCommon.unwrap(awaitedInput)
+		? valueKind.getValue(awaitedInput)
 		: awaitedInput;
 
 	for (const pipe of pipes) {
 		acc = await pipe(
 			isRight(acc)
-				? DCommon.unwrap(acc)
+				? valueKind.getValue(acc)
 				: acc,
 		);
 

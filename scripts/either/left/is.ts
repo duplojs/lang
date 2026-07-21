@@ -1,6 +1,5 @@
-import * as DCommon from "@scripts/common";
 import { leftKind, type Left } from "./create";
-import { informationKind } from "../kind";
+import { informationKind, valueKind } from "../kind";
 
 export function isLeft<
 	GenericInput extends unknown,
@@ -13,5 +12,5 @@ export function isLeft(
 ) {
 	return leftKind.has(input)
 		&& informationKind.has(input)
-		&& DCommon.isWrappedValue(input);
+		&& valueKind.has(input);
 }

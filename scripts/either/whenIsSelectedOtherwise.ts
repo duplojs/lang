@@ -1,9 +1,13 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
-import { informationKind } from "./kind";
+import { informationKind, valueKind } from "./kind";
 import type { Left } from "./left";
 import type { Right } from "./right";
+import type {
+	GetInformation,
+	GetValue,
+} from "./types";
 
 type Either = Right | Left;
 
@@ -15,7 +19,7 @@ type ForbiddenMoreKey<
 	Extract<
 		Exclude<
 			keyof GenericSelector,
-			DKind.GetValue<typeof informationKind, Extract<GenericInput, Either>>
+			GetInformation<Extract<GenericInput, Either>>
 		>,
 		string
 	>
@@ -44,7 +48,7 @@ type CallbackSelectedKind<
 export function whenIsSelectedOtherwise<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<typeof informationKind, Extract<GenericInput, Either>>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 	const GenericOutput extends unknown,
@@ -52,7 +56,9 @@ export function whenIsSelectedOtherwise<
 >(
 	selector: GenericSelector & ForbiddenMoreKey<GenericInput, GenericSelector>,
 	theFunction: (
-		value: DCommon.Unwrap<Extract<GenericInput, CallbackSelectedKind<GenericSelector>>>,
+		value: GetValue<
+			Extract<GenericInput, Either & CallbackSelectedKind<GenericSelector>>
+		>,
 	) => GenericOutput,
 	otherwiseFunction: (
 		value: Exclude<GenericInput, SelectedKind<GenericSelector>>,
@@ -62,7 +68,7 @@ export function whenIsSelectedOtherwise<
 export function whenIsSelectedOtherwise<
 	GenericInput extends unknown,
 	const GenericSelector extends Record<
-		DKind.GetValue<typeof informationKind, Extract<GenericInput, Either>>,
+		GetInformation<Extract<GenericInput, Either>>,
 		boolean
 	>,
 	const GenericOutput extends unknown,
@@ -71,7 +77,9 @@ export function whenIsSelectedOtherwise<
 	input: GenericInput,
 	selector: GenericSelector & ForbiddenMoreKey<GenericInput, GenericSelector>,
 	theFunction: (
-		value: DCommon.Unwrap<Extract<GenericInput, CallbackSelectedKind<GenericSelector>>>,
+		value: GetValue<
+			Extract<GenericInput, Either & CallbackSelectedKind<GenericSelector>>
+		>,
 	) => GenericOutput,
 	otherwiseFunction: (
 		value: Exclude<GenericInput, SelectedKind<GenericSelector>>,
@@ -107,9 +115,10 @@ export function whenIsSelectedOtherwise(
 
 	if (
 		informationKind.has(input)
+		&& valueKind.has(input)
 		&& selector[informationKind.getValue(input)] === true
 	) {
-		return theFunction(DCommon.unwrap(input));
+		return theFunction(valueKind.getValue(input));
 	}
 
 	return otherwiseFunction(input);

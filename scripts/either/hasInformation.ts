@@ -3,7 +3,8 @@ import type * as DCommon from "@scripts/common";
 import * as DArray from "@scripts/array";
 import type { Left } from "./left";
 import type { Right } from "./right";
-import { informationKind } from "./kind";
+import { informationKind, valueKind } from "./kind";
+import type { GetInformation } from "./types";
 
 type Either = Right | Left;
 
@@ -11,7 +12,7 @@ export function hasInformation<
 	const GenericInput extends unknown,
 	GenericInformation extends(
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, GenericInput>
+			? GetInformation<GenericInput>
 			: never
 	),
 >(
@@ -21,13 +22,14 @@ export function hasInformation<
 ) => input is Extract<
 	GenericInput,
 	DKind.Kind<typeof informationKind, GenericInformation>
+	& DKind.Kind<typeof valueKind>
 >;
 
 export function hasInformation<
 	const GenericInput extends unknown,
 	GenericInformation extends(
 		GenericInput extends Either
-			? DKind.GetValue<typeof informationKind, GenericInput>
+			? GetInformation<GenericInput>
 			: never
 	),
 >(
@@ -36,6 +38,7 @@ export function hasInformation<
 ): input is Extract<
 	GenericInput,
 	DKind.Kind<typeof informationKind, GenericInformation>
+	& DKind.Kind<typeof valueKind>
 >;
 
 export function hasInformation(
@@ -53,5 +56,6 @@ export function hasInformation(
 	const formattedInformation = DArray.coalescing(information);
 
 	return informationKind.has(input)
+		&& valueKind.has(input)
 		&& formattedInformation.includes(informationKind.getValue(input));
 }

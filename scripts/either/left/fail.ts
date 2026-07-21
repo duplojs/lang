@@ -1,6 +1,6 @@
 import type * as DKind from "@scripts/kind";
-import { createKind } from "../kind";
-import { left, type Left } from "./create";
+import { createKind, informationKind, valueKind } from "../kind";
+import { leftKind, type Left } from "./create";
 
 export const failKind = createKind("fail");
 
@@ -16,8 +16,10 @@ export interface Fail extends _Fail {
 export function fail(): Fail;
 
 export function fail() {
-	return failKind.setTo(
-		left("fail", undefined),
-		null,
-	);
+	return {
+		[leftKind.runTimeKey]: null,
+		[informationKind.runTimeKey]: "fail",
+		[valueKind.runTimeKey]: undefined,
+		[failKind.runTimeKey]: null,
+	} as never;
 }

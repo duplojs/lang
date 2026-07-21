@@ -1,6 +1,6 @@
 import type * as DKind from "@scripts/kind";
-import { createKind } from "../kind";
-import { left, type Left } from "./create";
+import { createKind, informationKind, valueKind } from "../kind";
+import { leftKind, type Left } from "./create";
 
 export const errorKind = createKind("error");
 
@@ -26,8 +26,10 @@ export function error<
 export function error(
 	value: unknown,
 ) {
-	return errorKind.setTo(
-		left("error", value),
-		null,
-	);
+	return {
+		[leftKind.runTimeKey]: null,
+		[informationKind.runTimeKey]: "error",
+		[valueKind.runTimeKey]: value,
+		[errorKind.runTimeKey]: null,
+	} as never;
 }
