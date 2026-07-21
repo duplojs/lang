@@ -2,10 +2,10 @@ import * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 import type { Left } from "./create";
 import { isLeft } from "./is";
-import { createEitherKind } from "../kind";
+import { createKind } from "../kind";
 
 export class NotLeftError extends DKind.parentClass(
-	createEitherKind("not-left-error"),
+	createKind("not-left-error"),
 	Error,
 ) {
 	public constructor(

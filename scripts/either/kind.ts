@@ -1,10 +1,10 @@
 import * as DKind from "@scripts/kind";
 
-export const createEitherKind = DKind.createNamespace(
+export const createKind = DKind.createNamespace(
 	"DuplojsLangEither",
 );
 
-export const informationKind = createEitherKind<
+export const informationKind = createKind<
 	"information",
 	string
 >("information");

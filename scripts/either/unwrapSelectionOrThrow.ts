@@ -3,10 +3,10 @@ import * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import type { Left } from "./left";
 import type { Right } from "./right";
-import { createEitherKind, informationKind } from "./kind";
+import { createKind, informationKind } from "./kind";
 
 export class HasNotSelectedInformationError extends DKind.parentClass(
-	createEitherKind("has-not-selected-information-error"),
+	createKind("has-not-selected-information-error"),
 	Error,
 ) {
 	public constructor(

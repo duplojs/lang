@@ -1,8 +1,8 @@
 import type * as DKind from "@scripts/kind";
-import { createEitherKind } from "../kind";
+import { createKind } from "../kind";
 import { left, type Left } from "./create";
 
-export const failKind = createEitherKind("fail");
+export const failKind = createKind("fail");
 
 type _Fail = (
 	& Left<"fail", void>

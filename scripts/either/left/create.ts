@@ -1,8 +1,8 @@
 import type * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
-import { createEitherKind, informationKind } from "../kind";
+import { createKind, informationKind } from "../kind";
 
-export const leftKind = createEitherKind("left");
+export const leftKind = createKind("left");
 
 type _Left<
 	GenericInformation extends string = string,

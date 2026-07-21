@@ -2,10 +2,10 @@ import * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 import type { Right } from "./create";
 import { isRight } from "./is";
-import { createEitherKind } from "../kind";
+import { createKind } from "../kind";
 
 export class NotRightError extends DKind.parentClass(
-	createEitherKind("not-right-error"),
+	createKind("not-right-error"),
 	Error,
 ) {
 	public constructor(

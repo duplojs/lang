@@ -1,8 +1,8 @@
 import type * as DKind from "@scripts/kind";
-import { createEitherKind } from "../kind";
+import { createKind } from "../kind";
 import { right, type Right } from "./create";
 
-export const okKind = createEitherKind("ok");
+export const okKind = createKind("ok");
 
 type _Ok = (
 	& Right<"ok", void>

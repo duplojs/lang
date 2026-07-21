@@ -1,8 +1,8 @@
 import type * as DKind from "@scripts/kind";
-import { createEitherKind } from "../kind";
+import { createKind } from "../kind";
 import { left, type Left } from "./create";
 
-export const errorKind = createEitherKind("error");
+export const errorKind = createKind("error");
 
 type _Error<
 	GenericValue extends unknown = unknown,

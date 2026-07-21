@@ -6,9 +6,6 @@ import { serialize } from "./serialize";
 
 const defaultKindValue = {};
 
-/**
- * {@include date/theTime/index.md}
- */
 export class TheTime extends DKind.parentClass(
 	createKind("the-time"),
 ) {

@@ -13,9 +13,8 @@ export * from "./matchInformationOtherwise";
 export * from "./unwrapSelection";
 export * from "./unwrapSelectionOrThrow";
 export * from "./forwardAssertsSelection";
-
-// export * from "./hasInformation";
-// export * from "./unwrapByInformation";
-// export * from "./keepAsRightByInformation";
-// export * from "./keepAsRightSelection";
-// export * from "./unwrapByInformationOrThrow";
+export * from "./hasInformation";
+export * from "./unwrapByInformation";
+export * from "./unwrapByInformationOrThrow";
+export * from "./keepAsRightByInformation";
+export * from "./keepAsRightSelection";
