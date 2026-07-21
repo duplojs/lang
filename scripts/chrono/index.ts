@@ -7,6 +7,8 @@ export * from "./makeSafeTimestamp";
 export * from "./theDate";
 export * from "./theTime";
 export * from "./serialize";
+export * from "./isDate";
+export * from "./isTime";
 
 // export * from "./create";
 // export * from "./now";
@@ -30,8 +32,6 @@ export * from "./serialize";
 // export * from "./maxTime";
 // export * from "./sort";
 // export * from "./sortTimes";
-// export * from "./is";
-// export * from "./isTime";
 // export * from "./timezone";
 // export * from "./getTimezoneOffset";
 // export * from "./applyTimezone";

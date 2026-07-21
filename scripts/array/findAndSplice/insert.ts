@@ -17,7 +17,7 @@ export function findAndSpliceInsert<
 	elements: GenericElements,
 ): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[] | undefined;
+) => (GenericArray[number] | GenericElements[number])[] | undefined;
 
 export function findAndSpliceInsert<
 	GenericArray extends readonly unknown[],
@@ -29,7 +29,7 @@ export function findAndSpliceInsert<
 		params: FindAndSpliceInsertPredicateFunctionParams<GenericArray>,
 	) => boolean,
 	elements: GenericElements,
-): DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[] | undefined;
+): (GenericArray[number] | GenericElements[number])[] | undefined;
 
 export function findAndSpliceInsert(
 	...args:
@@ -55,6 +55,7 @@ export function findAndSpliceInsert(
 			)
 		) {
 			const result = array.slice();
+			// Use a loop if spread inputs can become large.
 			result.splice(index, 0, ...elements);
 
 			return result;

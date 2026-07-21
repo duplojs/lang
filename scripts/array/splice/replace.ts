@@ -1,5 +1,3 @@
-import type * as DCommon from "@scripts/common";
-
 export function spliceReplace<
 	GenericElements extends readonly unknown[],
 >(
@@ -7,7 +5,7 @@ export function spliceReplace<
 	elements: GenericElements,
 ): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[];
+) => (GenericArray[number] | GenericElements[number])[];
 
 export function spliceReplace<
 	GenericArray extends readonly unknown[],
@@ -16,7 +14,7 @@ export function spliceReplace<
 	array: GenericArray,
 	indexFrom: number,
 	elements: GenericElements,
-): DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[];
+): (GenericArray[number] | GenericElements[number])[];
 
 export function spliceReplace(
 	...args:
@@ -32,6 +30,7 @@ export function spliceReplace(
 	const [array, indexFrom, elements] = args;
 
 	const result = array.slice();
+	// Use a loop if spread inputs can become large.
 	result.splice(indexFrom, elements.length, ...elements);
 
 	return result;

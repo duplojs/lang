@@ -1,4 +1,4 @@
-export function push<
+export function unshift<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
 >(
@@ -6,11 +6,11 @@ export function push<
 ): (
 	array: GenericArray,
 ) => (
-	| GenericArray[number]
 	| GenericValue
-)[];
+	| GenericArray[number]
+);
 
-export function push<
+export function unshift<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
 	GenericValuesRest extends readonly unknown[],
@@ -19,27 +19,24 @@ export function push<
 	value: GenericValue,
 	...valuesRest: GenericValuesRest
 ): (
-	| GenericArray[number]
 	| GenericValue
 	| GenericValuesRest[number]
+	| GenericArray[number]
 )[];
 
-export function push(
+export function unshift(
 	...args:
 		| [value: unknown]
 		| [array: readonly unknown[], value: unknown, ...valuesRest: readonly unknown[]]
 ) {
 	if (args.length === 1) {
-		const [value] = args;
+		const [value] = args as [unknown];
 
-		return (array: readonly unknown[]) => push(array, value);
+		return (array: readonly unknown[]) => unshift(array, value);
 	}
 
-	const [array, ...values] = args as [unknown[], ...unknown[]];
+	const [array, ...values] = args as [unknown[], unknown, ...unknown[]];
 
-	const result = array.slice();
 	// Use a loop if spread inputs can become large.
-	result.push(...values);
-
-	return result;
+	return [...values, ...array];
 }

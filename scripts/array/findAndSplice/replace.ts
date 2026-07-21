@@ -17,7 +17,7 @@ export function findAndSpliceReplace<
 	elements: GenericElements,
 ): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[] | undefined;
+) => (GenericArray[number] | GenericElements[number])[] | undefined;
 
 export function findAndSpliceReplace<
 	GenericArray extends readonly unknown[],
@@ -29,7 +29,7 @@ export function findAndSpliceReplace<
 		params: FindAndSpliceReplacePredicateFunctionParams<GenericArray>,
 	) => boolean,
 	elements: GenericElements,
-): DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[] | undefined;
+): (GenericArray[number] | GenericElements[number])[] | undefined;
 
 export function findAndSpliceReplace(
 	...args:
@@ -55,6 +55,7 @@ export function findAndSpliceReplace(
 			)
 		) {
 			const result = array.slice();
+			// Use a loop if spread inputs can become large.
 			result.splice(index, elements.length, ...elements);
 
 			return result;

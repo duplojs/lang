@@ -4,62 +4,62 @@ import * as DObject from "@scripts/object";
 import { push } from "./push";
 import { createKind } from "./kind";
 
-export interface ArrayReduceNext<
+export interface ReduceNext<
 	GenericOutput extends unknown = unknown,
 > {
 	"-next": GenericOutput;
 }
 
-export interface ArrayReduceExit<
+export interface ReduceExit<
 	GenericOutput extends unknown = unknown,
 > {
 	"-exit": GenericOutput;
 }
 
-export interface ArrayReduceFunctionParams<
-	GenericInputArray extends readonly unknown[] = unknown[],
+export interface ReduceTheFunctionParams<
+	GenericArray extends readonly unknown[] = unknown[],
 	GenericOutput extends unknown = unknown,
 > {
-	element: GenericInputArray[number];
+	element: GenericArray[number];
 	index: number;
 	lastValue: GenericOutput;
 	nextWithObject: GenericOutput extends object
 		? (
 			object1: GenericOutput,
 			object2: Partial<GenericOutput>,
-		) => ArrayReduceNext<GenericOutput>
+		) => ReduceNext<GenericOutput>
 		: undefined;
-	next(output: GenericOutput): ArrayReduceNext<GenericOutput>;
+	next(output: GenericOutput): ReduceNext<GenericOutput>;
 	exit<
 		GenericExitValue extends unknown,
-	>(output: GenericExitValue): ArrayReduceExit<GenericExitValue>;
-	self: GenericInputArray;
+	>(output: GenericExitValue): ReduceExit<GenericExitValue>;
+	self: GenericArray;
 	nextPush: GenericOutput extends readonly any[]
 		? (
 			array: GenericOutput,
 			...values: GenericOutput
-		) => ArrayReduceNext<GenericOutput>
+		) => ReduceNext<GenericOutput>
 		: undefined;
 }
 
-const reduceFromKind = createKind(
-	"reduce-from",
+export const reduceKind = createKind(
+	"reduce",
 );
 
-export interface ArrayReduceFromResult<
+export interface ReduceFromResult<
 	GenericValue extends unknown = unknown,
-> extends DKind.Kind<typeof reduceFromKind, GenericValue> {}
+> extends DKind.Kind<typeof reduceKind, GenericValue> {}
 
 export function reduceFrom<
 	GenericValue extends unknown,
->(value: GenericValue): ArrayReduceFromResult<GenericValue> {
+>(value: GenericValue): ReduceFromResult<GenericValue> {
 	return {
-		[reduceFromKind.runTimeKey]: value,
+		[reduceKind.runTimeKey]: value,
 	} as never;
 }
 
 export const reduceTools: Pick<
-	ArrayReduceFunctionParams<any, any>,
+	ReduceTheFunctionParams<any, any>,
 	"exit" | "next" | "nextWithObject" | "nextPush"
 > = {
 	exit(output: any) {
@@ -79,49 +79,49 @@ export const reduceTools: Pick<
 	},
 };
 
-export type ArrayEligibleReduceFromValue = number | string | bigint | boolean | ArrayReduceFromResult;
+export type EligibleReduceFromValue = number | string | bigint | boolean | ReduceFromResult;
 
-export type ArrayReduceFromValue<
-	GenericValue extends ArrayEligibleReduceFromValue,
-> = GenericValue extends ArrayReduceFromResult<infer InferredValue>
+export type ReduceFromValue<
+	GenericValue extends EligibleReduceFromValue,
+> = GenericValue extends ReduceFromResult<infer InferredValue>
 	? InferredValue
 	: DCommon.ToLargeEnsemble<GenericValue>;
 
 export function reduce<
 	GenericArray extends readonly unknown[],
-	GenericReduceFrom extends ArrayEligibleReduceFromValue,
-	GenericExit extends ArrayReduceExit = ArrayReduceExit<never>,
+	GenericReduceFrom extends EligibleReduceFromValue,
+	GenericExit extends ReduceExit = ReduceExit<never>,
 >(
 	fromValue: GenericReduceFrom,
 	theFunction: (
-		params: ArrayReduceFunctionParams<
+		params: ReduceTheFunctionParams<
 			GenericArray,
-			ArrayReduceFromValue<GenericReduceFrom>
+			ReduceFromValue<GenericReduceFrom>
 		>,
-	) => ArrayReduceNext<ArrayReduceFromValue<GenericReduceFrom>> | GenericExit,
+	) => ReduceNext<ReduceFromValue<GenericReduceFrom>> | GenericExit,
 ): (
 	array: GenericArray,
-) => ArrayReduceFromValue<GenericReduceFrom> | (
-	DCommon.IsEqual<GenericExit, ArrayReduceExit> extends true
+) => ReduceFromValue<GenericReduceFrom> | (
+	DCommon.IsEqual<GenericExit, ReduceExit> extends true
 		? never
 		: GenericExit["-exit"]
 );
 
 export function reduce<
 	GenericArray extends readonly unknown[],
-	GenericReduceFrom extends number | string | bigint | boolean | ArrayReduceFromResult,
-	GenericExit extends ArrayReduceExit = ArrayReduceExit<never>,
+	GenericReduceFrom extends number | string | bigint | boolean | ReduceFromResult,
+	GenericExit extends ReduceExit = ReduceExit<never>,
 >(
 	array: GenericArray,
 	fromValue: GenericReduceFrom,
 	theFunction: (
-		params: ArrayReduceFunctionParams<
+		params: ReduceTheFunctionParams<
 			GenericArray,
-			ArrayReduceFromValue<GenericReduceFrom>
+			ReduceFromValue<GenericReduceFrom>
 		>,
-	) => ArrayReduceNext<ArrayReduceFromValue<GenericReduceFrom>> | GenericExit,
-): ArrayReduceFromValue<GenericReduceFrom> | (
-	DCommon.IsEqual<GenericExit, ArrayReduceExit> extends true
+	) => ReduceNext<ReduceFromValue<GenericReduceFrom>> | GenericExit,
+): ReduceFromValue<GenericReduceFrom> | (
+	DCommon.IsEqual<GenericExit, ReduceExit> extends true
 		? never
 		: GenericExit["-exit"]
 );
@@ -143,8 +143,8 @@ export function reduce(
 
 	const [array, fromValue, theFunction] = args;
 
-	let lastValue = reduceFromKind.has(fromValue)
-		? reduceFromKind.getValue(fromValue)
+	let lastValue = reduceKind.has(fromValue)
+		? reduceKind.getValue(fromValue)
 		: fromValue;
 
 	for (let index = 0; index < array.length; index++) {
@@ -156,7 +156,7 @@ export function reduce(
 			lastValue,
 			self: array,
 			...reduceTools,
-		}) as ArrayReduceExit | ArrayReduceNext;
+		}) as ReduceExit | ReduceNext;
 
 		if ("-exit" in result) {
 			return result["-exit"];

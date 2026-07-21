@@ -1,4 +1,4 @@
-export function concat<
+export function prepend<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
 >(
@@ -6,11 +6,11 @@ export function concat<
 ): (
 	array: GenericArray,
 ) => (
-	| GenericArray[number]
 	| GenericElements[number]
+	| GenericArray[number]
 )[];
 
-export function concat<
+export function prepend<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
 	GenericElementsRest extends readonly unknown[][],
@@ -19,24 +19,28 @@ export function concat<
 	elements: GenericElements,
 	...elementsRest: GenericElementsRest
 ): (
-	| GenericArray[number]
 	| GenericElements[number]
 	| GenericElementsRest[number][number]
+	| GenericArray[number]
 )[];
 
-export function concat(
+export function prepend(
 	...args:
 		| [elements: readonly unknown[]]
-		| [array: readonly unknown[], elements: readonly unknown[], ...elementsRest: readonly unknown[]]
+		| [array: readonly unknown[], elements: readonly unknown[], ...elementsRest: readonly unknown[][]]
 ) {
 	if (args.length === 1) {
 		const [elements] = args;
 
-		return (array: readonly unknown[]) => concat(array, elements);
+		return (array: readonly unknown[]) => prepend(array, elements);
 	}
 
-	const [array, elements, ...elementsRest] = args;
+	const [array, elements, ...elementsRest] = args as [
+		readonly unknown[],
+		readonly unknown[],
+		...readonly unknown[][],
+	];
 
 	// Use a loop if spread inputs can become large.
-	return array.concat(elements, ...elementsRest);
+	return elements.concat(...elementsRest, array);
 }
