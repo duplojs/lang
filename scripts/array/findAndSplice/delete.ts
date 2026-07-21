@@ -17,7 +17,7 @@ export function findAndSpliceDelete<
 	deleteCount: number,
 ): (
 	array: GenericArray,
-) => GenericArray | undefined;
+) => DCommon.RemoveConstraint<GenericArray[number]>[] | undefined;
 
 export function findAndSpliceDelete<
 	GenericArray extends readonly unknown[],
@@ -28,7 +28,7 @@ export function findAndSpliceDelete<
 		params: FindAndSpliceDeletePredicateFunctionParams<GenericArray>,
 	) => boolean,
 	deleteCount: number,
-): GenericArray | undefined;
+): DCommon.RemoveConstraint<GenericArray[number]>[] | undefined;
 
 export function findAndSpliceDelete(
 	...args:
@@ -53,7 +53,10 @@ export function findAndSpliceDelete(
 				},
 			)
 		) {
-			return array.slice().splice(index, deleteCount);
+			const result = array.slice();
+			result.splice(index, deleteCount);
+
+			return result;
 		}
 	}
 

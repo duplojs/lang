@@ -33,3 +33,4 @@ export type * from "./unionToIntersection";
 export type * from "./unwrapGetter";
 export type * from "./adaptor";
 export type * from "./and";
+export * from "./expectType";

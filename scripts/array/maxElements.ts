@@ -1,5 +1,6 @@
 import type * as DCommon from "@scripts/common";
 import type * as DNumber from "@scripts/number";
+import type { ForbiddenLengthEqual } from "./lengthEqual";
 
 export interface MaxElements<
 	GenericMax extends number,
@@ -11,16 +12,16 @@ export function maxElements<
 >(
 	max: GenericMax & DNumber.ForbiddenNegative<GenericMax>,
 ): (
-	array: GenericArray,
-) => array is GenericArray & MaxElements<GenericMax>;
+	array: GenericArray & ForbiddenLengthEqual<GenericArray>,
+) => array is GenericArray & ForbiddenLengthEqual<GenericArray> & MaxElements<GenericMax>;
 
 export function maxElements<
 	GenericArray extends readonly unknown[],
 	GenericMax extends number,
 >(
-	array: GenericArray,
+	array: GenericArray & ForbiddenLengthEqual<GenericArray>,
 	max: GenericMax & DNumber.ForbiddenNegative<GenericMax>,
-): array is GenericArray & MaxElements<GenericMax>;
+): array is GenericArray & ForbiddenLengthEqual<GenericArray> & MaxElements<GenericMax>;
 
 export function maxElements(
 	...args:

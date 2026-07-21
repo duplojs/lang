@@ -2,8 +2,14 @@ import type * as DCommon from "@scripts/common";
 import type * as DNumber from "@scripts/number";
 
 export interface LengthEqual<
-	GenericMax extends number,
-> extends DCommon.Constraint<`array-length-equal-${GenericMax}`> {}
+	GenericLength extends number,
+> extends DCommon.Constraint<`array-length-equal-${GenericLength}`> {}
+
+export type ForbiddenLengthEqual<
+	GenericArray extends readonly unknown[],
+> = GenericArray extends LengthEqual<number>
+	? DCommon.ComputedTypeError<"Array already has exact length constraint.">
+	: unknown;
 
 export function lengthEqual<
 	GenericArray extends readonly unknown[],

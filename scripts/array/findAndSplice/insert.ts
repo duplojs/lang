@@ -8,27 +8,28 @@ export interface FindAndSpliceInsertPredicateFunctionParams<
 }
 
 export function findAndSpliceInsert<
-	GenericArray extends readonly unknown[],
+	GenericElements extends readonly unknown[],
 >(
 	predicate: (
-		element: GenericArray[number],
-		params: FindAndSpliceInsertPredicateFunctionParams<GenericArray>,
+		element: unknown,
+		params: FindAndSpliceInsertPredicateFunctionParams,
 	) => boolean,
-	elements: GenericArray,
-): (
+	elements: GenericElements,
+): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => GenericArray | undefined;
+) => DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[] | undefined;
 
 export function findAndSpliceInsert<
 	GenericArray extends readonly unknown[],
+	GenericElements extends readonly unknown[],
 >(
 	array: GenericArray,
 	predicate: (
 		element: GenericArray[number],
 		params: FindAndSpliceInsertPredicateFunctionParams<GenericArray>,
 	) => boolean,
-	elements: GenericArray,
-): GenericArray | undefined;
+	elements: GenericElements,
+): DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[] | undefined;
 
 export function findAndSpliceInsert(
 	...args:
@@ -53,7 +54,10 @@ export function findAndSpliceInsert(
 				},
 			)
 		) {
-			return array.slice().splice(index, 0, ...elements);
+			const result = array.slice();
+			result.splice(index, 0, ...elements);
+
+			return result;
 		}
 	}
 

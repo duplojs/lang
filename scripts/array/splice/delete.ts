@@ -1,11 +1,11 @@
-export function spliceDelete<
-	GenericArray extends readonly unknown[],
->(
+import type * as DCommon from "@scripts/common";
+
+export function spliceDelete(
 	indexTo: number,
 	deleteCount: number,
-): (
+): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => GenericArray;
+) => DCommon.RemoveConstraint<GenericArray[number]>[];
 
 export function spliceDelete<
 	GenericArray extends readonly unknown[],
@@ -13,7 +13,7 @@ export function spliceDelete<
 	array: GenericArray,
 	indexTo: number,
 	deleteCount: number,
-): GenericArray;
+): DCommon.RemoveConstraint<GenericArray[number]>[];
 
 export function spliceDelete(
 	...args:
@@ -28,5 +28,8 @@ export function spliceDelete(
 
 	const [array, indexTo, deleteCount] = args;
 
-	return array.slice().splice(indexTo, deleteCount);
+	const result = array.slice();
+	result.splice(indexTo, deleteCount);
+
+	return result;
 }

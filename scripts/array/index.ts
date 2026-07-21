@@ -6,16 +6,15 @@ export * from "./minElements";
 export * from "./maxElements";
 export * from "./lengthEqual";
 export * from "./filter";
-
-export * from "./fill";
-export * from "./findAndSplice";
-export * from "./splice";
-export * from "./chunk";
-export * from "./copyWithin";
-export * from "./findAndReplace";
 export * from "./find";
 export * from "./every";
 export * from "./concat";
+export * from "./copyWithin";
+export * from "./fill";
+export * from "./chunk";
+export * from "./findAndReplace";
+export * from "./findAndSplice";
+export * from "./splice";
 
 // export * from "./findLast";
 // export * from "./group";

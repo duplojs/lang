@@ -1,19 +1,22 @@
-export function spliceInsert<
-	GenericElement extends unknown,
->(
-	indexFrom: number,
-	elements: readonly GenericElement[],
-): (
-	array: readonly GenericElement[],
-) => GenericElement[];
+import type * as DCommon from "@scripts/common";
 
 export function spliceInsert<
-	GenericElement extends unknown,
+	GenericElements extends readonly unknown[],
 >(
-	array: readonly GenericElement[],
 	indexFrom: number,
-	elements: readonly GenericElement[],
-): GenericElement[];
+	elements: GenericElements,
+): <GenericArray extends readonly unknown[]>(
+	array: GenericArray,
+) => DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[];
+
+export function spliceInsert<
+	GenericArray extends readonly unknown[],
+	GenericElements extends readonly unknown[],
+>(
+	array: GenericArray,
+	indexFrom: number,
+	elements: GenericElements,
+): DCommon.RemoveConstraint<GenericArray[number] | GenericElements[number]>[];
 
 export function spliceInsert(
 	...args:
@@ -28,5 +31,8 @@ export function spliceInsert(
 
 	const [array, indexFrom, elements] = args;
 
-	return array.slice().splice(indexFrom, 0, ...elements);
+	const result = array.slice();
+	result.splice(indexFrom, 0, ...elements);
+
+	return result;
 }

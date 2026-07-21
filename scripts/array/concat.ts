@@ -1,3 +1,5 @@
+import type * as DCommon from "@scripts/common";
+
 export function concat<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
@@ -5,10 +7,10 @@ export function concat<
 	elements: GenericElements,
 ): (
 	array: GenericArray,
-) => (
+) => DCommon.RemoveConstraint<(
 	| GenericArray[number]
 	| GenericElements[number]
-)[];
+)>[];
 
 export function concat<
 	GenericArray extends readonly unknown[],
@@ -18,11 +20,11 @@ export function concat<
 	array: GenericArray,
 	elements: GenericElements,
 	...elementsRest: GenericElementsRest
-): (
+): DCommon.RemoveConstraint<(
 	| GenericArray[number]
 	| GenericElements[number]
 	| GenericElementsRest[number][number]
-)[];
+)>[];
 
 export function concat(
 	...args:

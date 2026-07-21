@@ -1,32 +1,16 @@
-import type * as DCommon from "@scripts/common";
-import type * as DNumber from "@scripts/number";
-import type { MaxElements } from "../maxElements";
-import type { MinElements } from "../minElements";
-import type { LengthEqual } from "../lengthEqual";
-
-type ComputeOutputFromMinElements<
-	GenericArray extends readonly unknown[],
-	GenericIndex extends number,
-> = GenericArray extends MinElements<infer InferredMin>
-	? DNumber.IsGreater<InferredMin, GenericIndex> extends true
-		? GenericArray[GenericIndex]
-		: GenericArray[number] | undefined
-	: GenericArray[number] | undefined;
+import type {
+	IsIndexCovered,
+	IsIndexOutOfRange,
+} from "../types";
 
 export type At<
 	GenericArray extends readonly unknown[],
 	GenericIndex extends number,
-> = DCommon.IsEqual<GenericIndex, number> extends true
-	? GenericArray[number] | undefined
-	: GenericArray extends LengthEqual<infer InferredLength>
-		? DNumber.IsGreaterOrEqual<GenericIndex, InferredLength> extends true
-			? undefined
-			: GenericArray[GenericIndex]
-		: GenericArray extends MaxElements<infer InferredMax>
-			? DNumber.IsGreaterOrEqual<GenericIndex, InferredMax> extends true
-				? undefined
-				: ComputeOutputFromMinElements<GenericArray, GenericIndex>
-			: ComputeOutputFromMinElements<GenericArray, GenericIndex>;
+> = IsIndexOutOfRange<GenericArray, GenericIndex> extends true
+	? undefined
+	: IsIndexCovered<GenericArray, GenericIndex> extends true
+		? GenericArray[GenericIndex]
+		: GenericArray[number] | undefined;
 
 export function at<
 	GenericArray extends readonly unknown[],

@@ -1,17 +1,19 @@
+import type * as DCommon from "@scripts/common";
+
 export function chunk<
 	GenericArray extends readonly unknown[],
 >(
 	size: number,
 ): (
 	array: GenericArray,
-) => GenericArray[];
+) => DCommon.RemoveConstraint<GenericArray[number]>[][];
 
 export function chunk<
 	GenericArray extends readonly unknown[],
 >(
 	array: GenericArray,
 	size: number,
-): GenericArray[];
+): DCommon.RemoveConstraint<GenericArray[number]>[][];
 
 export function chunk(
 	...args:
