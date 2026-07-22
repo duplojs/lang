@@ -1,3 +1,9 @@
+import type { ReapplyAllConstraints } from "./constraints";
+
+type CopyWithinOutput<
+	GenericArray extends readonly unknown[],
+> = ReapplyAllConstraints<GenericArray, GenericArray[number][]>;
+
 export function copyWithin<
 	GenericArray extends readonly unknown[],
 >(
@@ -6,7 +12,7 @@ export function copyWithin<
 	end?: number,
 ): (
 	array: GenericArray,
-) => GenericArray;
+) => CopyWithinOutput<GenericArray>;
 
 export function copyWithin<
 	GenericArray extends readonly unknown[],
@@ -15,7 +21,7 @@ export function copyWithin<
 	target: number,
 	start: number,
 	end?: number,
-): GenericArray;
+): CopyWithinOutput<GenericArray>;
 
 export function copyWithin(
 	...args:

@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import type { ReapplyAllConstraints } from "../constraints";
 
 export interface FindAndSpliceDeletePredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -6,6 +7,16 @@ export interface FindAndSpliceDeletePredicateFunctionParams<
 	index: number;
 	self: GenericArray;
 }
+
+type FindAndSpliceDeleteOutput<
+	GenericArray extends readonly unknown[],
+> =
+	| ReapplyAllConstraints<
+		GenericArray,
+		GenericArray[number][],
+		"lengthEqual" | "minElements"
+	>
+	| undefined;
 
 export function findAndSpliceDelete<
 	GenericArray extends readonly unknown[],
@@ -17,7 +28,7 @@ export function findAndSpliceDelete<
 	deleteCount: number,
 ): (
 	array: GenericArray,
-) => GenericArray[number][] | undefined;
+) => FindAndSpliceDeleteOutput<GenericArray>;
 
 export function findAndSpliceDelete<
 	GenericArray extends readonly unknown[],
@@ -28,7 +39,7 @@ export function findAndSpliceDelete<
 		params: FindAndSpliceDeletePredicateFunctionParams<GenericArray>,
 	) => boolean,
 	deleteCount: number,
-): GenericArray[number][] | undefined;
+): FindAndSpliceDeleteOutput<GenericArray>;
 
 export function findAndSpliceDelete(
 	...args:

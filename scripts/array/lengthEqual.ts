@@ -1,15 +1,5 @@
-import type * as DCommon from "@scripts/common";
 import type * as DNumber from "@scripts/number";
-
-export interface LengthEqual<
-	GenericLength extends number,
-> extends DCommon.Constraint<`array-length-equal-${GenericLength}`> {}
-
-export type ForbiddenLengthEqual<
-	GenericArray extends readonly unknown[],
-> = GenericArray extends LengthEqual<number>
-	? DCommon.ComputedTypeError<"Array already has exact length constraint.">
-	: unknown;
+import type { LengthEqual } from "./constraints";
 
 export function lengthEqual<
 	GenericArray extends readonly unknown[],

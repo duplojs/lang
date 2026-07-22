@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyConstraints } from "./types";
+import type { ReapplyAllConstraints } from "./constraints";
 
 export interface MapTheFunctionParams<
 	GenericInputArray extends readonly unknown[],
@@ -7,6 +7,11 @@ export interface MapTheFunctionParams<
 	index: number;
 	self: GenericInputArray;
 }
+
+type MapOutput<
+	GenericArray extends readonly unknown[],
+	GenericOutput extends unknown,
+> = ReapplyAllConstraints<GenericArray, GenericOutput[]>;
 
 export function map<
 	GenericArray extends readonly unknown[],
@@ -18,7 +23,7 @@ export function map<
 	) => GenericOutput,
 ): (
 	array: GenericArray,
-) => ReapplyConstraints<GenericArray, GenericOutput[]>;
+) => MapOutput<GenericArray, GenericOutput>;
 
 export function map<
 	GenericArray extends readonly unknown[],
@@ -29,7 +34,7 @@ export function map<
 		element: GenericArray[number],
 		params: MapTheFunctionParams<GenericArray>,
 	) => GenericOutput,
-): ReapplyConstraints<GenericArray, GenericOutput[]>;
+): MapOutput<GenericArray, GenericOutput>;
 
 export function map(
 	...args:

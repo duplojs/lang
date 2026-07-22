@@ -1,3 +1,17 @@
+import type { ReapplyAllConstraints } from "../constraints";
+
+type SpliceInsertOutput<
+	GenericArray extends readonly unknown[],
+	GenericElements extends readonly unknown[],
+> = ReapplyAllConstraints<
+	GenericArray,
+	(
+		| GenericArray[number]
+		| GenericElements[number]
+	)[],
+	"lengthEqual" | "maxElements"
+>;
+
 export function spliceInsert<
 	GenericElements extends readonly unknown[],
 >(
@@ -5,7 +19,7 @@ export function spliceInsert<
 	elements: GenericElements,
 ): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => (GenericArray[number] | GenericElements[number])[];
+) => SpliceInsertOutput<GenericArray, GenericElements>;
 
 export function spliceInsert<
 	GenericArray extends readonly unknown[],
@@ -14,7 +28,7 @@ export function spliceInsert<
 	array: GenericArray,
 	indexFrom: number,
 	elements: GenericElements,
-): (GenericArray[number] | GenericElements[number])[];
+): SpliceInsertOutput<GenericArray, GenericElements>;
 
 export function spliceInsert(
 	...args:

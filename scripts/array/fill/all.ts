@@ -1,17 +1,25 @@
-export function fillAll<
+import type { ReapplyAllConstraints } from "../constraints";
+
+type FillAllOutput<
+	GenericArray extends readonly unknown[],
 	GenericElement extends unknown,
->(
-	element: GenericElement,
-): (
-	array: readonly unknown[],
-) => GenericElement[];
+> = ReapplyAllConstraints<GenericArray, GenericElement[]>;
 
 export function fillAll<
 	GenericElement extends unknown,
 >(
-	array: readonly unknown[],
 	element: GenericElement,
-): GenericElement[];
+): <GenericArray extends readonly unknown[]>(
+	array: GenericArray,
+) => FillAllOutput<GenericArray, GenericElement>;
+
+export function fillAll<
+	GenericElement extends unknown,
+	GenericArray extends readonly unknown[],
+>(
+	array: GenericArray,
+	element: GenericElement,
+): FillAllOutput<GenericArray, GenericElement>;
 
 export function fillAll(
 	...args:

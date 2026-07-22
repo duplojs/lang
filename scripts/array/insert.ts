@@ -1,3 +1,17 @@
+import type { ReapplyAllConstraints } from "./constraints";
+
+type InsertOutput<
+	GenericArray extends readonly unknown[],
+	GenericValue extends unknown,
+> = ReapplyAllConstraints<
+	GenericArray,
+	(
+		| GenericArray[number]
+		| GenericValue
+	)[],
+	"lengthEqual" | "maxElements"
+>;
+
 export function insert<
 	GenericValue extends unknown,
 	GenericArray extends readonly unknown[],
@@ -5,10 +19,7 @@ export function insert<
 	array: GenericArray,
 ): (
 	value: GenericValue,
-) => (
-	| GenericArray[number]
-	| GenericValue
-)[];
+) => InsertOutput<GenericArray, GenericValue>;
 
 export function insert<
 	GenericValue extends unknown,
@@ -16,10 +27,7 @@ export function insert<
 >(
 	value: GenericValue,
 	array: GenericArray,
-): (
-	| GenericArray[number]
-	| GenericValue
-)[];
+): InsertOutput<GenericArray, GenericValue>;
 
 export function insert(
 	...args:

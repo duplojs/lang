@@ -1,9 +1,19 @@
+import type { ReapplyAllConstraints } from "../constraints";
+
+type SpliceDeleteOutput<
+	GenericArray extends readonly unknown[],
+> = ReapplyAllConstraints<
+	GenericArray,
+	GenericArray[number][],
+	"lengthEqual" | "minElements"
+>;
+
 export function spliceDelete(
 	indexTo: number,
 	deleteCount: number,
 ): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => GenericArray[number][];
+) => SpliceDeleteOutput<GenericArray>;
 
 export function spliceDelete<
 	GenericArray extends readonly unknown[],
@@ -11,7 +21,7 @@ export function spliceDelete<
 	array: GenericArray,
 	indexTo: number,
 	deleteCount: number,
-): GenericArray[number][];
+): SpliceDeleteOutput<GenericArray>;
 
 export function spliceDelete(
 	...args:

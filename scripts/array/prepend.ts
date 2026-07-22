@@ -1,3 +1,19 @@
+import type { ReapplyAllConstraints } from "./constraints";
+
+type PrependOutput<
+	GenericArray extends readonly unknown[],
+	GenericElements extends readonly unknown[],
+	GenericElementsRest extends readonly unknown[][] = [],
+> = ReapplyAllConstraints<
+	GenericArray,
+	(
+		| GenericElements[number]
+		| GenericElementsRest[number][number]
+		| GenericArray[number]
+	)[],
+	"lengthEqual" | "maxElements"
+>;
+
 export function prepend<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
@@ -5,10 +21,7 @@ export function prepend<
 	elements: GenericElements,
 ): (
 	array: GenericArray,
-) => (
-	| GenericElements[number]
-	| GenericArray[number]
-)[];
+) => PrependOutput<GenericArray, GenericElements>;
 
 export function prepend<
 	GenericArray extends readonly unknown[],
@@ -18,11 +31,7 @@ export function prepend<
 	array: GenericArray,
 	elements: GenericElements,
 	...elementsRest: GenericElementsRest
-): (
-	| GenericElements[number]
-	| GenericElementsRest[number][number]
-	| GenericArray[number]
-)[];
+): PrependOutput<GenericArray, GenericElements, GenericElementsRest>;
 
 export function prepend(
 	...args:

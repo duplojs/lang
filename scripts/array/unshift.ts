@@ -1,3 +1,19 @@
+import type { ReapplyAllConstraints } from "./constraints";
+
+type UnshiftOutput<
+	GenericArray extends readonly unknown[],
+	GenericValue extends unknown,
+	GenericValuesRest extends readonly unknown[] = [],
+> = ReapplyAllConstraints<
+	GenericArray,
+	(
+		| GenericValue
+		| GenericValuesRest[number]
+		| GenericArray[number]
+	)[],
+	"lengthEqual" | "maxElements"
+>;
+
 export function unshift<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
@@ -5,10 +21,7 @@ export function unshift<
 	value: GenericValue,
 ): (
 	array: GenericArray,
-) => (
-	| GenericValue
-	| GenericArray[number]
-);
+) => UnshiftOutput<GenericArray, GenericValue>;
 
 export function unshift<
 	GenericArray extends readonly unknown[],
@@ -18,11 +31,7 @@ export function unshift<
 	array: GenericArray,
 	value: GenericValue,
 	...valuesRest: GenericValuesRest
-): (
-	| GenericValue
-	| GenericValuesRest[number]
-	| GenericArray[number]
-)[];
+): UnshiftOutput<GenericArray, GenericValue, GenericValuesRest>;
 
 export function unshift(
 	...args:

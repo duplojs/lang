@@ -1,3 +1,19 @@
+import type { ReapplyAllConstraints } from "./constraints";
+
+type PushOutput<
+	GenericArray extends readonly unknown[],
+	GenericValue extends unknown,
+	GenericValuesRest extends readonly unknown[] = [],
+> = ReapplyAllConstraints<
+	GenericArray,
+	(
+		| GenericArray[number]
+		| GenericValue
+		| GenericValuesRest[number]
+	)[],
+	"lengthEqual" | "maxElements"
+>;
+
 export function push<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
@@ -5,10 +21,7 @@ export function push<
 	value: GenericValue,
 ): (
 	array: GenericArray,
-) => (
-	| GenericArray[number]
-	| GenericValue
-)[];
+) => PushOutput<GenericArray, GenericValue>;
 
 export function push<
 	GenericArray extends readonly unknown[],
@@ -18,11 +31,7 @@ export function push<
 	array: GenericArray,
 	value: GenericValue,
 	...valuesRest: GenericValuesRest
-): (
-	| GenericArray[number]
-	| GenericValue
-	| GenericValuesRest[number]
-)[];
+): PushOutput<GenericArray, GenericValue, GenericValuesRest>;
 
 export function push(
 	...args:

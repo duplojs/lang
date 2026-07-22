@@ -9,6 +9,15 @@ export interface Constraint<
 	};
 }
 
+export interface DynamicConstraint<
+	ConstraintName extends string = string,
+	ConstraintValue extends string | number = never,
+> {
+	[ConstraintKind]: {
+		[Prop in ConstraintName]: Record<ConstraintValue, unknown>
+	};
+}
+
 export type RemoveConstraint<
 	GenericValue extends unknown,
 > = GenericValue extends (infer InferredValue) & Pick<

@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import type { ReapplyAllConstraints } from "./constraints";
 
 export interface FindAndReplacePredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -6,6 +7,13 @@ export interface FindAndReplacePredicateFunctionParams<
 	index: number;
 	self: GenericArray;
 }
+
+type FindAndReplaceOutput<
+	GenericArray extends readonly unknown[],
+	GenericValue extends DCommon.AnyValue,
+> =
+	| ReapplyAllConstraints<GenericArray, (GenericArray[number] | GenericValue)[]>
+	| undefined;
 
 export function findAndReplace<
 	GenericArray extends readonly unknown[],
@@ -18,7 +26,7 @@ export function findAndReplace<
 	value: GenericValue,
 ): (
 	array: GenericArray,
-) => (GenericArray[number] | GenericValue)[] | undefined;
+) => FindAndReplaceOutput<GenericArray, GenericValue>;
 
 export function findAndReplace<
 	GenericArray extends readonly unknown[],
@@ -30,7 +38,7 @@ export function findAndReplace<
 		params: FindAndReplacePredicateFunctionParams<GenericArray>,
 	) => boolean,
 	value: GenericValue,
-): (GenericArray[number] | GenericValue)[] | undefined;
+): FindAndReplaceOutput<GenericArray, GenericValue>;
 
 export function findAndReplace(
 	...args:

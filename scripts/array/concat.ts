@@ -1,3 +1,19 @@
+import type { ReapplyAllConstraints } from "./constraints";
+
+type ConcatOutput<
+	GenericArray extends readonly unknown[],
+	GenericElements extends readonly unknown[],
+	GenericElementsRest extends readonly unknown[][] = [],
+> = ReapplyAllConstraints<
+	GenericArray,
+	(
+		| GenericArray[number]
+		| GenericElements[number]
+		| GenericElementsRest[number][number]
+	)[],
+	"lengthEqual" | "maxElements"
+>;
+
 export function concat<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
@@ -5,10 +21,7 @@ export function concat<
 	elements: GenericElements,
 ): (
 	array: GenericArray,
-) => (
-	| GenericArray[number]
-	| GenericElements[number]
-)[];
+) => ConcatOutput<GenericArray, GenericElements>;
 
 export function concat<
 	GenericArray extends readonly unknown[],
@@ -18,11 +31,7 @@ export function concat<
 	array: GenericArray,
 	elements: GenericElements,
 	...elementsRest: GenericElementsRest
-): (
-	| GenericArray[number]
-	| GenericElements[number]
-	| GenericElementsRest[number][number]
-)[];
+): ConcatOutput<GenericArray, GenericElements, GenericElementsRest>;
 
 export function concat(
 	...args:

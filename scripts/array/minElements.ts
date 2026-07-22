@@ -1,10 +1,5 @@
-import type * as DCommon from "@scripts/common";
 import type * as DNumber from "@scripts/number";
-import type { ForbiddenLengthEqual } from "./lengthEqual";
-
-export interface MinElements<
-	GenericMin extends number,
-> extends DCommon.Constraint<`array-min-elements-${GenericMin}`> {}
+import type { MinElements } from "./constraints";
 
 export function minElements<
 	GenericArray extends readonly unknown[],
@@ -12,16 +7,16 @@ export function minElements<
 >(
 	min: GenericMin & DNumber.ForbiddenNegative<GenericMin>,
 ): (
-	array: GenericArray & ForbiddenLengthEqual<GenericArray>,
-) => array is GenericArray & ForbiddenLengthEqual<GenericArray> & MinElements<GenericMin>;
+	array: GenericArray,
+) => array is GenericArray & MinElements<GenericMin>;
 
 export function minElements<
 	GenericArray extends readonly unknown[],
 	GenericMin extends number,
 >(
-	array: GenericArray & ForbiddenLengthEqual<GenericArray>,
+	array: GenericArray,
 	min: GenericMin & DNumber.ForbiddenNegative<GenericMin>,
-): array is GenericArray & ForbiddenLengthEqual<GenericArray> & MinElements<GenericMin>;
+): array is GenericArray & MinElements<GenericMin>;
 
 export function minElements(
 	...args:

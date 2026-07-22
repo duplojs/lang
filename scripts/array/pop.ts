@@ -1,10 +1,18 @@
-import type * as DCommon from "@scripts/common";
+import type { ReapplyAllConstraints } from "./constraints";
+
+type PopOutput<
+	GenericArray extends readonly unknown[],
+> = ReapplyAllConstraints<
+	GenericArray,
+	GenericArray[number][],
+	"lengthEqual" | "minElements"
+>;
 
 export function pop<
-	const GenericArray extends readonly unknown[],
+	GenericArray extends readonly unknown[],
 >(
 	array: GenericArray,
-): DCommon.RemoveConstraint<GenericArray>;
+): PopOutput<GenericArray>;
 
 export function pop(array: readonly unknown[]) {
 	return array.slice(0, -1);

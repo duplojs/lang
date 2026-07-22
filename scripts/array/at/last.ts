@@ -1,6 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { LengthEqual } from "../lengthEqual";
-import type { MinElements } from "../minElements";
+import type { LengthEqual, MinElements } from "../constraints";
 
 type ComputeLastOutputFromMinElements<
 	GenericArray extends readonly unknown[],

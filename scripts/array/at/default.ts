@@ -1,7 +1,4 @@
-import type {
-	IsIndexCovered,
-	IsIndexOutOfRange,
-} from "../types";
+import type { IsIndexCovered, IsIndexOutOfRange } from "../constraints";
 
 export type At<
 	GenericArray extends readonly unknown[],

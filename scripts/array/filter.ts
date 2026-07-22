@@ -1,6 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { LengthEqual } from "./lengthEqual";
-import type { MaxElements } from "./maxElements";
+import type { ReapplyAllConstraints } from "./constraints";
 
 export interface FilterPredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -9,37 +8,37 @@ export interface FilterPredicateFunctionParams<
 	self: GenericArray;
 }
 
-type ComputeOutput<
+type FilterOutput<
 	GenericArray extends readonly unknown[],
-	GenericOutput extends GenericArray[number] = GenericArray[number],
-> = GenericArray extends MaxElements<infer InferredMax>
-	? GenericOutput[] & MaxElements<InferredMax>
-	: GenericArray extends LengthEqual<infer InferredLength>
-		? GenericOutput[] & MaxElements<InferredLength>
-		: GenericOutput[];
+	GenericElement extends GenericArray[number] = GenericArray[number],
+> = ReapplyAllConstraints<
+	GenericArray,
+	GenericElement[],
+	"lengthEqual" | "minElements"
+>;
 
 export function filter<
 	GenericArray extends readonly unknown[],
-	GenericOutput extends GenericArray[number],
+	GenericElement extends GenericArray[number],
 >(
 	predicate: (
 		element: GenericArray[number],
 		params: FilterPredicateFunctionParams<GenericArray>,
-	) => element is GenericOutput,
+	) => element is GenericElement,
 ): (
 	array: GenericArray,
-) => ComputeOutput<GenericArray, GenericOutput>;
+) => FilterOutput<GenericArray, GenericElement>;
 
 export function filter<
 	GenericArray extends readonly unknown[],
-	GenericOutput extends GenericArray[number],
+	GenericElement extends GenericArray[number],
 >(
 	array: GenericArray,
 	predicate: (
 		element: GenericArray[number],
 		params: FilterPredicateFunctionParams<GenericArray>,
-	) => element is GenericOutput,
-): ComputeOutput<GenericArray, GenericOutput>;
+	) => element is GenericElement,
+): FilterOutput<GenericArray, GenericElement>;
 
 export function filter<
 	GenericArray extends readonly unknown[],
@@ -50,7 +49,7 @@ export function filter<
 	) => boolean,
 ): (
 	array: GenericArray,
-) => ComputeOutput<GenericArray>;
+) => FilterOutput<GenericArray>;
 
 export function filter<
 	GenericArray extends readonly unknown[],
@@ -60,7 +59,7 @@ export function filter<
 		element: GenericArray[number],
 		params: FilterPredicateFunctionParams<GenericArray>,
 	) => boolean,
-): ComputeOutput<GenericArray>;
+): FilterOutput<GenericArray>;
 
 export function filter(
 	...args:

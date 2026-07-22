@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import type { ReapplyAllConstraints } from "../constraints";
 
 export interface FindAndSpliceInsertPredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -6,6 +7,20 @@ export interface FindAndSpliceInsertPredicateFunctionParams<
 	index: number;
 	self: GenericArray;
 }
+
+type FindAndSpliceInsertOutput<
+	GenericArray extends readonly unknown[],
+	GenericElements extends readonly unknown[],
+> =
+	| ReapplyAllConstraints<
+		GenericArray,
+		(
+			| GenericArray[number]
+			| GenericElements[number]
+		)[],
+		"lengthEqual" | "maxElements"
+	>
+	| undefined;
 
 export function findAndSpliceInsert<
 	GenericElements extends readonly unknown[],
@@ -17,7 +32,7 @@ export function findAndSpliceInsert<
 	elements: GenericElements,
 ): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => (GenericArray[number] | GenericElements[number])[] | undefined;
+) => FindAndSpliceInsertOutput<GenericArray, GenericElements>;
 
 export function findAndSpliceInsert<
 	GenericArray extends readonly unknown[],
@@ -29,7 +44,7 @@ export function findAndSpliceInsert<
 		params: FindAndSpliceInsertPredicateFunctionParams<GenericArray>,
 	) => boolean,
 	elements: GenericElements,
-): (GenericArray[number] | GenericElements[number])[] | undefined;
+): FindAndSpliceInsertOutput<GenericArray, GenericElements>;
 
 export function findAndSpliceInsert(
 	...args:
