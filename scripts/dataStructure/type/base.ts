@@ -1,5 +1,5 @@
 import type * as DKind from "@scripts/kind";
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import { type FundamentalType, type FundamentalTypeValue } from "../fundamentalType";
 import { createKind } from "../kind";
 import { ErrorSymbol, type GetErrorHandler, type SuccessSymbol } from "../common";
@@ -90,12 +90,12 @@ export function createType<
 		) => {
 			const self: DKind.Remove<Type> = {
 				definition,
-				executeCheck: (data: unknown) => DCommon.callThen(
-					fundamentalType.executeCheck(data),
-					(result) => result === ErrorSymbol
-						? ErrorSymbol
-						: executeCheck(self as never, data),
-				),
+				executeCheck: (
+					data: unknown,
+					errorHandler,
+				) => self.fundamentalType.executeCheck(data, errorHandler) === ErrorSymbol
+					? ErrorSymbol
+					: executeCheck(self as never, data, errorHandler),
 				isAsynchronous: () => isAsynchronous(self as never),
 				fundamentalType,
 				[typeKind.runTimeKey]: null,

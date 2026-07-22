@@ -59,23 +59,33 @@ export function createCodec<
 	const self: DKind.Remove<Codec> = {
 		fundamentalType,
 		encodedStructure,
-		encode: (data, errorHandler) => DCommon.callThen(
+		encode: (
+			data,
+			errorHandler,
+		) => errorHandler?.().setCurrentContext("encode") ?? DCommon.callThen(
 			encode(data as never, errorHandler),
 			(encodedData) => encodedData === ErrorSymbol
 				? ErrorSymbol
 				: DCommon.callThen(
 					encodedStructure.executeCheck(encodedData, errorHandler),
-					(result) => result === ErrorSymbol
-						? ErrorSymbol
-						: encodedData,
+					(result) => errorHandler?.().setCurrentContext("check") ?? (
+						result === ErrorSymbol
+							? ErrorSymbol
+							: encodedData
+					),
 				),
 
 		),
-		decode: (data, errorHandler) => DCommon.callThen(
+		decode: (
+			data,
+			errorHandler,
+		) => errorHandler?.().setCurrentContext("decode") ?? DCommon.callThen(
 			encodedStructure.executeCheck(data, errorHandler),
-			(result) => result === ErrorSymbol
-				? ErrorSymbol
-				: decode(data as never, errorHandler),
+			(result) => errorHandler?.().setCurrentContext("check") ?? (
+				result === ErrorSymbol
+					? ErrorSymbol
+					: decode(data as never, errorHandler)
+			),
 		),
 		[codecKind.runTimeKey]: null,
 	};

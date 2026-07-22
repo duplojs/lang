@@ -1,5 +1,4 @@
 import type * as DKind from "@scripts/kind";
-import type * as DCommon from "@scripts/common";
 import { createKind } from "../kind";
 import { type SuccessSymbol, type ErrorSymbol, type GetErrorHandler } from "../common";
 
@@ -16,10 +15,10 @@ export interface FundamentalType<
 	executeCheck(
 		data: unknown,
 		errorHandler?: GetErrorHandler
-	): DCommon.MaybePromise<
+	): (
 		| SuccessSymbol
 		| ErrorSymbol
-	>;
+	);
 }
 
 export function createFundamentalType<
@@ -30,10 +29,10 @@ export function createFundamentalType<
 		self: GenericFundamentalType,
 		data: unknown,
 		errorHandler?: GetErrorHandler,
-	) => DCommon.MaybePromise<
+	) => (
 		| SuccessSymbol
 		| ErrorSymbol
-	>,
+	),
 ): GenericFundamentalType {
 	const self: DKind.Remove<FundamentalType> = {
 		symbol,
