@@ -5,13 +5,13 @@ export interface Email extends DCommon.Constraint<"email"> {}
 export const emailRegex = /^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9-]*\.)+[A-Za-z]{2,}$/;
 
 export function isEmail<
-	GenericString extends string,
+	GenericValue extends string,
 >(
-	string: GenericString,
-): string is GenericString & Email;
+	value: GenericValue,
+): value is GenericValue & Email;
 
 export function isEmail(
-	string: string,
+	value: string,
 ): any {
-	return emailRegex.test(string);
+	return emailRegex.test(value);
 }

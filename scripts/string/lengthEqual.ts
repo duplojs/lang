@@ -5,34 +5,34 @@ export interface LengthEqual<
 > extends DCommon.DynamicConstraint<"string-length-equal", GenericLength> {}
 
 export function lengthEqual<
-	GenericString extends string,
+	GenericValue extends string,
 	GenericLength extends number,
 >(
 	length: GenericLength,
 ): (
-	string: GenericString,
-) => string is GenericString & LengthEqual<GenericLength>;
+	value: GenericValue,
+) => value is GenericValue & LengthEqual<GenericLength>;
 
 export function lengthEqual<
-	GenericString extends string,
+	GenericValue extends string,
 	GenericLength extends number,
 >(
-	string: GenericString,
+	value: GenericValue,
 	length: GenericLength,
-): string is GenericString & LengthEqual<GenericLength>;
+): value is GenericValue & LengthEqual<GenericLength>;
 
 export function lengthEqual(
 	...args:
 		| [length: number]
-		| [string: string, length: number]
+		| [value: string, length: number]
 ): any {
 	if (args.length === 1) {
 		const [length] = args;
 
-		return (string: string) => lengthEqual(string, length);
+		return (value: string) => lengthEqual(value, length);
 	}
 
-	const [string, length] = args;
+	const [value, length] = args;
 
-	return string.length === length;
+	return value.length === length;
 }

@@ -5,34 +5,34 @@ export interface MinLength<
 > extends DCommon.DynamicConstraint<"string-min-length", GenericMin> {}
 
 export function minLength<
-	GenericString extends string,
+	GenericValue extends string,
 	GenericMin extends number,
 >(
 	min: GenericMin,
 ): (
-	string: GenericString,
-) => string is GenericString & MinLength<GenericMin>;
+	value: GenericValue,
+) => value is GenericValue & MinLength<GenericMin>;
 
 export function minLength<
-	GenericString extends string,
+	GenericValue extends string,
 	GenericMin extends number,
 >(
-	string: GenericString,
+	value: GenericValue,
 	min: GenericMin,
-): string is GenericString & MinLength<GenericMin>;
+): value is GenericValue & MinLength<GenericMin>;
 
 export function minLength(
 	...args:
 		| [min: number]
-		| [string: string, min: number]
+		| [value: string, min: number]
 ): any {
 	if (args.length === 1) {
 		const [min] = args;
 
-		return (string: string) => minLength(string, min);
+		return (value: string) => minLength(value, min);
 	}
 
-	const [string, min] = args;
+	const [value, min] = args;
 
-	return string.length >= min;
+	return value.length >= min;
 }

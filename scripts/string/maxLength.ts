@@ -5,34 +5,34 @@ export interface MaxLength<
 > extends DCommon.DynamicConstraint<"string-max-length", GenericMax> {}
 
 export function maxLength<
-	GenericString extends string,
+	GenericValue extends string,
 	GenericMax extends number,
 >(
 	max: GenericMax,
 ): (
-	string: GenericString,
-) => string is GenericString & MaxLength<GenericMax>;
+	value: GenericValue,
+) => value is GenericValue & MaxLength<GenericMax>;
 
 export function maxLength<
-	GenericString extends string,
+	GenericValue extends string,
 	GenericMax extends number,
 >(
-	string: GenericString,
+	value: GenericValue,
 	max: GenericMax,
-): string is GenericString & MaxLength<GenericMax>;
+): value is GenericValue & MaxLength<GenericMax>;
 
 export function maxLength(
 	...args:
 		| [max: number]
-		| [string: string, max: number]
+		| [value: string, max: number]
 ): any {
 	if (args.length === 1) {
 		const [max] = args;
 
-		return (string: string) => maxLength(string, max);
+		return (value: string) => maxLength(value, max);
 	}
 
-	const [string, max] = args;
+	const [value, max] = args;
 
-	return string.length <= max;
+	return value.length <= max;
 }

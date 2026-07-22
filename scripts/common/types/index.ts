@@ -37,3 +37,4 @@ export type * from "./expectType";
 export type * from "./toLargeEnsemble";
 export type * from "./objectKey";
 export type * from "./objectEntry";
+export type * from "./sortType";
