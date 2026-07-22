@@ -2,7 +2,7 @@ import type * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
 import { type FundamentalType, type FundamentalTypeValue } from "../fundamentalType";
 import { createKind } from "../kind";
-import { ErrorSymbol, type SuccessSymbol } from "../common";
+import { ErrorSymbol, type GetErrorHandler, type SuccessSymbol } from "../common";
 
 export const typeKind = createKind("type");
 
@@ -20,7 +20,8 @@ export interface Type<
 	executeCheck(
 		data: FundamentalTypeValue<
 			GenericFundamentalType
-		>
+		>,
+		errorHandler?: GetErrorHandler
 	): DCommon.MaybePromise<
 		| SuccessSymbol
 		| ErrorSymbol
@@ -37,6 +38,7 @@ export interface CreateTypeInitParams<
 		data: FundamentalTypeValue<
 			GenericFundamentalType
 		>,
+		errorHandler?: GetErrorHandler
 	): DCommon.MaybePromise<
 		| SuccessSymbol
 		| ErrorSymbol

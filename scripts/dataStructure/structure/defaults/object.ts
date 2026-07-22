@@ -5,11 +5,9 @@ import { type Constraint } from "../../constraint";
 import { createStructure, type StructureDefinition, type Structure } from "../base";
 import { createKind } from "../../kind";
 import { type StructureValue } from "../types";
-import { ErrorSymbol, SuccessSymbol } from "../../common";
+import { type Codec, type EncodedValue, ErrorSymbol, SuccessSymbol } from "../../common";
 
-import "../../codec";
-
-declare module "../../codec" {
+declare module "../../common" {
 	interface EncodeStructure<
 		GenericValue extends unknown,
 		GenericCodec extends Codec,
@@ -29,7 +27,7 @@ declare module "../../codec" {
 
 export type ShapeObjectStructure = Record<
 	string,
-	DCommon.MayBeGetter<Structure>
+	Structure<any>
 >;
 
 export interface EntryShapeObjectStructure {
@@ -69,9 +67,8 @@ export interface ObjectStructure<
 		& Structure<GenericValue, ObjectStructureDefinition<GenericConstraints>>
 		& DKind.Kind<typeof objectStructureKind>
 	> {
-	readonly definition: ObjectStructureDefinition<
-		GenericConstraints
-	>;
+
+	/*
 	addConstraint<
 		const GenericNewConstraints extends DCommon.AnyTuple<Constraint<GenericValue>>,
 	>(
@@ -80,6 +77,7 @@ export interface ObjectStructure<
 		GenericValue,
 		readonly [...GenericConstraints, ...GenericNewConstraints]
 	>;
+	*/
 }
 
 export const ObjectStructure = createStructure(
@@ -104,37 +102,37 @@ export const ObjectStructure = createStructure(
 					.map(
 						([key, value]) => ({
 							key,
-							value: typeof value === "function"
-								? value()
-								: value,
+							value,
 						}),
 					),
 			),
 			constraints: constraints,
 		},
 		{
-			executeCheck: (self, data) => {
+			executeCheck: (self, data, errorHandler) => {
 				if (
 					typeof data !== "object"
-				|| data === null
-				|| (
-					data.constructor !== undefined
-					&& data.constructor.name !== "Object"
-				)
-				|| Object.getOwnPropertySymbols(data).length !== 0
+					|| data === null
+					|| (
+						data.constructor !== undefined
+						&& data.constructor.name !== "Object"
+					)
+					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
-					return ErrorSymbol;
+					return errorHandler?.().addIssue(self) ?? ErrorSymbol;
 				}
 
-				return self.definition.shape.value.reduce<
+				const pathStage = errorHandler?.().createPathStage();
+
+				const result = self.definition.shape.value.reduce<
 					DCommon.MaybePromise<SuccessSymbol | ErrorSymbol>
 				>(
 					(accumulator, entry) => DCommon.callThen(
 						accumulator,
 						(result) => result === ErrorSymbol
 							? ErrorSymbol
-							: DCommon.callThen(
-								entry.value.executeCheck(data[entry.key as never]),
+							: pathStage?.setCurrentPath(entry.key) ?? DCommon.callThen(
+								entry.value.executeCheck(data[entry.key as never], errorHandler),
 								(result) => result === ErrorSymbol
 									? ErrorSymbol
 									: SuccessSymbol,
@@ -142,25 +140,35 @@ export const ObjectStructure = createStructure(
 					),
 					SuccessSymbol,
 				);
+
+				return DCommon.callThen(
+					result,
+					(awaitedResult) => {
+						pathStage?.close();
+						return awaitedResult;
+					},
+				);
 			},
-			executeEncode: (self, codecContext, data) => {
+			executeEncode: (self, codecContext, data, errorHandler) => {
 				if (
 					typeof data !== "object"
-				|| data === null
-				|| (
-					data.constructor !== undefined
-					&& data.constructor.name !== "Object"
-				)
-				|| Object.getOwnPropertySymbols(data).length !== 0
+					|| data === null
+					|| (
+						data.constructor !== undefined
+						&& data.constructor.name !== "Object"
+					)
+					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
-					return ErrorSymbol;
+					return errorHandler?.().addIssue(self) ?? ErrorSymbol;
 				}
+
+				const pathStage = errorHandler?.().createPathStage();
 
 				const encodedData = self.definition.shape.value.reduce<unknown>(
 					(accumulator, entry) => DCommon.callThen(
 						accumulator,
-						(awaitedAccumulator) => DCommon.callThen(
-							entry.value.executeEncode(codecContext, data[entry.key as never]),
+						(awaitedAccumulator) => pathStage?.setCurrentPath(entry.key) ?? DCommon.callThen(
+							entry.value.executeEncode(codecContext, data[entry.key as never], errorHandler),
 							(encodedData) => {
 								if (encodedData === ErrorSymbol || awaitedAccumulator === ErrorSymbol) {
 									return ErrorSymbol;
@@ -175,35 +183,42 @@ export const ObjectStructure = createStructure(
 					{},
 				);
 
-				if (encodedData === ErrorSymbol) {
-					return ErrorSymbol;
-				}
-
 				return DCommon.callThen(
-					self.executeConstraints(data),
-					(result) => result === ErrorSymbol
+					encodedData,
+					(awaitedEncodedData) => awaitedEncodedData === ErrorSymbol
 						? ErrorSymbol
-						: encodedData,
+						: DCommon.callThen(
+							self.executeConstraints(awaitedEncodedData, errorHandler),
+							(result) => {
+								pathStage?.close();
+
+								return result === ErrorSymbol
+									? ErrorSymbol
+									: awaitedEncodedData;
+							},
+						),
 				);
 			},
-			executeDecode: (self, codecContext, data) => {
+			executeDecode: (self, codecContext, data, errorHandler) => {
 				if (
 					typeof data !== "object"
-				|| data === null
-				|| (
-					data.constructor !== undefined
-					&& data.constructor.name !== "Object"
-				)
-				|| Object.getOwnPropertySymbols(data).length !== 0
+					|| data === null
+					|| (
+						data.constructor !== undefined
+						&& data.constructor.name !== "Object"
+					)
+					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
-					return ErrorSymbol;
+					return errorHandler?.().addIssue(self) ?? ErrorSymbol;
 				}
+
+				const pathStage = errorHandler?.().createPathStage();
 
 				const decodedData = self.definition.shape.value.reduce<unknown>(
 					(accumulator, entry) => DCommon.callThen(
 						accumulator,
-						(awaitedAccumulator) => DCommon.callThen(
-							entry.value.executeDecode(codecContext, data[entry.key as never]),
+						(awaitedAccumulator) => pathStage?.setCurrentPath(entry.key) || DCommon.callThen(
+							entry.value.executeDecode(codecContext, data[entry.key as never], errorHandler),
 							(decodedData) => {
 								if (decodedData === ErrorSymbol || awaitedAccumulator === ErrorSymbol) {
 									return ErrorSymbol;
@@ -218,15 +233,20 @@ export const ObjectStructure = createStructure(
 					{},
 				);
 
-				if (decodedData === ErrorSymbol) {
-					return ErrorSymbol;
-				}
-
 				return DCommon.callThen(
-					self.executeConstraints(decodedData),
-					(result) => result === ErrorSymbol
+					decodedData,
+					(awaitedDecodedData) => awaitedDecodedData === ErrorSymbol
 						? ErrorSymbol
-						: decodedData,
+						: DCommon.callThen(
+							self.executeConstraints(awaitedDecodedData, errorHandler),
+							(result) => {
+								pathStage?.close();
+
+								return result === ErrorSymbol
+									? ErrorSymbol
+									: awaitedDecodedData;
+							},
+						),
 				);
 			},
 			isAsynchronous: (self) => self.definition.shape.value.some((entry) => entry.value.isAsynchronous()),

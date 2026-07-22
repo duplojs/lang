@@ -3,9 +3,8 @@ import * as DEither from "@scripts/either";
 import * as DCommon from "@scripts/common";
 import { type FundamentalType } from "../fundamentalType";
 import { createKind } from "../kind";
-import { ErrorSymbol, SuccessSymbol } from "../common";
+import { createGetErrorHandler, ErrorSymbol, type GetErrorHandler, SuccessSymbol, type EncodedValue, type Codec, type CodecContext, type Error } from "../common";
 import { type ConstraintValue, type Constraint } from "../constraint";
-import { type EncodedValue, type Codec, type CodecContext } from "../codec";
 import { type StructureValue } from "./types";
 
 export class StructureClass {
@@ -45,14 +44,6 @@ export interface Structure<
 		)
 	> {
 	readonly definition: GenericDefinition;
-	executeCheck(data: unknown): DCommon.MaybePromise<
-		| SuccessSymbol
-		| ErrorSymbol
-	>;
-	executeConstraints(data: unknown): DCommon.MaybePromise<
-		| SuccessSymbol
-		| ErrorSymbol
-	>;
 	addConstraint<
 		const GenericNewConstraints extends DCommon.AnyTuple<Constraint<GenericValue>>,
 	>(
@@ -63,115 +54,130 @@ export interface Structure<
 			readonly [...this["definition"]["constraints"], ...GenericNewConstraints]
 		>
 	>;
+	executeConstraints(data: unknown, errorHandler?: GetErrorHandler): DCommon.MaybePromise<
+		| SuccessSymbol
+		| ErrorSymbol
+	>;
+	executeCheck(data: unknown, errorHandler?: GetErrorHandler): DCommon.MaybePromise<
+		| SuccessSymbol
+		| ErrorSymbol
+	>;
 	executeEncode(
 		codecContext: CodecContext,
 		data: unknown,
+		errorHandler?: GetErrorHandler
 	): unknown;
 	executeDecode(
 		codecContext: CodecContext,
 		data: unknown,
+		errorHandler?: GetErrorHandler
 	): unknown;
 	isAsynchronous(): boolean;
 	check(data: unknown): (
 		| DEither.Right<"check-success", StructureValue<this>>
-		| DEither.Left<"check-error", undefined>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"check-error", Error>
 	);
 	asyncCheck(data: unknown): Promise<
 		| DEither.Right<"check-success", StructureValue<this>>
-		| DEither.Left<"check-error", undefined>
+		| DEither.Left<"check-error", Error>
 	>;
 	is(data: unknown): data is StructureValue<this>;
 	encode<
-		GenericCodecs extends DCommon.AnyTuple<Codec>,
+		GenericCodecs extends Record<string, Codec>,
 	>(
 		codecs: GenericCodecs,
 		data: StructureValue<this>,
 	): (
 		| DEither.Right<
 			"encode-success",
-			EncodedValue<StructureValue<this>, GenericCodecs[number]>
+			EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>
 		>
-		| DEither.Left<"encode-error", undefined>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"encode-error", Error>
 	);
 	asyncEncode<
-		GenericCodecs extends DCommon.AnyTuple<Codec>,
+		GenericCodecs extends Record<string, Codec>,
 	>(
 		codecs: GenericCodecs,
 		data: StructureValue<this>,
 	): Promise<
 		| DEither.Right<
 			"encode-success",
-			EncodedValue<StructureValue<this>, GenericCodecs[number]>
+			EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>
 		>
-		| DEither.Left<"encode-error", undefined>
+		| DEither.Left<"encode-error", Error>
 	>;
 	unsafeEncode<
-		GenericCodecs extends DCommon.AnyTuple<Codec>,
+		GenericCodecs extends Record<string, Codec>,
 	>(
 		codecs: GenericCodecs,
 		data: unknown,
 	): (
 		| DEither.Right<
 			"encode-success",
-			EncodedValue<StructureValue<this>, GenericCodecs[number]>
+			EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>
 		>
-		| DEither.Left<"encode-error", undefined>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"encode-error", Error>
 	);
 	asyncUnsafeEncode<
-		GenericCodecs extends DCommon.AnyTuple<Codec>,
+		GenericCodecs extends Record<string, Codec>,
 	>(
 		codecs: GenericCodecs,
 		data: unknown,
 	): Promise<
 		| DEither.Right<
 			"encode-success",
-			EncodedValue<StructureValue<this>, GenericCodecs[number]>
+			EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>
 		>
-		| DEither.Left<"encode-error", undefined>
+		| DEither.Left<"encode-error", Error>
 	>;
 	decode<
-		GenericCodecs extends DCommon.AnyTuple<Codec>,
+		GenericCodecs extends Record<string, Codec>,
 	>(
 		codecs: GenericCodecs,
-		data: EncodedValue<StructureValue<this>, GenericCodecs[number]>,
+		data: EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>,
 	): (
 		| DEither.Right<
 			"decode-success",
 			StructureValue<this>
 		>
-		| DEither.Left<"decode-error", undefined>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"decode-error", Error>
 	);
 	asyncDecode<
-		GenericCodecs extends DCommon.AnyTuple<Codec>,
+		GenericCodecs extends Record<string, Codec>,
 	>(
 		codecs: GenericCodecs,
-		data: EncodedValue<StructureValue<this>, GenericCodecs[number]>,
+		data: EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>,
 	): Promise<
 		| DEither.Right<
 			"decode-success",
 			StructureValue<this>
 		>
-		| DEither.Left<"decode-error", undefined>
+		| DEither.Left<"decode-error", Error>
 	>;
 	unsafeDecode(
-		codecs: DCommon.AnyTuple<Codec>,
+		codecs: Record<string, Codec>,
 		data: unknown,
 	): (
 		| DEither.Right<
 			"decode-success",
 			StructureValue<this>
 		>
-		| DEither.Left<"decode-error", undefined>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"decode-error", Error>
 	);
 	asyncUnsafeDecode(
-		codecs: DCommon.AnyTuple<Codec>,
+		codecs: Record<string, Codec>,
 		data: unknown,
 	): Promise<
 		| DEither.Right<
 			"decode-success",
 			StructureValue<this>
 		>
-		| DEither.Left<"decode-error", undefined>
+		| DEither.Left<"decode-error", Error>
 	>;
 }
 
@@ -181,19 +187,22 @@ export interface CreateStructureInitParams<
 	executeCheck(
 		self: GenericStructure,
 		data: unknown,
+		errorHandler?: GetErrorHandler,
 	): DCommon.MaybePromise<
-			| SuccessSymbol
-			| ErrorSymbol
+		| SuccessSymbol
+		| ErrorSymbol
 	>;
 	executeEncode(
 		self: GenericStructure,
 		codecContext: CodecContext,
 		data: unknown,
+		errorHandler?: GetErrorHandler,
 	): unknown;
 	executeDecode(
 		self: GenericStructure,
 		codecContext: CodecContext,
 		data: unknown,
+		errorHandler?: GetErrorHandler,
 	): unknown;
 	isAsynchronous(self: GenericStructure): boolean;
 }
@@ -239,23 +248,6 @@ export function createStructure<
 	) => {
 		let cachedIsAsynchronous: undefined | boolean = undefined;
 		const self = StructureClass.init({
-			executeConstraints: (data) => definition.constraints.reduce<
-				DCommon.MaybePromise<SuccessSymbol | ErrorSymbol>
-			>(
-				(accumulator, constraint) => DCommon.callThen(
-					accumulator,
-					(result) => result === ErrorSymbol
-						? ErrorSymbol
-						: constraint.executeCheck(data),
-				),
-				SuccessSymbol,
-			),
-			executeCheck: (data) => DCommon.callThen(
-				executeCheck(self as never, data),
-				(result) => result === ErrorSymbol
-					? ErrorSymbol
-					: self.executeConstraints(data),
-			),
 			definition,
 			addConstraint: (...args) => init(
 				{
@@ -272,15 +264,34 @@ export function createStructure<
 					isAsynchronous,
 				},
 			) as never,
-			executeEncode: (codecContext, data) => executeEncode(
-				self as never,
-				codecContext,
-				data,
+			executeConstraints: (data, errorHandler) => definition.constraints.reduce<
+				DCommon.MaybePromise<SuccessSymbol | ErrorSymbol>
+			>(
+				(accumulator, constraint) => DCommon.callThen(
+					accumulator,
+					(result) => result === ErrorSymbol
+						? ErrorSymbol
+						: constraint.executeCheck(data, errorHandler),
+				),
+				SuccessSymbol,
 			),
-			executeDecode: (codecContext, data) => executeDecode(
+			executeCheck: (data, errorHandler) => DCommon.callThen(
+				executeCheck(self as never, data, errorHandler),
+				(result) => result === ErrorSymbol
+					? ErrorSymbol
+					: self.executeConstraints(data, errorHandler),
+			),
+			executeEncode: (codecContext, data, errorHandler) => executeEncode(
 				self as never,
 				codecContext,
 				data,
+				errorHandler,
+			),
+			executeDecode: (codecContext, data, errorHandler) => executeDecode(
+				self as never,
+				codecContext,
+				data,
+				errorHandler,
 			),
 			isAsynchronous: () => {
 				if (cachedIsAsynchronous !== undefined) {
@@ -297,17 +308,30 @@ export function createStructure<
 				return cachedIsAsynchronous;
 			},
 			check: (data) => {
-				const result = self.executeCheck(data);
-				if (result instanceof Promise || result === ErrorSymbol) {
-					return DEither.left("check-error", undefined);
+				const errorHandler = createGetErrorHandler("check");
+				const result = self.executeCheck(
+					data,
+					errorHandler,
+				);
+
+				if (result instanceof Promise) {
+					return DEither.left("async-error", undefined);
+				}
+
+				if (result === ErrorSymbol) {
+					return DEither.left("check-error", errorHandler().createError());
 				}
 
 				return DEither.right("check-success", data);
 			},
 			asyncCheck: async(data) => {
-				const result = await self.executeCheck(data);
+				const errorHandler = createGetErrorHandler("check");
+				const result = await self.executeCheck(
+					data,
+					errorHandler,
+				);
 				if (result === ErrorSymbol) {
-					return DEither.left("check-error", undefined);
+					return DEither.left("check-error", errorHandler().createError());
 				}
 
 				return DEither.right("check-success", data);
@@ -323,33 +347,41 @@ export function createStructure<
 			encode: (codecs, data) => self.unsafeEncode(codecs, data),
 			asyncEncode: (codecs, data) => self.asyncUnsafeEncode(codecs, data),
 			unsafeEncode: (codecs, data) => {
+				const errorHandler = createGetErrorHandler("check");
 				const result = self.executeEncode(
 					new Map<FundamentalType, Codec>(
-						codecs.map(
+						Object.values(codecs).map(
 							(codec) => [codec.fundamentalType, codec],
 						),
 					),
 					data,
+					errorHandler,
 				);
 
-				if (result instanceof Promise || result === ErrorSymbol) {
-					return DEither.left("encode-error", undefined);
+				if (result instanceof Promise) {
+					return DEither.left("async-error", undefined);
+				}
+
+				if (result === ErrorSymbol) {
+					return DEither.left("encode-error", errorHandler().createError());
 				}
 
 				return DEither.right("encode-success", result as never);
 			},
 			asyncUnsafeEncode: async(codecs, data) => {
+				const errorHandler = createGetErrorHandler("check");
 				const result = await self.executeEncode(
 					new Map<FundamentalType, Codec>(
-						codecs.map(
+						Object.values(codecs).map(
 							(codec) => [codec.fundamentalType, codec],
 						),
 					),
 					data,
+					errorHandler,
 				);
 
 				if (result === ErrorSymbol) {
-					return DEither.left("encode-error", undefined);
+					return DEither.left("encode-error", errorHandler().createError());
 				}
 
 				return DEither.right("encode-success", result as never);
@@ -357,33 +389,41 @@ export function createStructure<
 			decode: (codecs, data) => self.unsafeDecode(codecs, data),
 			asyncDecode: (codecs, data) => self.asyncUnsafeDecode(codecs, data),
 			unsafeDecode: (codecs, data) => {
+				const errorHandler = createGetErrorHandler("check");
 				const result = self.executeDecode(
 					new Map<FundamentalType, Codec>(
-						codecs.map(
+						Object.values(codecs).map(
 							(codec) => [codec.fundamentalType, codec],
 						),
 					),
 					data,
+					errorHandler,
 				);
 
-				if (result instanceof Promise || result === ErrorSymbol) {
-					return DEither.left("decode-error", undefined);
+				if (result instanceof Promise) {
+					return DEither.left("async-error", undefined);
+				}
+
+				if (result === ErrorSymbol) {
+					return DEither.left("decode-error", errorHandler().createError());
 				}
 
 				return DEither.right("decode-success", result as never);
 			},
 			asyncUnsafeDecode: async(codecs, data) => {
+				const errorHandler = createGetErrorHandler("check");
 				const result = await self.executeDecode(
 					new Map<FundamentalType, Codec>(
-						codecs.map(
+						Object.values(codecs).map(
 							(codec) => [codec.fundamentalType, codec],
 						),
 					),
 					data,
+					errorHandler,
 				);
 
 				if (result === ErrorSymbol) {
-					return DEither.left("decode-error", undefined);
+					return DEither.left("decode-error", errorHandler().createError());
 				}
 
 				return DEither.right("decode-success", result as never);

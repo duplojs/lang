@@ -27,6 +27,8 @@ export interface TypeStructure<
 		>
 		& DKind.Kind<typeof typeStructureKind>
 	> {
+
+	/*
 	addConstraint<
 		const GenericNewConstraints extends DCommon.AnyTuple<Constraint<TypeValue<GenericType>>>,
 	>(
@@ -35,6 +37,7 @@ export interface TypeStructure<
 		GenericType,
 		readonly [...GenericConstraints, ...GenericNewConstraints]
 	>;
+	*/
 }
 
 export const TypeStructure = createStructure(
@@ -56,9 +59,9 @@ export const TypeStructure = createStructure(
 			constraints: constraints,
 		},
 		{
-			executeCheck: (self, data) => self.definition.type.executeCheck(data),
-			executeEncode: (self, codecContext, data) => DCommon.callThen(
-				self.executeCheck(data),
+			executeCheck: (self, data, errorHandler) => self.definition.type.executeCheck(data, errorHandler),
+			executeEncode: (self, codecContext, data, errorHandler) => DCommon.callThen(
+				self.executeCheck(data, errorHandler),
 				(result) => {
 					if (result === ErrorSymbol) {
 						return ErrorSymbol;
@@ -67,21 +70,21 @@ export const TypeStructure = createStructure(
 					const codec = codecContext.get(self.definition.type.fundamentalType);
 
 					return codec
-						? codec.encode(data)
+						? codec.encode(data, errorHandler)
 						: data;
 				},
 			),
-			executeDecode: (self, codecContext, data) => {
+			executeDecode: (self, codecContext, data, errorHandler) => {
 				const codec = codecContext.get(self.definition.type.fundamentalType);
 
 				return DCommon.callThen(
 					codec
-						? codec.decode(data)
+						? codec.decode(data, errorHandler)
 						: data,
 					(decodedData) => decodedData === ErrorSymbol
 						? ErrorSymbol
 						: DCommon.callThen(
-							self.executeCheck(decodedData),
+							self.executeCheck(decodedData, errorHandler),
 							(result) => result === ErrorSymbol
 								? ErrorSymbol
 								: decodedData,

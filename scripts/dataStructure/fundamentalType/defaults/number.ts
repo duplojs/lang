@@ -13,5 +13,7 @@ export const TheNumber = createFundamentalType<
 	TheNumber
 >(
 	FundamentalTypeTheNumberSymbol,
-	(data) => typeof data === "number" ? SuccessSymbol : ErrorSymbol,
+	(self, data, errorHandler) => typeof data === "number"
+		? SuccessSymbol
+		: errorHandler?.().addIssue(self) ?? ErrorSymbol,
 );

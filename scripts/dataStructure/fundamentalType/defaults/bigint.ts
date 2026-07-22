@@ -13,5 +13,7 @@ export const TheBigint = createFundamentalType<
 	TheBigint
 >(
 	FundamentalTypeTheBigintSymbol,
-	(data) => typeof data === "bigint" ? SuccessSymbol : ErrorSymbol,
+	(self, data, errorHandler) => typeof data === "bigint"
+		? SuccessSymbol
+		: errorHandler?.().addIssue(self) ?? ErrorSymbol,
 );

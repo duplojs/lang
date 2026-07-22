@@ -3,8 +3,8 @@ import * as DCommon from "@scripts/common";
 import { type FundamentalTypeValue, type FundamentalType } from "../fundamentalType";
 import { type StructureValue, type Structure } from "../structure";
 import { createKind } from "../kind";
-import { type UnionToIntersection, type NeverCoalescing } from "@scripts/common";
-import { ErrorSymbol } from "../common";
+import { type NeverCoalescing } from "@scripts/common";
+import { ErrorSymbol, type GetErrorHandler } from ".";
 
 export const codecKind = createKind("codec");
 
@@ -14,11 +14,17 @@ export interface Codec<
 > extends DKind.Kind<typeof codecKind> {
 	fundamentalType: GenericFundamentalType;
 	encodedStructure: GenericEncodedStructure;
-	encode(data: FundamentalTypeValue<GenericFundamentalType>): DCommon.MaybePromise<
+	encode(
+		data: FundamentalTypeValue<GenericFundamentalType>,
+		errorHandler?: GetErrorHandler
+	): DCommon.MaybePromise<
 		| StructureValue<GenericEncodedStructure>
 		| ErrorSymbol
 	>;
-	decode(data: StructureValue<GenericEncodedStructure>): DCommon.MaybePromise<
+	decode(
+		data: StructureValue<GenericEncodedStructure>,
+		errorHandler?: GetErrorHandler
+	): DCommon.MaybePromise<
 		| FundamentalTypeValue<GenericFundamentalType>
 		| ErrorSymbol
 	>;
@@ -33,13 +39,15 @@ export function createCodec<
 	fundamentalType: GenericFundamentalType,
 	encodedStructure: GenericEncodedStructure,
 	encode: (
-		data: GenericFundamentalType,
+		data: FundamentalTypeValue<GenericFundamentalType>,
+		errorHandler?: GetErrorHandler,
 	) => DCommon.MaybePromise<
 		| StructureValue<GenericEncodedStructure>
 		| ErrorSymbol
 	>,
 	decode: (
 		data: StructureValue<GenericEncodedStructure>,
+		errorHandler?: GetErrorHandler,
 	) => DCommon.MaybePromise<
 		| FundamentalTypeValue<GenericFundamentalType>
 		| ErrorSymbol
@@ -51,23 +59,23 @@ export function createCodec<
 	const self: DKind.Remove<Codec> = {
 		fundamentalType,
 		encodedStructure,
-		encode: (data) => DCommon.callThen(
-			encode(data as never),
+		encode: (data, errorHandler) => DCommon.callThen(
+			encode(data as never, errorHandler),
 			(encodedData) => encodedData === ErrorSymbol
 				? ErrorSymbol
 				: DCommon.callThen(
-					encodedStructure.executeCheck(encodedData),
+					encodedStructure.executeCheck(encodedData, errorHandler),
 					(result) => result === ErrorSymbol
 						? ErrorSymbol
 						: encodedData,
 				),
 
 		),
-		decode: (data) => DCommon.callThen(
-			encodedStructure.executeCheck(data),
+		decode: (data, errorHandler) => DCommon.callThen(
+			encodedStructure.executeCheck(data, errorHandler),
 			(result) => result === ErrorSymbol
 				? ErrorSymbol
-				: decode(data as never),
+				: decode(data as never, errorHandler),
 		),
 		[codecKind.runTimeKey]: null,
 	};
@@ -86,27 +94,26 @@ export type EncodedValue<
 	GenericValue extends unknown,
 	GenericCodec extends Codec,
 > = GenericValue extends unknown
-	? NeverCoalescing<
+	? (
 		EncodeStructure<
 			GenericValue,
 			GenericCodec
 		> extends infer InferredResult
 			? InferredResult[keyof InferredResult]
-			: never,
-		GenericValue
-	> extends infer InferredResult
-		? NeverCoalescing<
-			UnionToIntersection<
+			: never
+	) extends infer InferredResult
+		? DCommon.IsNever<InferredResult> extends true
+			? NeverCoalescing<
 				GenericCodec extends Codec<
 					infer InferredFundamentalType,
 					infer InferredEncodedStructure
 				>
-					? InferredResult extends FundamentalTypeValue<InferredFundamentalType>
+					? GenericValue extends FundamentalTypeValue<InferredFundamentalType>
 						? StructureValue<InferredEncodedStructure>
 						: never
-					: never
-			>,
-			InferredResult
-		>
+					: never,
+				GenericValue
+			>
+			: InferredResult
 		: never
 	: never;
