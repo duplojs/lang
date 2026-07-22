@@ -2,33 +2,37 @@ import type * as DCommon from "@scripts/common";
 
 export interface MaxLength<
 	GenericMax extends number,
-> extends DCommon.Constraint<`string-max-length-${GenericMax}`> {}
+> extends DCommon.DynamicConstraint<"string-max-length", GenericMax> {}
 
 export function maxLength<
-	GenericInput extends string,
+	GenericString extends string,
 	GenericMax extends number,
 >(
 	max: GenericMax,
-): (input: GenericInput) => input is GenericInput & MaxLength<GenericMax>;
+): (
+	string: GenericString,
+) => string is GenericString & MaxLength<GenericMax>;
 
 export function maxLength<
-	GenericInput extends string,
+	GenericString extends string,
 	GenericMax extends number,
 >(
-	input: GenericInput,
+	string: GenericString,
 	max: GenericMax,
-): input is GenericInput & MaxLength<GenericMax>;
+): string is GenericString & MaxLength<GenericMax>;
 
 export function maxLength(
-	...args: [input: string, max: number] | [max: number]
+	...args:
+		| [max: number]
+		| [string: string, max: number]
 ): any {
 	if (args.length === 1) {
 		const [max] = args;
 
-		return (input: string) => maxLength(input, max);
+		return (string: string) => maxLength(string, max);
 	}
 
-	const [input, max] = args;
+	const [string, max] = args;
 
-	return input.length <= max;
+	return string.length <= max;
 }
