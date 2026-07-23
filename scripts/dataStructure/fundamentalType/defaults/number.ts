@@ -13,7 +13,7 @@ export const TheNumber = createFundamentalType<
 	TheNumber
 >(
 	FundamentalTypeTheNumberSymbol,
-	(self, data, errorHandler) => typeof data === "number"
+	(self, data, errorHandler) => typeof data === "number" && isFinite(data) && !isNaN(data)
 		? SuccessSymbol
-		: errorHandler?.().addIssue(self) ?? ErrorSymbol,
+		: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
 );

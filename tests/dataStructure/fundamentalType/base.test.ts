@@ -11,7 +11,7 @@ describe("createFundamentalType", () => {
 				errorHandler?: DS.GetErrorHandler,
 			) => data === "valid"
 				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol,
+				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
 		);
 
 		interface TestFundamentalType extends DS.FundamentalType<
@@ -60,9 +60,11 @@ describe("createFundamentalType", () => {
 				self: TestFundamentalType,
 				data: unknown,
 				errorHandler?: DS.GetErrorHandler,
-			) => Promise.resolve(data === "valid"
-				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol),
+			) => Promise.resolve(
+				data === "valid"
+					? DS.SuccessSymbol
+					: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
+			),
 		);
 
 		interface TestFundamentalType extends DS.FundamentalType<

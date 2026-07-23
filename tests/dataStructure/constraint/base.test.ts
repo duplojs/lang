@@ -25,7 +25,7 @@ describe("createConstraint", () => {
 				errorHandler?: DS.GetErrorHandler,
 			) => data.length >= self.definition.min
 				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol,
+				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
 		);
 		const isAsynchronous = vi.fn(() => false);
 
@@ -97,7 +97,7 @@ describe("createConstraint", () => {
 			) => Promise.resolve(
 				data.length >= self.definition.min
 					? DS.SuccessSymbol
-					: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol,
+					: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
 			),
 		);
 		const isAsynchronous = vi.fn(() => true);

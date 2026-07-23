@@ -212,7 +212,7 @@ export interface CreateStructureConstructorParams<
 > {
 	init<
 		GenericStructure extends (
-			& Structure<any>
+			& Structure
 			& DKind.Kind<GenericKindHandler>
 		),
 	>(
@@ -225,7 +225,7 @@ export function createStructure<
 	GenericKindHandler extends DKind.Handler,
 	GenericConstructor extends (
 		(...args: any[]) => (
-			& Structure<any>
+			& Structure
 			& DKind.Kind<GenericKindHandler>
 		)
 	),

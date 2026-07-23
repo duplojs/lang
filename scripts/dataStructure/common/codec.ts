@@ -81,11 +81,12 @@ export function createCodec<
 			errorHandler,
 		) => errorHandler?.().setCurrentContext("decode") ?? DCommon.callThen(
 			encodedStructure.executeCheck(data, errorHandler),
-			(result) => errorHandler?.().setCurrentContext("default") ?? (
-				result === ErrorSymbol
-					? ErrorSymbol
-					: decode(data as never, errorHandler)
-			),
+			(result) => result === ErrorSymbol
+				? ErrorSymbol
+				: DCommon.callThen(
+					decode(data as never, errorHandler),
+					(result) => errorHandler?.().setCurrentContext("default") ?? result,
+				),
 		),
 		[codecKind.runTimeKey]: null,
 	};

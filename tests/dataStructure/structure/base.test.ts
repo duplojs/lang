@@ -343,7 +343,7 @@ describe("createStructure", () => {
 				{
 					executeCheck: (_self, data, errorHandler) => typeof data === "string"
 						? DS.SuccessSymbol
-						: errorHandler?.().addIssue(_self) ?? DS.ErrorSymbol,
+						: errorHandler?.().addIssue(_self, data) ?? DS.ErrorSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: () => false,
@@ -367,8 +367,8 @@ describe("createStructure", () => {
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
-					executeCheck: (self, _data, errorHandler) => Promise.resolve(
-						errorHandler?.().addIssue(self) ?? DS.ErrorSymbol,
+					executeCheck: (self, data, errorHandler) => Promise.resolve(
+						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
 					),
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
@@ -412,7 +412,7 @@ describe("createStructure", () => {
 			Symbol("encode-string"),
 			() => DS.SuccessSymbol,
 		);
-		const encodedStructure = DS.TypeStructure(DS.StringType());
+		const encodedStructure = DS.TypeStructure(DS.StringType(), []);
 		const codec = DS.createCodec(
 			fundamentalType,
 			encodedStructure,
@@ -475,8 +475,8 @@ describe("createStructure", () => {
 				{ constraints: [] },
 				{
 					executeCheck: () => DS.SuccessSymbol,
-					executeEncode: (self, _codecContext, _data, errorHandler) => (
-						errorHandler?.().addIssue(self) ?? DS.ErrorSymbol
+					executeEncode: (self, _codecContext, data, errorHandler) => (
+						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
 					),
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: () => false,
@@ -514,7 +514,7 @@ describe("createStructure", () => {
 			Symbol("decode-string"),
 			() => DS.SuccessSymbol,
 		);
-		const encodedStructure = DS.TypeStructure(DS.StringType());
+		const encodedStructure = DS.TypeStructure(DS.StringType(), []);
 		const codec = DS.createCodec(
 			fundamentalType,
 			encodedStructure,
@@ -573,8 +573,8 @@ describe("createStructure", () => {
 				{
 					executeCheck: () => DS.SuccessSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
-					executeDecode: (self, _codecContext, _data, errorHandler) => (
-						errorHandler?.().addIssue(self) ?? DS.ErrorSymbol
+					executeDecode: (self, _codecContext, data, errorHandler) => (
+						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
 					),
 					isAsynchronous: () => false,
 				},

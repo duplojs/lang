@@ -15,11 +15,19 @@ declare module "../../common" {
 		object: GenericValue extends object
 			? keyof GenericValue extends string
 				? {
-					[Prop in keyof GenericValue]: EncodedValue<
+					readonly [Prop in keyof GenericValue]: EncodedValue<
 						GenericValue[Prop],
 						GenericCodec
 					>
-				}
+				} extends infer InferredResult extends Record<string, unknown>
+					? DObject.PartialKeys<
+						InferredResult,
+						DObject.GetPropsWithValueExtends<
+							InferredResult,
+							undefined
+						>
+					>
+					: never
 				: never
 			: never;
 	}
@@ -27,7 +35,7 @@ declare module "../../common" {
 
 export type ShapeObjectStructure = Record<
 	string,
-	Structure<any>
+	Structure
 >;
 
 export interface EntryShapeObjectStructure {
@@ -88,11 +96,11 @@ export const ObjectStructure = createStructure(
 		const GenericConstraints extends readonly Constraint<GenericValue>[] = readonly [],
 	>(
 		shape: GenericShape,
-		constraints: GenericConstraints = [] as never,
+		constraints: GenericConstraints,
 	) => init<
 		ObjectStructure<
 			GenericValue,
-			GenericConstraints
+			readonly [...GenericConstraints]
 		>
 	>(
 		{
@@ -119,7 +127,11 @@ export const ObjectStructure = createStructure(
 					)
 					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
-					return errorHandler?.().addIssue(self) ?? ErrorSymbol;
+					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
+				}
+
+				if (Object.keys(data).length !== self.definition.shape.value.length) {
+					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
 				const pathStage = errorHandler?.().createPathStage();
@@ -159,7 +171,11 @@ export const ObjectStructure = createStructure(
 					)
 					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
-					return errorHandler?.().addIssue(self) ?? ErrorSymbol;
+					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
+				}
+
+				if (Object.keys(data).length !== self.definition.shape.value.length) {
+					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
 				const pathStage = errorHandler?.().createPathStage();
@@ -185,18 +201,18 @@ export const ObjectStructure = createStructure(
 
 				return DCommon.callThen(
 					encodedData,
-					(awaitedEncodedData) => awaitedEncodedData === ErrorSymbol
-						? ErrorSymbol
-						: DCommon.callThen(
-							self.executeConstraints(awaitedEncodedData, errorHandler),
-							(result) => {
-								pathStage?.close();
-
-								return result === ErrorSymbol
-									? ErrorSymbol
-									: awaitedEncodedData;
-							},
-						),
+					(awaitedEncodedData) => pathStage?.close() ?? (
+						awaitedEncodedData === ErrorSymbol
+							? ErrorSymbol
+							: DCommon.callThen(
+								self.executeConstraints(data, errorHandler),
+								(result) => pathStage?.close() ?? (
+									result === ErrorSymbol
+										? ErrorSymbol
+										: awaitedEncodedData
+								),
+							)
+					),
 				);
 			},
 			executeDecode: (self, codecContext, data, errorHandler) => {
@@ -209,7 +225,11 @@ export const ObjectStructure = createStructure(
 					)
 					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
-					return errorHandler?.().addIssue(self) ?? ErrorSymbol;
+					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
+				}
+
+				if (Object.keys(data).length !== self.definition.shape.value.length) {
+					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
 				const pathStage = errorHandler?.().createPathStage();
@@ -235,18 +255,18 @@ export const ObjectStructure = createStructure(
 
 				return DCommon.callThen(
 					decodedData,
-					(awaitedDecodedData) => awaitedDecodedData === ErrorSymbol
-						? ErrorSymbol
-						: DCommon.callThen(
-							self.executeConstraints(awaitedDecodedData, errorHandler),
-							(result) => {
-								pathStage?.close();
-
-								return result === ErrorSymbol
-									? ErrorSymbol
-									: awaitedDecodedData;
-							},
-						),
+					(awaitedDecodedData) => pathStage?.close() ?? (
+						awaitedDecodedData === ErrorSymbol
+							? ErrorSymbol
+							: DCommon.callThen(
+								self.executeConstraints(awaitedDecodedData, errorHandler),
+								(result) => pathStage?.close() ?? (
+									result === ErrorSymbol
+										? ErrorSymbol
+										: awaitedDecodedData
+								),
+							)
+					),
 				);
 			},
 			isAsynchronous: (self) => self.definition.shape.value.some((entry) => entry.value.isAsynchronous()),

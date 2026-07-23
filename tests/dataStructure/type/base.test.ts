@@ -18,7 +18,7 @@ describe("createType", () => {
 				errorHandler?: DS.GetErrorHandler,
 			) => typeof data === "string"
 				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol,
+				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
 		);
 		const fundamentalType = DS.createFundamentalType<TestFundamentalType>(
 			fundamentalSymbol,
@@ -45,7 +45,7 @@ describe("createType", () => {
 				errorHandler?: DS.GetErrorHandler,
 			) => data === self.definition.literal
 				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol,
+				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
 		);
 		const isAsynchronous = vi.fn(() => false);
 
@@ -175,7 +175,7 @@ describe("createType", () => {
 				errorHandler?: DS.GetErrorHandler,
 			) => Promise.resolve(typeof data === "string"
 				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol),
+				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol),
 		);
 		const fundamentalType = DS.createFundamentalType<TestFundamentalType>(
 			fundamentalSymbol,
@@ -194,7 +194,7 @@ describe("createType", () => {
 				errorHandler?: DS.GetErrorHandler,
 			) => Promise.resolve(data === "valid"
 				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol),
+				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol),
 		);
 		const TestType = DS.createType(
 			fundamentalType,
@@ -216,7 +216,7 @@ describe("createType", () => {
 		await expect(type.executeCheck("invalid", errorHandler)).resolves.toBe(
 			DS.ErrorSymbol,
 		);
-		await expect(type.executeCheck(123 as never, errorHandler)).resolves.toBe(
+		await expect(type.executeCheck(123, errorHandler)).resolves.toBe(
 			DS.ErrorSymbol,
 		);
 		expect(fundamentalTypeExecuteCheck).toHaveBeenNthCalledWith(

@@ -11,9 +11,10 @@ export interface Issue {
 		| "decode"
 	);
 	readonly path: string;
+	readonly data: unknown;
 	getSource(): (
 		| Type
-		| Structure<any>
+		| Structure
 		| FundamentalType
 		| Constraint
 	);
@@ -32,13 +33,13 @@ export interface ErrorHandler {
 	readonly issues: readonly Issue[];
 	readonly currentPath: string[];
 	setCurrentContext(context: Issue["context"]): void;
-	addIssue(source: ReturnType<Issue["getSource"]>): ErrorSymbol;
+	addIssue(source: ReturnType<Issue["getSource"]>, data: unknown): ErrorSymbol;
 	createPathStage(): PathStageErrorHandler;
 	createError(): Error;
 }
 
 export function createErrorHandler(): ErrorHandler {
-	let currentStagePath = 0;
+	let currentStagePath = -1;
 
 	const issues: Issue[] = [];
 	const currentPath: string[] = [];
@@ -56,7 +57,7 @@ export function createErrorHandler(): ErrorHandler {
 						currentPath[currentStagePath] = path;
 					},
 					close: () => {
-						if (currentStagePath === 0) {
+						if (currentStagePath === -1) {
 							return;
 						}
 
@@ -75,11 +76,12 @@ export function createErrorHandler(): ErrorHandler {
 		setCurrentContext: (newContext) => {
 			context = newContext;
 		},
-		addIssue: (source) => {
+		addIssue: (source, data) => {
 			issues.push({
 				context,
-				getSource: () => source,
+				data,
 				path: currentPath.join("."),
+				getSource: () => source,
 			});
 			return ErrorSymbol;
 		},

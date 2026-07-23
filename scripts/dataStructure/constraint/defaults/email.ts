@@ -28,7 +28,7 @@ export const EmailConstraint = createConstraint(
 		{
 			executeCheck: (self, data, errorHandler) => self.definition.regex.test(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? ErrorSymbol,
+				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

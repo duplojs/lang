@@ -18,9 +18,7 @@ export interface Type<
 	readonly fundamentalType: GenericFundamentalType;
 	readonly definition: GenericDefinition;
 	executeCheck(
-		data: FundamentalTypeValue<
-			GenericFundamentalType
-		>,
+		data: unknown,
 		errorHandler?: GetErrorHandler
 	): DCommon.MaybePromise<
 		| SuccessSymbol

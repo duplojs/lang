@@ -15,5 +15,5 @@ export const TheString = createFundamentalType<
 	FundamentalTypeTheStringSymbol,
 	(self, data, errorHandler) => typeof data === "string"
 		? SuccessSymbol
-		: errorHandler?.().addIssue(self) ?? ErrorSymbol,
+		: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
 );

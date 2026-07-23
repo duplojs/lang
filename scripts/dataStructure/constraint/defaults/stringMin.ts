@@ -35,7 +35,7 @@ export const StringMinConstraint = createConstraint(
 		{
 			executeCheck: (self, data, errorHandler) => data.length >= self.definition.min
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self) ?? ErrorSymbol,
+				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),
