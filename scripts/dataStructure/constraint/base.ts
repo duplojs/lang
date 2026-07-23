@@ -14,7 +14,7 @@ export interface Constraint<
 > extends DKind.Kind<typeof constraintKind, GenericChecked> {
 	readonly definition: GenericDefinition;
 	executeCheck(
-		input: GenericInput,
+		data: GenericInput,
 		errorHandler?: GetErrorHandler
 	): DCommon.MaybePromise<
 		| SuccessSymbol

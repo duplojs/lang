@@ -257,6 +257,81 @@ describe("createStructure", () => {
 		expect(structureIsAsynchronous).not.toHaveBeenCalled();
 	});
 
+	it("preserves asynchronous constraint execution order", async() => {
+		const testStructureKind = DS.createKind("test-async-constraint-chain");
+		const testConstraintKind = DS.createKind("test-async-chain-constraint");
+		const executeCheck = vi.fn(
+			(self: TestConstraint) => Promise.resolve(self.definition.result),
+		);
+
+		interface TestConstraintDefinition extends DS.ConstraintDefinition {
+			readonly result: DS.SuccessSymbol | DS.ErrorSymbol;
+		}
+
+		interface TestConstraint extends DCommon.UnionToIntersection<
+			& DS.Constraint<string, string, TestConstraintDefinition>
+			& DKind.Kind<typeof testConstraintKind>
+		> {}
+
+		const TestConstraint = DS.createConstraint(
+			testConstraintKind,
+			({ init }) => (
+				result: DS.SuccessSymbol | DS.ErrorSymbol,
+			) => init<TestConstraint>(
+				{ result },
+				{
+					executeCheck,
+					isAsynchronous: () => true,
+				},
+			),
+		);
+
+		const passingConstraint = TestConstraint(DS.SuccessSymbol);
+		const failingConstraint = TestConstraint(DS.ErrorSymbol);
+		const skippedConstraint = TestConstraint(DS.SuccessSymbol);
+		const TestStructure = DS.createStructure(
+			testStructureKind,
+			({ init }) => () => init(
+				{
+					constraints: [
+						passingConstraint,
+						failingConstraint,
+						skippedConstraint,
+					],
+				},
+				{
+					executeCheck: () => DS.SuccessSymbol,
+					executeEncode: (_self, _codecContext, data) => data,
+					executeDecode: (_self, _codecContext, data) => data,
+					isAsynchronous: () => true,
+				},
+			),
+		);
+
+		const structure = TestStructure();
+
+		await expect(structure.executeConstraints("value")).resolves.toBe(
+			DS.ErrorSymbol,
+		);
+		expect(executeCheck).toHaveBeenNthCalledWith(
+			1,
+			passingConstraint,
+			"value",
+			undefined,
+		);
+		expect(executeCheck).toHaveBeenNthCalledWith(
+			2,
+			failingConstraint,
+			"value",
+			undefined,
+		);
+		expect(executeCheck).not.toHaveBeenCalledWith(
+			skippedConstraint,
+			"value",
+			undefined,
+		);
+	});
+
 	it("returns check results for synchronous, asynchronous and predicate usages", async() => {
 		const syncStructureKind = DS.createKind("test-sync-check-structure");
 		const asyncStructureKind = DS.createKind("test-async-check-structure");
@@ -379,11 +454,16 @@ describe("createStructure", () => {
 		const fallbackSuccess = structure.unsafeEncode({}, "value");
 		const asyncFailure = asyncStructure.encode({}, "value");
 		const asyncSuccess = await asyncStructure.asyncEncode({ codec }, "value");
+		const asyncUnsafeSuccess = await asyncStructure.asyncUnsafeEncode(
+			{ codec },
+			"value",
+		);
 
 		expect(success).toStrictEqual(DEither.right("encode-success", "ABCD"));
 		expect(fallbackSuccess).toStrictEqual(DEither.right("encode-success", "value"));
 		expect(asyncFailure).toStrictEqual(DEither.left("async-error", undefined));
 		expect(asyncSuccess).toStrictEqual(DEither.right("encode-success", "encoded"));
+		expect(asyncUnsafeSuccess).toStrictEqual(DEither.right("encode-success", "encoded"));
 	});
 
 	it("wraps encode errors with collected issues", async() => {
@@ -407,6 +487,7 @@ describe("createStructure", () => {
 		const structure = TestStructure();
 		const failure = structure.encode({}, "value");
 		const asyncFailure = await structure.asyncEncode({}, "value");
+		const unsafeAsyncFailure = await structure.asyncUnsafeEncode({}, "value");
 
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "encode-error").issues,
@@ -414,6 +495,12 @@ describe("createStructure", () => {
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				asyncFailure,
+				"encode-error",
+			).issues,
+		).toHaveLength(1);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				unsafeAsyncFailure,
 				"encode-error",
 			).issues,
 		).toHaveLength(1);
@@ -465,10 +552,15 @@ describe("createStructure", () => {
 		const success = structure.decode({ codec }, 123 as never);
 		const asyncFailure = asyncStructure.decode({ codec }, "value");
 		const asyncSuccess = await asyncStructure.asyncDecode({ codec }, "value");
+		const asyncUnsafeSuccess = await asyncStructure.asyncUnsafeDecode(
+			{ codec },
+			"value",
+		);
 
 		expect(success).toStrictEqual(DEither.right("decode-success", "123"));
 		expect(asyncFailure).toStrictEqual(DEither.left("async-error", undefined));
 		expect(asyncSuccess).toStrictEqual(DEither.right("decode-success", "decoded"));
+		expect(asyncUnsafeSuccess).toStrictEqual(DEither.right("decode-success", "decoded"));
 	});
 
 	it("wraps decode errors with collected issues", async() => {
@@ -492,6 +584,7 @@ describe("createStructure", () => {
 		const structure = TestStructure();
 		const failure = structure.decode({}, "value");
 		const asyncFailure = await structure.asyncDecode({}, "value");
+		const unsafeAsyncFailure = await structure.asyncUnsafeDecode({}, "value");
 
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "decode-error").issues,
@@ -499,6 +592,12 @@ describe("createStructure", () => {
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				asyncFailure,
+				"decode-error",
+			).issues,
+		).toHaveLength(1);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				unsafeAsyncFailure,
 				"decode-error",
 			).issues,
 		).toHaveLength(1);

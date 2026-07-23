@@ -108,7 +108,7 @@ describe("createType", () => {
 	it("forwards the error handler to the fundamental type and the type implementation", () => {
 		const fundamentalSymbol = Symbol("test-string-error-handler");
 		const testTypeKind = DS.createKind("test-type-error-handler");
-		const errorHandler = DS.createGetErrorHandler("check");
+		const errorHandler = DS.createGetErrorHandler();
 
 		interface TestFundamentalType extends DS.FundamentalType<
 			typeof fundamentalSymbol,
@@ -156,5 +156,92 @@ describe("createType", () => {
 			"valid",
 			errorHandler,
 		);
+	});
+
+	it("preserves asynchronous checks through the fundamental type and implementation", async() => {
+		const fundamentalSymbol = Symbol("test-async-string");
+		const testTypeKind = DS.createKind("test-async-type");
+		const errorHandler = DS.createGetErrorHandler();
+
+		interface TestFundamentalType extends DS.FundamentalType<
+			typeof fundamentalSymbol,
+			string
+		> {}
+
+		const fundamentalTypeExecuteCheck = vi.fn(
+			(
+				self: TestFundamentalType,
+				data: unknown,
+				errorHandler?: DS.GetErrorHandler,
+			) => Promise.resolve(typeof data === "string"
+				? DS.SuccessSymbol
+				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol),
+		);
+		const fundamentalType = DS.createFundamentalType<TestFundamentalType>(
+			fundamentalSymbol,
+			fundamentalTypeExecuteCheck,
+		);
+
+		interface TestType extends DCommon.UnionToIntersection<
+			& DS.Type<typeof fundamentalType>
+			& DKind.Kind<typeof testTypeKind>
+		> {}
+
+		const executeCheck = vi.fn(
+			(
+				self: TestType,
+				data: string,
+				errorHandler?: DS.GetErrorHandler,
+			) => Promise.resolve(data === "valid"
+				? DS.SuccessSymbol
+				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol),
+		);
+		const TestType = DS.createType(
+			fundamentalType,
+			testTypeKind,
+			({ init }) => () => init<TestType>(
+				{},
+				{
+					executeCheck,
+					isAsynchronous: () => true,
+				},
+			),
+		);
+
+		const type = TestType();
+
+		await expect(type.executeCheck("valid", errorHandler)).resolves.toBe(
+			DS.SuccessSymbol,
+		);
+		await expect(type.executeCheck("invalid", errorHandler)).resolves.toBe(
+			DS.ErrorSymbol,
+		);
+		await expect(type.executeCheck(123 as never, errorHandler)).resolves.toBe(
+			DS.ErrorSymbol,
+		);
+		expect(fundamentalTypeExecuteCheck).toHaveBeenNthCalledWith(
+			1,
+			fundamentalType,
+			"valid",
+			errorHandler,
+		);
+		expect(executeCheck).toHaveBeenNthCalledWith(
+			1,
+			type,
+			"valid",
+			errorHandler,
+		);
+		expect(executeCheck).toHaveBeenNthCalledWith(
+			2,
+			type,
+			"invalid",
+			errorHandler,
+		);
+		expect(executeCheck).not.toHaveBeenCalledWith(
+			type,
+			123,
+			errorHandler,
+		);
+		expect(errorHandler().createError().issues).toHaveLength(2);
 	});
 });

@@ -217,7 +217,7 @@ export const ObjectStructure = createStructure(
 				const decodedData = self.definition.shape.value.reduce<unknown>(
 					(accumulator, entry) => DCommon.callThen(
 						accumulator,
-						(awaitedAccumulator) => pathStage?.setCurrentPath(entry.key) || DCommon.callThen(
+						(awaitedAccumulator) => pathStage?.setCurrentPath(entry.key) ?? DCommon.callThen(
 							entry.value.executeDecode(codecContext, data[entry.key as never], errorHandler),
 							(decodedData) => {
 								if (decodedData === ErrorSymbol || awaitedAccumulator === ErrorSymbol) {

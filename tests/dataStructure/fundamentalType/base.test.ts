@@ -51,4 +51,38 @@ describe("createFundamentalType", () => {
 			undefined,
 		);
 	});
+
+	it("forwards the error handler and preserves asynchronous checks", async() => {
+		const symbol = Symbol("test-async-fundamental-type");
+		const errorHandler = DS.createGetErrorHandler();
+		const executeCheck = vi.fn(
+			(
+				self: TestFundamentalType,
+				data: unknown,
+				errorHandler?: DS.GetErrorHandler,
+			) => Promise.resolve(data === "valid"
+				? DS.SuccessSymbol
+				: errorHandler?.().addIssue(self) ?? DS.ErrorSymbol),
+		);
+
+		interface TestFundamentalType extends DS.FundamentalType<
+			typeof symbol,
+			string
+		> {}
+
+		const fundamentalType = DS.createFundamentalType<TestFundamentalType>(
+			symbol,
+			executeCheck,
+		);
+
+		await expect(
+			fundamentalType.executeCheck("invalid", errorHandler),
+		).resolves.toBe(DS.ErrorSymbol);
+		expect(executeCheck).toHaveBeenCalledWith(
+			fundamentalType,
+			"invalid",
+			errorHandler,
+		);
+		expect(errorHandler().createError().issues).toHaveLength(1);
+	});
 });
