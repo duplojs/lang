@@ -308,7 +308,7 @@ export function createStructure<
 				return cachedIsAsynchronous;
 			},
 			check: (data) => {
-				const errorHandler = createGetErrorHandler("check");
+				const errorHandler = createGetErrorHandler();
 				const result = self.executeCheck(
 					data,
 					errorHandler,
@@ -325,7 +325,7 @@ export function createStructure<
 				return DEither.right("check-success", data);
 			},
 			asyncCheck: async(data) => {
-				const errorHandler = createGetErrorHandler("check");
+				const errorHandler = createGetErrorHandler();
 				const result = await self.executeCheck(
 					data,
 					errorHandler,
@@ -347,7 +347,7 @@ export function createStructure<
 			encode: (codecs, data) => self.unsafeEncode(codecs, data),
 			asyncEncode: (codecs, data) => self.asyncUnsafeEncode(codecs, data),
 			unsafeEncode: (codecs, data) => {
-				const errorHandler = createGetErrorHandler("check");
+				const errorHandler = createGetErrorHandler();
 				const result = self.executeEncode(
 					new Map<FundamentalType, Codec>(
 						Object.values(codecs).map(
@@ -369,7 +369,7 @@ export function createStructure<
 				return DEither.right("encode-success", result as never);
 			},
 			asyncUnsafeEncode: async(codecs, data) => {
-				const errorHandler = createGetErrorHandler("check");
+				const errorHandler = createGetErrorHandler();
 				const result = await self.executeEncode(
 					new Map<FundamentalType, Codec>(
 						Object.values(codecs).map(
@@ -389,7 +389,7 @@ export function createStructure<
 			decode: (codecs, data) => self.unsafeDecode(codecs, data),
 			asyncDecode: (codecs, data) => self.asyncUnsafeDecode(codecs, data),
 			unsafeDecode: (codecs, data) => {
-				const errorHandler = createGetErrorHandler("check");
+				const errorHandler = createGetErrorHandler();
 				const result = self.executeDecode(
 					new Map<FundamentalType, Codec>(
 						Object.values(codecs).map(
@@ -411,7 +411,7 @@ export function createStructure<
 				return DEither.right("decode-success", result as never);
 			},
 			asyncUnsafeDecode: async(codecs, data) => {
-				const errorHandler = createGetErrorHandler("check");
+				const errorHandler = createGetErrorHandler();
 				const result = await self.executeDecode(
 					new Map<FundamentalType, Codec>(
 						Object.values(codecs).map(

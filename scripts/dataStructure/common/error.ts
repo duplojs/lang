@@ -6,7 +6,7 @@ import { ErrorSymbol } from "./resultSymbol";
 
 export interface Issue {
 	readonly context: (
-		| "check"
+		| "default"
 		| "encode"
 		| "decode"
 	);
@@ -37,14 +37,14 @@ export interface ErrorHandler {
 	createError(): Error;
 }
 
-export function createErrorHandler(initialContext: Issue["context"]): ErrorHandler {
+export function createErrorHandler(): ErrorHandler {
 	let currentStagePath = 0;
 
 	const issues: Issue[] = [];
 	const currentPath: string[] = [];
 
 	let currentStage: PathStageErrorHandler | undefined = undefined;
-	let context: Issue["context"] = initialContext;
+	let context: Issue["context"] = "default";
 
 	return {
 		currentPath,
@@ -89,12 +89,12 @@ export function createErrorHandler(initialContext: Issue["context"]): ErrorHandl
 
 export type GetErrorHandler = () => ErrorHandler;
 
-export function createGetErrorHandler(initialContext: Issue["context"]): GetErrorHandler {
+export function createGetErrorHandler(): GetErrorHandler {
 	let errorHandler: undefined | ErrorHandler = undefined;
 
 	return () => {
 		if (errorHandler === undefined) {
-			errorHandler = createErrorHandler(initialContext);
+			errorHandler = createErrorHandler();
 		}
 
 		return errorHandler;

@@ -68,7 +68,7 @@ export function createCodec<
 				? ErrorSymbol
 				: DCommon.callThen(
 					encodedStructure.executeCheck(encodedData, errorHandler),
-					(result) => errorHandler?.().setCurrentContext("check") ?? (
+					(result) => errorHandler?.().setCurrentContext("default") ?? (
 						result === ErrorSymbol
 							? ErrorSymbol
 							: encodedData
@@ -81,7 +81,7 @@ export function createCodec<
 			errorHandler,
 		) => errorHandler?.().setCurrentContext("decode") ?? DCommon.callThen(
 			encodedStructure.executeCheck(data, errorHandler),
-			(result) => errorHandler?.().setCurrentContext("check") ?? (
+			(result) => errorHandler?.().setCurrentContext("default") ?? (
 				result === ErrorSymbol
 					? ErrorSymbol
 					: decode(data as never, errorHandler)
