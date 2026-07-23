@@ -1,8 +1,4 @@
-import type * as DCommon from "@scripts/common";
-
-export interface MinLength<
-	GenericMin extends number,
-> extends DCommon.DynamicConstraint<"string-min-length", GenericMin> {}
+import type { MinLength } from "./constraints";
 
 export function minLength<
 	GenericValue extends string,

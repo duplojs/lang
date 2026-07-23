@@ -1,6 +1,4 @@
-import type * as DCommon from "@scripts/common";
-
-export interface Email extends DCommon.Constraint<"email"> {}
+import type { Email } from "./constraints";
 
 export const emailRegex = /^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9-]*\.)+[A-Za-z]{2,}$/;
 

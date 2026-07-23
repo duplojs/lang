@@ -1,8 +1,4 @@
-import type * as DCommon from "@scripts/common";
-
-export interface MaxLength<
-	GenericMax extends number,
-> extends DCommon.DynamicConstraint<"string-max-length", GenericMax> {}
+import type { MaxLength } from "./constraints";
 
 export function maxLength<
 	GenericValue extends string,
