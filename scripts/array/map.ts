@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllConstraints } from "./constraints";
+import type { ReapplyAllSizeConstraints } from "./constraints";
 
 export interface MapTheFunctionParams<
 	GenericInputArray extends readonly unknown[],
@@ -11,7 +11,7 @@ export interface MapTheFunctionParams<
 type MapOutput<
 	GenericArray extends readonly unknown[],
 	GenericOutput extends unknown,
-> = ReapplyAllConstraints<GenericArray, GenericOutput[]>;
+> = ReapplyAllSizeConstraints<GenericArray, GenericOutput[]>;
 
 export function map<
 	GenericArray extends readonly unknown[],

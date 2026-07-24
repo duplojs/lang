@@ -1,9 +1,9 @@
-import type { ReapplyAllConstraints } from "../constraints";
+import type { ReapplyAllSizeConstraints } from "../constraints";
 
 type SpliceInsertOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
-> = ReapplyAllConstraints<
+> = ReapplyAllSizeConstraints<
 	GenericArray,
 	(
 		| GenericArray[number]

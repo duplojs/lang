@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllConstraints } from "./constraints";
+import type { ReapplyAllSizeConstraints } from "./constraints";
 
 export interface FilterPredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -11,7 +11,7 @@ export interface FilterPredicateFunctionParams<
 type FilterOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends GenericArray[number] = GenericArray[number],
-> = ReapplyAllConstraints<
+> = ReapplyAllSizeConstraints<
 	GenericArray,
 	GenericElement[],
 	"lengthEqual" | "minElements"

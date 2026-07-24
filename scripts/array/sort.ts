@@ -1,10 +1,10 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllConstraints } from "./constraints";
+import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type SortOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends GenericArray[number],
-> = ReapplyAllConstraints<GenericArray, GenericElement[]>;
+> = ReapplyAllSizeConstraints<GenericArray, GenericElement[]>;
 
 export function sort<
 	GenericArray extends readonly unknown[],

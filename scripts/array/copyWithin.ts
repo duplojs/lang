@@ -1,8 +1,8 @@
-import type { ReapplyAllConstraints } from "./constraints";
+import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type CopyWithinOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyAllConstraints<GenericArray, GenericArray[number][]>;
+> = ReapplyAllSizeConstraints<GenericArray, GenericArray[number][]>;
 
 export function copyWithin<
 	GenericArray extends readonly unknown[],

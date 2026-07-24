@@ -1,10 +1,10 @@
-import type { ReapplyAllConstraints } from "./constraints";
+import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type UnshiftOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
 	GenericValuesRest extends readonly unknown[] = [],
-> = ReapplyAllConstraints<
+> = ReapplyAllSizeConstraints<
 	GenericArray,
 	(
 		| GenericValue

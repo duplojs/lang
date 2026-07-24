@@ -1,9 +1,9 @@
-import type { ReapplyAllConstraints } from "../constraints";
+import type { ReapplyAllSizeConstraints } from "../constraints";
 
 type FillAllOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends unknown,
-> = ReapplyAllConstraints<GenericArray, GenericElement[]>;
+> = ReapplyAllSizeConstraints<GenericArray, GenericElement[]>;
 
 export function fillAll<
 	GenericElement extends unknown,

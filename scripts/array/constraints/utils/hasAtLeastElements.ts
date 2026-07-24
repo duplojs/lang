@@ -1,7 +1,7 @@
 import type * as DCommon from "@scripts/common";
 import type * as DNumber from "@scripts/number";
-import type { MinElements } from "./minElements";
-import type { LengthEqual } from "./lengthEqual";
+import type { MinElements } from "../minElements";
+import type { LengthEqual } from "../lengthEqual";
 
 export type HasAtLeastElements<
 	GenericArray extends readonly unknown[],

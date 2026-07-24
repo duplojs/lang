@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllConstraints } from "../constraints";
+import type { ReapplyAllSizeConstraints } from "../constraints";
 
 export interface FindAndSpliceInsertPredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -12,7 +12,7 @@ type FindAndSpliceInsertOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
 > =
-	| ReapplyAllConstraints<
+	| ReapplyAllSizeConstraints<
 		GenericArray,
 		(
 			| GenericArray[number]

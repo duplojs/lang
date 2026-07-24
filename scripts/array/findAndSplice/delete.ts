@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllConstraints } from "../constraints";
+import type { ReapplyAllSizeConstraints } from "../constraints";
 
 export interface FindAndSpliceDeletePredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -11,7 +11,7 @@ export interface FindAndSpliceDeletePredicateFunctionParams<
 type FindAndSpliceDeleteOutput<
 	GenericArray extends readonly unknown[],
 > =
-	| ReapplyAllConstraints<
+	| ReapplyAllSizeConstraints<
 		GenericArray,
 		GenericArray[number][],
 		"lengthEqual" | "minElements"

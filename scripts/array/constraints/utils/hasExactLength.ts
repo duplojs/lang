@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { LengthEqual } from "./lengthEqual";
+import type { LengthEqual } from "../lengthEqual";
 
 export type HasExactLength<
 	GenericArray extends readonly unknown[],

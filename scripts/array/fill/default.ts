@@ -1,9 +1,9 @@
-import type { ReapplyAllConstraints } from "../constraints";
+import type { ReapplyAllSizeConstraints } from "../constraints";
 
 type FillOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
-> = ReapplyAllConstraints<
+> = ReapplyAllSizeConstraints<
 	GenericArray,
 	(
 		| GenericArray[number]

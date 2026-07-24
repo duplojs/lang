@@ -7,7 +7,7 @@
 	"editor.detectIndentation": false,
 	"editor.codeActionsOnSave": {
 		"source.format.oxc": "explicit",
-		"source.fixAll.oxc": "explicit",
+		"source.fixAll.oxc": "always",
 	},
 
 	"[yaml]": {

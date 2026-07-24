@@ -1,10 +1,10 @@
-import type { ReapplyAllConstraints } from "./constraints";
+import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type ConcatOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
 	GenericElementsRest extends readonly unknown[][] = [],
-> = ReapplyAllConstraints<
+> = ReapplyAllSizeConstraints<
 	GenericArray,
 	(
 		| GenericArray[number]

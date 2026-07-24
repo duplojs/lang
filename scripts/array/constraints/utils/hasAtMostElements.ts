@@ -1,7 +1,7 @@
 import type * as DCommon from "@scripts/common";
 import type * as DNumber from "@scripts/number";
-import type { MaxElements } from "./maxElements";
-import type { LengthEqual } from "./lengthEqual";
+import type { MaxElements } from "../maxElements";
+import type { LengthEqual } from "../lengthEqual";
 
 export type HasAtMostElements<
 	GenericArray extends readonly unknown[],

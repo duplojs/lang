@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllConstraints } from "./constraints";
+import type { ReapplyAllSizeConstraints } from "./constraints";
 
 export interface FindAndReplacePredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -12,7 +12,7 @@ type FindAndReplaceOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends DCommon.AnyValue,
 > =
-	| ReapplyAllConstraints<GenericArray, (GenericArray[number] | GenericValue)[]>
+	| ReapplyAllSizeConstraints<GenericArray, (GenericArray[number] | GenericValue)[]>
 	| undefined;
 
 export function findAndReplace<

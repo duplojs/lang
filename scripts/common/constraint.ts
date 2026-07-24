@@ -1,4 +1,4 @@
-declare const ConstraintKind: unique symbol;
+export declare const ConstraintKind: unique symbol;
 export type ConstraintKind = typeof ConstraintKind;
 
 export interface Constraint<

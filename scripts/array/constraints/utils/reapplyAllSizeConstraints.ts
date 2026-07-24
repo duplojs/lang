@@ -1,7 +1,7 @@
 import type * as DCommon from "@scripts/common";
-import type { LengthEqual } from "./lengthEqual";
-import type { MaxElements } from "./maxElements";
-import type { MinElements } from "./minElements";
+import type { LengthEqual } from "../lengthEqual";
+import type { MaxElements } from "../maxElements";
+import type { MinElements } from "../minElements";
 
 type ApplyLengthEqual<
 	GenericOutput extends readonly unknown[],
@@ -24,7 +24,7 @@ type ApplyMaxElements<
 	? GenericOutput & MaxElements<InferredMax>
 	: GenericOutput;
 
-export type ReapplyAllConstraints<
+export type ReapplyAllSizeConstraints<
 	GenericSource extends readonly unknown[],
 	GenericOutput extends readonly unknown[],
 	GenericExpectConstraint extends "maxElements" | "minElements" | "lengthEqual" = never,

@@ -1,8 +1,8 @@
-import type { ReapplyAllConstraints } from "./constraints";
+import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type ShiftOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyAllConstraints<
+> = ReapplyAllSizeConstraints<
 	GenericArray,
 	GenericArray[number][],
 	"lengthEqual" | "minElements"

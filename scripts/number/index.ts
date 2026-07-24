@@ -1,5 +1,6 @@
 export type * from "./types";
 
+export * from "./constraints";
 export * from "./lessThan";
 export * from "./lessThanOrEqual";
 export * from "./greaterThan";

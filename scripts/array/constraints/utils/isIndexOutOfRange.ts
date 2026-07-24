@@ -1,15 +1,15 @@
 import type * as DCommon from "@scripts/common";
 import type * as DNumber from "@scripts/number";
-import type { LengthEqual } from "./lengthEqual";
-import type { MinElements } from "./minElements";
+import type { LengthEqual } from "../lengthEqual";
+import type { MaxElements } from "../maxElements";
 
-export type IsIndexCovered<
+export type IsIndexOutOfRange<
 	GenericArray extends readonly unknown[],
 	GenericIndex extends number,
 > = DCommon.IsEqual<GenericIndex, number> extends true
 	? false
 	: GenericArray extends LengthEqual<infer InferredLength>
-		? DNumber.IsGreater<InferredLength, GenericIndex>
-		: GenericArray extends MinElements<infer InferredMin>
-			? DNumber.IsGreater<InferredMin, GenericIndex>
+		? DNumber.IsGreaterOrEqual<GenericIndex, InferredLength>
+		: GenericArray extends MaxElements<infer InferredMax>
+			? DNumber.IsGreaterOrEqual<GenericIndex, InferredMax>
 			: false;
