@@ -3,8 +3,8 @@ import * as DCommon from "@scripts/common";
 import { type FundamentalTypeValue, type FundamentalType } from "../fundamentalType";
 import { type StructureValue, type Structure } from "../structure";
 import { createKind } from "../kind";
-import { type NeverCoalescing } from "@scripts/common";
-import { ErrorSymbol, type GetErrorHandler } from ".";
+import { type GetErrorHandler } from "./error";
+import { ErrorSymbol } from "./resultSymbol";
 
 export const codecKind = createKind("codec");
 
@@ -114,7 +114,7 @@ export type EncodedValue<
 			: never
 	) extends infer InferredResult
 		? DCommon.IsNever<InferredResult> extends true
-			? NeverCoalescing<
+			? DCommon.NeverCoalescing<
 				GenericCodec extends Codec<
 					infer InferredFundamentalType,
 					infer InferredEncodedStructure

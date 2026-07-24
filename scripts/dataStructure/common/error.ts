@@ -2,7 +2,6 @@ import { type Constraint } from "../constraint";
 import { type FundamentalType } from "../fundamentalType";
 import { type Structure } from "../structure";
 import { type Type } from "../type";
-import { ErrorSymbol } from "./resultSymbol";
 
 export interface Issue {
 	readonly context: (
@@ -33,7 +32,7 @@ export interface ErrorHandler {
 	readonly issues: readonly Issue[];
 	readonly currentPath: string[];
 	setCurrentContext(context: Issue["context"]): void;
-	addIssue(source: ReturnType<Issue["getSource"]>, data: unknown): ErrorSymbol;
+	addIssue(source: ReturnType<Issue["getSource"]>, data: unknown): void;
 	createPathStage(): PathStageErrorHandler;
 	createError(): Error;
 }
@@ -83,7 +82,6 @@ export function createErrorHandler(): ErrorHandler {
 				path: currentPath.join("."),
 				getSource: () => source,
 			});
-			return ErrorSymbol;
 		},
 		createError: () => ({ issues }),
 	};
