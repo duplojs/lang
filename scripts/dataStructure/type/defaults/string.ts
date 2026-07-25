@@ -5,7 +5,7 @@ import { createKind } from "../../kind";
 import { createType, type TypeDefinition, type Type } from "../base";
 import { SuccessSymbol } from "../../common";
 
-export const stringKind = createKind("string-type");
+export const stringTypeKind = createKind("string-type");
 
 export interface StringTypeDefinition extends TypeDefinition {}
 
@@ -15,14 +15,14 @@ export interface StringType extends DCommon.UnionToIntersection<
 		string,
 		StringTypeDefinition
 	>
-	& DKind.Kind<typeof stringKind>
+	& DKind.Kind<typeof stringTypeKind>
 > {
 
 }
 
 export const StringType = createType(
 	FundamentalType.TheString,
-	stringKind,
+	stringTypeKind,
 	({ init }) => () => init<StringType>(
 		{},
 		{

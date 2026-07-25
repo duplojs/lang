@@ -70,7 +70,12 @@ describe("ObjectStructure", () => {
 			age: DS.TypeStructure(DS.NumberType(), []),
 		}, []);
 		const invalidKind = structure.check(null);
-		const invalidLength = structure.check({ name: "Jane" });
+		const invalidMissingProperty = structure.check({ name: "Jane" });
+		const invalidUnknownProperty = structure.check({
+			name: "Jane",
+			age: 30,
+			extra: true,
+		});
 		const invalidProperty = structure.check({
 			name: 123,
 			age: 30,
@@ -87,9 +92,25 @@ describe("ObjectStructure", () => {
 			path: "",
 		});
 		expect(
-			DEither.unwrapByInformationOrThrow(invalidLength, "check-error").issues[0],
+			DEither.unwrapByInformationOrThrow(
+				invalidMissingProperty,
+				"check-error",
+			).issues[0],
 		).toMatchObject({
-			data: { name: "Jane" },
+			data: undefined,
+			path: "age",
+		});
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				invalidUnknownProperty,
+				"check-error",
+			).issues[0],
+		).toMatchObject({
+			data: {
+				name: "Jane",
+				age: 30,
+				extra: true,
+			},
 			path: "",
 		});
 		expect(
@@ -133,6 +154,44 @@ describe("ObjectStructure", () => {
 		})).toBe(false);
 		expect(structure.is({ name: "Jane" })).toBe(false);
 		expect(structure.is(null)).toBe(false);
+	});
+
+	it("accepts missing properties when their structure accepts undefined", () => {
+		const structure = DS.ObjectStructure({
+			name: DS.TypeStructure(DS.StringType(), []),
+			deletedAt: DS.TypeStructure(DS.UndefinedType(), []),
+		}, []);
+		const input = {
+			name: "Jane",
+		};
+		const invalidUnknownProperty = {
+			name: "Jane",
+			deletedAt: undefined,
+			extra: true,
+		};
+
+		type _CheckStructureValue = ExpectType<
+			DS.StructureValue<typeof structure>,
+			{
+				readonly name: string;
+				readonly deletedAt?: undefined;
+			},
+			"strict"
+		>;
+
+		expect(structure.check(input)).toStrictEqual(
+			DEither.right("check-success", input),
+		);
+		expect(structure.is(input)).toBe(true);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.check(invalidUnknownProperty),
+				"check-error",
+			).issues[0],
+		).toMatchObject({
+			data: invalidUnknownProperty,
+			path: "",
+		});
 	});
 
 	it("returns async check errors for asynchronous shaped structures in synchronous APIs", async() => {
@@ -310,7 +369,12 @@ describe("ObjectStructure", () => {
 			age: DS.TypeStructure(DS.NumberType(), []),
 		}, []);
 		const invalidKind = structure.encode({}, null as never);
-		const invalidLength = structure.encode({}, { name: "Jane" } as never);
+		const invalidMissingProperty = structure.encode({}, { name: "Jane" } as never);
+		const invalidUnknownProperty = structure.encode({}, {
+			name: "Jane",
+			age: 30,
+			extra: true,
+		} as never);
 		const invalidProperty = structure.encode(
 			{},
 			{
@@ -326,9 +390,25 @@ describe("ObjectStructure", () => {
 			path: "",
 		});
 		expect(
-			DEither.unwrapByInformationOrThrow(invalidLength, "encode-error").issues[0],
+			DEither.unwrapByInformationOrThrow(
+				invalidMissingProperty,
+				"encode-error",
+			).issues[0],
 		).toMatchObject({
-			data: { name: "Jane" },
+			data: undefined,
+			path: "age",
+		});
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				invalidUnknownProperty,
+				"encode-error",
+			).issues[0],
+		).toMatchObject({
+			data: {
+				name: "Jane",
+				age: 30,
+				extra: true,
+			},
 			path: "",
 		});
 		expect(
@@ -361,6 +441,7 @@ describe("ObjectStructure", () => {
 
 	it("returns encode errors when source constraints fail after shaped properties are encoded", async() => {
 		const constraintKind = DS.createKind("test-public-object-encode-error");
+		const encode = vi.fn((data: string) => data.length);
 
 		interface FailingConstraint extends DCommon.UnionToIntersection<
 			& DS.Constraint<{ readonly name: string }>
@@ -386,19 +467,27 @@ describe("ObjectStructure", () => {
 			},
 			[failingConstraint],
 		);
-		const failure = structure.encode({}, { name: "Jane" });
-		const asyncFailure = await structure.asyncEncode({}, { name: "Jane" });
+		const codec = DS.createCodec(
+			DS.TheString,
+			DS.TypeStructure(DS.NumberType(), []),
+			encode,
+			(data) => String(data),
+		);
+		const failure = structure.encode({ codec }, { name: "Jane" });
+		const asyncFailure = await structure.asyncEncode({ codec }, { name: "Jane" });
 
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "encode-error").issues[0]
 				?.getSource(),
 		).toBe(failingConstraint);
+		expect(encode).toHaveBeenCalledWith("Jane", expect.any(Function));
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				asyncFailure,
 				"encode-error",
 			).issues[0]?.getSource(),
 		).toBe(failingConstraint);
+		expect(encode).toHaveBeenCalledTimes(2);
 	});
 
 	it("returns async encode errors for asynchronous shaped encoders in synchronous APIs", async() => {
@@ -502,7 +591,12 @@ describe("ObjectStructure", () => {
 			age: DS.TypeStructure(DS.NumberType(), []),
 		}, []);
 		const invalidKind = structure.decode({}, null as never);
-		const invalidLength = structure.decode({}, { name: "Jane" } as never);
+		const invalidMissingProperty = structure.decode({}, { name: "Jane" } as never);
+		const invalidUnknownProperty = structure.decode({}, {
+			name: "Jane",
+			age: 30,
+			extra: true,
+		} as never);
 		const invalidProperty = structure.decode(
 			{},
 			{
@@ -518,9 +612,25 @@ describe("ObjectStructure", () => {
 			path: "",
 		});
 		expect(
-			DEither.unwrapByInformationOrThrow(invalidLength, "decode-error").issues[0],
+			DEither.unwrapByInformationOrThrow(
+				invalidMissingProperty,
+				"decode-error",
+			).issues[0],
 		).toMatchObject({
-			data: { name: "Jane" },
+			data: undefined,
+			path: "age",
+		});
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				invalidUnknownProperty,
+				"decode-error",
+			).issues[0],
+		).toMatchObject({
+			data: {
+				name: "Jane",
+				age: 30,
+				extra: true,
+			},
 			path: "",
 		});
 		expect(

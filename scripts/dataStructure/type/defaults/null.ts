@@ -5,25 +5,25 @@ import { createKind } from "../../kind";
 import { createType, type TypeDefinition, type Type } from "../base";
 import { SuccessSymbol } from "../../common";
 
-export const bigintTypeKind = createKind("bigint-type");
+export const nullTypeKind = createKind("null-type");
 
-export interface BigintTypeDefinition extends TypeDefinition {}
+export interface NullTypeDefinition extends TypeDefinition {}
 
-export interface BigintType extends DCommon.UnionToIntersection<
+export interface NullType extends DCommon.UnionToIntersection<
 	& Type<
-		FundamentalType.TheBigint,
-		bigint,
-		BigintTypeDefinition
+		FundamentalType.TheNull,
+		null,
+		NullTypeDefinition
 	>
-	& DKind.Kind<typeof bigintTypeKind>
+	& DKind.Kind<typeof nullTypeKind>
 > {
 
 }
 
-export const BigintType = createType(
-	FundamentalType.TheBigint,
-	bigintTypeKind,
-	({ init }) => () => init<BigintType>(
+export const NullType = createType(
+	FundamentalType.TheNull,
+	nullTypeKind,
+	({ init }) => () => init<NullType>(
 		{},
 		{
 			executeCheck: () => SuccessSymbol,

@@ -5,7 +5,7 @@ import { createKind } from "../../kind";
 import { createType, type TypeDefinition, type Type } from "../base";
 import { SuccessSymbol } from "../../common";
 
-export const numberKind = createKind("number-type");
+export const numberTypeKind = createKind("number-type");
 
 export interface NumberTypeDefinition extends TypeDefinition {}
 
@@ -15,14 +15,14 @@ export interface NumberType extends DCommon.UnionToIntersection<
 		number,
 		NumberTypeDefinition
 	>
-	& DKind.Kind<typeof numberKind>
+	& DKind.Kind<typeof numberTypeKind>
 > {
 
 }
 
 export const NumberType = createType(
 	FundamentalType.TheNumber,
-	numberKind,
+	numberTypeKind,
 	({ init }) => () => init<NumberType>(
 		{},
 		{

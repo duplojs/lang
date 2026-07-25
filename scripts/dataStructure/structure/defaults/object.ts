@@ -47,7 +47,7 @@ export type ShapeObjectStructureValue<
 	GenericShape extends ShapeObjectStructure,
 > = {
 	readonly [Prop in keyof GenericShape]: StructureValue<
-		DCommon.UnwrapGetter<GenericShape[Prop]>
+		GenericShape[Prop]
 	>
 } extends infer InferredResult extends Record<string, unknown>
 	? DObject.PartialKeys<
@@ -64,7 +64,8 @@ export const objectStructureKind = createKind("object-structure");
 export interface ObjectStructureDefinition<
 	GenericConstraints extends readonly Constraint[] = readonly Constraint[],
 > extends StructureDefinition<GenericConstraints> {
-	readonly shape: DCommon.Memoized<EntryShapeObjectStructure[]>;
+	readonly shape: DCommon.Memoized<readonly EntryShapeObjectStructure[]>;
+	readonly keys: readonly string[];
 }
 
 export interface ObjectStructure<
@@ -92,7 +93,7 @@ export const ObjectStructure = createStructure(
 	objectStructureKind,
 	({ init }) => <
 		GenericShape extends ShapeObjectStructure,
-		GenericValue extends Record<string, unknown> = ShapeObjectStructureValue<GenericShape>,
+		GenericValue extends ShapeObjectStructureValue<GenericShape>,
 		const GenericConstraints extends readonly Constraint<GenericValue>[] = readonly [],
 	>(
 		shape: GenericShape,
@@ -114,6 +115,7 @@ export const ObjectStructure = createStructure(
 						}),
 					),
 			),
+			keys: Object.keys(shape),
 			constraints: constraints,
 		},
 		{
@@ -130,7 +132,10 @@ export const ObjectStructure = createStructure(
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
-				if (Object.keys(data).length !== self.definition.shape.value.length) {
+				if (
+					Object.keys(data)
+						.some((value) => !self.definition.keys.includes(value))
+				) {
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
@@ -174,7 +179,10 @@ export const ObjectStructure = createStructure(
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
-				if (Object.keys(data).length !== self.definition.shape.value.length) {
+				if (
+					Object.keys(data)
+						.some((value) => !self.definition.keys.includes(value))
+				) {
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
@@ -206,11 +214,9 @@ export const ObjectStructure = createStructure(
 							? ErrorSymbol
 							: DCommon.callThen(
 								self.executeConstraints(data, errorHandler),
-								(result) => pathStage?.close() ?? (
-									result === ErrorSymbol
-										? ErrorSymbol
-										: awaitedEncodedData
-								),
+								(result) => result === ErrorSymbol
+									? ErrorSymbol
+									: awaitedEncodedData,
 							)
 					),
 				);
@@ -228,7 +234,10 @@ export const ObjectStructure = createStructure(
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
-				if (Object.keys(data).length !== self.definition.shape.value.length) {
+				if (
+					Object.keys(data)
+						.some((value) => !self.definition.keys.includes(value))
+				) {
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
 				}
 
@@ -260,11 +269,9 @@ export const ObjectStructure = createStructure(
 							? ErrorSymbol
 							: DCommon.callThen(
 								self.executeConstraints(awaitedDecodedData, errorHandler),
-								(result) => pathStage?.close() ?? (
-									result === ErrorSymbol
-										? ErrorSymbol
-										: awaitedDecodedData
-								),
+								(result) => result === ErrorSymbol
+									? ErrorSymbol
+									: awaitedDecodedData,
 							)
 					),
 				);

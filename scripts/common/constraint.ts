@@ -26,3 +26,9 @@ export type RemoveConstraint<
 >
 	? InferredValue
 	: GenericValue;
+
+export type GetConstraint<
+	GenericValue extends unknown,
+> = GenericValue extends (infer InferredValue) & RemoveConstraint<GenericValue>
+	? InferredValue
+	: GenericValue;

@@ -5,7 +5,7 @@ export function callThen<
 >(
 	input: GenericInput,
 	theFunction: (
-		input: Awaited<GenericInput>,
+		result: Awaited<GenericInput>,
 	) => GenericOutput,
 	catchFunction?: (error: unknown) => GenericOutputCatch,
 ): (
