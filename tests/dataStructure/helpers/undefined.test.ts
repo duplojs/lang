@@ -9,7 +9,7 @@ describe("undefined", () => {
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<DS.UndefinedType, readonly []>,
+			DS.TypeStructure<undefined, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<

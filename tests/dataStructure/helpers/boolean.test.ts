@@ -1,45 +1,44 @@
-import { describe, expect, it } from "vitest";
 import { DS, DEither, type ExpectType } from "@scripts";
 
-describe("string", () => {
-	it("creates a string type structure", () => {
-		const structure = DS.string();
-		const success = structure.check("value");
-		const failure = structure.check(12);
+describe("boolean", () => {
+	it("creates a boolean type structure", () => {
+		const structure = DS.boolean();
+		const success = structure.check(true);
+		const failure = structure.check("true");
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<string, readonly []>,
+			DS.TypeStructure<boolean, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
 			DS.StructureValue<typeof structure>,
-			string,
+			boolean,
 			"strict"
 		>;
 
-		expect(structure.definition.type.fundamentalType).toBe(DS.TheString);
+		expect(structure.definition.type.fundamentalType).toBe(DS.TheBoolean);
 		expect(structure.definition.constraints).toStrictEqual([]);
-		expect(success).toStrictEqual(DEither.right("check-success", "value"));
+		expect(success).toStrictEqual(DEither.right("check-success", true));
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "check-error").issues[0],
 		).toMatchObject({
-			data: 12,
+			data: "true",
 			path: "",
 		});
 	});
 
-	it("preserves constraint output inside nested object helpers", () => {
+	it("can be used inside nested object and array helpers", () => {
 		const structure = DS.object({
 			user: DS.object({
-				email: DS.string([DS.email()]),
-				name: DS.string([DS.stringMin(3)]),
+				active: DS.boolean(),
+				flags: DS.array(DS.boolean()),
 			}),
 		});
 		const input = {
 			user: {
-				email: "jane@example.com",
-				name: "Jane",
+				active: true,
+				flags: [true, false],
 			},
 		};
 
@@ -47,8 +46,8 @@ describe("string", () => {
 			DS.StructureValue<typeof structure>,
 			{
 				readonly user: {
-					readonly email: `${string}@${string}.${string}`;
-					readonly name: string;
+					readonly active: boolean;
+					readonly flags: readonly boolean[];
 				};
 			},
 			"strict"

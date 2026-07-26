@@ -24,7 +24,7 @@ export class StructureClass {
 export const structureKind = createKind("structure");
 
 export interface StructureDefinition<
-	GenericConstraints extends readonly Constraint[] = readonly Constraint[],
+	GenericConstraints extends readonly Constraint<any>[] = readonly Constraint<any>[],
 > {
 	readonly constraints: readonly [...GenericConstraints];
 }
@@ -38,8 +38,18 @@ export interface Structure<
 		typeof structureKind,
 		(
 			& GenericValue
-			& DCommon.UnionToIntersection<
-				ConstraintValue<GenericDefinition["constraints"][number]>
+			& DCommon.NeverCoalescing<
+				Extract<
+					DCommon.UnionToIntersection<
+						GenericDefinition["constraints"][number] extends infer InferredConstraint
+							? InferredConstraint extends Constraint
+								? { value: ConstraintValue<InferredConstraint> }
+								: never
+							: never
+					>,
+					{ value: GenericValue }
+				>["value"],
+				unknown
 			>
 		)
 	> {

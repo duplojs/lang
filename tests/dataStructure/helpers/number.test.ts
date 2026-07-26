@@ -9,7 +9,7 @@ describe("number", () => {
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<DS.NumberType, readonly []>,
+			DS.TypeStructure<number, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<

@@ -1,4 +1,7 @@
 export * from "./bigint";
+export * from "./bigintLiteral";
+export * from "./boolean";
+export * from "./booleanLiteral";
 export * from "./date";
 export * from "./null";
 export * from "./number";

@@ -146,14 +146,12 @@ export const ObjectStructure = createStructure(
 				>(
 					(accumulator, entry) => DCommon.callThen(
 						accumulator,
-						(result) => result === ErrorSymbol
-							? ErrorSymbol
-							: pathStage?.setCurrentPath(entry.key) ?? DCommon.callThen(
-								entry.value.executeCheck(data[entry.key as never], errorHandler),
-								(result) => result === ErrorSymbol
-									? ErrorSymbol
-									: SuccessSymbol,
-							),
+						(awaitedAccumulator) => pathStage?.setCurrentPath(entry.key) ?? DCommon.callThen(
+							entry.value.executeCheck(data[entry.key as never], errorHandler),
+							(result) => result === ErrorSymbol || awaitedAccumulator === ErrorSymbol
+								? ErrorSymbol
+								: SuccessSymbol,
+						),
 					),
 					SuccessSymbol,
 				);

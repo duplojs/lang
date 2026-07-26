@@ -54,11 +54,11 @@ export interface ArrayStructure<
 export const ArrayStructure = createStructure(
 	arrayStructureKind,
 	({ init }) => <
-		GenericStructure extends Structure,
-		GenericValue extends readonly StructureValue<GenericStructure>[],
+		GenericElement extends Structure,
+		GenericValue extends readonly StructureValue<GenericElement>[],
 		const GenericConstraints extends readonly Constraint<GenericValue>[] = readonly [],
 	>(
-		element: GenericStructure,
+		element: GenericElement,
 		constraints: GenericConstraints,
 	) => init<
 		ArrayStructure<
@@ -83,14 +83,12 @@ export const ArrayStructure = createStructure(
 				>(
 					(accumulator, value, index) => DCommon.callThen(
 						accumulator,
-						(result) => result === ErrorSymbol
-							? ErrorSymbol
-							: pathStage?.setCurrentPath(`[array: ${index}]`) ?? DCommon.callThen(
-								self.definition.element.executeCheck(value, errorHandler),
-								(result) => result === ErrorSymbol
-									? ErrorSymbol
-									: SuccessSymbol,
-							),
+						(awaitedAccumulator) => pathStage?.setCurrentPath(`[array: ${index}]`) ?? DCommon.callThen(
+							self.definition.element.executeCheck(value, errorHandler),
+							(result) => result === ErrorSymbol || awaitedAccumulator === ErrorSymbol
+								? ErrorSymbol
+								: SuccessSymbol,
+						),
 					),
 					SuccessSymbol,
 				);

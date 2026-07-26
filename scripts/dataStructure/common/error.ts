@@ -33,15 +33,17 @@ export interface ErrorHandler {
 	readonly currentPath: string[];
 	setCurrentContext(context: Issue["context"]): void;
 	addIssue(source: ReturnType<Issue["getSource"]>, data: unknown): void;
+	importIssues(errorHandler: (GetErrorHandler | ErrorHandler)[]): void;
 	createPathStage(): PathStageErrorHandler;
 	createError(): Error;
+	usePath(path: string[]): void;
 }
 
 export function createErrorHandler(): ErrorHandler {
 	let currentStagePath = -1;
 
 	const issues: Issue[] = [];
-	const currentPath: string[] = [];
+	let currentPath: string[] = [];
 
 	let currentStage: PathStageErrorHandler | undefined = undefined;
 	let context: Issue["context"] = "default";
@@ -84,6 +86,19 @@ export function createErrorHandler(): ErrorHandler {
 			});
 		},
 		createError: () => ({ issues }),
+		importIssues: (errorHandler) => void errorHandler.forEach(
+			(value) => void issues.push(
+				...(
+					typeof value === "function"
+						? value().issues
+						: value.issues
+				),
+			),
+		),
+		usePath: (path) => {
+			currentPath = [...path];
+			currentStagePath = currentPath.length - 1;
+		},
 	};
 }
 

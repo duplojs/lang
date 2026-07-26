@@ -9,21 +9,19 @@ import { ErrorSymbol } from "../../common";
 export const typeStructureKind = createKind("type-structure");
 
 export interface TypeStructureDefinition<
-	GenericType extends Type = Type,
-	GenericConstraints extends readonly Constraint<TypeValue<GenericType>>[] =
-		readonly Constraint<TypeValue<GenericType>>[],
+	GenericConstraints extends readonly Constraint[] = readonly Constraint[],
 > extends StructureDefinition<GenericConstraints> {
-	readonly type: GenericType;
+	readonly type: Type;
 }
 
 export interface TypeStructure<
-	GenericType extends Type = Type,
-	GenericConstraints extends readonly Constraint<TypeValue<GenericType>>[] =
-		readonly Constraint<TypeValue<GenericType>>[],
+	GenericType extends unknown = unknown,
+	GenericConstraints extends readonly Constraint<GenericType>[] =
+		readonly Constraint<GenericType>[],
 > extends DCommon.UnionToIntersection<
 		& Structure<
-			TypeValue<GenericType>,
-			TypeStructureDefinition<GenericType, GenericConstraints>
+			GenericType,
+			TypeStructureDefinition<GenericConstraints>
 		>
 		& DKind.Kind<typeof typeStructureKind>
 	> {
@@ -50,7 +48,7 @@ export const TypeStructure = createStructure(
 		constraints: GenericConstraints,
 	) => init<
 		TypeStructure<
-			GenericType,
+			TypeValue<GenericType>,
 			readonly [...GenericConstraints]
 		>
 	>(

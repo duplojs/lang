@@ -10,7 +10,7 @@ describe("time", () => {
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<DS.TimeType, readonly []>,
+			DS.TypeStructure<DChrono.TheTime, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<

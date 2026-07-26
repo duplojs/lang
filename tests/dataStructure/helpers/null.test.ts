@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { DS, DEither, type ExpectType } from "@scripts";
 
 describe("null", () => {
@@ -9,7 +8,7 @@ describe("null", () => {
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<DS.NullType, readonly []>,
+			DS.TypeStructure<null, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
