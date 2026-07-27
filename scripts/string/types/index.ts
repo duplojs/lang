@@ -5,4 +5,7 @@ export type * from "./shift";
 export type * from "./number";
 export type * from "./split";
 export type * from "./replace";
-export * from "./templateLiteralContainLargeType";
+export type * from "./join";
+export type * from "./templateLiteralContainLargeType";
+export type * from "./normalizeForm";
+export type * from "./pop";

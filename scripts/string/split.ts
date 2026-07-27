@@ -1,6 +1,8 @@
 import type * as DCommon from "@scripts/common";
+import type * as DArray from "@scripts/array";
+import type * as DTuple from "@scripts/tuple";
 import type { Format } from "./constraints";
-import type { Split } from "./types";
+import type { TemplateLiteralContainLargeType } from "./types";
 
 export interface SplitParams<
 	GenericLimit extends number,
@@ -8,16 +10,73 @@ export interface SplitParams<
 	limit: GenericLimit;
 }
 
+type CountSplitGroups<
+	GenericString extends string,
+	GenericSeparator extends string,
+	GenericGroups extends readonly string[] = [string],
+> = GenericString extends `${string}${GenericSeparator}${infer InferredAfter}`
+	? DCommon.IsEqual<GenericGroups["length"], 100> extends true
+		? number
+		: CountSplitGroups<
+			InferredAfter,
+			GenericSeparator,
+			[...GenericGroups, string]
+		>
+	: GenericGroups["length"];
+
+type ApplySplitLimit<
+	GenericGroupNumber extends number,
+	GenericLimit extends number,
+> = DCommon.IsEqual<GenericLimit, number> extends true
+	? GenericGroupNumber
+	: DTuple.Create<unknown, GenericGroupNumber> extends [
+		...DTuple.Create<unknown, GenericLimit>,
+		...unknown[],
+	]
+		? GenericLimit
+		: GenericGroupNumber;
+
+type ComputeSplitOutput<
+	GenericString extends string,
+	GenericSeparator extends string,
+	GenericLimit extends number,
+> = DCommon.Or<[
+	DCommon.IsEqual<GenericString, string>,
+	DCommon.IsEqual<GenericSeparator, "">,
+	TemplateLiteralContainLargeType<GenericSeparator>,
+]> extends true
+	? string[] & DArray.MinElements<ApplySplitLimit<1, GenericLimit>>
+	: CountSplitGroups<
+		GenericString,
+		GenericSeparator
+	> extends infer InferredGroupNumber extends number
+		? ApplySplitLimit<
+			InferredGroupNumber,
+			GenericLimit
+		> extends infer InferredOutputLength extends number
+			? (
+				& string[]
+				& DArray.MinElements<InferredOutputLength>
+				& (
+					TemplateLiteralContainLargeType<GenericString> extends true
+						? unknown
+						: (
+							& DArray.LengthEqual<InferredOutputLength>
+							& DArray.MaxElements<InferredOutputLength>
+						)
+				)
+			)
+			: never
+		: never;
+
 type SplitOutput<
 	GenericString extends string,
 	GenericSeparator extends string,
 	GenericLimit extends number = number,
 > = DCommon.RemoveConstraint<GenericString> extends infer InferredString extends string
-	? DCommon.IsEqual<InferredString, string> extends false
-		? Split<InferredString, GenericSeparator, GenericLimit>
-		: GenericString extends Format<string, infer InferredPattern>
-			? Split<InferredPattern, GenericSeparator, GenericLimit>
-			: Split<GenericString, GenericSeparator, GenericLimit>
+	? GenericString extends Format<string, infer InferredPattern>
+		? ComputeSplitOutput<InferredPattern, GenericSeparator, GenericLimit>
+		: ComputeSplitOutput<InferredString, GenericSeparator, GenericLimit>
 	: never;
 
 export function split<
@@ -51,4 +110,3 @@ export function split(
 
 	return string.split(separator, params?.limit);
 }
-
