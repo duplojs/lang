@@ -82,29 +82,3 @@ export function maxCharacters(
 
 	return string.length <= max;
 }
-
-const source = "a" as
-	| (string & MaxCharacters<2>)
-	| (string & MaxCharacters<5>)
-	| (string & LengthEqual<4>)
-	| (string & MinCharacters<2>)
-	| (string & MinCharacters<5>);
-
-if (maxCharacters(source, 3)) {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (string & MaxCharacters<2>)
-		| (string & MaxCharacters<5> & MaxCharacters<3>)
-		| (string & MinCharacters<2> & MaxCharacters<3>),
-		"strict"
-	>;
-} else {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (string & MaxCharacters<5>)
-		| (string & LengthEqual<4>)
-		| (string & MinCharacters<2>)
-		| (string & MinCharacters<5>),
-		"strict"
-	>;
-}

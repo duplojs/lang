@@ -3,7 +3,7 @@ export interface ExtractOutput<
 > {
 	matchedValue: string;
 	groups: string[];
-	namedGroups?: Record<string, string>;
+	namedGroups: Record<string, string | undefined>;
 	offset: number;
 	self: GenericString;
 }
@@ -45,7 +45,7 @@ export function extract(
 	return {
 		matchedValue: result[0],
 		groups: result.slice(1),
-		namedGroups: result.groups ? { ...result.groups } : undefined,
+		namedGroups: result.groups ? { ...result.groups } : {},
 		offset: result.index ?? 0,
 		self: result.input ?? string,
 	};

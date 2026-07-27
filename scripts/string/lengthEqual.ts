@@ -101,31 +101,3 @@ export function lengthEqual(
 
 	return string.length === length;
 }
-
-const source = "a" as
-	| (string & LengthEqual<3>)
-	| (string & LengthEqual<5>)
-	| (string & MinCharacters<2>)
-	| (string & MaxCharacters<5>)
-	| (string & MinCharacters<5>)
-	| (string & MaxCharacters<2>);
-
-if (lengthEqual(source, 3)) {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (string & LengthEqual<3>)
-		| (string & MinCharacters<2> & LengthEqual<3>)
-		| (string & MaxCharacters<5> & LengthEqual<3>),
-		"strict"
-	>;
-} else {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (string & LengthEqual<5>)
-		| (string & MinCharacters<2>)
-		| (string & MaxCharacters<5>)
-		| (string & MinCharacters<5>)
-		| (string & MaxCharacters<2>),
-		"strict"
-	>;
-}

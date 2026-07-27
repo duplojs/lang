@@ -3,7 +3,7 @@ export interface StringReplacerParams<
 > {
 	matchedValue: string;
 	groups: (string | undefined)[];
-	namedGroups?: Record<string, string | undefined>;
+	namedGroups: Record<string, string | undefined>;
 	offset: number;
 	self: GenericString;
 }
@@ -65,7 +65,7 @@ export function replace(
 			) => {
 				const namedGroups = typeof argsRest[argsRest.length - 1] === "object"
 					? argsRest.pop() as Record<string, string | undefined>
-					: undefined;
+					: {};
 
 				const [offset, self] = argsRest.splice(-2, 2) as [number, string];
 

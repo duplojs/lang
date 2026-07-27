@@ -53,7 +53,7 @@ export function replaceAll(
 			) => {
 				const namedGroups = typeof argsRest[argsRest.length - 1] === "object"
 					? argsRest.pop() as Record<string, string | undefined>
-					: undefined;
+					: {};
 
 				const [offset, self] = argsRest.splice(-2, 2) as [number, string];
 
