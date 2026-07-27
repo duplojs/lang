@@ -1,13 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
-import { DS, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
 
 describe("ObjectStructure", () => {
 	it("checks shaped objects and narrows with is", async() => {
 		const shape = {
-			name: DS.TypeStructure(DS.StringType(), []),
-			age: DS.TypeStructure(DS.NumberType(), []),
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			age: DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		};
-		const structure = DS.ObjectStructure(shape, []);
+		const structure = DDataStructure.ObjectStructure(shape, []);
 		const input: unknown = {
 			name: "Jane",
 			age: 30,
@@ -16,7 +15,7 @@ describe("ObjectStructure", () => {
 		const asyncSuccess = await structure.asyncCheck(input);
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly name: string;
 				readonly age: number;
@@ -33,7 +32,7 @@ describe("ObjectStructure", () => {
 				}
 			>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncSuccess = ExpectType<
@@ -45,7 +44,7 @@ describe("ObjectStructure", () => {
 					readonly age: number;
 				}
 			>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -65,9 +64,9 @@ describe("ObjectStructure", () => {
 	});
 
 	it("returns check errors for invalid object shapes", async() => {
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(DS.StringType(), []),
-			age: DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			age: DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		}, []);
 		const invalidKind = structure.check(null);
 		const invalidMissingProperty = structure.check({ name: "Jane" });
@@ -157,9 +156,9 @@ describe("ObjectStructure", () => {
 	});
 
 	it("accepts missing properties when their structure accepts undefined", () => {
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(DS.StringType(), []),
-			deletedAt: DS.TypeStructure(DS.UndefinedType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			deletedAt: DDataStructure.TypeStructure(DDataStructure.UndefinedType(), []),
 		}, []);
 		const input = {
 			name: "Jane",
@@ -171,7 +170,7 @@ describe("ObjectStructure", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly name: string;
 				readonly deletedAt?: undefined;
@@ -195,26 +194,26 @@ describe("ObjectStructure", () => {
 	});
 
 	it("returns async check errors for asynchronous shaped structures in synchronous APIs", async() => {
-		const asyncTypeKind = DS.createKind("test-public-async-object-type");
+		const asyncTypeKind = DDataStructure.createKind("test-public-async-object-type");
 
 		interface AsyncType extends DCommon.UnionToIntersection<
-			& DS.Type<DS.TheString>
+			& DDataStructure.Type<DDataStructure.TheString>
 			& DKind.Kind<typeof asyncTypeKind>
 		> {}
 
-		const AsyncType = DS.createType(
-			DS.TheString,
+		const AsyncType = DDataStructure.createType(
+			DDataStructure.TheString,
 			asyncTypeKind,
 			({ init }) => () => init<AsyncType>(
 				{},
 				{
-					executeCheck: () => Promise.resolve(DS.SuccessSymbol),
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
 					isAsynchronous: () => true,
 				},
 			),
 		);
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(AsyncType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(AsyncType(), []),
 		}, []);
 
 		expect(structure.check({ name: "Jane" })).toStrictEqual(
@@ -228,19 +227,19 @@ describe("ObjectStructure", () => {
 	});
 
 	it("encodes shaped objects with matching codecs", async() => {
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(DS.StringType(), []),
-			age: DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			age: DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		}, []);
-		const stringCodec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const stringCodec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
-		const numberCodec = DS.createCodec(
-			DS.TheNumber,
-			DS.TypeStructure(DS.StringType(), []),
+		const numberCodec = DDataStructure.createCodec(
+			DDataStructure.TheNumber,
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			(data) => String(data),
 			(data) => Number(data),
 		);
@@ -273,7 +272,7 @@ describe("ObjectStructure", () => {
 				}
 			>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncSuccess = ExpectType<
@@ -285,7 +284,7 @@ describe("ObjectStructure", () => {
 					readonly age: string;
 				}
 			>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -304,23 +303,23 @@ describe("ObjectStructure", () => {
 	});
 
 	it("checks object constraints against source data after encoding", async() => {
-		const constraintKind = DS.createKind("test-public-object-source-constraint");
+		const constraintKind = DDataStructure.createKind("test-public-object-source-constraint");
 		const executeCheck = vi.fn(
 			(
 				self: SourceConstraint,
 				data: { readonly name: string },
-				errorHandler?: DS.GetErrorHandler,
+				errorHandler?: DDataStructure.GetErrorHandler,
 			) => typeof data.name === "string"
-				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
+				? DDataStructure.SuccessSymbol
+				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
 		);
 
 		interface SourceConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<{ readonly name: string }>
+			& DDataStructure.Constraint<{ readonly name: string }>
 			& DKind.Kind<typeof constraintKind>
 		> {}
 
-		const SourceConstraint = DS.createConstraint(
+		const SourceConstraint = DDataStructure.createConstraint(
 			constraintKind,
 			({ init }) => () => init<SourceConstraint>(
 				{},
@@ -331,15 +330,15 @@ describe("ObjectStructure", () => {
 			),
 		);
 		const sourceConstraint = SourceConstraint();
-		const structure = DS.ObjectStructure(
+		const structure = DDataStructure.ObjectStructure(
 			{
-				name: DS.TypeStructure(DS.StringType(), []),
+				name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			},
 			[sourceConstraint],
 		);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => String(data),
 		);
@@ -364,9 +363,9 @@ describe("ObjectStructure", () => {
 	});
 
 	it("returns encode errors for invalid object shapes", () => {
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(DS.StringType(), []),
-			age: DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			age: DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		}, []);
 		const invalidKind = structure.encode({}, null as never);
 		const invalidMissingProperty = structure.encode({}, { name: "Jane" } as never);
@@ -440,36 +439,36 @@ describe("ObjectStructure", () => {
 	});
 
 	it("returns encode errors when source constraints fail after shaped properties are encoded", async() => {
-		const constraintKind = DS.createKind("test-public-object-encode-error");
+		const constraintKind = DDataStructure.createKind("test-public-object-encode-error");
 		const encode = vi.fn((data: string) => data.length);
 
 		interface FailingConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<{ readonly name: string }>
+			& DDataStructure.Constraint<{ readonly name: string }>
 			& DKind.Kind<typeof constraintKind>
 		> {}
 
-		const FailingConstraint = DS.createConstraint(
+		const FailingConstraint = DDataStructure.createConstraint(
 			constraintKind,
 			({ init }) => () => init<FailingConstraint>(
 				{},
 				{
 					executeCheck: (self, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
+						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
 					),
 					isAsynchronous: () => false,
 				},
 			),
 		);
 		const failingConstraint = FailingConstraint();
-		const structure = DS.ObjectStructure(
+		const structure = DDataStructure.ObjectStructure(
 			{
-				name: DS.TypeStructure(DS.StringType(), []),
+				name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			},
 			[failingConstraint],
 		);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			encode,
 			(data) => String(data),
 		);
@@ -491,12 +490,12 @@ describe("ObjectStructure", () => {
 	});
 
 	it("returns async encode errors for asynchronous shaped encoders in synchronous APIs", async() => {
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 		}, []);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => Promise.resolve(data.length),
 			(data) => String(data),
 		);
@@ -510,19 +509,19 @@ describe("ObjectStructure", () => {
 	});
 
 	it("decodes shaped objects with matching codecs", async() => {
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(DS.StringType(), []),
-			age: DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			age: DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		}, []);
-		const stringCodec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const stringCodec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
-		const numberCodec = DS.createCodec(
-			DS.TheNumber,
-			DS.TypeStructure(DS.StringType(), []),
+		const numberCodec = DDataStructure.createCodec(
+			DDataStructure.TheNumber,
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			(data) => String(data),
 			(data) => Number(data),
 		);
@@ -555,7 +554,7 @@ describe("ObjectStructure", () => {
 				}
 			>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncSuccess = ExpectType<
@@ -567,7 +566,7 @@ describe("ObjectStructure", () => {
 					readonly age: number;
 				}
 			>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -586,9 +585,9 @@ describe("ObjectStructure", () => {
 	});
 
 	it("returns decode errors for invalid object shapes", () => {
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(DS.StringType(), []),
-			age: DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			age: DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		}, []);
 		const invalidKind = structure.decode({}, null as never);
 		const invalidMissingProperty = structure.decode({}, { name: "Jane" } as never);
@@ -662,29 +661,29 @@ describe("ObjectStructure", () => {
 	});
 
 	it("returns decode errors when decoded constraints fail", async() => {
-		const constraintKind = DS.createKind("test-public-object-decode-error");
+		const constraintKind = DDataStructure.createKind("test-public-object-decode-error");
 
 		interface FailingConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<{ readonly name: string }>
+			& DDataStructure.Constraint<{ readonly name: string }>
 			& DKind.Kind<typeof constraintKind>
 		> {}
 
-		const FailingConstraint = DS.createConstraint(
+		const FailingConstraint = DDataStructure.createConstraint(
 			constraintKind,
 			({ init }) => () => init<FailingConstraint>(
 				{},
 				{
 					executeCheck: (self, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
+						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
 					),
 					isAsynchronous: () => false,
 				},
 			),
 		);
 		const failingConstraint = FailingConstraint();
-		const structure = DS.ObjectStructure(
+		const structure = DDataStructure.ObjectStructure(
 			{
-				name: DS.TypeStructure(DS.StringType(), []),
+				name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			},
 			[failingConstraint],
 		);
@@ -704,12 +703,12 @@ describe("ObjectStructure", () => {
 	});
 
 	it("returns async decode errors for asynchronous shaped decoders in synchronous APIs", async() => {
-		const structure = DS.ObjectStructure({
-			name: DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 		}, []);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => Promise.resolve(`name-${data}`),
 		);

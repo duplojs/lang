@@ -1,46 +1,45 @@
-import { describe, expect, it } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("BooleanLiteralType", () => {
 	it("creates a synchronous boolean literal type", () => {
-		const type = DS.BooleanLiteralType(true);
+		const type = DDataStructure.BooleanLiteralType(true);
 
 		type _CheckType = ExpectType<
 			typeof type,
-			DS.BooleanLiteralType<true>,
+			DDataStructure.BooleanLiteralType<true>,
 			"strict"
 		>;
 		type _CheckTypeValue = ExpectType<
-			DS.TypeValue<typeof type>,
+			DDataStructure.TypeValue<typeof type>,
 			true,
 			"strict"
 		>;
 
-		expect(type.fundamentalType).toBe(DS.TheBoolean);
+		expect(type.fundamentalType).toBe(DDataStructure.TheBoolean);
 		expect(type.definition).toEqual({ value: true });
 		expect(type.isAsynchronous()).toBe(false);
 	});
 
 	it("accepts its literal value", () => {
-		const type = DS.BooleanLiteralType(true);
+		const type = DDataStructure.BooleanLiteralType(true);
 
-		expect(type.executeCheck(true)).toBe(DS.SuccessSymbol);
+		expect(type.executeCheck(true)).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects non-boolean values through its fundamental type", () => {
-		const type = DS.BooleanLiteralType(true);
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.BooleanLiteralType(true);
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck("true", errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck("true", errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DS.TheBoolean);
+		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheBoolean);
 	});
 
 	it("rejects another boolean value through its literal type", () => {
-		const type = DS.BooleanLiteralType(true);
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.BooleanLiteralType(true);
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck(false, errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck(false, errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
 		expect(errorHandler().createError().issues[0]?.getSource()).toBe(type);
 	});

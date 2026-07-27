@@ -1,11 +1,10 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("object", () => {
 	it("creates an object structure from helper shapes", () => {
-		const structure = DS.object({
-			name: DS.string(),
-			age: DS.number(),
+		const structure = DDataStructure.object({
+			name: DDataStructure.string(),
+			age: DDataStructure.number(),
 		});
 		const input = {
 			name: "Jane",
@@ -13,7 +12,7 @@ describe("object", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly name: string;
 				readonly age: number;
@@ -29,12 +28,12 @@ describe("object", () => {
 	});
 
 	it("keeps nested object helper output coherent", () => {
-		const structure = DS.object({
-			user: DS.object({
-				profile: DS.object({
-					name: DS.string(),
-					contact: DS.object({
-						email: DS.string([DS.email()]),
+		const structure = DDataStructure.object({
+			user: DDataStructure.object({
+				profile: DDataStructure.object({
+					name: DDataStructure.string(),
+					contact: DDataStructure.object({
+						email: DDataStructure.string([DDataStructure.email()]),
 					}),
 				}),
 			}),
@@ -52,7 +51,7 @@ describe("object", () => {
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.ObjectStructure<{
+			DDataStructure.ObjectStructure<{
 				readonly user: {
 					readonly profile: {
 						readonly name: string;
@@ -65,7 +64,7 @@ describe("object", () => {
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
 					readonly profile: {

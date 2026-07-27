@@ -1,15 +1,14 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
 
 describe("TypeStructure", () => {
 	it("checks values with the wrapped type", async() => {
-		const structure = DS.TypeStructure(DS.StringType(), []);
+		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const success = structure.check("value");
 		const failure = structure.check(123);
 		const asyncSuccess = await structure.asyncCheck("value");
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			string,
 			"strict"
 		>;
@@ -17,13 +16,13 @@ describe("TypeStructure", () => {
 			typeof success,
 			| DEither.Right<"check-success", string>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncSuccess = ExpectType<
 			typeof asyncSuccess,
 			| DEither.Right<"check-success", string>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -40,26 +39,26 @@ describe("TypeStructure", () => {
 	});
 
 	it("returns async check errors for asynchronous types in synchronous APIs", async() => {
-		const asyncTypeKind = DS.createKind("test-public-async-type-structure-type");
+		const asyncTypeKind = DDataStructure.createKind("test-public-async-type-structure-type");
 
 		interface AsyncType extends DCommon.UnionToIntersection<
-			& DS.Type<DS.TheString>
+			& DDataStructure.Type<DDataStructure.TheString>
 			& DKind.Kind<typeof asyncTypeKind>
 		> {}
 
-		const AsyncType = DS.createType(
-			DS.TheString,
+		const AsyncType = DDataStructure.createType(
+			DDataStructure.TheString,
 			asyncTypeKind,
 			({ init }) => () => init<AsyncType>(
 				{},
 				{
-					executeCheck: () => Promise.resolve(DS.SuccessSymbol),
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
 					isAsynchronous: () => true,
 				},
 			),
 		);
 
-		const structure = DS.TypeStructure(AsyncType(), []);
+		const structure = DDataStructure.TypeStructure(AsyncType(), []);
 
 		expect(structure.check("value")).toStrictEqual(
 			DEither.left("async-error", undefined),
@@ -72,10 +71,10 @@ describe("TypeStructure", () => {
 	});
 
 	it("encodes values with the matching codec", async() => {
-		const structure = DS.TypeStructure(DS.StringType(), []);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -88,13 +87,13 @@ describe("TypeStructure", () => {
 			typeof success,
 			| DEither.Right<"encode-success", number>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncSuccess = ExpectType<
 			typeof asyncSuccess,
 			| DEither.Right<"encode-success", number>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -112,10 +111,10 @@ describe("TypeStructure", () => {
 	});
 
 	it("returns async encode errors for asynchronous encoders in synchronous APIs", async() => {
-		const structure = DS.TypeStructure(DS.StringType(), []);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => Promise.resolve(data.length),
 			(data) => `value-${data}`,
 		);
@@ -129,12 +128,12 @@ describe("TypeStructure", () => {
 	});
 
 	it("returns encode errors from matching codecs", async() => {
-		const structure = DS.TypeStructure(DS.StringType(), []);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(_data, errorHandler) => (
-				errorHandler?.().addIssue(DS.TheString, "encoded-error") ?? DS.ErrorSymbol
+				errorHandler?.().addIssue(DDataStructure.TheString, "encoded-error") ?? DDataStructure.ErrorSymbol
 			),
 			(data) => `value-${data}`,
 		);
@@ -159,10 +158,10 @@ describe("TypeStructure", () => {
 	});
 
 	it("decodes values with the matching codec", async() => {
-		const structure = DS.TypeStructure(DS.StringType(), []);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -175,13 +174,13 @@ describe("TypeStructure", () => {
 			typeof success,
 			| DEither.Right<"decode-success", string>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncSuccess = ExpectType<
 			typeof asyncSuccess,
 			| DEither.Right<"decode-success", string>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -201,10 +200,10 @@ describe("TypeStructure", () => {
 	});
 
 	it("returns async decode errors for asynchronous decoders in synchronous APIs", async() => {
-		const structure = DS.TypeStructure(DS.StringType(), []);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => Promise.resolve(`value-${data}`),
 		);
@@ -218,13 +217,13 @@ describe("TypeStructure", () => {
 	});
 
 	it("returns decode errors from matching codecs", async() => {
-		const structure = DS.TypeStructure(DS.StringType(), []);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(_data, errorHandler) => (
-				errorHandler?.().addIssue(DS.TheString, "decoded-error") ?? DS.ErrorSymbol
+				errorHandler?.().addIssue(DDataStructure.TheString, "decoded-error") ?? DDataStructure.ErrorSymbol
 			),
 		);
 		const failure = structure.decode({ codec }, 4);

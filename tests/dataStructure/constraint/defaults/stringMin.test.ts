@@ -1,17 +1,16 @@
-import { describe, expect, it } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("StringMinConstraint", () => {
 	it("creates a synchronous string minimum constraint", () => {
-		const constraint = DS.StringMinConstraint(3);
+		const constraint = DDataStructure.StringMinConstraint(3);
 
 		type _CheckConstraint = ExpectType<
 			typeof constraint,
-			DS.StringMinConstraint<3>,
+			DDataStructure.StringMinConstraint<3>,
 			"strict"
 		>;
 		type _CheckConstraintValue = ExpectType<
-			DS.ConstraintValue<typeof constraint>,
+			DDataStructure.ConstraintValue<typeof constraint>,
 			string,
 			"strict"
 		>;
@@ -21,23 +20,23 @@ describe("StringMinConstraint", () => {
 	});
 
 	it("accepts strings with at least the minimum length", () => {
-		const constraint = DS.StringMinConstraint(3);
+		const constraint = DDataStructure.StringMinConstraint(3);
 
-		expect(constraint.executeCheck("abc")).toBe(DS.SuccessSymbol);
-		expect(constraint.executeCheck("abcd")).toBe(DS.SuccessSymbol);
+		expect(constraint.executeCheck("abc")).toBe(DDataStructure.SuccessSymbol);
+		expect(constraint.executeCheck("abcd")).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects shorter strings without an error handler", () => {
-		const constraint = DS.StringMinConstraint(3);
+		const constraint = DDataStructure.StringMinConstraint(3);
 
-		expect(constraint.executeCheck("ab")).toBe(DS.ErrorSymbol);
+		expect(constraint.executeCheck("ab")).toBe(DDataStructure.ErrorSymbol);
 	});
 
 	it("adds itself to the error handler when a shorter string is rejected", () => {
-		const constraint = DS.StringMinConstraint(3);
-		const errorHandler = DS.createGetErrorHandler();
+		const constraint = DDataStructure.StringMinConstraint(3);
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(constraint.executeCheck("", errorHandler)).toBe(DS.ErrorSymbol);
+		expect(constraint.executeCheck("", errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
 		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
 	});

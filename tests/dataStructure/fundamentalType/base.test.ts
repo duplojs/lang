@@ -1,5 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("createFundamentalType", () => {
 	it("creates a discriminable fundamental type that delegates checks with itself", () => {
@@ -8,18 +7,18 @@ describe("createFundamentalType", () => {
 			(
 				self: TestFundamentalType,
 				data: unknown,
-				errorHandler?: DS.GetErrorHandler,
+				errorHandler?: DDataStructure.GetErrorHandler,
 			) => data === "valid"
-				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
+				? DDataStructure.SuccessSymbol
+				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
 		);
 
-		interface TestFundamentalType extends DS.FundamentalType<
+		interface TestFundamentalType extends DDataStructure.FundamentalType<
 			typeof symbol,
 			string
 		> {}
 
-		const fundamentalType = DS.createFundamentalType<TestFundamentalType>(
+		const fundamentalType = DDataStructure.createFundamentalType<TestFundamentalType>(
 			symbol,
 			executeCheck,
 		);
@@ -30,14 +29,14 @@ describe("createFundamentalType", () => {
 			"strict"
 		>;
 		type _CheckFundamentalValue = ExpectType<
-			DS.FundamentalTypeValue<typeof fundamentalType>,
+			DDataStructure.FundamentalTypeValue<typeof fundamentalType>,
 			string,
 			"strict"
 		>;
 
 		expect(fundamentalType.symbol).toBe(symbol);
-		expect(fundamentalType.executeCheck("valid")).toBe(DS.SuccessSymbol);
-		expect(fundamentalType.executeCheck("invalid")).toBe(DS.ErrorSymbol);
+		expect(fundamentalType.executeCheck("valid")).toBe(DDataStructure.SuccessSymbol);
+		expect(fundamentalType.executeCheck("invalid")).toBe(DDataStructure.ErrorSymbol);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			1,
 			fundamentalType,
@@ -54,32 +53,32 @@ describe("createFundamentalType", () => {
 
 	it("forwards the error handler and preserves asynchronous checks", async() => {
 		const symbol = Symbol("test-async-fundamental-type");
-		const errorHandler = DS.createGetErrorHandler();
+		const errorHandler = DDataStructure.createGetErrorHandler();
 		const executeCheck = vi.fn(
 			(
 				self: TestFundamentalType,
 				data: unknown,
-				errorHandler?: DS.GetErrorHandler,
+				errorHandler?: DDataStructure.GetErrorHandler,
 			) => Promise.resolve(
 				data === "valid"
-					? DS.SuccessSymbol
-					: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
+					? DDataStructure.SuccessSymbol
+					: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
 			),
 		);
 
-		interface TestFundamentalType extends DS.FundamentalType<
+		interface TestFundamentalType extends DDataStructure.FundamentalType<
 			typeof symbol,
 			string
 		> {}
 
-		const fundamentalType = DS.createFundamentalType<TestFundamentalType>(
+		const fundamentalType = DDataStructure.createFundamentalType<TestFundamentalType>(
 			symbol,
 			executeCheck,
 		);
 
 		await expect(
 			fundamentalType.executeCheck("invalid", errorHandler),
-		).resolves.toBe(DS.ErrorSymbol);
+		).resolves.toBe(DDataStructure.ErrorSymbol);
 		expect(executeCheck).toHaveBeenCalledWith(
 			fundamentalType,
 			"invalid",

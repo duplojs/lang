@@ -1,38 +1,37 @@
-import { describe, expect, it } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("TheUndefined", () => {
 	it("accepts undefined values", () => {
-		const result = DS.TheUndefined.executeCheck(undefined);
+		const result = DDataStructure.TheUndefined.executeCheck(undefined);
 
 		type _CheckFundamentalType = ExpectType<
-			typeof DS.TheUndefined,
-			DS.TheUndefined,
+			typeof DDataStructure.TheUndefined,
+			DDataStructure.TheUndefined,
 			"strict"
 		>;
 		type _CheckFundamentalValue = ExpectType<
-			DS.FundamentalTypeValue<typeof DS.TheUndefined>,
+			DDataStructure.FundamentalTypeValue<typeof DDataStructure.TheUndefined>,
 			undefined,
 			"strict"
 		>;
 
-		expect(result).toBe(DS.SuccessSymbol);
-		expect(typeof DS.TheUndefined.symbol).toBe("symbol");
+		expect(result).toBe(DDataStructure.SuccessSymbol);
+		expect(typeof DDataStructure.TheUndefined.symbol).toBe("symbol");
 	});
 
 	it("rejects non-undefined values without an error handler", () => {
-		expect(DS.TheUndefined.executeCheck(null)).toBe(DS.ErrorSymbol);
+		expect(DDataStructure.TheUndefined.executeCheck(null)).toBe(DDataStructure.ErrorSymbol);
 	});
 
 	it("adds itself to the error handler when a non-undefined value is rejected", () => {
-		const errorHandler = DS.createGetErrorHandler();
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(DS.TheUndefined.executeCheck("undefined", errorHandler)).toBe(
-			DS.ErrorSymbol,
+		expect(DDataStructure.TheUndefined.executeCheck("undefined", errorHandler)).toBe(
+			DDataStructure.ErrorSymbol,
 		);
 		expect(errorHandler().createError().issues).toHaveLength(1);
 		expect(errorHandler().createError().issues[0]?.getSource()).toBe(
-			DS.TheUndefined,
+			DDataStructure.TheUndefined,
 		);
 	});
 });

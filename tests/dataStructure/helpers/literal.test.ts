@@ -1,23 +1,23 @@
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("literal", () => {
 	it("creates a string literal type structure", () => {
-		const structure = DS.literal("admin");
+		const structure = DDataStructure.literal("admin");
 		const success = structure.check("admin");
 		const failure = structure.check("member");
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<"admin", readonly []>,
+			DDataStructure.TypeStructure<"admin", readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			"admin",
 			"strict"
 		>;
 
-		expect(structure.definition.type.fundamentalType).toBe(DS.TheString);
+		expect(structure.definition.type.fundamentalType).toBe(DDataStructure.TheString);
 		expect(structure.definition.type.definition).toStrictEqual({ value: "admin" });
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(success).toStrictEqual(DEither.right("check-success", "admin"));
@@ -30,34 +30,34 @@ describe("literal", () => {
 	});
 
 	it("creates number bigint boolean undefined and null literal structures", () => {
-		const numberStructure = DS.literal(12);
-		const bigintStructure = DS.literal(12n);
-		const booleanStructure = DS.literal(true);
-		const undefinedStructure = DS.literal(undefined);
-		const nullStructure = DS.literal(null);
+		const numberStructure = DDataStructure.literal(12);
+		const bigintStructure = DDataStructure.literal(12n);
+		const booleanStructure = DDataStructure.literal(true);
+		const undefinedStructure = DDataStructure.literal(undefined);
+		const nullStructure = DDataStructure.literal(null);
 
 		type _CheckNumberValue = ExpectType<
-			DS.StructureValue<typeof numberStructure>,
+			DDataStructure.StructureValue<typeof numberStructure>,
 			12,
 			"strict"
 		>;
 		type _CheckBigintValue = ExpectType<
-			DS.StructureValue<typeof bigintStructure>,
+			DDataStructure.StructureValue<typeof bigintStructure>,
 			12n,
 			"strict"
 		>;
 		type _CheckBooleanValue = ExpectType<
-			DS.StructureValue<typeof booleanStructure>,
+			DDataStructure.StructureValue<typeof booleanStructure>,
 			true,
 			"strict"
 		>;
 		type _CheckUndefinedValue = ExpectType<
-			DS.StructureValue<typeof undefinedStructure>,
+			DDataStructure.StructureValue<typeof undefinedStructure>,
 			undefined,
 			"strict"
 		>;
 		type _CheckNullValue = ExpectType<
-			DS.StructureValue<typeof nullStructure>,
+			DDataStructure.StructureValue<typeof nullStructure>,
 			null,
 			"strict"
 		>;
@@ -83,15 +83,15 @@ describe("literal", () => {
 	});
 
 	it("creates a union structure from literal values", () => {
-		const structure = DS.literal(["draft", "published", true]);
+		const structure = DDataStructure.literal(["draft", "published", true]);
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.UnionStructure<"draft" | "published" | true, readonly []>,
+			DDataStructure.UnionStructure<"draft" | "published" | true, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			"draft" | "published" | true,
 			"strict"
 		>;
@@ -107,12 +107,12 @@ describe("literal", () => {
 	});
 
 	it("can model literal values inside object and array helpers", () => {
-		const structure = DS.object({
-			kind: DS.literal("user"),
-			statuses: DS.array(DS.literal(["active", "disabled"])),
-			metadata: DS.object({
-				version: DS.literal(1),
-				verified: DS.literal(true),
+		const structure = DDataStructure.object({
+			kind: DDataStructure.literal("user"),
+			statuses: DDataStructure.array(DDataStructure.literal(["active", "disabled"])),
+			metadata: DDataStructure.object({
+				version: DDataStructure.literal(1),
+				verified: DDataStructure.literal(true),
 			}),
 		});
 		const input = {
@@ -133,7 +133,7 @@ describe("literal", () => {
 		} as const;
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly kind: "user";
 				readonly statuses: readonly ("active" | "disabled")[];

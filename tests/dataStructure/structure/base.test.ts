@@ -1,26 +1,25 @@
-import { describe, expect, it, vi } from "vitest";
-import { DS, type DCommon, type DKind, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, type DCommon, type DKind, DEither, type ExpectType } from "@scripts";
 
 describe("createStructure", () => {
 	it("creates a structure that checks its implementation before its constraints", () => {
-		const testStructureKind = DS.createKind("test-structure");
+		const testStructureKind = DDataStructure.createKind("test-structure");
 
-		const testConstraintKind = DS.createKind("test-passing-constraint");
+		const testConstraintKind = DDataStructure.createKind("test-passing-constraint");
 		const constraintExecuteCheck = vi.fn(
-			(): DS.SuccessSymbol => DS.SuccessSymbol,
+			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const structureExecuteCheck = vi.fn(
 			(_self: TestStructure, data: unknown) => typeof data === "string"
-				? DS.SuccessSymbol
-				: DS.ErrorSymbol,
+				? DDataStructure.SuccessSymbol
+				: DDataStructure.ErrorSymbol,
 		);
 
 		interface StringConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<string>
+			& DDataStructure.Constraint<string>
 			& DKind.Kind<typeof testConstraintKind>
 		> {}
 
-		const TestConstraint = DS.createConstraint(
+		const TestConstraint = DDataStructure.createConstraint(
 			testConstraintKind,
 			({ init }) => () => init<StringConstraint>(
 				{},
@@ -34,14 +33,14 @@ describe("createStructure", () => {
 		const passingConstraint = TestConstraint();
 
 		interface TestStructure extends DCommon.UnionToIntersection<
-			& DS.Structure<
+			& DDataStructure.Structure<
 				string,
-				DS.StructureDefinition<readonly [StringConstraint]>
+				DDataStructure.StructureDefinition<readonly [StringConstraint]>
 			>
 			& DKind.Kind<typeof testStructureKind>
 		> {}
 
-		const TestStructure = DS.createStructure(
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init<TestStructure>(
 				{ constraints: [passingConstraint] },
@@ -62,12 +61,12 @@ describe("createStructure", () => {
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			string,
 			"strict"
 		>;
 
-		expect(structure.executeCheck("value")).toBe(DS.SuccessSymbol);
+		expect(structure.executeCheck("value")).toBe(DDataStructure.SuccessSymbol);
 		expect(structureExecuteCheck).toHaveBeenCalledWith(
 			structure,
 			"value",
@@ -84,24 +83,24 @@ describe("createStructure", () => {
 
 		structureExecuteCheck.mockClear();
 		constraintExecuteCheck.mockClear();
-		expect(structure.executeCheck(123)).toBe(DS.ErrorSymbol);
+		expect(structure.executeCheck(123)).toBe(DDataStructure.ErrorSymbol);
 		expect(structureExecuteCheck).toHaveBeenCalledOnce();
 		expect(constraintExecuteCheck).not.toHaveBeenCalled();
 	});
 
 	it("adds constraints immutably and stops after the first failing constraint", () => {
-		const testStructureKind = DS.createKind("test-structure-add-constraint");
+		const testStructureKind = DDataStructure.createKind("test-structure-add-constraint");
 
-		const testConstraintKind = DS.createKind("test-named-constraint");
+		const testConstraintKind = DDataStructure.createKind("test-named-constraint");
 		const executeCheck = vi.fn((self: TestConstraint) => self.definition.result);
 
-		interface TestConstraintDefinition extends DS.ConstraintDefinition {
+		interface TestConstraintDefinition extends DDataStructure.ConstraintDefinition {
 			readonly name: string;
-			readonly result: DS.SuccessSymbol | DS.ErrorSymbol;
+			readonly result: DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol;
 		}
 
 		interface TestConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<
+			& DDataStructure.Constraint<
 				string,
 				string,
 				TestConstraintDefinition
@@ -111,11 +110,11 @@ describe("createStructure", () => {
 			readonly name: string;
 		}
 
-		const TestConstraint = DS.createConstraint(
+		const TestConstraint = DDataStructure.createConstraint(
 			testConstraintKind,
 			({ init }) => (
 				name: string,
-				result: DS.SuccessSymbol | DS.ErrorSymbol,
+				result: DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol,
 			) => init<TestConstraint>(
 				{
 					name,
@@ -128,16 +127,16 @@ describe("createStructure", () => {
 			),
 		);
 
-		const passingConstraint = TestConstraint("passing", DS.SuccessSymbol);
-		const failingConstraint = TestConstraint("failing", DS.ErrorSymbol);
-		const skippedConstraint = TestConstraint("skipped", DS.SuccessSymbol);
+		const passingConstraint = TestConstraint("passing", DDataStructure.SuccessSymbol);
+		const failingConstraint = TestConstraint("failing", DDataStructure.ErrorSymbol);
+		const skippedConstraint = TestConstraint("skipped", DDataStructure.SuccessSymbol);
 
-		const TestStructure = DS.createStructure(
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init(
 				{ constraints: [passingConstraint] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: () => false,
@@ -157,7 +156,7 @@ describe("createStructure", () => {
 			failingConstraint,
 			skippedConstraint,
 		]);
-		expect(constrainedStructure.executeConstraints("value")).toBe(DS.ErrorSymbol);
+		expect(constrainedStructure.executeConstraints("value")).toBe(DDataStructure.ErrorSymbol);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			1,
 			passingConstraint,
@@ -178,34 +177,34 @@ describe("createStructure", () => {
 	});
 
 	it("caches asynchronous detection after checking constraints and structure implementation", () => {
-		const testStructureKind = DS.createKind("test-structure-async-cache");
+		const testStructureKind = DDataStructure.createKind("test-structure-async-cache");
 		const constraintIsAsynchronous = vi.fn(() => false);
 		const structureIsAsynchronous = vi.fn(() => true);
 
-		const testConstraintKind = DS.createKind("test-sync-constraint");
-		const SyncConstraint = DS.createConstraint(
+		const testConstraintKind = DDataStructure.createKind("test-sync-constraint");
+		const SyncConstraint = DDataStructure.createConstraint(
 			testConstraintKind,
 			({ init }) => () => init<
 				DCommon.UnionToIntersection<
-					& DS.Constraint<string>
+					& DDataStructure.Constraint<string>
 					& DKind.Kind<typeof testConstraintKind>
 				>
 			>(
 				{},
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					isAsynchronous: constraintIsAsynchronous,
 				},
 			),
 		);
 		const syncConstraint = SyncConstraint();
 
-		const TestStructure = DS.createStructure(
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init(
 				{ constraints: [syncConstraint] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: structureIsAsynchronous,
@@ -222,30 +221,30 @@ describe("createStructure", () => {
 	});
 
 	it("detects asynchronous structures from constraints before checking the implementation", () => {
-		const testStructureKind = DS.createKind("test-constraint-async-structure");
-		const testConstraintKind = DS.createKind("test-async-constraint");
+		const testStructureKind = DDataStructure.createKind("test-constraint-async-structure");
+		const testConstraintKind = DDataStructure.createKind("test-async-constraint");
 		const structureIsAsynchronous = vi.fn(() => false);
 
-		const AsyncConstraint = DS.createConstraint(
+		const AsyncConstraint = DDataStructure.createConstraint(
 			testConstraintKind,
 			({ init }) => () => init<
-				& DS.Constraint<string>
+				& DDataStructure.Constraint<string>
 				& DKind.Kind<typeof testConstraintKind>
 			>(
 				{},
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					isAsynchronous: () => true,
 				},
 			),
 		);
 
-		const TestStructure = DS.createStructure(
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init(
 				{ constraints: [AsyncConstraint()] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: structureIsAsynchronous,
@@ -258,25 +257,25 @@ describe("createStructure", () => {
 	});
 
 	it("preserves asynchronous constraint execution order", async() => {
-		const testStructureKind = DS.createKind("test-async-constraint-chain");
-		const testConstraintKind = DS.createKind("test-async-chain-constraint");
+		const testStructureKind = DDataStructure.createKind("test-async-constraint-chain");
+		const testConstraintKind = DDataStructure.createKind("test-async-chain-constraint");
 		const executeCheck = vi.fn(
 			(self: TestConstraint) => Promise.resolve(self.definition.result),
 		);
 
-		interface TestConstraintDefinition extends DS.ConstraintDefinition {
-			readonly result: DS.SuccessSymbol | DS.ErrorSymbol;
+		interface TestConstraintDefinition extends DDataStructure.ConstraintDefinition {
+			readonly result: DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol;
 		}
 
 		interface TestConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<string, string, TestConstraintDefinition>
+			& DDataStructure.Constraint<string, string, TestConstraintDefinition>
 			& DKind.Kind<typeof testConstraintKind>
 		> {}
 
-		const TestConstraint = DS.createConstraint(
+		const TestConstraint = DDataStructure.createConstraint(
 			testConstraintKind,
 			({ init }) => (
-				result: DS.SuccessSymbol | DS.ErrorSymbol,
+				result: DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol,
 			) => init<TestConstraint>(
 				{ result },
 				{
@@ -286,10 +285,10 @@ describe("createStructure", () => {
 			),
 		);
 
-		const passingConstraint = TestConstraint(DS.SuccessSymbol);
-		const failingConstraint = TestConstraint(DS.ErrorSymbol);
-		const skippedConstraint = TestConstraint(DS.SuccessSymbol);
-		const TestStructure = DS.createStructure(
+		const passingConstraint = TestConstraint(DDataStructure.SuccessSymbol);
+		const failingConstraint = TestConstraint(DDataStructure.ErrorSymbol);
+		const skippedConstraint = TestConstraint(DDataStructure.SuccessSymbol);
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init(
 				{
@@ -300,7 +299,7 @@ describe("createStructure", () => {
 					],
 				},
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: () => true,
@@ -311,7 +310,7 @@ describe("createStructure", () => {
 		const structure = TestStructure();
 
 		await expect(structure.executeConstraints("value")).resolves.toBe(
-			DS.ErrorSymbol,
+			DDataStructure.ErrorSymbol,
 		);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			1,
@@ -333,42 +332,42 @@ describe("createStructure", () => {
 	});
 
 	it("returns check results for synchronous, asynchronous and predicate usages", async() => {
-		const syncStructureKind = DS.createKind("test-sync-check-structure");
-		const asyncStructureKind = DS.createKind("test-async-check-structure");
+		const syncStructureKind = DDataStructure.createKind("test-sync-check-structure");
+		const asyncStructureKind = DDataStructure.createKind("test-async-check-structure");
 
-		const SyncStructure = DS.createStructure(
+		const SyncStructure = DDataStructure.createStructure(
 			syncStructureKind,
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
 					executeCheck: (_self, data, errorHandler) => typeof data === "string"
-						? DS.SuccessSymbol
-						: errorHandler?.().addIssue(_self, data) ?? DS.ErrorSymbol,
+						? DDataStructure.SuccessSymbol
+						: errorHandler?.().addIssue(_self, data) ?? DDataStructure.ErrorSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: () => false,
 				},
 			),
 		);
-		const AsyncStructure = DS.createStructure(
+		const AsyncStructure = DDataStructure.createStructure(
 			asyncStructureKind,
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
-					executeCheck: () => Promise.resolve(DS.SuccessSymbol),
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: () => true,
 				},
 			),
 		);
-		const AsyncErrorStructure = DS.createStructure(
-			DS.createKind("test-async-check-error-structure"),
+		const AsyncErrorStructure = DDataStructure.createStructure(
+			DDataStructure.createKind("test-async-check-error-structure"),
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
 					executeCheck: (self, data, errorHandler) => Promise.resolve(
-						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
+						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
 					),
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => data,
@@ -405,27 +404,27 @@ describe("createStructure", () => {
 	});
 
 	it("wraps synchronous and asynchronous encode results", async() => {
-		const testStructureKind = DS.createKind("test-encode-structure");
-		const fundamentalType = DS.createFundamentalType<
-			DS.FundamentalType<symbol, string>
+		const testStructureKind = DDataStructure.createKind("test-encode-structure");
+		const fundamentalType = DDataStructure.createFundamentalType<
+			DDataStructure.FundamentalType<symbol, string>
 		>(
 			Symbol("encode-string"),
-			() => DS.SuccessSymbol,
+			() => DDataStructure.SuccessSymbol,
 		);
-		const encodedStructure = DS.TypeStructure(DS.StringType(), []);
-		const codec = DS.createCodec(
+		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const codec = DDataStructure.createCodec(
 			fundamentalType,
 			encodedStructure,
 			(data) => data.toUpperCase(),
 			(data) => String(data),
 		);
 
-		const TestStructure = DS.createStructure(
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (_self, codecContext, data) => {
 						const selectedCodec = codecContext.get(fundamentalType);
 						return selectedCodec?.encode(data as never) ?? data;
@@ -435,12 +434,12 @@ describe("createStructure", () => {
 				},
 			),
 		);
-		const AsyncEncodeStructure = DS.createStructure(
-			DS.createKind("test-async-encode-structure"),
+		const AsyncEncodeStructure = DDataStructure.createStructure(
+			DDataStructure.createKind("test-async-encode-structure"),
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: () => Promise.resolve("encoded"),
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: () => true,
@@ -467,16 +466,16 @@ describe("createStructure", () => {
 	});
 
 	it("wraps encode errors with collected issues", async() => {
-		const testStructureKind = DS.createKind("test-encode-error-structure");
+		const testStructureKind = DDataStructure.createKind("test-encode-error-structure");
 
-		const TestStructure = DS.createStructure(
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (self, _codecContext, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
+						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
 					),
 					executeDecode: (_self, _codecContext, data) => data,
 					isAsynchronous: () => false,
@@ -507,39 +506,39 @@ describe("createStructure", () => {
 	});
 
 	it("wraps synchronous and asynchronous decode results", async() => {
-		const testStructureKind = DS.createKind("test-decode-structure");
-		const fundamentalType = DS.createFundamentalType<
-			DS.FundamentalType<symbol, string>
+		const testStructureKind = DDataStructure.createKind("test-decode-structure");
+		const fundamentalType = DDataStructure.createFundamentalType<
+			DDataStructure.FundamentalType<symbol, string>
 		>(
 			Symbol("decode-string"),
-			() => DS.SuccessSymbol,
+			() => DDataStructure.SuccessSymbol,
 		);
-		const encodedStructure = DS.TypeStructure(DS.StringType(), []);
-		const codec = DS.createCodec(
+		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const codec = DDataStructure.createCodec(
 			fundamentalType,
 			encodedStructure,
 			(data) => data,
 			(data) => data,
 		);
 
-		const TestStructure = DS.createStructure(
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (_self, _codecContext, data) => String(data),
 					isAsynchronous: () => false,
 				},
 			),
 		);
-		const AsyncDecodeStructure = DS.createStructure(
-			DS.createKind("test-async-decode-structure"),
+		const AsyncDecodeStructure = DDataStructure.createStructure(
+			DDataStructure.createKind("test-async-decode-structure"),
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: () => Promise.resolve("decoded"),
 					isAsynchronous: () => true,
@@ -564,17 +563,17 @@ describe("createStructure", () => {
 	});
 
 	it("wraps decode errors with collected issues", async() => {
-		const testStructureKind = DS.createKind("test-decode-error-structure");
+		const testStructureKind = DDataStructure.createKind("test-decode-error-structure");
 
-		const TestStructure = DS.createStructure(
+		const TestStructure = DDataStructure.createStructure(
 			testStructureKind,
 			({ init }) => () => init(
 				{ constraints: [] },
 				{
-					executeCheck: () => DS.SuccessSymbol,
+					executeCheck: () => DDataStructure.SuccessSymbol,
 					executeEncode: (_self, _codecContext, data) => data,
 					executeDecode: (self, _codecContext, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
+						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
 					),
 					isAsynchronous: () => false,
 				},

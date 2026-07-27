@@ -1,24 +1,23 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("number", () => {
 	it("creates a number type structure", () => {
-		const structure = DS.number();
+		const structure = DDataStructure.number();
 		const success = structure.check(12);
 		const failure = structure.check("12");
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<number, readonly []>,
+			DDataStructure.TypeStructure<number, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			number,
 			"strict"
 		>;
 
-		expect(structure.definition.type.fundamentalType).toBe(DS.TheNumber);
+		expect(structure.definition.type.fundamentalType).toBe(DDataStructure.TheNumber);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(success).toStrictEqual(DEither.right("check-success", 12));
 		expect(
@@ -30,9 +29,9 @@ describe("number", () => {
 	});
 
 	it("can be used inside nested object helpers", () => {
-		const structure = DS.object({
-			user: DS.object({
-				age: DS.number(),
+		const structure = DDataStructure.object({
+			user: DDataStructure.object({
+				age: DDataStructure.number(),
 			}),
 		});
 		const input = {
@@ -42,7 +41,7 @@ describe("number", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
 					readonly age: number;

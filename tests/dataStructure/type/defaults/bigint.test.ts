@@ -1,38 +1,37 @@
-import { describe, expect, it } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("BigintType", () => {
 	it("creates a synchronous bigint type", () => {
-		const type = DS.BigintType();
+		const type = DDataStructure.BigintType();
 
 		type _CheckType = ExpectType<
 			typeof type,
-			DS.BigintType,
+			DDataStructure.BigintType,
 			"strict"
 		>;
 		type _CheckTypeValue = ExpectType<
-			DS.TypeValue<typeof type>,
+			DDataStructure.TypeValue<typeof type>,
 			bigint,
 			"strict"
 		>;
 
-		expect(type.fundamentalType).toBe(DS.TheBigint);
+		expect(type.fundamentalType).toBe(DDataStructure.TheBigint);
 		expect(type.definition).toEqual({});
 		expect(type.isAsynchronous()).toBe(false);
 	});
 
 	it("accepts bigint values", () => {
-		const type = DS.BigintType();
+		const type = DDataStructure.BigintType();
 
-		expect(type.executeCheck(12n)).toBe(DS.SuccessSymbol);
+		expect(type.executeCheck(12n)).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects non-bigint values through its fundamental type", () => {
-		const type = DS.BigintType();
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.BigintType();
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck(12, errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck(12, errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DS.TheBigint);
+		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheBigint);
 	});
 });

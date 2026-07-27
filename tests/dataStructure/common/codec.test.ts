@@ -1,11 +1,10 @@
-import { describe, expect, it } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("codec", () => {
 	it("creates a codec kind with its fundamental type and encoded structure", () => {
-		const encodedStructure = DS.TypeStructure(DS.NumberType(), []);
-		const codec = DS.createCodec(
-			DS.TheString,
+		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.NumberType(), []);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
 			encodedStructure,
 			(data) => data.length,
 			(data) => `value-${data}`,
@@ -13,19 +12,19 @@ describe("codec", () => {
 
 		type _CheckCodec = ExpectType<
 			typeof codec,
-			DS.Codec<typeof DS.TheString, typeof encodedStructure>,
+			DDataStructure.Codec<typeof DDataStructure.TheString, typeof encodedStructure>,
 			"strict"
 		>;
 
-		expect(DS.codecKind.has(codec)).toBe(true);
-		expect(codec.fundamentalType).toBe(DS.TheString);
+		expect(DDataStructure.codecKind.has(codec)).toBe(true);
+		expect(codec.fundamentalType).toBe(DDataStructure.TheString);
 		expect(codec.encodedStructure).toBe(encodedStructure);
 	});
 
 	it("encodes and validates encoded data", () => {
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -34,18 +33,18 @@ describe("codec", () => {
 	});
 
 	it("returns encode errors from the encoder", () => {
-		const getErrorHandler = DS.createGetErrorHandler();
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const getErrorHandler = DDataStructure.createGetErrorHandler();
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(_data, errorHandler) => {
-				errorHandler?.().addIssue(DS.TheString, "encode-error");
-				return DS.ErrorSymbol;
+				errorHandler?.().addIssue(DDataStructure.TheString, "encode-error");
+				return DDataStructure.ErrorSymbol;
 			},
 			(data) => `value-${data}`,
 		);
 
-		expect(codec.encode("abcd", getErrorHandler)).toBe(DS.ErrorSymbol);
+		expect(codec.encode("abcd", getErrorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(getErrorHandler().issues[0]).toMatchObject({
 			context: "encode",
 			data: "encode-error",
@@ -53,15 +52,15 @@ describe("codec", () => {
 	});
 
 	it("returns encode errors when encoded data does not match the encoded structure", () => {
-		const getErrorHandler = DS.createGetErrorHandler();
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const getErrorHandler = DDataStructure.createGetErrorHandler();
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			() => "invalid" as never,
 			(data) => `value-${data}`,
 		);
 
-		expect(codec.encode("abcd", getErrorHandler)).toBe(DS.ErrorSymbol);
+		expect(codec.encode("abcd", getErrorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(getErrorHandler().issues[0]).toMatchObject({
 			context: "encode",
 			data: "invalid",
@@ -69,9 +68,9 @@ describe("codec", () => {
 	});
 
 	it("decodes checked encoded data", () => {
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -80,15 +79,15 @@ describe("codec", () => {
 	});
 
 	it("returns decode errors when encoded data does not match the encoded structure", () => {
-		const getErrorHandler = DS.createGetErrorHandler();
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const getErrorHandler = DDataStructure.createGetErrorHandler();
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
 
-		expect(codec.decode("invalid" as never, getErrorHandler)).toBe(DS.ErrorSymbol);
+		expect(codec.decode("invalid" as never, getErrorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(getErrorHandler().issues[0]).toMatchObject({
 			context: "decode",
 			data: "invalid",
@@ -96,18 +95,18 @@ describe("codec", () => {
 	});
 
 	it("returns decode errors from the decoder", () => {
-		const getErrorHandler = DS.createGetErrorHandler();
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const getErrorHandler = DDataStructure.createGetErrorHandler();
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(_data, errorHandler) => {
-				errorHandler?.().addIssue(DS.TheString, "decode-error");
-				return DS.ErrorSymbol;
+				errorHandler?.().addIssue(DDataStructure.TheString, "decode-error");
+				return DDataStructure.ErrorSymbol;
 			},
 		);
 
-		expect(codec.decode(4, getErrorHandler)).toBe(DS.ErrorSymbol);
+		expect(codec.decode(4, getErrorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(getErrorHandler().issues[0]).toMatchObject({
 			context: "decode",
 			data: "decode-error",
@@ -115,9 +114,9 @@ describe("codec", () => {
 	});
 
 	it("supports asynchronous encoders and decoders", async() => {
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => Promise.resolve(data.length),
 			(data) => Promise.resolve(`value-${data}`),
 		);
@@ -127,20 +126,20 @@ describe("codec", () => {
 	});
 
 	it("infers encoded values for matching codecs and falls back otherwise", () => {
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
 
 		type _CheckEncodedValue = ExpectType<
-			DS.EncodedValue<string, typeof codec>,
+			DDataStructure.EncodedValue<string, typeof codec>,
 			number,
 			"strict"
 		>;
 		type _CheckFallbackValue = ExpectType<
-			DS.EncodedValue<boolean, typeof codec>,
+			DDataStructure.EncodedValue<boolean, typeof codec>,
 			boolean,
 			"strict"
 		>;

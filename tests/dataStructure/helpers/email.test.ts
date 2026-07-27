@@ -1,30 +1,29 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("email", () => {
 	it("creates an email constraint", () => {
-		const constraint = DS.email();
+		const constraint = DDataStructure.email();
 
 		type _CheckConstraint = ExpectType<
 			typeof constraint,
-			DS.EmailConstraint,
+			DDataStructure.EmailConstraint,
 			"strict"
 		>;
 		type _CheckConstraintValue = ExpectType<
-			DS.ConstraintValue<typeof constraint>,
+			DDataStructure.ConstraintValue<typeof constraint>,
 			`${string}@${string}.${string}`,
 			"strict"
 		>;
 
-		expect(constraint.definition).toEqual({ regex: DS.emailRegex });
-		expect(constraint.executeCheck("user@example.com")).toBe(DS.SuccessSymbol);
-		expect(constraint.executeCheck("user@example")).toBe(DS.ErrorSymbol);
+		expect(constraint.definition).toEqual({ regex: DDataStructure.emailRegex });
+		expect(constraint.executeCheck("user@example.com")).toBe(DDataStructure.SuccessSymbol);
+		expect(constraint.executeCheck("user@example")).toBe(DDataStructure.ErrorSymbol);
 	});
 
 	it("can constrain a string helper inside nested object helpers", () => {
-		const structure = DS.object({
-			user: DS.object({
-				email: DS.string([DS.email()]),
+		const structure = DDataStructure.object({
+			user: DDataStructure.object({
+				email: DDataStructure.string([DDataStructure.email()]),
 			}),
 		});
 		const input = {
@@ -39,7 +38,7 @@ describe("email", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
 					readonly email: `${string}@${string}.${string}`;

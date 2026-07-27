@@ -1,11 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
-import { DS, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
 
 describe("UnionStructure", () => {
 	it("checks values against the first matching structure and narrows with is", async() => {
-		const structure = DS.UnionStructure([
-			DS.TypeStructure(DS.StringType(), []),
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.UnionStructure([
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		], []);
 		const input: unknown = "value";
 		const success = structure.check(input);
@@ -13,7 +12,7 @@ describe("UnionStructure", () => {
 		const failure = structure.check(true);
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			string | number,
 			"strict"
 		>;
@@ -21,13 +20,13 @@ describe("UnionStructure", () => {
 			typeof success,
 			| DEither.Right<"check-success", string | number>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckNumberSuccess = ExpectType<
 			typeof numberSuccess,
 			| DEither.Right<"check-success", string | number>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -57,14 +56,14 @@ describe("UnionStructure", () => {
 	});
 
 	it("flattens nested union structures", () => {
-		const stringStructure = DS.TypeStructure(DS.StringType(), []);
-		const numberStructure = DS.TypeStructure(DS.NumberType(), []);
-		const bigintStructure = DS.TypeStructure(DS.BigintType(), []);
-		const nestedUnion = DS.UnionStructure([
+		const stringStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const numberStructure = DDataStructure.TypeStructure(DDataStructure.NumberType(), []);
+		const bigintStructure = DDataStructure.TypeStructure(DDataStructure.BigintType(), []);
+		const nestedUnion = DDataStructure.UnionStructure([
 			numberStructure,
 			bigintStructure,
 		], []);
-		const structure = DS.UnionStructure([
+		const structure = DDataStructure.UnionStructure([
 			stringStructure,
 			nestedUnion,
 		], []);
@@ -80,19 +79,19 @@ describe("UnionStructure", () => {
 	});
 
 	it("encodes and decodes values with the first matching branch", async() => {
-		const structure = DS.UnionStructure([
-			DS.TypeStructure(DS.StringType(), []),
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.UnionStructure([
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		], []);
-		const stringCodec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const stringCodec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
-		const numberCodec = DS.createCodec(
-			DS.TheNumber,
-			DS.TypeStructure(DS.StringType(), []),
+		const numberCodec = DDataStructure.createCodec(
+			DDataStructure.TheNumber,
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			(data) => `number-${data}`,
 			(data) => Number(data.slice(7)),
 		);
@@ -109,26 +108,26 @@ describe("UnionStructure", () => {
 			typeof encodedString,
 			| DEither.Right<"encode-success", string | number>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckEncodedNumber = ExpectType<
 			typeof encodedNumber,
 			| DEither.Right<"encode-success", string | number>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckDecodedString = ExpectType<
 			typeof decodedString,
 			| DEither.Right<"decode-success", string | number>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckDecodedNumber = ExpectType<
 			typeof decodedNumber,
 			| DEither.Right<"decode-success", string | number>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -145,9 +144,9 @@ describe("UnionStructure", () => {
 	});
 
 	it("imports branch errors when no structure matches during encode or decode", () => {
-		const structure = DS.UnionStructure([
-			DS.TypeStructure(DS.StringType(), []),
-			DS.ArrayStructure(DS.TypeStructure(DS.NumberType(), []), []),
+		const structure = DDataStructure.UnionStructure([
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.ArrayStructure(DDataStructure.TypeStructure(DDataStructure.NumberType(), []), []),
 		], []);
 		const encodeFailure = structure.encode({}, true as never);
 		const decodeFailure = structure.decode({}, ["value"] as never);
@@ -185,10 +184,10 @@ describe("UnionStructure", () => {
 	});
 
 	it("keeps union branch paths isolated inside parent structure paths", () => {
-		const structure = DS.ObjectStructure({
-			value: DS.UnionStructure([
-				DS.TypeStructure(DS.StringType(), []),
-				DS.ArrayStructure(DS.TypeStructure(DS.NumberType(), []), []),
+		const structure = DDataStructure.ObjectStructure({
+			value: DDataStructure.UnionStructure([
+				DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+				DDataStructure.ArrayStructure(DDataStructure.TypeStructure(DDataStructure.NumberType(), []), []),
 			], []),
 		}, []);
 		const failure = structure.check({ value: ["invalid"] });
@@ -208,12 +207,12 @@ describe("UnionStructure", () => {
 	});
 
 	it("does not leak a successful union branch path to sibling properties", () => {
-		const structure = DS.ObjectStructure({
-			first: DS.UnionStructure([
-				DS.TypeStructure(DS.StringType(), []),
-				DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.ObjectStructure({
+			first: DDataStructure.UnionStructure([
+				DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+				DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			], []),
-			second: DS.TypeStructure(DS.StringType(), []),
+			second: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 		}, []);
 		const failure = structure.check({
 			first: "value",
@@ -231,23 +230,23 @@ describe("UnionStructure", () => {
 	});
 
 	it("checks constraints against source data after encoding and decoded data after decoding", async() => {
-		const constraintKind = DS.createKind("test-public-union-constraint");
+		const constraintKind = DDataStructure.createKind("test-public-union-constraint");
 		const executeCheck = vi.fn(
 			(
 				self: UnionConstraint,
 				data: any,
-				errorHandler?: DS.GetErrorHandler,
+				errorHandler?: DDataStructure.GetErrorHandler,
 			) => typeof data === "string" && data.length === 0
-				? errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
-				: DS.SuccessSymbol,
+				? errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
+				: DDataStructure.SuccessSymbol,
 		);
 
 		interface UnionConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<number | string>
+			& DDataStructure.Constraint<number | string>
 			& DKind.Kind<typeof constraintKind>
 		> {}
 
-		const UnionConstraint = DS.createConstraint(
+		const UnionConstraint = DDataStructure.createConstraint(
 			constraintKind,
 			({ init }) => () => init<UnionConstraint>(
 				{},
@@ -258,24 +257,24 @@ describe("UnionStructure", () => {
 			),
 		);
 		const unionConstraint = UnionConstraint();
-		const stringStructure = DS.TypeStructure(DS.StringType(), []);
-		const numberStructure = DS.TypeStructure(DS.NumberType(), []);
-		const structure = DS.UnionStructure([
+		const stringStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const numberStructure = DDataStructure.TypeStructure(DDataStructure.NumberType(), []);
+		const structure = DDataStructure.UnionStructure([
 			stringStructure,
 			numberStructure,
 		], [unionConstraint]);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => String(data),
 		);
 		const encoded = structure.encode({ codec }, "Jane");
 		const decoded = await structure.asyncDecode({ codec }, 4 as never);
 		const encodeFailure = structure.encode({ codec }, "");
-		const emptyStringCodec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const emptyStringCodec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			() => "",
 		);
@@ -321,41 +320,41 @@ describe("UnionStructure", () => {
 	});
 
 	it("returns execution symbols without collecting issues when no error handler is provided", () => {
-		const structure = DS.UnionStructure([
-			DS.TypeStructure(DS.StringType(), []),
-			DS.ArrayStructure(DS.TypeStructure(DS.NumberType(), []), []),
+		const structure = DDataStructure.UnionStructure([
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.ArrayStructure(DDataStructure.TypeStructure(DDataStructure.NumberType(), []), []),
 		], []);
 
-		expect(structure.executeCheck(true)).toBe(DS.ErrorSymbol);
-		expect(structure.executeEncode(new Map(), true)).toBe(DS.ErrorSymbol);
-		expect(structure.executeDecode(new Map(), ["value"])).toBe(DS.ErrorSymbol);
+		expect(structure.executeCheck(true)).toBe(DDataStructure.ErrorSymbol);
+		expect(structure.executeEncode(new Map(), true)).toBe(DDataStructure.ErrorSymbol);
+		expect(structure.executeDecode(new Map(), ["value"])).toBe(DDataStructure.ErrorSymbol);
 	});
 
 	it("returns async errors for asynchronous branches in synchronous APIs", async() => {
-		const asyncStructureKind = DS.createKind("test-public-union-async-structure");
+		const asyncStructureKind = DDataStructure.createKind("test-public-union-async-structure");
 
 		interface AsyncStructure extends DCommon.UnionToIntersection<
-			& DS.Structure<string>
+			& DDataStructure.Structure<string>
 			& DKind.Kind<typeof asyncStructureKind>
 		> {}
 
-		const AsyncStructure = DS.createStructure(
+		const AsyncStructure = DDataStructure.createStructure(
 			asyncStructureKind,
 			({ init }) => () => init<AsyncStructure>(
 				{
 					constraints: [],
 				},
 				{
-					executeCheck: () => Promise.resolve(DS.SuccessSymbol),
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
 					executeEncode: (_self, _codec, data) => Promise.resolve(data),
 					executeDecode: (_self, _codec, data) => Promise.resolve(data),
 					isAsynchronous: () => true,
 				},
 			),
 		);
-		const structure = DS.UnionStructure([
+		const structure = DDataStructure.UnionStructure([
 			AsyncStructure(),
-			DS.TypeStructure(DS.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		], []);
 
 		expect(structure.check("value")).toStrictEqual(

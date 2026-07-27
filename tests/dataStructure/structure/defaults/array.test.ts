@@ -1,10 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
-import { DS, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
 
 describe("ArrayStructure", () => {
 	it("checks arrays with homogeneous elements and narrows with is", async() => {
-		const structure = DS.ArrayStructure(
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ArrayStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
 		const input: unknown = ["Jane", "John"];
@@ -12,7 +11,7 @@ describe("ArrayStructure", () => {
 		const asyncSuccess = await structure.asyncCheck(input);
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			readonly string[],
 			"strict"
 		>;
@@ -20,13 +19,13 @@ describe("ArrayStructure", () => {
 			typeof success,
 			| DEither.Right<"check-success", readonly string[]>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncSuccess = ExpectType<
 			typeof asyncSuccess,
 			| DEither.Right<"check-success", readonly string[]>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -43,8 +42,8 @@ describe("ArrayStructure", () => {
 	});
 
 	it("returns check errors for invalid arrays or invalid elements", async() => {
-		const structure = DS.ArrayStructure(
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ArrayStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
 		const invalidKind = structure.check(null);
@@ -81,13 +80,13 @@ describe("ArrayStructure", () => {
 	});
 
 	it("encodes and decodes homogeneous arrays with matching codecs", async() => {
-		const structure = DS.ArrayStructure(
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ArrayStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
@@ -116,26 +115,26 @@ describe("ArrayStructure", () => {
 			typeof encoded,
 			| DEither.Right<"encode-success", readonly number[]>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncEncoded = ExpectType<
 			typeof asyncEncoded,
 			| DEither.Right<"encode-success", readonly number[]>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckDecoded = ExpectType<
 			typeof decoded,
 			| DEither.Right<"decode-success", readonly string[]>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncDecoded = ExpectType<
 			typeof asyncDecoded,
 			| DEither.Right<"decode-success", readonly string[]>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckEncodedValue = ExpectType<
@@ -170,8 +169,8 @@ describe("ArrayStructure", () => {
 	});
 
 	it("returns encode and decode errors for invalid arrays or invalid elements", () => {
-		const structure = DS.ArrayStructure(
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ArrayStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
 		const invalidEncodeKind = structure.encode({}, null as never);
@@ -218,23 +217,23 @@ describe("ArrayStructure", () => {
 	});
 
 	it("checks constraints against source data after encoding and decoded data after decoding", async() => {
-		const constraintKind = DS.createKind("test-public-array-constraint");
+		const constraintKind = DDataStructure.createKind("test-public-array-constraint");
 		const executeCheck = vi.fn(
 			(
 				self: ArrayConstraint,
 				data: readonly string[],
-				errorHandler?: DS.GetErrorHandler,
+				errorHandler?: DDataStructure.GetErrorHandler,
 			) => data.length > 0
-				? DS.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol,
+				? DDataStructure.SuccessSymbol
+				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
 		);
 
 		interface ArrayConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<readonly string[]>
+			& DDataStructure.Constraint<readonly string[]>
 			& DKind.Kind<typeof constraintKind>
 		> {}
 
-		const ArrayConstraint = DS.createConstraint(
+		const ArrayConstraint = DDataStructure.createConstraint(
 			constraintKind,
 			({ init }) => () => init<ArrayConstraint>(
 				{},
@@ -245,13 +244,13 @@ describe("ArrayStructure", () => {
 			),
 		);
 		const arrayConstraint = ArrayConstraint();
-		const structure = DS.ArrayStructure(
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ArrayStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[arrayConstraint],
 		);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => String(data),
 		);
@@ -273,28 +272,28 @@ describe("ArrayStructure", () => {
 	});
 
 	it("returns encode and decode errors when array constraints fail", async() => {
-		const constraintKind = DS.createKind("test-public-array-failing-constraint");
+		const constraintKind = DDataStructure.createKind("test-public-array-failing-constraint");
 
 		interface FailingConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<readonly string[]>
+			& DDataStructure.Constraint<readonly string[]>
 			& DKind.Kind<typeof constraintKind>
 		> {}
 
-		const FailingConstraint = DS.createConstraint(
+		const FailingConstraint = DDataStructure.createConstraint(
 			constraintKind,
 			({ init }) => () => init<FailingConstraint>(
 				{},
 				{
 					executeCheck: (self, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
+						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
 					),
 					isAsynchronous: () => false,
 				},
 			),
 		);
 		const failingConstraint = FailingConstraint();
-		const structure = DS.ArrayStructure(
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ArrayStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[failingConstraint],
 		);
 		const encodeFailure = structure.encode({}, ["Jane"]);
@@ -315,34 +314,34 @@ describe("ArrayStructure", () => {
 	});
 
 	it("returns encode constraint errors after encoding elements", () => {
-		const constraintKind = DS.createKind("test-public-array-encode-after-constraint");
+		const constraintKind = DDataStructure.createKind("test-public-array-encode-after-constraint");
 		const encode = vi.fn((data: string) => data.length);
 
 		interface FailingConstraint extends DCommon.UnionToIntersection<
-			& DS.Constraint<readonly string[]>
+			& DDataStructure.Constraint<readonly string[]>
 			& DKind.Kind<typeof constraintKind>
 		> {}
 
-		const FailingConstraint = DS.createConstraint(
+		const FailingConstraint = DDataStructure.createConstraint(
 			constraintKind,
 			({ init }) => () => init<FailingConstraint>(
 				{},
 				{
 					executeCheck: (self, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DS.ErrorSymbol
+						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
 					),
 					isAsynchronous: () => false,
 				},
 			),
 		);
 		const failingConstraint = FailingConstraint();
-		const structure = DS.ArrayStructure(
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ArrayStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[failingConstraint],
 		);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			encode,
 			(data) => String(data),
 		);
@@ -358,13 +357,13 @@ describe("ArrayStructure", () => {
 	});
 
 	it("returns async errors for asynchronous homogeneous element codecs in synchronous APIs", async() => {
-		const structure = DS.ArrayStructure(
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.ArrayStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => Promise.resolve(data.length),
 			(data) => Promise.resolve(String(data)),
 		);

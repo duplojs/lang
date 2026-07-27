@@ -101,30 +101,45 @@ export interface EncodeStructure<
 
 }
 
+// Recursive types can be problematic here.
+// When recursive types are used to create constraints,
+// the encode/decode layer can break when it relies on
+// patterns like this:
+// V extends infer T ? T : never
+// This forces type rendering and can trigger recursion issues.
+// Some object manipulations and transformations can also cause problems.
+
+type GetEncodedStructureValue<
+	GenericValue extends object,
+> = GenericValue[keyof GenericValue];
+
+type TreatValue<
+	GenericEncodedStructure extends unknown,
+	GenericValue extends unknown,
+	GenericCodec extends Codec,
+> = DCommon.IsNever<GenericEncodedStructure> extends true
+	? DCommon.NeverCoalescing<
+		GenericCodec extends Codec<
+			infer InferredFundamentalType,
+			infer InferredEncodedStructure
+		>
+			? GenericValue extends FundamentalTypeValue<InferredFundamentalType>
+				? StructureValue<InferredEncodedStructure>
+				: never
+			: never,
+		GenericValue
+	>
+	: GenericEncodedStructure;
+
 export type EncodedValue<
 	GenericValue extends unknown,
 	GenericCodec extends Codec,
 > = GenericValue extends unknown
-	? (
-		EncodeStructure<
-			GenericValue,
-			GenericCodec
-		> extends infer InferredResult
-			? InferredResult[keyof InferredResult]
-			: never
-	) extends infer InferredResult
-		? DCommon.IsNever<InferredResult> extends true
-			? DCommon.NeverCoalescing<
-				GenericCodec extends Codec<
-					infer InferredFundamentalType,
-					infer InferredEncodedStructure
-				>
-					? GenericValue extends FundamentalTypeValue<InferredFundamentalType>
-						? StructureValue<InferredEncodedStructure>
-						: never
-					: never,
-				GenericValue
-			>
-			: InferredResult
-		: never
+	? TreatValue<
+		GetEncodedStructureValue<
+			EncodeStructure<GenericValue, GenericCodec>
+		>,
+		GenericValue,
+		GenericCodec
+	>
 	: never;

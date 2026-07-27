@@ -189,6 +189,14 @@ export interface Structure<
 		>
 		| DEither.Left<"decode-error", Error>
 	>;
+	contract<
+		GenericValue extends unknown,
+		GenericThis extends this,
+	>(
+		...args: DCommon.IsEqual<StructureValue<GenericThis>, GenericValue> extends true
+			? []
+			: [] & DCommon.ComputedTypeError<"Contract error.">
+	): Structure<GenericValue>;
 }
 
 export interface CreateStructureInitParams<
@@ -438,6 +446,7 @@ export function createStructure<
 
 				return DEither.right("decode-success", result as never);
 			},
+			contract: () => self as never,
 			[kindHandler.runTimeKey]: null,
 			[structureKind.runTimeKey]: null,
 		});

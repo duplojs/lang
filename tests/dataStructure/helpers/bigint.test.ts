@@ -1,23 +1,23 @@
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("bigint", () => {
 	it("creates a bigint type structure", () => {
-		const structure = DS.bigint();
+		const structure = DDataStructure.bigint();
 		const success = structure.check(12n);
 		const failure = structure.check(12);
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<bigint, readonly []>,
+			DDataStructure.TypeStructure<bigint, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			bigint,
 			"strict"
 		>;
 
-		expect(structure.definition.type.fundamentalType).toBe(DS.TheBigint);
+		expect(structure.definition.type.fundamentalType).toBe(DDataStructure.TheBigint);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(success).toStrictEqual(DEither.right("check-success", 12n));
 		expect(
@@ -29,9 +29,9 @@ describe("bigint", () => {
 	});
 
 	it("can be used inside nested object helpers", () => {
-		const structure = DS.object({
-			user: DS.object({
-				balance: DS.bigint(),
+		const structure = DDataStructure.object({
+			user: DDataStructure.object({
+				balance: DDataStructure.bigint(),
 			}),
 		});
 		const input = {
@@ -41,7 +41,7 @@ describe("bigint", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
 					readonly balance: bigint;

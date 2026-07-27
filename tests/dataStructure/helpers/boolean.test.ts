@@ -1,23 +1,23 @@
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("boolean", () => {
 	it("creates a boolean type structure", () => {
-		const structure = DS.boolean();
+		const structure = DDataStructure.boolean();
 		const success = structure.check(true);
 		const failure = structure.check("true");
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<boolean, readonly []>,
+			DDataStructure.TypeStructure<boolean, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			boolean,
 			"strict"
 		>;
 
-		expect(structure.definition.type.fundamentalType).toBe(DS.TheBoolean);
+		expect(structure.definition.type.fundamentalType).toBe(DDataStructure.TheBoolean);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(success).toStrictEqual(DEither.right("check-success", true));
 		expect(
@@ -29,10 +29,10 @@ describe("boolean", () => {
 	});
 
 	it("can be used inside nested object and array helpers", () => {
-		const structure = DS.object({
-			user: DS.object({
-				active: DS.boolean(),
-				flags: DS.array(DS.boolean()),
+		const structure = DDataStructure.object({
+			user: DDataStructure.object({
+				active: DDataStructure.boolean(),
+				flags: DDataStructure.array(DDataStructure.boolean()),
 			}),
 		});
 		const input = {
@@ -43,7 +43,7 @@ describe("boolean", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
 					readonly active: boolean;

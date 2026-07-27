@@ -1,46 +1,45 @@
-import { describe, expect, it } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("BigintLiteralType", () => {
 	it("creates a synchronous bigint literal type", () => {
-		const type = DS.BigintLiteralType(12n);
+		const type = DDataStructure.BigintLiteralType(12n);
 
 		type _CheckType = ExpectType<
 			typeof type,
-			DS.BigintLiteralType<12n>,
+			DDataStructure.BigintLiteralType<12n>,
 			"strict"
 		>;
 		type _CheckTypeValue = ExpectType<
-			DS.TypeValue<typeof type>,
+			DDataStructure.TypeValue<typeof type>,
 			12n,
 			"strict"
 		>;
 
-		expect(type.fundamentalType).toBe(DS.TheBigint);
+		expect(type.fundamentalType).toBe(DDataStructure.TheBigint);
 		expect(type.definition).toEqual({ value: 12n });
 		expect(type.isAsynchronous()).toBe(false);
 	});
 
 	it("accepts its literal value", () => {
-		const type = DS.BigintLiteralType(12n);
+		const type = DDataStructure.BigintLiteralType(12n);
 
-		expect(type.executeCheck(12n)).toBe(DS.SuccessSymbol);
+		expect(type.executeCheck(12n)).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects non-bigint values through its fundamental type", () => {
-		const type = DS.BigintLiteralType(12n);
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.BigintLiteralType(12n);
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck(12, errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck(12, errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DS.TheBigint);
+		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheBigint);
 	});
 
 	it("rejects another bigint value through its literal type", () => {
-		const type = DS.BigintLiteralType(12n);
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.BigintLiteralType(12n);
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck(24n, errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck(24n, errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
 		expect(errorHandler().createError().issues[0]?.getSource()).toBe(type);
 	});

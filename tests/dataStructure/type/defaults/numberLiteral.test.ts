@@ -1,46 +1,45 @@
-import { describe, expect, it } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("NumberLiteralType", () => {
 	it("creates a synchronous number literal type", () => {
-		const type = DS.NumberLiteralType(12);
+		const type = DDataStructure.NumberLiteralType(12);
 
 		type _CheckType = ExpectType<
 			typeof type,
-			DS.NumberLiteralType<12>,
+			DDataStructure.NumberLiteralType<12>,
 			"strict"
 		>;
 		type _CheckTypeValue = ExpectType<
-			DS.TypeValue<typeof type>,
+			DDataStructure.TypeValue<typeof type>,
 			12,
 			"strict"
 		>;
 
-		expect(type.fundamentalType).toBe(DS.TheNumber);
+		expect(type.fundamentalType).toBe(DDataStructure.TheNumber);
 		expect(type.definition).toEqual({ value: 12 });
 		expect(type.isAsynchronous()).toBe(false);
 	});
 
 	it("accepts its literal value", () => {
-		const type = DS.NumberLiteralType(12);
+		const type = DDataStructure.NumberLiteralType(12);
 
-		expect(type.executeCheck(12)).toBe(DS.SuccessSymbol);
+		expect(type.executeCheck(12)).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects non-number values through its fundamental type", () => {
-		const type = DS.NumberLiteralType(12);
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.NumberLiteralType(12);
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck("12", errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck("12", errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DS.TheNumber);
+		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheNumber);
 	});
 
 	it("rejects another number value through its literal type", () => {
-		const type = DS.NumberLiteralType(12);
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.NumberLiteralType(12);
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck(24, errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck(24, errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
 		expect(errorHandler().createError().issues[0]?.getSource()).toBe(type);
 	});

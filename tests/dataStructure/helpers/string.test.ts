@@ -1,24 +1,23 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("string", () => {
 	it("creates a string type structure", () => {
-		const structure = DS.string();
+		const structure = DDataStructure.string();
 		const success = structure.check("value");
 		const failure = structure.check(12);
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<string, readonly []>,
+			DDataStructure.TypeStructure<string, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			string,
 			"strict"
 		>;
 
-		expect(structure.definition.type.fundamentalType).toBe(DS.TheString);
+		expect(structure.definition.type.fundamentalType).toBe(DDataStructure.TheString);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(success).toStrictEqual(DEither.right("check-success", "value"));
 		expect(
@@ -30,10 +29,10 @@ describe("string", () => {
 	});
 
 	it("preserves constraint output inside nested object helpers", () => {
-		const structure = DS.object({
-			user: DS.object({
-				email: DS.string([DS.email()]),
-				name: DS.string([DS.stringMin(3)]),
+		const structure = DDataStructure.object({
+			user: DDataStructure.object({
+				email: DDataStructure.string([DDataStructure.email()]),
+				name: DDataStructure.string([DDataStructure.stringMin(3)]),
 			}),
 		});
 		const input = {
@@ -44,7 +43,7 @@ describe("string", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
 					readonly email: `${string}@${string}.${string}`;

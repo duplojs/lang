@@ -1,38 +1,37 @@
-import { describe, expect, it } from "vitest";
-import { DChrono, DS, type ExpectType } from "@scripts";
+import { DChrono, DDataStructure, type ExpectType } from "@scripts";
 
 describe("DateType", () => {
 	it("creates a synchronous date type", () => {
-		const type = DS.DateType();
+		const type = DDataStructure.DateType();
 
 		type _CheckType = ExpectType<
 			typeof type,
-			DS.DateType,
+			DDataStructure.DateType,
 			"strict"
 		>;
 		type _CheckTypeValue = ExpectType<
-			DS.TypeValue<typeof type>,
+			DDataStructure.TypeValue<typeof type>,
 			DChrono.TheDate,
 			"strict"
 		>;
 
-		expect(type.fundamentalType).toBe(DS.TheDate);
+		expect(type.fundamentalType).toBe(DDataStructure.TheDate);
 		expect(type.definition).toEqual({});
 		expect(type.isAsynchronous()).toBe(false);
 	});
 
 	it("accepts chrono date values", () => {
-		const type = DS.DateType();
+		const type = DDataStructure.DateType();
 
-		expect(type.executeCheck(DChrono.TheDate.new(0))).toBe(DS.SuccessSymbol);
+		expect(type.executeCheck(DChrono.TheDate.new(0))).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects non-chrono date values through its fundamental type", () => {
-		const type = DS.DateType();
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.DateType();
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck(new Date(0), errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck(new Date(0), errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DS.TheDate);
+		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheDate);
 	});
 });

@@ -1,38 +1,37 @@
-import { describe, expect, it } from "vitest";
-import { DS, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("NumberType", () => {
 	it("creates a synchronous number type", () => {
-		const type = DS.NumberType();
+		const type = DDataStructure.NumberType();
 
 		type _CheckType = ExpectType<
 			typeof type,
-			DS.NumberType,
+			DDataStructure.NumberType,
 			"strict"
 		>;
 		type _CheckTypeValue = ExpectType<
-			DS.TypeValue<typeof type>,
+			DDataStructure.TypeValue<typeof type>,
 			number,
 			"strict"
 		>;
 
-		expect(type.fundamentalType).toBe(DS.TheNumber);
+		expect(type.fundamentalType).toBe(DDataStructure.TheNumber);
 		expect(type.definition).toEqual({});
 		expect(type.isAsynchronous()).toBe(false);
 	});
 
 	it("accepts number values", () => {
-		const type = DS.NumberType();
+		const type = DDataStructure.NumberType();
 
-		expect(type.executeCheck(12)).toBe(DS.SuccessSymbol);
+		expect(type.executeCheck(12)).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects non-number values through its fundamental type", () => {
-		const type = DS.NumberType();
-		const errorHandler = DS.createGetErrorHandler();
+		const type = DDataStructure.NumberType();
+		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		expect(type.executeCheck("12", errorHandler)).toBe(DS.ErrorSymbol);
+		expect(type.executeCheck("12", errorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DS.TheNumber);
+		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheNumber);
 	});
 });

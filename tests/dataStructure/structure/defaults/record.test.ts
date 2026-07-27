@@ -1,11 +1,10 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
 
 describe("RecordStructure", () => {
 	it("checks string keyed records and narrows with is", async() => {
-		const structure = DS.RecordStructure(
-			DS.TypeStructure(DS.StringType(), []),
-			DS.TypeStructure(DS.NumberType(), []),
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			[],
 		);
 		const input: unknown = {
@@ -16,7 +15,7 @@ describe("RecordStructure", () => {
 		const asyncSuccess = await structure.asyncCheck(input);
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			Partial<{ readonly [Prop in string]: number }>,
 			"strict"
 		>;
@@ -24,13 +23,13 @@ describe("RecordStructure", () => {
 			typeof success,
 			| DEither.Right<"check-success", Partial<{ readonly [Prop in string]: number }>>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncSuccess = ExpectType<
 			typeof asyncSuccess,
 			| DEither.Right<"check-success", Partial<{ readonly [Prop in string]: number }>>
-			| DEither.Left<"check-error", DS.Error>,
+			| DEither.Left<"check-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -47,12 +46,12 @@ describe("RecordStructure", () => {
 	});
 
 	it("checks literal key records and exposes required keys in the output type", () => {
-		const structure = DS.RecordStructure(
-			DS.UnionStructure([
-				DS.TypeStructure(DS.StringLiteralType("name"), []),
-				DS.TypeStructure(DS.StringLiteralType("role"), []),
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.UnionStructure([
+				DDataStructure.TypeStructure(DDataStructure.StringLiteralType("name"), []),
+				DDataStructure.TypeStructure(DDataStructure.StringLiteralType("role"), []),
 			], []),
-			DS.TypeStructure(DS.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
 		const input = {
@@ -61,7 +60,7 @@ describe("RecordStructure", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly name: string;
 				readonly role: string;
@@ -77,12 +76,12 @@ describe("RecordStructure", () => {
 	});
 
 	it("keeps required keys open when a key union contains the string type", () => {
-		const structure = DS.RecordStructure(
-			DS.UnionStructure([
-				DS.TypeStructure(DS.StringLiteralType("name"), []),
-				DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.UnionStructure([
+				DDataStructure.TypeStructure(DDataStructure.StringLiteralType("name"), []),
+				DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			], []),
-			DS.TypeStructure(DS.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
 		const input = {
@@ -91,7 +90,7 @@ describe("RecordStructure", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			Partial<{ readonly [Prop in string]: string }>,
 			"strict"
 		>;
@@ -103,15 +102,15 @@ describe("RecordStructure", () => {
 	});
 
 	it("allows partial literal key records when the value structure accepts undefined", () => {
-		const structure = DS.RecordStructure(
-			DS.TypeStructure(DS.StringLiteralType("deletedAt"), []),
-			DS.TypeStructure(DS.UndefinedType(), []),
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringLiteralType("deletedAt"), []),
+			DDataStructure.TypeStructure(DDataStructure.UndefinedType(), []),
 			[],
 		);
 		const input = {};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly deletedAt?: undefined;
 			},
@@ -125,12 +124,12 @@ describe("RecordStructure", () => {
 	});
 
 	it("returns check errors for invalid records, keys and values", () => {
-		const structure = DS.RecordStructure(
-			DS.UnionStructure([
-				DS.TypeStructure(DS.StringLiteralType("name"), []),
-				DS.TypeStructure(DS.StringLiteralType("role"), []),
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.UnionStructure([
+				DDataStructure.TypeStructure(DDataStructure.StringLiteralType("name"), []),
+				DDataStructure.TypeStructure(DDataStructure.StringLiteralType("role"), []),
 			], []),
-			DS.TypeStructure(DS.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
 		const invalidKind = structure.check(null);
@@ -200,17 +199,17 @@ describe("RecordStructure", () => {
 	});
 
 	it("encodes and decodes record values with matching codecs", async() => {
-		const structure = DS.RecordStructure(
-			DS.UnionStructure([
-				DS.TypeStructure(DS.StringLiteralType("first"), []),
-				DS.TypeStructure(DS.StringLiteralType("second"), []),
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.UnionStructure([
+				DDataStructure.TypeStructure(DDataStructure.StringLiteralType("first"), []),
+				DDataStructure.TypeStructure(DDataStructure.StringLiteralType("second"), []),
 			], []),
-			DS.TypeStructure(DS.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
-		const codec = DS.createCodec(
-			DS.TheString,
-			DS.TypeStructure(DS.NumberType(), []),
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
@@ -231,8 +230,8 @@ describe("RecordStructure", () => {
 			second: 5,
 		});
 
-		type EncodedRecord = DS.EncodedValue<
-			DS.StructureValue<typeof structure>,
+		type EncodedRecord = DDataStructure.EncodedValue<
+			DDataStructure.StructureValue<typeof structure>,
 			typeof codec
 		>;
 		type _CheckEncodedRecord = ExpectType<
@@ -250,7 +249,7 @@ describe("RecordStructure", () => {
 				EncodedRecord
 			>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncEncoded = ExpectType<
@@ -259,7 +258,7 @@ describe("RecordStructure", () => {
 				"encode-success",
 				EncodedRecord
 			>
-			| DEither.Left<"encode-error", DS.Error>,
+			| DEither.Left<"encode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckDecoded = ExpectType<
@@ -272,7 +271,7 @@ describe("RecordStructure", () => {
 				}
 			>
 			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 		type _CheckAsyncDecoded = ExpectType<
@@ -284,7 +283,7 @@ describe("RecordStructure", () => {
 					readonly second: string;
 				}
 			>
-			| DEither.Left<"decode-error", DS.Error>,
+			| DEither.Left<"decode-error", DDataStructure.Error>,
 			"strict"
 		>;
 
@@ -307,9 +306,9 @@ describe("RecordStructure", () => {
 	});
 
 	it("returns encode and decode errors for invalid records or invalid values", () => {
-		const structure = DS.RecordStructure(
-			DS.TypeStructure(DS.StringLiteralType("name"), []),
-			DS.TypeStructure(DS.StringType(), []),
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringLiteralType("name"), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
 		const invalidEncodeKind = structure.encode({}, null as never);
@@ -384,27 +383,27 @@ describe("RecordStructure", () => {
 	});
 
 	it("returns async errors for asynchronous key or value structures in synchronous APIs", () => {
-		const asyncTypeKind = DS.createKind("test-public-async-record-type");
+		const asyncTypeKind = DDataStructure.createKind("test-public-async-record-type");
 
 		interface AsyncType extends DCommon.UnionToIntersection<
-			& DS.Type<DS.TheString>
+			& DDataStructure.Type<DDataStructure.TheString>
 			& DKind.Kind<typeof asyncTypeKind>
 		> {}
 
-		const AsyncType = DS.createType(
-			DS.TheString,
+		const AsyncType = DDataStructure.createType(
+			DDataStructure.TheString,
 			asyncTypeKind,
 			({ init }) => () => init<AsyncType>(
 				{},
 				{
-					executeCheck: () => Promise.resolve(DS.SuccessSymbol),
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
 					isAsynchronous: () => true,
 				},
 			),
 		);
-		const structure = DS.RecordStructure(
-			DS.TypeStructure(DS.StringType(), []),
-			DS.TypeStructure(AsyncType(), []),
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.TypeStructure(AsyncType(), []),
 			[],
 		);
 

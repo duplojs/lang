@@ -19,15 +19,7 @@ declare module "../../common" {
 						GenericValue[Prop],
 						GenericCodec
 					>
-				} extends infer InferredResult extends Record<string, unknown>
-					? DObject.PartialKeys<
-						InferredResult,
-						DObject.GetPropsWithValueExtends<
-							InferredResult,
-							undefined
-						>
-					>
-					: never
+				}
 				: never
 			: never;
 	}

@@ -1,19 +1,18 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("array", () => {
 	it("creates an array structure from an element structure", () => {
-		const structure = DS.array(DS.string());
+		const structure = DDataStructure.array(DDataStructure.string());
 		const success = structure.check(["Jane", "John"]);
 		const failure = structure.check(["Jane", 12]);
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.ArrayStructure<readonly string[], readonly []>,
+			DDataStructure.ArrayStructure<readonly string[], readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			readonly string[],
 			"strict"
 		>;
@@ -34,10 +33,10 @@ describe("array", () => {
 	});
 
 	it("can be used inside object helpers and nested array helpers", () => {
-		const structure = DS.object({
-			user: DS.object({
-				tags: DS.array(DS.string()),
-				groups: DS.array(DS.array(DS.number())),
+		const structure = DDataStructure.object({
+			user: DDataStructure.object({
+				tags: DDataStructure.array(DDataStructure.string()),
+				groups: DDataStructure.array(DDataStructure.array(DDataStructure.number())),
 			}),
 		});
 		const input = {
@@ -48,7 +47,7 @@ describe("array", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
 					readonly tags: readonly string[];

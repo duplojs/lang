@@ -1,25 +1,24 @@
-import { describe, expect, it } from "vitest";
-import { DChrono, DS, DEither, type ExpectType } from "@scripts";
+import { DChrono, DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("date", () => {
 	it("creates a date type structure", () => {
-		const structure = DS.date();
+		const structure = DDataStructure.date();
 		const value = DChrono.TheDate.new(0);
 		const success = structure.check(value);
 		const failure = structure.check(new Date(0));
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<DChrono.TheDate, readonly []>,
+			DDataStructure.TypeStructure<DChrono.TheDate, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			DChrono.TheDate,
 			"strict"
 		>;
 
-		expect(structure.definition.type.fundamentalType).toBe(DS.TheDate);
+		expect(structure.definition.type.fundamentalType).toBe(DDataStructure.TheDate);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(success).toStrictEqual(DEither.right("check-success", value));
 		expect(
@@ -31,10 +30,10 @@ describe("date", () => {
 	});
 
 	it("can be used inside object helpers and array helpers", () => {
-		const structure = DS.object({
-			calendar: DS.object({
-				start: DS.date(),
-				holidays: DS.array(DS.date()),
+		const structure = DDataStructure.object({
+			calendar: DDataStructure.object({
+				start: DDataStructure.date(),
+				holidays: DDataStructure.array(DDataStructure.date()),
 			}),
 		});
 		const input = {
@@ -48,7 +47,7 @@ describe("date", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly calendar: {
 					readonly start: DChrono.TheDate;

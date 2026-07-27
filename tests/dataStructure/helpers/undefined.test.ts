@@ -1,24 +1,23 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("undefined", () => {
 	it("creates an undefined type structure", () => {
-		const structure = DS.undefined();
+		const structure = DDataStructure.undefined();
 		const success = structure.check(undefined);
 		const failure = structure.check(null);
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.TypeStructure<undefined, readonly []>,
+			DDataStructure.TypeStructure<undefined, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			undefined,
 			"strict"
 		>;
 
-		expect(structure.definition.type.fundamentalType).toBe(DS.TheUndefined);
+		expect(structure.definition.type.fundamentalType).toBe(DDataStructure.TheUndefined);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(success).toStrictEqual(DEither.right("check-success", undefined));
 		expect(
@@ -30,10 +29,10 @@ describe("undefined", () => {
 	});
 
 	it("can be used inside object helpers and array helpers", () => {
-		const structure = DS.object({
-			state: DS.object({
-				missing: DS.undefined(),
-				items: DS.array(DS.undefined()),
+		const structure = DDataStructure.object({
+			state: DDataStructure.object({
+				missing: DDataStructure.undefined(),
+				items: DDataStructure.array(DDataStructure.undefined()),
 			}),
 		});
 		const input = {
@@ -44,7 +43,7 @@ describe("undefined", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly state: {
 					readonly missing?: undefined;

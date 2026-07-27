@@ -1,23 +1,22 @@
-import { describe, expect, it } from "vitest";
-import { DS, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
 
 describe("union", () => {
 	it("creates a union structure from helper structures", () => {
-		const structure = DS.union([
-			DS.string(),
-			DS.number(),
-			DS.boolean(),
+		const structure = DDataStructure.union([
+			DDataStructure.string(),
+			DDataStructure.number(),
+			DDataStructure.boolean(),
 		]);
 		const success = structure.check("value");
 		const failure = structure.check(null);
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DS.UnionStructure<string | number | boolean, readonly []>,
+			DDataStructure.UnionStructure<string | number | boolean, readonly []>,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			string | number | boolean,
 			"strict"
 		>;
@@ -44,17 +43,17 @@ describe("union", () => {
 	});
 
 	it("can combine literal object and array helpers", () => {
-		const structure = DS.union([
-			DS.object({
-				kind: DS.literal("user"),
-				email: DS.string([DS.email()]),
-				active: DS.boolean(),
+		const structure = DDataStructure.union([
+			DDataStructure.object({
+				kind: DDataStructure.literal("user"),
+				email: DDataStructure.string([DDataStructure.email()]),
+				active: DDataStructure.boolean(),
 			}),
-			DS.object({
-				kind: DS.literal("batch"),
-				values: DS.array(DS.union([
-					DS.number(),
-					DS.literal("skip"),
+			DDataStructure.object({
+				kind: DDataStructure.literal("batch"),
+				values: DDataStructure.array(DDataStructure.union([
+					DDataStructure.number(),
+					DDataStructure.literal("skip"),
 				])),
 			}),
 		]);
@@ -69,7 +68,7 @@ describe("union", () => {
 		} as const;
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			| {
 				readonly kind: "user";
 				readonly email: `${string}@${string}.${string}`;
@@ -95,17 +94,17 @@ describe("union", () => {
 	});
 
 	it("can be used inside nested object and array helpers", () => {
-		const structure = DS.object({
-			events: DS.array(DS.object({
-				id: DS.union([
-					DS.string(),
-					DS.number(),
+		const structure = DDataStructure.object({
+			events: DDataStructure.array(DDataStructure.object({
+				id: DDataStructure.union([
+					DDataStructure.string(),
+					DDataStructure.number(),
 				]),
-				payload: DS.union([
-					DS.null(),
-					DS.object({
-						count: DS.number(),
-						flags: DS.array(DS.boolean()),
+				payload: DDataStructure.union([
+					DDataStructure.null(),
+					DDataStructure.object({
+						count: DDataStructure.number(),
+						flags: DDataStructure.array(DDataStructure.boolean()),
 					}),
 				]),
 			})),
@@ -127,7 +126,7 @@ describe("union", () => {
 		};
 
 		type _CheckStructureValue = ExpectType<
-			DS.StructureValue<typeof structure>,
+			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly events: readonly {
 					readonly id: string | number;
