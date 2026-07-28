@@ -4,8 +4,9 @@ import * as DCommon from "@scripts/common";
 import { type FundamentalType } from "../fundamentalType";
 import { createKind } from "../kind";
 import { createGetErrorHandler, ErrorSymbol, type GetErrorHandler, SuccessSymbol, type EncodedValue, type Codec, type CodecContext, type Error } from "../common";
-import { type ConstraintValue, type Constraint } from "../constraint";
+import { type Constraint } from "../constraint";
 import { type StructureValue } from "./types";
+import { type StructureConstraintsValue } from "./types/ConstraintsValue";
 
 export class StructureClass {
 	private constructor() {}
@@ -38,18 +39,8 @@ export interface Structure<
 		typeof structureKind,
 		(
 			& GenericValue
-			& DCommon.NeverCoalescing<
-				Extract<
-					DCommon.UnionToIntersection<
-						GenericDefinition["constraints"][number] extends infer InferredConstraint
-							? InferredConstraint extends Constraint
-								? { value: ConstraintValue<InferredConstraint> }
-								: never
-							: never
-					>,
-					{ value: GenericValue }
-				>["value"],
-				unknown
+			& StructureConstraintsValue<
+				GenericDefinition["constraints"][number]
 			>
 		)
 	> {

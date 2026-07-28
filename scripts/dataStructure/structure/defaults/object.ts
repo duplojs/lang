@@ -15,7 +15,7 @@ declare module "../../common" {
 		object: GenericValue extends object
 			? keyof GenericValue extends string
 				? {
-					readonly [Prop in keyof GenericValue]: EncodedValue<
+					[Prop in keyof GenericValue]: EncodedValue<
 						GenericValue[Prop],
 						GenericCodec
 					>

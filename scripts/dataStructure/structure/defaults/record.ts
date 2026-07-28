@@ -8,7 +8,7 @@ import { type StructureValue } from "../types";
 import { unionStructureKind, type UnionStructure } from "./union";
 import { typeStructureKind, type TypeStructure } from "./type";
 import { structureIdentifier } from "../identifier";
-import { stringLiteralTypeKind, stringTypeKind, typeIdentifier } from "@scripts/dataStructure/type";
+import { stringLiteralTypeKind, stringTypeKind, typeIdentifier } from "../../type";
 
 export type RecordStructureValue<
 	GenericKey extends Structure<string>,

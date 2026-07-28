@@ -1,0 +1,81 @@
+import { DDataStructure, DEither, type ExpectType } from "@scripts";
+
+describe("optional", () => {
+	it("keeps structure constraints when adding undefined to a non-union structure", () => {
+		const structure = DDataStructure.optional(
+			DDataStructure.string([DDataStructure.email()]),
+		);
+
+		type _CheckStructure = ExpectType<
+			typeof structure,
+			DDataStructure.UnionStructure<
+				| `${string}@${string}.${string}`
+				| undefined,
+				readonly []
+			>,
+			"strict"
+		>;
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			| `${string}@${string}.${string}`
+			| undefined,
+			"strict"
+		>;
+
+		expect(structure.definition.values).toHaveLength(2);
+		expect(structure.definition.constraints).toStrictEqual([]);
+		expect(structure.check(undefined)).toStrictEqual(
+			DEither.right("check-success", undefined),
+		);
+		expect(structure.check("jane@example.com")).toStrictEqual(
+			DEither.right("check-success", "jane@example.com"),
+		);
+		expect(structure.is("not-an-email")).toBe(false);
+	});
+
+	it("does not add undefined twice inside an existing union", () => {
+		const structure = DDataStructure.optional(
+			DDataStructure.union([
+				DDataStructure.undefined(),
+				DDataStructure.string(),
+			]),
+		);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			string | undefined,
+			"strict"
+		>;
+
+		expect(structure.definition.values).toHaveLength(2);
+		expect(structure.check(undefined)).toStrictEqual(
+			DEither.right("check-success", undefined),
+		);
+	});
+
+	it("removes union constraints and keeps the initial value when adding undefined to a union", () => {
+		const structure = DDataStructure.optional(
+			DDataStructure.union(
+				[DDataStructure.string()],
+				[DDataStructure.email()],
+			),
+		);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			string | undefined,
+			"strict"
+		>;
+		type _CheckConstraints = ExpectType<
+			typeof structure.definition.constraints,
+			readonly [],
+			"strict"
+		>;
+
+		expect(structure.definition.values).toHaveLength(2);
+		expect(structure.definition.constraints).toStrictEqual([]);
+		expect(structure.check("not-an-email")).toStrictEqual(
+			DEither.right("check-success", "not-an-email"),
+		);
+	});
+});
