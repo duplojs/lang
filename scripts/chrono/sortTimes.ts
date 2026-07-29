@@ -1,3 +1,4 @@
+import type * as DArray from "@scripts/array";
 import type * as DCommon from "@scripts/common";
 import { toTimeValue } from "./toTimeValue";
 import { TheTime } from "./theTime";
@@ -8,13 +9,13 @@ export function sortTimes<
 >(
 	type: DCommon.SortType,
 ): (
-	times: GenericTimes,
+	times: GenericTimes & DArray.RequireAtLeastElements<GenericTimes, 1>,
 ) => TheTime[];
 
 export function sortTimes<
 	GenericTimes extends readonly (TheTime | SerializedTheTime)[],
 >(
-	times: GenericTimes,
+	times: GenericTimes & DArray.RequireAtLeastElements<GenericTimes, 1>,
 	type: DCommon.SortType,
 ): TheTime[];
 
@@ -26,7 +27,7 @@ export function sortTimes(
 	if (args.length === 1) {
 		const [type] = args;
 
-		return (times: readonly (TheTime | SerializedTheTime)[]) => sortTimes(times, type);
+		return (times: readonly (TheTime | SerializedTheTime)[]) => sortTimes(times as never, type);
 	}
 
 	const [times, type] = args;

@@ -1,3 +1,4 @@
+import type * as DArray from "@scripts/array";
 import type * as DCommon from "@scripts/common";
 import { toTimestamp } from "./toTimestamp";
 import { TheDate } from "./theDate";
@@ -8,13 +9,13 @@ export function sortDates<
 >(
 	type: DCommon.SortType,
 ): (
-	dates: GenericDates,
+	dates: GenericDates & DArray.RequireAtLeastElements<GenericDates, 1>,
 ) => TheDate[];
 
 export function sortDates<
 	GenericDates extends readonly (TheDate | SerializedTheDate)[],
 >(
-	dates: GenericDates,
+	dates: GenericDates & DArray.RequireAtLeastElements<GenericDates, 1>,
 	type: DCommon.SortType,
 ): TheDate[];
 
@@ -26,7 +27,7 @@ export function sortDates(
 	if (args.length === 1) {
 		const [type] = args;
 
-		return (dates: readonly (TheDate | SerializedTheDate)[]) => sortDates(dates, type);
+		return (dates: readonly (TheDate | SerializedTheDate)[]) => sortDates(dates as never, type);
 	}
 
 	const [dates, type] = args;
