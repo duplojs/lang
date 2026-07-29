@@ -13,4 +13,4 @@ export type * from "./lessThan";
 export type * from "./lessThanOrEqual";
 export type * from "./multipleOf";
 
-export type * from "./utils";
+export type * from "./types";

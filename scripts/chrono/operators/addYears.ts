@@ -32,8 +32,8 @@ export function addYears(
 
 	const [date, year] = args;
 
-	const date = toNative(date);
-	date.setUTCFullYear(date.getUTCFullYear() + year);
+	const nativeDate = toNative(date);
+	nativeDate.setUTCFullYear(nativeDate.getUTCFullYear() + year);
 
-	return TheDate.new(date.getTime());
+	return TheDate.new(nativeDate.getTime());
 }

@@ -9,4 +9,4 @@ export type * from "./email";
 export type * from "./url";
 export type * from "./uuid";
 
-export type * from "./utils";
+export type * from "./types";

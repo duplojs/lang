@@ -31,7 +31,7 @@ export function getDayOfYear(
 			day: "numeric",
 			year: "numeric",
 			month: "numeric",
-		}).formatToParts(date);
+		}).formatToParts(nativeDate);
 
 		const partsMap = new Map(parts.map((part) => [part.type, part.value]));
 		year = Number(partsMap.get("year"));

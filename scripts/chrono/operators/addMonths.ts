@@ -32,9 +32,9 @@ export function addMonths(
 
 	const [date, month] = args;
 
-	const date = toNative(date);
+	const nativeDate = toNative(date);
 
-	date.setUTCMonth(date.getUTCMonth() + month);
+	nativeDate.setUTCMonth(nativeDate.getUTCMonth() + month);
 
-	return TheDate.new(date.getTime());
+	return TheDate.new(nativeDate.getTime());
 }

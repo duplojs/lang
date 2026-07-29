@@ -32,8 +32,8 @@ export function subtractMonths(
 
 	const [date, month] = args;
 
-	const date = toNative(date);
-	date.setUTCMonth(date.getUTCMonth() - month);
+	const nativeDate = toNative(date);
+	nativeDate.setUTCMonth(nativeDate.getUTCMonth() - month);
 
-	return TheDate.new(date.getTime());
+	return TheDate.new(nativeDate.getTime());
 }
