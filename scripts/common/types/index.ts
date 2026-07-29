@@ -38,3 +38,5 @@ export type * from "./toLargeEnsemble";
 export type * from "./objectKey";
 export type * from "./objectEntry";
 export type * from "./sortType";
+export type * from "./lastUnionElement";
+export type * from "./unionToTuple";

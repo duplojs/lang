@@ -1,4 +1,3 @@
-
 import { TheDate } from "./theDate";
 import type { TheTime } from "./theTime";
 import type { SerializedTheTime, SerializedTheDate } from "./types";
@@ -20,7 +19,7 @@ export function serialize(
 		return `date${Math.abs(timestamp)}${timestamp > 0 ? "+" : "-"}`;
 	}
 
-	const number = input.toNative();
+	const timeValue = input.toNative();
 
-	return `time${Math.abs(number)}${number > 0 ? "+" : "-"}`;
+	return `time${Math.abs(timeValue)}${timeValue > 0 ? "+" : "-"}`;
 }

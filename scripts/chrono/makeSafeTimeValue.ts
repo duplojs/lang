@@ -1,6 +1,12 @@
 import { maxTimeValue, minTimeValue } from "./constants";
 
-export function makeSafeTimeValue(timeValue: number) {
+export function makeSafeTimeValue(
+	timeValue: number,
+): number;
+
+export function makeSafeTimeValue(
+	timeValue: number,
+) {
 	if (Number.isNaN(timeValue)) {
 		return 0;
 	}

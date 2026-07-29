@@ -1,6 +1,12 @@
 import { maxTimestamp, minTimestamp } from "./constants";
 
-export function makeSafeTimestamp(timestamp: number) {
+export function makeSafeTimestamp(
+	timestamp: number,
+): number;
+
+export function makeSafeTimestamp(
+	timestamp: number,
+) {
 	if (Number.isNaN(timestamp)) {
 		return 0;
 	}

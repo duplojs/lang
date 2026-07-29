@@ -12,3 +12,4 @@ export * from "./unwrap";
 export * from "./when";
 export * from "./whenNot";
 export * from "./wrapValue";
+export * from "./enum";

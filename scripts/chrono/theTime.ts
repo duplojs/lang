@@ -15,7 +15,7 @@ export class TheTime extends DKind.parentClass(
 		super(defaultKindValue);
 	}
 
-	public toNative() {
+	public toNative(): number {
 		return this.timeValue;
 	}
 
@@ -31,7 +31,7 @@ export class TheTime extends DKind.parentClass(
 	 * @internal
 	 * @deprecated use DDate.createTime | DDate.createTimeOrThrow function
 	 */
-	public static "new"(time: number) {
+	public static "new"(time: number): TheTime {
 		return new TheTime(makeSafeTimeValue(time));
 	}
 }

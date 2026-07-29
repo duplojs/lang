@@ -1,11 +1,11 @@
 import { TheTime } from "./theTime";
 
 export function isTime(
-	input: unknown,
-): input is TheTime {
-	if (input instanceof TheTime) {
-		return true;
-	}
+	value: unknown,
+): value is TheTime;
 
-	return false;
+export function isTime(
+	value: unknown,
+): boolean {
+	return value instanceof TheTime;
 }

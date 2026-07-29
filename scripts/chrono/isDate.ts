@@ -1,11 +1,11 @@
 import { TheDate } from "./theDate";
 
 export function isDate(
-	input: unknown,
-): input is TheDate {
-	if (input instanceof TheDate) {
-		return true;
-	}
+	value: unknown,
+): value is TheDate;
 
-	return false;
+export function isDate(
+	value: unknown,
+): boolean {
+	return value instanceof TheDate;
 }

@@ -14,7 +14,7 @@ export class TheDate extends DKind.parentClass(
 		super(defaultKindValue, timestamp);
 	}
 
-	public toNative() {
+	public toNative(): Date {
 		return new Date(this.getTime());
 	}
 
@@ -29,113 +29,113 @@ export class TheDate extends DKind.parentClass(
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setDate(_date: number) {
+	public override setDate(_date: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setFullYear(_year: number, _month?: number, _date?: number) {
+	public override setFullYear(_year: number, _month?: number, _date?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setHours(_hours: number, _min?: number, _sec?: number, _ms?: number) {
+	public override setHours(_hours: number, _min?: number, _sec?: number, _ms?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setMilliseconds(_ms: number) {
+	public override setMilliseconds(_ms: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setMinutes(_min: number, _sec?: number, _ms?: number) {
+	public override setMinutes(_min: number, _sec?: number, _ms?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setMonth(_month: number, _date?: number) {
+	public override setMonth(_month: number, _date?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setSeconds(_sec: number, _ms?: number) {
+	public override setSeconds(_sec: number, _ms?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setTime(_time: number) {
+	public override setTime(_time: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCDate(_date: number) {
+	public override setUTCDate(_date: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCFullYear(_year: number, _month?: number, _date?: number) {
+	public override setUTCFullYear(_year: number, _month?: number, _date?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCHours(_hours: number, _min?: number, _sec?: number, _ms?: number) {
+	public override setUTCHours(_hours: number, _min?: number, _sec?: number, _ms?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCMilliseconds(_ms: number) {
+	public override setUTCMilliseconds(_ms: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCMinutes(_min: number, _sec?: number, _ms?: number) {
+	public override setUTCMinutes(_min: number, _sec?: number, _ms?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCMonth(_month: number, _date?: number) {
+	public override setUTCMonth(_month: number, _date?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCSeconds(_sec: number, _ms?: number) {
+	public override setUTCSeconds(_sec: number, _ms?: number): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @internal
-	 * @deprecated use DDate.create | DDate.createOrThrow function
+	 * @deprecated use DChrono.createDate | DChrono.createDateOrThrow function
 	 */
-	public static "new"(timestamp: number) {
+	public static "new"(timestamp: number): TheDate {
 		return new TheDate(makeSafeTimestamp(timestamp));
 	}
 }
