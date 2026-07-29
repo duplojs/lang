@@ -1,3 +1,13 @@
 export type * from "./create";
 export type * from "./shift";
 export type * from "./join";
+export type * from "./at";
+export type * from "./excerpt";
+export type * from "./expect";
+export type * from "./hasSpread";
+export type * from "./isCompromise";
+export type * from "./map";
+export type * from "./mergeUnion";
+export type * from "./reverse";
+export type * from "./pop";
+export type * from "./shift";
