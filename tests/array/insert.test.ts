@@ -1,0 +1,46 @@
+import { DArray, pipe, type ExpectType } from "@scripts";
+
+describe("insert", () => {
+	it("should insert a value without mutating the source", () => {
+		const source = [1, 2] as number[] & DArray.MinElements<2>;
+		const result = DArray.insert("a", source);
+
+		expect(result).toEqual([1, 2, "a"]);
+		expect(source).toEqual([1, 2]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			(number | string)[] & DArray.MinElements<2>,
+			"strict"
+		>;
+	});
+
+	it("should insert a value in pipe", () => {
+		const result = pipe(
+			"a",
+			DArray.insert([1, 2] as const),
+		);
+
+		expect(result).toEqual([1, 2, "a"]);
+	});
+
+	it("should discard incompatible size constraints", () => {
+		const sourceMax = [1, 2] as number[] & DArray.MaxElements<2>;
+		const resultMax = DArray.insert("a", sourceMax);
+
+		type _CheckMaxResult = ExpectType<
+			typeof resultMax,
+			(number | string)[],
+			"strict"
+		>;
+
+		const sourceLength = [1, 2] as number[] & DArray.LengthEqual<2>;
+		const resultLength = DArray.insert("a", sourceLength);
+
+		type _CheckLengthResult = ExpectType<
+			typeof resultLength,
+			(number | string)[],
+			"strict"
+		>;
+	});
+});

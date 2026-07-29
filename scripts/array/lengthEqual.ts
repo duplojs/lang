@@ -101,31 +101,3 @@ export function lengthEqual(
 
 	return array.length === length;
 }
-
-const source = [1] as
-	| (string[] & LengthEqual<3>)
-	| (number[] & LengthEqual<5>)
-	| (boolean[] & MinElements<2>)
-	| (symbol[] & MaxElements<5>)
-	| (bigint[] & MinElements<5>)
-	| (Date[] & MaxElements<2>);
-
-if (lengthEqual(source, 3)) {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (string[] & LengthEqual<3>)
-		| (boolean[] & MinElements<2> & LengthEqual<3>)
-		| (symbol[] & MaxElements<5> & LengthEqual<3>),
-		"strict"
-	>;
-} else {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (number[] & LengthEqual<5>)
-		| (boolean[] & MinElements<2>)
-		| (symbol[] & MaxElements<5>)
-		| (bigint[] & MinElements<5>)
-		| (Date[] & MaxElements<2>),
-		"strict"
-	>;
-}

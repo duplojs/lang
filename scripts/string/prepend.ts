@@ -1,15 +1,36 @@
+import type * as DCommon from "@scripts/common";
 import type { ReapplyAllSizeConstraints } from "./constraints";
 import type { Join } from "./types";
+
+type RemoveStringConstraints<
+	GenericStrings extends readonly string[],
+> = GenericStrings extends readonly []
+	? []
+	: GenericStrings extends readonly [
+		infer InferredHead extends string,
+		...infer InferredRest extends readonly string[],
+	]
+		? [
+			DCommon.RemoveConstraint<InferredHead> extends infer InferredString extends string
+				? InferredString
+				: never,
+			...RemoveStringConstraints<InferredRest>,
+		]
+		: string[];
 
 type PrependOutput<
 	GenericString extends string,
 	GenericElement extends string,
 	GenericElementsRest extends readonly string[] = [],
-> = ReapplyAllSizeConstraints<
-	GenericString,
-	`${GenericElement}${Join<GenericElementsRest>}${GenericString}`,
-	"lengthEqual" | "maxCharacters"
->;
+> = DCommon.RemoveConstraint<GenericString> extends infer InferredString extends string
+	? DCommon.RemoveConstraint<GenericElement> extends infer InferredElement extends string
+		? ReapplyAllSizeConstraints<
+			GenericString,
+			`${InferredElement}${Join<RemoveStringConstraints<GenericElementsRest>>}${InferredString}`,
+			"lengthEqual" | "maxCharacters"
+		>
+		: never
+	: never;
 
 export function prepend<
 	GenericElement extends string,

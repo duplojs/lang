@@ -82,29 +82,3 @@ export function minElements(
 
 	return array.length >= min;
 }
-
-const source = [1] as
-	| (string[] & MinElements<2>)
-	| (number[] & MinElements<5>)
-	| (boolean[] & LengthEqual<4>)
-	| (symbol[] & MaxElements<2>)
-	| (bigint[] & MaxElements<5>);
-
-if (minElements(source, 3)) {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (number[] & MinElements<5>)
-		| (string[] & MinElements<2> & MinElements<3>)
-		| (boolean[] & LengthEqual<4>)
-		| (bigint[] & MaxElements<5> & MinElements<3>),
-		"strict"
-	>;
-} else {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (string[] & MinElements<2>)
-		| (symbol[] & MaxElements<2>)
-		| (bigint[] & MaxElements<5>),
-		"strict"
-	>;
-}

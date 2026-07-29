@@ -2,7 +2,11 @@ import { DString, type DArray, type ExpectType, pipe } from "@scripts";
 
 describe("sort", () => {
 	it("should sort strings in ascending order without mutating the source", () => {
-		const source = ["b", "a", "c"] as const;
+		const source = ["b", "a", "c"] as
+			& string[]
+			& DArray.LengthEqual<3>
+			& DArray.MinElements<3>
+			& DArray.MaxElements<3>;
 		const result = DString.sort(source, "ASC");
 
 		expect(result).toEqual(["a", "b", "c"]);
@@ -10,10 +14,7 @@ describe("sort", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			DArray.ReapplyAllSizeConstraints<
-				typeof source,
-				(typeof source)[number][]
-			>,
+			string[] & DArray.LengthEqual<3> & DArray.MinElements<3> & DArray.MaxElements<3>,
 			"strict"
 		>;
 	});

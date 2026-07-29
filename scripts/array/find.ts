@@ -25,7 +25,7 @@ export function find<
 >(
 	array: GenericArray,
 	predicate: (
-		element: GenericOutput,
+		element: GenericArray[number],
 		params: FindPredicateFunctionParams<GenericArray>,
 	) => element is GenericOutput,
 ): GenericOutput | undefined;

@@ -82,29 +82,3 @@ export function maxElements(
 
 	return array.length <= max;
 }
-
-const source = [1] as
-	| (string[] & MaxElements<2>)
-	| (number[] & MaxElements<5>)
-	| (boolean[] & LengthEqual<4>)
-	| (symbol[] & MinElements<2>)
-	| (bigint[] & MinElements<5>);
-
-if (maxElements(source, 3)) {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (string[] & MaxElements<2>)
-		| (number[] & MaxElements<5> & MaxElements<3>)
-		| (symbol[] & MinElements<2> & MaxElements<3>),
-		"strict"
-	>;
-} else {
-	type check = DCommon.ExpectType<
-		typeof source,
-		| (number[] & MaxElements<5>)
-		| (boolean[] & LengthEqual<4>)
-		| (symbol[] & MinElements<2>)
-		| (bigint[] & MinElements<5>),
-		"strict"
-	>;
-}

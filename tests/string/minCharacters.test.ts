@@ -32,4 +32,43 @@ describe("minCharacters", () => {
 			>;
 		}
 	});
+
+	it("should discriminate compatible size constraints", () => {
+		const source = "hello" as
+			| (string & DString.MinCharacters<2>)
+			| (string & DString.MinCharacters<5>)
+			| (string & DString.LengthEqual<4>)
+			| (string & DString.MaxCharacters<2>)
+			| (string & DString.MaxCharacters<5>);
+
+		if (DString.minCharacters(source, 3)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				| (string & DString.MinCharacters<5>)
+				| (string & DString.MinCharacters<2> & DString.MinCharacters<3>)
+				| (string & DString.LengthEqual<4>)
+				| (string & DString.MaxCharacters<5> & DString.MinCharacters<3>),
+				"strict"
+			>;
+		} else {
+			type _CheckSource = ExpectType<
+				typeof source,
+				| (string & DString.MinCharacters<2>)
+				| (string & DString.MaxCharacters<2>)
+				| (string & DString.MaxCharacters<5>),
+				"strict"
+			>;
+		}
+	});
+
+	it("should reject incompatible min characters constraints", () => {
+		const sourceMax = "hi" as string & DString.MaxCharacters<2>;
+		const sourceLength = "hi" as string & DString.LengthEqual<2>;
+
+		// @ts-expect-error Cannot apply MinCharacters<3> on MaxCharacters<2>.
+		expect(DString.minCharacters(sourceMax, 3)).toBe(false);
+
+		// @ts-expect-error Cannot apply MinCharacters<3> on LengthEqual<2>.
+		expect(DString.minCharacters(sourceLength, 3)).toBe(false);
+	});
 });

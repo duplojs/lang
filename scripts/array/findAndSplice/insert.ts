@@ -32,7 +32,7 @@ export function findAndSpliceInsert<
 	elements: GenericElements,
 ): <GenericArray extends readonly unknown[]>(
 	array: GenericArray,
-) => FindAndSpliceInsertOutput<GenericArray, GenericElements>;
+) => Extract<FindAndSpliceInsertOutput<GenericArray, GenericElements>, any>;
 
 export function findAndSpliceInsert<
 	GenericArray extends readonly unknown[],
@@ -44,7 +44,7 @@ export function findAndSpliceInsert<
 		params: FindAndSpliceInsertPredicateFunctionParams<GenericArray>,
 	) => boolean,
 	elements: GenericElements,
-): FindAndSpliceInsertOutput<GenericArray, GenericElements>;
+): Extract<FindAndSpliceInsertOutput<GenericArray, GenericElements>, any>;
 
 export function findAndSpliceInsert(
 	...args:

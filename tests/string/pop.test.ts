@@ -16,4 +16,33 @@ describe("pop", () => {
 	it("should keep an empty string unchanged", () => {
 		expect(DString.pop("")).toBe("");
 	});
+
+	it("should preserve only compatible size constraints", () => {
+		const sourceMax = "hello" as string & DString.MaxCharacters<10>;
+		const resultMax = DString.pop(sourceMax);
+
+		type _CheckMaxResult = ExpectType<
+			typeof resultMax,
+			string & DString.MaxCharacters<10>,
+			"strict"
+		>;
+
+		const sourceMin = "hello" as string & DString.MinCharacters<3>;
+		const resultMin = DString.pop(sourceMin);
+
+		type _CheckMinResult = ExpectType<
+			typeof resultMin,
+			string,
+			"strict"
+		>;
+
+		const sourceLength = "hello" as string & DString.LengthEqual<5>;
+		const resultLength = DString.pop(sourceLength);
+
+		type _CheckLengthResult = ExpectType<
+			typeof resultLength,
+			string,
+			"strict"
+		>;
+	});
 });

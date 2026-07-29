@@ -11,9 +11,10 @@ export interface FindAndReplacePredicateFunctionParams<
 type FindAndReplaceOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends DCommon.AnyValue,
-> =
+> = (
 	| ReapplyAllSizeConstraints<GenericArray, (GenericArray[number] | GenericValue)[]>
-	| undefined;
+	| undefined
+);
 
 export function findAndReplace<
 	GenericArray extends readonly unknown[],
@@ -26,7 +27,7 @@ export function findAndReplace<
 	value: GenericValue,
 ): (
 	array: GenericArray,
-) => FindAndReplaceOutput<GenericArray, GenericValue>;
+) => Extract<FindAndReplaceOutput<GenericArray, GenericValue>, any>;
 
 export function findAndReplace<
 	GenericArray extends readonly unknown[],
@@ -38,7 +39,7 @@ export function findAndReplace<
 		params: FindAndReplacePredicateFunctionParams<GenericArray>,
 	) => boolean,
 	value: GenericValue,
-): FindAndReplaceOutput<GenericArray, GenericValue>;
+): Extract<FindAndReplaceOutput<GenericArray, GenericValue>, any>;
 
 export function findAndReplace(
 	...args:

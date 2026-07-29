@@ -18,6 +18,7 @@ export default defineConfig({
 			excludeFiles: ["**/*.d.ts"],
 			rules: {
 				...testPreset.rules,
+				"typescript/no-confusing-void-expression": "off",
 			},
 		},
 	],

@@ -12,4 +12,33 @@ describe("toLowerCase", () => {
 			"strict"
 		>;
 	});
+
+	it("should preserve only compatible size constraints", () => {
+		const sourceMin = "HELLO" as string & DString.MinCharacters<3>;
+		const resultMin = DString.toLowerCase(sourceMin);
+
+		type _CheckMinResult = ExpectType<
+			typeof resultMin,
+			Lowercase<string> & DString.MinCharacters<3>,
+			"strict"
+		>;
+
+		const sourceMax = "HELLO" as string & DString.MaxCharacters<5>;
+		const resultMax = DString.toLowerCase(sourceMax);
+
+		type _CheckMaxResult = ExpectType<
+			typeof resultMax,
+			Lowercase<string>,
+			"strict"
+		>;
+
+		const sourceLength = "HELLO" as string & DString.LengthEqual<5>;
+		const resultLength = DString.toLowerCase(sourceLength);
+
+		type _CheckLengthResult = ExpectType<
+			typeof resultLength,
+			Lowercase<string>,
+			"strict"
+		>;
+	});
 });
