@@ -29,6 +29,7 @@ type RequireApplyMinElements<
 	GenericMin extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericMin>
+	& DNumber.RequireLiteralNumber<GenericMin>
 	& RequireLengthEqualConstraint<GenericArray, GenericMin>
 	& RequireMaxElementsConstraint<GenericArray, GenericMin>
 );
@@ -75,7 +76,7 @@ export function minElements(
 	if (args.length === 1) {
 		const [min] = args;
 
-		return (array: readonly unknown[]) => minElements(array, min);
+		return (array: readonly unknown[]) => minElements(array, min as never);
 	}
 
 	const [array, min] = args;

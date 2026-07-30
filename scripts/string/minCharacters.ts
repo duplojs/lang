@@ -29,6 +29,7 @@ type RequireApplyMinCharacters<
 	GenericMin extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericMin>
+	& DNumber.RequireLiteralNumber<GenericMin>
 	& RequireLengthEqualConstraint<GenericString, GenericMin>
 	& RequireMaxCharactersConstraint<GenericString, GenericMin>
 );
@@ -75,7 +76,7 @@ export function minCharacters(
 	if (args.length === 1) {
 		const [min] = args;
 
-		return (string: string) => minCharacters(string, min);
+		return (string: string) => minCharacters(string, min as never);
 	}
 
 	const [string, min] = args;

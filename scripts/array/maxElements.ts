@@ -29,6 +29,7 @@ type RequireApplyMaxElements<
 	GenericMax extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericMax>
+	& DNumber.RequireLiteralNumber<GenericMax>
 	& RequireLengthEqualConstraint<GenericArray, GenericMax>
 	& RequireMinElementsConstraint<GenericArray, GenericMax>
 );
@@ -75,7 +76,7 @@ export function maxElements(
 	if (args.length === 1) {
 		const [max] = args;
 
-		return (array: readonly unknown[]) => maxElements(array, max);
+		return (array: readonly unknown[]) => maxElements(array, max as never);
 	}
 
 	const [array, max] = args;

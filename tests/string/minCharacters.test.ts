@@ -64,6 +64,12 @@ describe("minCharacters", () => {
 	it("should reject incompatible min characters constraints", () => {
 		const sourceMax = "hi" as string & DString.MaxCharacters<2>;
 		const sourceLength = "hi" as string & DString.LengthEqual<2>;
+		const min = 3 as number;
+
+		if (false) {
+			// @ts-expect-error min must be a literal number.
+			DString.minCharacters("hello", min);
+		}
 
 		// @ts-expect-error Cannot apply MinCharacters<3> on MaxCharacters<2>.
 		expect(DString.minCharacters(sourceMax, 3)).toBe(false);

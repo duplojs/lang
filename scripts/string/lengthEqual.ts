@@ -40,6 +40,7 @@ type RequireApplyLengthEqual<
 	GenericLength extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericLength>
+	& DNumber.RequireLiteralNumber<GenericLength>
 	& RequireLengthEqualConstraint<GenericString, GenericLength>
 	& RequireMinCharactersConstraint<GenericString, GenericLength>
 	& RequireMaxCharactersConstraint<GenericString, GenericLength>
@@ -94,7 +95,7 @@ export function lengthEqual(
 	if (args.length === 1) {
 		const [length] = args;
 
-		return (string: string) => lengthEqual(string, length);
+		return (string: string) => lengthEqual(string, length as never);
 	}
 
 	const [string, length] = args;

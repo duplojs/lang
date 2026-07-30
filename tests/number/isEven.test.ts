@@ -1,0 +1,42 @@
+import { pipe, when, type ExpectType } from "@scripts";
+import type { Even } from "@scripts/number";
+import * as DNumber from "@scripts/number/isEven";
+
+describe("isEven", () => {
+	it("should validate an even number", () => {
+		expect(DNumber.isEven(2)).toBe(true);
+		expect(DNumber.isEven(3)).toBe(false);
+	});
+
+	it("should narrow a number with an even constraint", () => {
+		const source = 2 as number;
+
+		if (DNumber.isEven(source)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				number & Even,
+				"strict"
+			>;
+		}
+	});
+
+	it("should narrow a number inside a pipe when callback", () => {
+		const result = pipe(
+			2 as number,
+			when(
+				DNumber.isEven,
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						number & Even,
+						"strict"
+					>;
+
+					return value / 2;
+				},
+			),
+		);
+
+		expect(result).toBe(1);
+	});
+});

@@ -67,6 +67,12 @@ describe("lengthEqual", () => {
 		const sourceLength = "hello" as string & DString.LengthEqual<5>;
 		const sourceMin = "hello" as string & DString.MinCharacters<5>;
 		const sourceMax = "hi" as string & DString.MaxCharacters<2>;
+		const length = 3 as number;
+
+		if (false) {
+			// @ts-expect-error length must be a literal number.
+			DString.lengthEqual("abc", length);
+		}
 
 		// @ts-expect-error Cannot apply LengthEqual<3> on LengthEqual<5>.
 		expect(DString.lengthEqual(sourceLength, 3)).toBe(false);

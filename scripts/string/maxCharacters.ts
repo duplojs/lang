@@ -29,6 +29,7 @@ type RequireApplyMaxCharacters<
 	GenericMax extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericMax>
+	& DNumber.RequireLiteralNumber<GenericMax>
 	& RequireLengthEqualConstraint<GenericString, GenericMax>
 	& RequireMinCharactersConstraint<GenericString, GenericMax>
 );
@@ -75,7 +76,7 @@ export function maxCharacters(
 	if (args.length === 1) {
 		const [max] = args;
 
-		return (string: string) => maxCharacters(string, max);
+		return (string: string) => maxCharacters(string, max as never);
 	}
 
 	const [string, max] = args;
