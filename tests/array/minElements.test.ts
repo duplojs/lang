@@ -1,4 +1,4 @@
-import { DArray, pipe, type ExpectType } from "@scripts";
+import { DArray, pipe, when, type ExpectType } from "@scripts";
 
 describe("minElements", () => {
 	it("should validate an array longer than the minimum", () => {
@@ -6,13 +6,25 @@ describe("minElements", () => {
 		expect(DArray.minElements(["a", "b"], 3)).toBe(false);
 	});
 
-	it("should validate an array in pipe", () => {
+	it("should narrow the array inside a pipe when callback", () => {
+		const source = ["a", "b", "c"] as string[];
 		const result = pipe(
-			["a", "b", "c"],
-			DArray.minElements(3),
+			source,
+			when(
+				DArray.minElements(3),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						string[] & DArray.MinElements<3>,
+						"strict"
+					>;
+
+					return value.length;
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe(3);
 	});
 
 	it("should narrow the array with a min elements constraint", () => {

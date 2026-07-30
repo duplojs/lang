@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("endsWith", () => {
 	it("should validate string end", () => {
@@ -6,13 +6,25 @@ describe("endsWith", () => {
 		expect(DString.endsWith("admin", "api")).toBe(false);
 	});
 
-	it("should validate string end in pipe", () => {
+	it("should narrow a string end inside a pipe when callback", () => {
+		const source = "user-api" as "user-api" | "admin";
 		const result = pipe(
-			"user-api",
-			DString.endsWith("api"),
+			source,
+			when(
+				DString.endsWith("api"),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						"user-api",
+						"strict"
+					>;
+
+					return value.toUpperCase();
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe("USER-API");
 	});
 
 	it("should narrow a string union to values ending with the search string", () => {

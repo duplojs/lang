@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("isKeyof", () => {
 	it("should validate a key with a defined value", () => {
@@ -19,15 +19,29 @@ describe("isKeyof", () => {
 		expect(DString.isKeyof("name", source)).toBe(false);
 	});
 
-	it("should validate a key in pipe", () => {
+	it("should narrow a key inside a pipe when callback", () => {
+		const source = {
+			name: "Duplo",
+			version: 1,
+		};
+		const key = "name" as "name" | "missing";
 		const result = pipe(
-			"name",
-			DString.isKeyof({
-				name: "Duplo",
-			}),
+			key,
+			when(
+				DString.isKeyof(source),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						"name",
+						"strict"
+					>;
+
+					return source[value];
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe("Duplo");
 	});
 
 	it("should narrow the key to object keys when the value is defined", () => {

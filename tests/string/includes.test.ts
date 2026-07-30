@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("includes", () => {
 	it("should validate contained text", () => {
@@ -6,13 +6,25 @@ describe("includes", () => {
 		expect(DString.includes("hello world", "duplo")).toBe(false);
 	});
 
-	it("should validate contained text in pipe", () => {
+	it("should narrow contained text inside a pipe when callback", () => {
+		const source = "hello world" as "hello world" | "admin";
 		const result = pipe(
-			"hello world",
-			DString.includes("world"),
+			source,
+			when(
+				DString.includes("world"),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						"hello world",
+						"strict"
+					>;
+
+					return value.toUpperCase();
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe("HELLO WORLD");
 	});
 
 	it("should narrow a string union to values containing the search string", () => {

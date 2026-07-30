@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("lengthEqual", () => {
 	it("should validate a string with the expected length", () => {
@@ -6,13 +6,25 @@ describe("lengthEqual", () => {
 		expect(DString.lengthEqual("code", 5)).toBe(false);
 	});
 
-	it("should validate a string in pipe", () => {
+	it("should narrow the string inside a pipe when callback", () => {
+		const source = "code" as string;
 		const result = pipe(
-			"code",
-			DString.lengthEqual(4),
+			source,
+			when(
+				DString.lengthEqual(4),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						string & DString.LengthEqual<4>,
+						"strict"
+					>;
+
+					return value.length;
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe(4);
 	});
 
 	it("should narrow the string with a length equal constraint", () => {

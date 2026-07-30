@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("isIn", () => {
 	it("should validate a string contained in an array", () => {
@@ -8,13 +8,25 @@ describe("isIn", () => {
 		expect(DString.isIn("archived", values)).toBe(false);
 	});
 
-	it("should validate a string contained in an array in pipe", () => {
+	it("should narrow a string contained in an array inside a pipe when callback", () => {
+		const source = "draft" as string;
 		const result = pipe(
-			"draft",
-			DString.isIn(["draft", "published"] as const),
+			source,
+			when(
+				DString.isIn(["draft", "published"] as const),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						"draft" | "published",
+						"strict"
+					>;
+
+					return "published";
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe("published");
 	});
 
 	it("should narrow the string to array values", () => {

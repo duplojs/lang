@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("maxCharacters", () => {
 	it("should validate a string shorter than the maximum", () => {
@@ -6,13 +6,25 @@ describe("maxCharacters", () => {
 		expect(DString.maxCharacters("hello!", 5)).toBe(false);
 	});
 
-	it("should validate a string in pipe", () => {
+	it("should narrow the string inside a pipe when callback", () => {
+		const source = "hello" as string;
 		const result = pipe(
-			"hello",
-			DString.maxCharacters(5),
+			source,
+			when(
+				DString.maxCharacters(5),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						string & DString.MaxCharacters<5>,
+						"strict"
+					>;
+
+					return value.length;
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe(5);
 	});
 
 	it("should narrow the string with a max characters constraint", () => {

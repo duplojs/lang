@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("startsWith", () => {
 	it("should validate string start", () => {
@@ -6,13 +6,25 @@ describe("startsWith", () => {
 		expect(DString.startsWith("admin", "api")).toBe(false);
 	});
 
-	it("should validate string start in pipe", () => {
+	it("should narrow a string start inside a pipe when callback", () => {
+		const source = "api-user" as "api-user" | "admin";
 		const result = pipe(
-			"api-user",
-			DString.startsWith("api"),
+			source,
+			when(
+				DString.startsWith("api"),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						"api-user",
+						"strict"
+					>;
+
+					return value.toUpperCase();
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe("API-USER");
 	});
 
 	it("should narrow a string union to values starting with the search string", () => {

@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("minCharacters", () => {
 	it("should validate a string longer than the minimum", () => {
@@ -6,13 +6,25 @@ describe("minCharacters", () => {
 		expect(DString.minCharacters("hi", 3)).toBe(false);
 	});
 
-	it("should validate a string in pipe", () => {
+	it("should narrow the string inside a pipe when callback", () => {
+		const source = "hello" as string;
 		const result = pipe(
-			"hello",
-			DString.minCharacters(3),
+			source,
+			when(
+				DString.minCharacters(3),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						string & DString.MinCharacters<3>,
+						"strict"
+					>;
+
+					return value.length;
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe(5);
 	});
 
 	it("should narrow the string with a min characters constraint", () => {

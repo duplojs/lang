@@ -1,4 +1,4 @@
-import { DArray, pipe, type ExpectType } from "@scripts";
+import { DArray, pipe, when, type ExpectType } from "@scripts";
 
 describe("maxElements", () => {
 	it("should validate an array shorter than the maximum", () => {
@@ -6,13 +6,25 @@ describe("maxElements", () => {
 		expect(DArray.maxElements(["a", "b", "c", "d"], 3)).toBe(false);
 	});
 
-	it("should validate an array in pipe", () => {
+	it("should narrow the array inside a pipe when callback", () => {
+		const source = ["a", "b", "c"] as string[];
 		const result = pipe(
-			["a", "b", "c"],
-			DArray.maxElements(3),
+			source,
+			when(
+				DArray.maxElements(3),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						string[] & DArray.MaxElements<3>,
+						"strict"
+					>;
+
+					return value.length;
+				},
+			),
 		);
 
-		expect(result).toBe(true);
+		expect(result).toBe(3);
 	});
 
 	it("should narrow the array with a max elements constraint", () => {
