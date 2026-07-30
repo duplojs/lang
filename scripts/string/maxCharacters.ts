@@ -52,7 +52,7 @@ type ComputeMaxCharacters<
 
 export function maxCharacters<
 	GenericString extends string,
-	GenericMax extends number,
+	const GenericMax extends number,
 >(
 	max: GenericMax & RequireApplyMaxCharacters<GenericString, GenericMax>,
 ): (
@@ -61,7 +61,7 @@ export function maxCharacters<
 
 export function maxCharacters<
 	GenericString extends string,
-	GenericMax extends number,
+	const GenericMax extends number,
 >(
 	string: GenericString,
 	max: GenericMax & RequireApplyMaxCharacters<GenericString, GenericMax>,

@@ -52,7 +52,7 @@ type ComputeMinCharacters<
 
 export function minCharacters<
 	GenericString extends string,
-	GenericMin extends number,
+	const GenericMin extends number,
 >(
 	min: GenericMin & RequireApplyMinCharacters<GenericString, GenericMin>,
 ): (
@@ -61,7 +61,7 @@ export function minCharacters<
 
 export function minCharacters<
 	GenericString extends string,
-	GenericMin extends number,
+	const GenericMin extends number,
 >(
 	string: GenericString,
 	min: GenericMin & RequireApplyMinCharacters<GenericString, GenericMin>,

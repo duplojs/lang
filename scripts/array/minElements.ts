@@ -52,7 +52,7 @@ type ComputeMinElements<
 
 export function minElements<
 	GenericArray extends readonly unknown[],
-	GenericMin extends number,
+	const GenericMin extends number,
 >(
 	min: GenericMin & RequireApplyMinElements<GenericArray, GenericMin>,
 ): (
@@ -61,7 +61,7 @@ export function minElements<
 
 export function minElements<
 	GenericArray extends readonly unknown[],
-	GenericMin extends number,
+	const GenericMin extends number,
 >(
 	array: GenericArray,
 	min: GenericMin & RequireApplyMinElements<GenericArray, GenericMin>,

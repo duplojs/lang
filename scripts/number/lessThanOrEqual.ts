@@ -1,17 +1,43 @@
-export function lessThanOrEqual<
+import type { GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, RequireLiteralNumber } from "./constraints";
+import type { IsGreater, IsGreaterOrEqual } from "./types";
+
+type LessThanOrEqualOutput<
 	GenericValue extends number,
->(
-	threshold: number,
-): (
-	value: GenericValue,
-) => boolean;
+	GenericThreshold extends number,
+> = GenericValue extends LessThanOrEqual<infer InferredMax>
+	? IsGreaterOrEqual<GenericThreshold, InferredMax> extends true
+		? GenericValue
+		: GenericValue & LessThanOrEqual<GenericThreshold>
+	: GenericValue extends LessThan<infer InferredMax>
+		? IsGreaterOrEqual<GenericThreshold, InferredMax> extends true
+			? GenericValue
+			: GenericValue & LessThanOrEqual<GenericThreshold>
+		: GenericValue extends GreaterThan<infer InferredMin>
+			? IsGreater<GenericThreshold, InferredMin> extends true
+				? GenericValue & LessThanOrEqual<GenericThreshold>
+				: never
+			: GenericValue extends GreaterThanOrEqual<infer InferredMin>
+				? IsGreaterOrEqual<GenericThreshold, InferredMin> extends true
+					? GenericValue & LessThanOrEqual<GenericThreshold>
+					: never
+				: GenericValue & LessThanOrEqual<GenericThreshold>;
 
 export function lessThanOrEqual<
 	GenericValue extends number,
+	const GenericThreshold extends number,
+>(
+	threshold: GenericThreshold & RequireLiteralNumber<GenericThreshold>,
+): (
+	value: GenericValue,
+) => value is LessThanOrEqualOutput<GenericValue, GenericThreshold>;
+
+export function lessThanOrEqual<
+	GenericValue extends number,
+	const GenericThreshold extends number,
 >(
 	value: GenericValue,
-	threshold: number,
-): boolean;
+	threshold: GenericThreshold & RequireLiteralNumber<GenericThreshold>,
+): value is LessThanOrEqualOutput<GenericValue, GenericThreshold>;
 
 export function lessThanOrEqual(
 	...args:
@@ -21,7 +47,7 @@ export function lessThanOrEqual(
 	if (args.length === 1) {
 		const [threshold] = args;
 
-		return (value: number) => lessThanOrEqual(value, threshold);
+		return (value: number) => lessThanOrEqual(value, threshold as never);
 	}
 
 	const [value, threshold] = args;

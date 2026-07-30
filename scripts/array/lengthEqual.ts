@@ -71,7 +71,7 @@ type ComputeLengthEqual<
 
 export function lengthEqual<
 	GenericArray extends readonly unknown[],
-	GenericLength extends number,
+	const GenericLength extends number,
 >(
 	length: GenericLength & RequireApplyLengthEqual<GenericArray, GenericLength>,
 ): (
@@ -80,7 +80,7 @@ export function lengthEqual<
 
 export function lengthEqual<
 	GenericArray extends readonly unknown[],
-	GenericLength extends number,
+	const GenericLength extends number,
 >(
 	array: GenericArray,
 	length: GenericLength & RequireApplyLengthEqual<GenericArray, GenericLength>,

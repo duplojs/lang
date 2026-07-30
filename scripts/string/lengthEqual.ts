@@ -71,7 +71,7 @@ type ComputeLengthEqual<
 
 export function lengthEqual<
 	GenericString extends string,
-	GenericLength extends number,
+	const GenericLength extends number,
 >(
 	length: GenericLength & RequireApplyLengthEqual<GenericString, GenericLength>,
 ): (
@@ -80,7 +80,7 @@ export function lengthEqual<
 
 export function lengthEqual<
 	GenericString extends string,
-	GenericLength extends number,
+	const GenericLength extends number,
 >(
 	string: GenericString,
 	length: GenericLength & RequireApplyLengthEqual<GenericString, GenericLength>,

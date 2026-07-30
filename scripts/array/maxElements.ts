@@ -52,7 +52,7 @@ type ComputeMaxElements<
 
 export function maxElements<
 	GenericArray extends readonly unknown[],
-	GenericMax extends number,
+	const GenericMax extends number,
 >(
 	max: GenericMax & RequireApplyMaxElements<GenericArray, GenericMax>,
 ): (
@@ -61,7 +61,7 @@ export function maxElements<
 
 export function maxElements<
 	GenericArray extends readonly unknown[],
-	GenericMax extends number,
+	const GenericMax extends number,
 >(
 	array: GenericArray,
 	max: GenericMax & RequireApplyMaxElements<GenericArray, GenericMax>,

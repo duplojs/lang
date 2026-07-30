@@ -1,17 +1,43 @@
-export function lessThan<
+import type { GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, RequireLiteralNumber } from "./constraints";
+import type { IsGreater, IsGreaterOrEqual } from "./types";
+
+type LessThanOutput<
 	GenericValue extends number,
->(
-	threshold: number,
-): (
-	value: GenericValue,
-) => boolean;
+	GenericThreshold extends number,
+> = GenericValue extends LessThanOrEqual<infer InferredMax>
+	? IsGreater<GenericThreshold, InferredMax> extends true
+		? GenericValue
+		: GenericValue & LessThan<GenericThreshold>
+	: GenericValue extends LessThan<infer InferredMax>
+		? IsGreaterOrEqual<GenericThreshold, InferredMax> extends true
+			? GenericValue
+			: GenericValue & LessThan<GenericThreshold>
+		: GenericValue extends GreaterThan<infer InferredMin>
+			? IsGreater<GenericThreshold, InferredMin> extends true
+				? GenericValue & LessThan<GenericThreshold>
+				: never
+			: GenericValue extends GreaterThanOrEqual<infer InferredMin>
+				? IsGreater<GenericThreshold, InferredMin> extends true
+					? GenericValue & LessThan<GenericThreshold>
+					: never
+				: GenericValue & LessThan<GenericThreshold>;
 
 export function lessThan<
 	GenericValue extends number,
+	const GenericThreshold extends number,
+>(
+	threshold: GenericThreshold & RequireLiteralNumber<GenericThreshold>,
+): (
+	value: GenericValue,
+) => value is LessThanOutput<GenericValue, GenericThreshold>;
+
+export function lessThan<
+	GenericValue extends number,
+	const GenericThreshold extends number,
 >(
 	value: GenericValue,
-	threshold: number,
-): boolean;
+	threshold: GenericThreshold & RequireLiteralNumber<GenericThreshold>,
+): value is LessThanOutput<GenericValue, GenericThreshold>;
 
 export function lessThan(
 	...args:
@@ -21,7 +47,7 @@ export function lessThan(
 	if (args.length === 1) {
 		const [threshold] = args;
 
-		return (value: number) => lessThan(value, threshold);
+		return (value: number) => lessThan(value, threshold as never);
 	}
 
 	const [value, threshold] = args;
