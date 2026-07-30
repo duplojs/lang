@@ -126,9 +126,11 @@ export function create<
 			return input as never;
 		},
 		has(input): input is never {
-			return input
+			return Boolean(
+				input
 				&& typeof input === "object"
-				&& runTimeKey in input;
+				&& runTimeKey in input,
+			);
 		},
 		getValue(input) {
 			return input[runTimeKey as never];

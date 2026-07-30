@@ -1,5 +1,4 @@
 import { type ExpectType, DChrono } from "@scripts";
-import { vi } from "vitest";
 
 describe("format", () => {
 	beforeEach(() => {
