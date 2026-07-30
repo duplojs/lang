@@ -6,9 +6,7 @@ type IncludesOutput<
 > = GenericString extends string
 	? ApplyFormat<GenericString> extends `${string}${GenericSearchString}${string}`
 		? GenericString
-		: string extends GenericString
-			? GenericString & `${string}${GenericSearchString}${string}`
-			: never
+		: GenericString & `${string}${GenericSearchString}${string}`
 	: never;
 
 export function includes<
