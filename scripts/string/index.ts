@@ -19,6 +19,7 @@ export * from "./toLowerCase";
 export * from "./isKeyof";
 export * from "./trim";
 export * from "./includes";
+export * from "./containsOnly";
 export * from "./startsWith";
 export * from "./endsWith";
 export * from "./replace";
