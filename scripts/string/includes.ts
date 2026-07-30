@@ -1,12 +1,14 @@
-import type * as DCommon from "@scripts/common";
+import { type ApplyFormat } from "./constraints";
 
 type IncludesOutput<
 	GenericString extends string,
 	GenericSearchString extends string,
-> = Extract<GenericString, `${string}${GenericSearchString}${string}`> extends infer InferredResult extends GenericString
-	? DCommon.IsEqual<InferredResult, never> extends true
-		? GenericString & `${string}${GenericSearchString}${string}`
-		: InferredResult
+> = GenericString extends string
+	? ApplyFormat<GenericString> extends `${string}${GenericSearchString}${string}`
+		? GenericString
+		: string extends GenericString
+			? GenericString & `${string}${GenericSearchString}${string}`
+			: never
 	: never;
 
 export function includes<

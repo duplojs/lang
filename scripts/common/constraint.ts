@@ -1,28 +1,30 @@
-export declare const ConstraintKind: unique symbol;
-export type ConstraintKind = typeof ConstraintKind;
+export declare const ConstraintSymbol: unique symbol;
+export type ConstraintSymbol = typeof ConstraintSymbol;
 
 export interface Constraint<
-	ConstraintName extends string = string,
+	GenericName extends string = string,
+	GenericValue extends unknown = unknown,
 > {
-	[ConstraintKind]: {
-		[Prop in ConstraintName]: unknown
+	[ConstraintSymbol]: {
+		[Prop in GenericName]: GenericValue
 	};
 }
 
 export interface DynamicConstraint<
-	ConstraintName extends string = string,
-	ConstraintValue extends string | number = never,
-> {
-	[ConstraintKind]: {
-		[Prop in ConstraintName]: Record<ConstraintValue, unknown>
-	};
+	GenericName extends string = string,
+	GenericValue extends string | number = never,
+> extends Constraint<
+		GenericName,
+		Record<GenericValue, unknown>
+	> {
+
 }
 
 export type RemoveConstraint<
 	GenericValue extends unknown,
 > = GenericValue extends (infer InferredValue) & Pick<
 	GenericValue,
-	Extract<ConstraintKind, keyof GenericValue>
+	Extract<ConstraintSymbol, keyof GenericValue>
 >
 	? InferredValue
 	: GenericValue;

@@ -1,3 +1,3 @@
 import type { Format } from "./format";
 
-export interface Url extends Format<"url"> {}
+export interface Url extends Format<"url", never> {}
