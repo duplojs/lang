@@ -49,11 +49,13 @@ Certains fichiers peuvent exceptionnellement tester plusieurs fonctions. Ne pas 
 
 ## Imports
 
+- Ne jamais importer depuis `vitest`. Les globals Vitest sont chargés par le `tsconfig` et disponibles à l'exécution.
 - Importer les éléments depuis `@scripts`.
 - Appeler la fonction testée via son namespace.
 - Importer uniquement ce qui est utilisé.
 - Importer `ExpectType` lorsque des assertions de type sont pertinentes.
 - Importer `pipe` uniquement lorsqu'un test de pipe est pertinent.
+- Importer `when` ou une autre API de composition uniquement lorsqu'elle sert réellement à vérifier un narrowing dans un pipe.
 
 ## Structure
 
@@ -79,7 +81,7 @@ Choisir uniquement celui qui correspond réellement à la fonction :
 
 - `assets/basic-function.md` pour une fonction simple;
 - `assets/curried-function.md` pour une fonction qui possède une signature curryfiée;
-- `assets/predicate-function.md` pour une fonction qui effectue un narrowing ou accepte un type predicate;
+- `assets/predicate-function.md` pour une fonction qui est elle-même un predicate ou un type predicate;
 - `assets/examples.md` pour des exemples de placement de `ExpectType`.
 
 Ne pas fusionner tous les templates dans un même fichier de test.
@@ -129,29 +131,59 @@ Ne pas ajouter un `ExpectType` uniquement pour respecter un quota. Une fonction 
 
 Les checks de types doivent être placés près de la valeur ou de l'étape qu'ils valident.
 
+## Tests d'API TypeScript
+
+Le contrat TypeScript fait partie de l'API publique. Tester le runtime seul ne suffit pas.
+
+Vérifier les formes publiques pertinentes :
+
+- appel direct;
+- usage dans un `pipe` pour les signatures curryfiées;
+- predicates et type predicates;
+- overloads exposés;
+- relations entre arguments;
+- entrées acceptées et refusées;
+- inférence des sorties et des valeurs intermédiaires.
+
+Utiliser `ExpectType` pour vérifier l'inférence et `@ts-expect-error` pour les appels qui doivent être refusés.
+
+Tester notamment les limites visibles par l'utilisateur : littéraux, unions, tuples, `readonly`, types intersection/branded et contraintes entre paramètres.
+
+Si une inférence semble trop large, inversée, instable ou incohérente avec l'intention de l'API, s'arrêter et demander au mainteneur au lieu d'adapter le test pour masquer le problème.
+
 ## Tests avec `pipe`
 
 Un test de pipe n'est pas systématique.
 
 Ajouter un test avec `pipe` lorsque :
 
-- la fonction possède une signature curryfiée destinée à la composition;
+- la fonction possède une signature curryfiée;
 - la propagation de ses génériques dans un pipe doit être vérifiée;
 - le pipe produit une inférence différente ou plus complexe qu'un appel direct;
 - la fonction est explicitement conçue pour être utilisée dans un pipeline.
 
 Ne pas ajouter de test de pipe lorsque la fonction ne possède aucune forme curryfiée ou lorsque le test n'apporte aucune vérification supplémentaire.
 
+Dans ce projet, une signature curryfiée existe uniquement pour l'usage dans `pipe`.
+
+Ne pas tester une signature curryfiée seule, hors `pipe`, sauf demande explicite ou cas exceptionnel documenté par le code existant.
+
 Dans un test de pipe pertinent, vérifier le comportement runtime et, si nécessaire, l'inférence obtenue à une étape intermédiaire ou en sortie.
 
 ## Predicates
 
-Lorsqu'une fonction est un predicate ou accepte un predicate :
+Lorsqu'une fonction est un predicate ou un type predicate :
 
 - tester le comportement runtime;
 - tester le narrowing lorsque celui-ci fait partie du contrat;
-- tester les predicates type guard lorsque la signature les supporte;
+- tester la forme directe avec la valeur à discriminer;
 - vérifier l'inférence dans un pipe uniquement si la forme curryfiée existe et si le test apporte une information utile.
+
+Lorsqu'une fonction accepte une callback predicate en paramètre, tester cette callback comme un argument de l'API concernée. Ne pas appliquer automatiquement le template `predicate-function.md`.
+
+Pour vérifier le narrowing d'un predicate dans un `pipe`, ne pas placer seulement le predicate comme étape du pipe.
+
+Utiliser `when` ou une autre fonction de composition qui consomme le predicate et donne accès à la valeur narrowée dans un callback.
 
 ## Couverture
 

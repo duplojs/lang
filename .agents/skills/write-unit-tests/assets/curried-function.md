@@ -14,18 +14,6 @@ describe("functionName", () => {
 		expect(result).toStrictEqual(expectedResult);
 	});
 
-	it("supports curried call", () => {
-		const result = DNamespace.functionName(params)(input);
-
-		type _CheckResult = ExpectType<
-			typeof result,
-			ExpectedResult,
-			"strict"
-		>;
-
-		expect(result).toStrictEqual(expectedResult);
-	});
-
 	it("preserves inference in a pipe", () => {
 		const result = pipe(
 			input,

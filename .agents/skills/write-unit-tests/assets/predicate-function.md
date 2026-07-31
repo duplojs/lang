@@ -1,11 +1,11 @@
 ```ts
-import { DNamespace, type ExpectType, pipe } from "@scripts";
+import { DNamespace, type ExpectType, pipe, when } from "@scripts";
 
 describe("functionName", () => {
 	it("narrows the direct input", () => {
 		const input = value as Input;
 
-		if (DNamespace.functionName(input, predicate)) {
+		if (DNamespace.functionName(input, predicateParams)) {
 			type _CheckInput = ExpectType<
 				typeof input,
 				NarrowedInput,
@@ -16,14 +16,25 @@ describe("functionName", () => {
 
 	it("returns the expected runtime result", () => {
 		expect(
-			DNamespace.functionName(input, predicate),
+			DNamespace.functionName(input, predicateParams),
 		).toBe(expectedResult);
 	});
 
 	it("preserves narrowing in a pipe", () => {
 		const result = pipe(
 			input,
-			DNamespace.functionName(predicate),
+			when(
+				DNamespace.functionName(predicateParams),
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						NarrowedInput,
+						"strict"
+					>;
+
+					return transform(value);
+				},
+			),
 		);
 
 		type _CheckResult = ExpectType<
@@ -36,3 +47,5 @@ describe("functionName", () => {
 	});
 });
 ```
+
+Omettre `predicateParams` lorsque la fonction predicate ne prend aucune configuration.
