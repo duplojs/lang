@@ -11,6 +11,7 @@ Le projet fournit des fonctions et des types TypeScript conçus pour offrir une 
 Avant toute analyse ou modification, lire et appliquer :
 
 - `.agents/mindset/collaboration.md`
+- `.agents/mindset/philosophy.md`
 - `.agents/rules/code.md`
 - `.agents/rules/typescript.md`
 
