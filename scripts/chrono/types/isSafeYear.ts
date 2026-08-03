@@ -4,6 +4,6 @@ import type * as DNumber from "@scripts/number";
 export type IsSafeYear<
 	GenericYears extends number,
 > = DCommon.And<[
-	DNumber.IsGreater<GenericYears, -271820>,
-	DNumber.IsLess<GenericYears, 275759>,
+	DNumber.IsGreaterOrEqual<GenericYears, -271820>,
+	DNumber.IsLessOrEqual<GenericYears, 275759>,
 ]>;

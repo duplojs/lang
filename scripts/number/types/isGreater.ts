@@ -179,15 +179,13 @@ type ComputeIsGreater<
 export type IsGreaterOrEqual<
 	GenericValue extends number,
 	GenericReference extends number,
-> = DCommon.Or<[
-	DCommon.IsEqual<GenericValue, GenericReference>,
-	ComputeIsGreater<GenericValue, GenericReference>,
-]>;
+> = DCommon.IsEqual<GenericValue, GenericReference> extends true
+	? true
+	: ComputeIsGreater<GenericValue, GenericReference>;
 
 export type IsGreater<
 	GenericValue extends number,
 	GenericReference extends number,
-> = DCommon.And<[
-	DCommon.Not<DCommon.IsEqual<GenericValue, GenericReference>>,
-	ComputeIsGreater<GenericValue, GenericReference>,
-]>;
+> = DCommon.Not<DCommon.IsEqual<GenericValue, GenericReference>> extends true
+	? ComputeIsGreater<GenericValue, GenericReference>
+	: false;

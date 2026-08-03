@@ -28,8 +28,8 @@ type ForbiddenTime<
 		& (
 			DCommon.IsEqual<GenericUnit, "millisecond"> extends true
 				? DCommon.And<[
-					DNumber.IsGreater<GenericInput, typeof minTimeValue>,
-					DNumber.IsLess<GenericInput, typeof maxTimeValue>,
+					DNumber.IsGreaterOrEqual<GenericInput, typeof minTimeValue>,
+					DNumber.IsLessOrEqual<GenericInput, typeof maxTimeValue>,
 				]> extends true
 					? GenericInput
 					: DCommon.ComputedTypeError<"Support that the milliseconds between -9007199254740991 and 9007199254740991.">
@@ -38,8 +38,8 @@ type ForbiddenTime<
 		& (
 			DCommon.IsEqual<GenericUnit, "second"> extends true
 				? DCommon.And<[
-					DNumber.IsGreater<GenericInput, -9007199254740>,
-					DNumber.IsLess<GenericInput, 9007199254740>,
+					DNumber.IsGreaterOrEqual<GenericInput, -9007199254740>,
+					DNumber.IsLessOrEqual<GenericInput, 9007199254740>,
 				]> extends true
 					? GenericInput
 					: DCommon.ComputedTypeError<"Support that the seconds between -9007199254740 and 9007199254740.">
@@ -48,8 +48,8 @@ type ForbiddenTime<
 		& (
 			DCommon.IsEqual<GenericUnit, "minute"> extends true
 				? DCommon.And<[
-					DNumber.IsGreater<GenericInput, -150119987579>,
-					DNumber.IsLess<GenericInput, 150119987579>,
+					DNumber.IsGreaterOrEqual<GenericInput, -150119987579>,
+					DNumber.IsLessOrEqual<GenericInput, 150119987579>,
 				]> extends true
 					? GenericInput
 					: DCommon.ComputedTypeError<"Support that the minutes between -150119987579 and 150119987579.">
@@ -58,8 +58,8 @@ type ForbiddenTime<
 		& (
 			DCommon.IsEqual<GenericUnit, "hour"> extends true
 				? DCommon.And<[
-					DNumber.IsGreater<GenericInput, -2501999792>,
-					DNumber.IsLess<GenericInput, 2501999792>,
+					DNumber.IsGreaterOrEqual<GenericInput, -2501999792>,
+					DNumber.IsLessOrEqual<GenericInput, 2501999792>,
 				]> extends true
 					? GenericInput
 					: DCommon.ComputedTypeError<"Support that the hours between -2501999792 and 2501999792.">
@@ -68,8 +68,8 @@ type ForbiddenTime<
 		& (
 			DCommon.IsEqual<GenericUnit, "day"> extends true
 				? DCommon.And<[
-					DNumber.IsGreater<GenericInput, -104249991>,
-					DNumber.IsLess<GenericInput, 104249991>,
+					DNumber.IsGreaterOrEqual<GenericInput, -104249991>,
+					DNumber.IsLessOrEqual<GenericInput, 104249991>,
 				]> extends true
 					? GenericInput
 					: DCommon.ComputedTypeError<"Support that the days between -104249991 and 104249991.">
@@ -78,8 +78,8 @@ type ForbiddenTime<
 		& (
 			DCommon.IsEqual<GenericUnit, "week"> extends true
 				? DCommon.And<[
-					DNumber.IsGreater<GenericInput, -14892855>,
-					DNumber.IsLess<GenericInput, 14892855>,
+					DNumber.IsGreaterOrEqual<GenericInput, -14892855>,
+					DNumber.IsLessOrEqual<GenericInput, 14892855>,
 				]> extends true
 					? GenericInput
 					: DCommon.ComputedTypeError<"Support that the weeks between -14892855 and 14892855.">
