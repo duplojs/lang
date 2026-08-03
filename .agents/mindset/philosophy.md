@@ -42,5 +42,9 @@ Lorsqu'une tâche touche une contrainte, une fonction predicate qui produit une 
 
 Lire un fichier de domaine seulement lorsqu'il est utile :
 
+- `domains/array.md` pour `scripts/array`, les types array, les callbacks array et les contraintes de taille de tableau.
+- `domains/chrono.md` pour `scripts/chrono`, `TheDate`, `TheTime`, les conversions, sérialisations, timezones et opérations temporelles.
 - `domains/constraints.md` pour le système transversal des contraintes.
+- `domains/dataStructure.md` pour `scripts/dataStructure`, les structures, types, contraintes runtime, helpers, codecs, checks, encode et decode.
+- `domains/number.md` pour `scripts/number`, les types number, les predicates numériques et les contraintes numériques.
 - `domains/string.md` pour `scripts/string`, les types string, les predicates string et les contraintes string.
