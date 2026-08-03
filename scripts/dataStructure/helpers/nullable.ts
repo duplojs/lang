@@ -1,17 +1,7 @@
-import { type Structure, type StructureInitialValue, type StructureValue, type UnionStructure, structureIdentifier, typeStructureKind, unionStructureKind } from "../structure";
-import { nullTypeKind, typeIdentifier } from "../type";
+import { type Structure, type StructureInitialValue, type StructureValue, type UnionStructure, structureIdentifier, unionStructureKind } from "../structure";
 import { union } from "./union";
 import { null as nullHelper } from "./null";
-
-function isNullStructure(structure: Structure) {
-	return (
-		structureIdentifier(structure, typeStructureKind)
-		&& typeIdentifier(
-			structure.definition.type,
-			nullTypeKind,
-		)
-	);
-}
+import { isNullStructure } from "./isNullStructure";
 
 export function nullable<
 	GenericStructure extends Structure,

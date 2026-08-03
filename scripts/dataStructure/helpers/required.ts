@@ -1,17 +1,7 @@
-import { type ObjectStructure, type Structure, unionStructureKind, typeStructureKind, structureIdentifier, type StructureInitialValue } from "../structure";
-import { typeIdentifier, undefinedTypeKind } from "../type";
+import { type ObjectStructure, type Structure, unionStructureKind, structureIdentifier, type StructureInitialValue } from "../structure";
 import { union } from "./union";
 import { object } from "./object";
-
-function isUndefinedStructure(structure: Structure) {
-	return (
-		structureIdentifier(structure, typeStructureKind)
-		&& typeIdentifier(
-			structure.definition.type,
-			undefinedTypeKind,
-		)
-	);
-}
+import { isUndefinedStructure } from "./isUndefinedStructure";
 
 function requiredStructure(structure: Structure) {
 	if (!structureIdentifier(structure, unionStructureKind)) {

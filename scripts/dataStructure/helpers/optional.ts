@@ -1,17 +1,7 @@
-import { type Structure, type StructureInitialValue, type StructureValue, type UnionStructure, structureIdentifier, typeStructureKind, unionStructureKind } from "../structure";
-import { typeIdentifier, undefinedTypeKind } from "../type";
+import { type Structure, type StructureInitialValue, type StructureValue, type UnionStructure, structureIdentifier, unionStructureKind } from "../structure";
 import { union } from "./union";
 import { undefined as undefinedHelper } from "./undefined";
-
-function isUndefinedStructure(structure: Structure) {
-	return (
-		structureIdentifier(structure, typeStructureKind)
-		&& typeIdentifier(
-			structure.definition.type,
-			undefinedTypeKind,
-		)
-	);
-}
+import { isUndefinedStructure } from "./isUndefinedStructure";
 
 export function optional<
 	GenericStructure extends Structure,

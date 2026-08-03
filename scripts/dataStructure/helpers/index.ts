@@ -4,6 +4,8 @@ export * from "./boolean";
 export * from "./date";
 export * from "./email";
 export * from "./extend";
+export * from "./isNullStructure";
+export * from "./isUndefinedStructure";
 export * from "./lazy";
 export * from "./literal";
 export * from "./null";
