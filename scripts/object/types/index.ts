@@ -5,4 +5,5 @@ export * from "./getPropsWithValueExtends";
 export * from "./partialKeys";
 export * from "./requireAtLeastOne";
 export * from "./requiredKeys";
+export * from "./split";
 export * from "./values";

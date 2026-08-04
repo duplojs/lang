@@ -29,3 +29,6 @@ export * as DTuple from "./tuple";
 
 export * as N from "./number";
 export * as DNumber from "./number";
+
+export * as M from "./modeling";
+export * as DModeling from "./modeling";

@@ -1,26 +1,28 @@
-import type { GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, RequireLiteralNumber } from "./constraints";
+import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, RequireLiteralNumber } from "./constraints";
 import type { IsGreater, IsGreaterOrEqual } from "./types";
 
 type LessThanOutput<
 	GenericValue extends number,
 	GenericThreshold extends number,
-> = GenericValue extends LessThanOrEqual<infer InferredMax>
-	? IsGreater<GenericThreshold, InferredMax> extends true
-		? GenericValue
-		: GenericValue & LessThan<GenericThreshold>
-	: GenericValue extends LessThan<infer InferredMax>
-		? IsGreaterOrEqual<GenericThreshold, InferredMax> extends true
+> = GenericValue extends unknown
+	? ExtractLessThanOrEqual<GenericValue, unknown> extends LessThanOrEqual<infer InferredMax>
+		? IsGreater<GenericThreshold, InferredMax> extends true
 			? GenericValue
 			: GenericValue & LessThan<GenericThreshold>
-		: GenericValue extends GreaterThan<infer InferredMin>
-			? IsGreater<GenericThreshold, InferredMin> extends true
-				? GenericValue & LessThan<GenericThreshold>
-				: never
-			: GenericValue extends GreaterThanOrEqual<infer InferredMin>
+		: ExtractLessThan<GenericValue, unknown> extends LessThan<infer InferredMax>
+			? IsGreaterOrEqual<GenericThreshold, InferredMax> extends true
+				? GenericValue
+				: GenericValue & LessThan<GenericThreshold>
+			: ExtractGreaterThan<GenericValue, unknown> extends GreaterThan<infer InferredMin>
 				? IsGreater<GenericThreshold, InferredMin> extends true
 					? GenericValue & LessThan<GenericThreshold>
 					: never
-				: GenericValue & LessThan<GenericThreshold>;
+				: ExtractGreaterThanOrEqual<GenericValue, unknown> extends GreaterThanOrEqual<infer InferredMin>
+					? IsGreater<GenericThreshold, InferredMin> extends true
+						? GenericValue & LessThan<GenericThreshold>
+						: never
+					: GenericValue & LessThan<GenericThreshold>
+	: never;
 
 export function lessThan<
 	GenericValue extends number,

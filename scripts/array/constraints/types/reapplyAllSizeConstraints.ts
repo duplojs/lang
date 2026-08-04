@@ -1,26 +1,26 @@
 import type * as DCommon from "@scripts/common";
-import type { LengthEqual } from "../lengthEqual";
-import type { MaxElements } from "../maxElements";
-import type { MinElements } from "../minElements";
+import type { ExtractLengthEqual, LengthEqual } from "../lengthEqual";
+import type { ExtractMaxElements, MaxElements } from "../maxElements";
+import type { ExtractMinElements, MinElements } from "../minElements";
 
 type ApplyLengthEqual<
 	GenericOutput extends readonly unknown[],
 	GenericSource extends readonly unknown[],
-> = GenericSource extends LengthEqual<infer InferredLength>
+> = ExtractLengthEqual<GenericSource, unknown> extends LengthEqual<infer InferredLength>
 	? GenericOutput & LengthEqual<InferredLength>
 	: GenericOutput;
 
 type ApplyMinElements<
 	GenericOutput extends readonly unknown[],
 	GenericSource extends readonly unknown[],
-> = GenericSource extends MinElements<infer InferredMin>
+> = ExtractMinElements<GenericSource, unknown> extends MinElements<infer InferredMin>
 	? GenericOutput & MinElements<InferredMin>
 	: GenericOutput;
 
 type ApplyMaxElements<
 	GenericOutput extends readonly unknown[],
 	GenericSource extends readonly unknown[],
-> = GenericSource extends MaxElements<infer InferredMax>
+> = ExtractMaxElements<GenericSource, unknown> extends MaxElements<infer InferredMax>
 	? GenericOutput & MaxElements<InferredMax>
 	: GenericOutput;
 

@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, RequireLiteralNumber } from "./constraints";
+import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, RequireLiteralNumber } from "./constraints";
 import type { IsGreater, IsGreaterOrEqual } from "./types";
 
 type ApplyGreaterThan<
@@ -7,18 +7,18 @@ type ApplyGreaterThan<
 	GenericThreshold extends number,
 > = GenericValue extends unknown
 	? DCommon.And<[
-		GenericValue extends LessThanOrEqual<infer InferredMax>
+		ExtractLessThanOrEqual<GenericValue, unknown> extends LessThanOrEqual<infer InferredMax>
 			? IsGreater<InferredMax, GenericThreshold>
 			: true,
-		GenericValue extends LessThan<infer InferredMax>
+		ExtractLessThan<GenericValue, unknown> extends LessThan<infer InferredMax>
 			? IsGreater<InferredMax, GenericThreshold>
 			: true,
 	]> extends true
 		? DCommon.Or<[
-			GenericValue extends GreaterThan<infer InferredMin>
+			ExtractGreaterThan<GenericValue, unknown> extends GreaterThan<infer InferredMin>
 				? IsGreaterOrEqual<InferredMin, GenericThreshold>
 				: false,
-			GenericValue extends GreaterThanOrEqual<infer InferredMin>
+			ExtractGreaterThanOrEqual<GenericValue, unknown> extends GreaterThanOrEqual<infer InferredMin>
 				? IsGreater<InferredMin, GenericThreshold>
 				: false,
 		]> extends true
@@ -32,18 +32,18 @@ type ApplyLessThan<
 	GenericThreshold extends number,
 > = GenericValue extends unknown
 	? DCommon.And<[
-		GenericValue extends GreaterThan<infer InferredMin>
+		ExtractGreaterThan<GenericValue, unknown> extends GreaterThan<infer InferredMin>
 			? IsGreater<GenericThreshold, InferredMin>
 			: true,
-		GenericValue extends GreaterThanOrEqual<infer InferredMin>
+		ExtractGreaterThanOrEqual<GenericValue, unknown> extends GreaterThanOrEqual<infer InferredMin>
 			? IsGreater<GenericThreshold, InferredMin>
 			: true,
 	]> extends true
 		? DCommon.Or<[
-			GenericValue extends LessThan<infer InferredMax>
+			ExtractLessThan<GenericValue, unknown> extends LessThan<infer InferredMax>
 				? IsGreaterOrEqual<GenericThreshold, InferredMax>
 				: false,
-			GenericValue extends LessThanOrEqual<infer InferredMax>
+			ExtractLessThanOrEqual<GenericValue, unknown> extends LessThanOrEqual<infer InferredMax>
 				? IsGreater<GenericThreshold, InferredMax>
 				: false,
 		]> extends true

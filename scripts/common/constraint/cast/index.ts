@@ -3,6 +3,7 @@ import type * as DCommon from "@scripts/common";
 import { type GetConstraint, type Constraint } from "../types";
 import { type CastError } from "./error";
 import { type ComputeCastStringRule } from "./string";
+import { type DArray } from "@scripts";
 
 export * from "./error";
 export * from "./string";
@@ -21,15 +22,29 @@ export interface ComputeCastRule<
 export type ComputeCast<
 	GenericValue extends unknown,
 	GenericConstraint extends Constraint,
-> = DCommon.NeverCoalescing<
-	DObject.Values<
-		ComputeCastRule<
-			GenericValue,
-			GenericConstraint
+> = DCommon.IsUnion<GenericValue> extends true
+	? GenericConstraint extends Constraint
+		? DArray.Unwrap<
+			DCommon.NeverCoalescing<
+				Extract<
+					[
+						DCommon.NeverCoalescing<
+							DObject.Values<
+								ComputeCastRule<
+									GenericValue,
+									GenericConstraint
+								>
+							>,
+							CastError<"None of the intended constraints is possible on the current value.", GenericValue, GenericConstraint>
+						>,
+					],
+					[CastError<string, GenericValue, GenericConstraint>]
+				>,
+				unknown
+			>
 		>
-	>,
-	CastError<"None of the intended constraints is possible on the current value.", GenericValue>
->;
+		: never
+	: CastError<"Value cannot be a union.", GenericValue, GenericConstraint>;
 
 export function cast<
 	GenericInput extends unknown,

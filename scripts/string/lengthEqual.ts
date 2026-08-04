@@ -1,11 +1,11 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { LengthEqual, MaxCharacters, MinCharacters } from "./constraints";
+import type { ExtractLengthEqual, ExtractMaxCharacters, ExtractMinCharacters, LengthEqual, MaxCharacters, MinCharacters } from "./constraints";
 
 type RequireLengthEqualConstraint<
 	GenericString extends string,
 	GenericLength extends number,
-> = GenericString extends LengthEqual<infer InferredLength>
+> = ExtractLengthEqual<GenericString, unknown> extends LengthEqual<infer InferredLength>
 	? DCommon.IsEqual<GenericLength, InferredLength> extends true
 		? unknown
 		: DCommon.ComputedTypeError<
@@ -16,7 +16,7 @@ type RequireLengthEqualConstraint<
 type RequireMinCharactersConstraint<
 	GenericString extends string,
 	GenericLength extends number,
-> = GenericString extends MinCharacters<infer InferredMin>
+> = ExtractMinCharacters<GenericString, unknown> extends MinCharacters<infer InferredMin>
 	? DNumber.IsGreaterOrEqual<GenericLength, InferredMin> extends true
 		? unknown
 		: DCommon.ComputedTypeError<
@@ -27,7 +27,7 @@ type RequireMinCharactersConstraint<
 type RequireMaxCharactersConstraint<
 	GenericString extends string,
 	GenericLength extends number,
-> = GenericString extends MaxCharacters<infer InferredMax>
+> = ExtractMaxCharacters<GenericString, unknown> extends MaxCharacters<infer InferredMax>
 	? DNumber.IsGreaterOrEqual<InferredMax, GenericLength> extends true
 		? unknown
 		: DCommon.ComputedTypeError<
@@ -50,13 +50,13 @@ type IsLengthEqualCompatible<
 	GenericString extends string,
 	GenericLength extends number,
 > = DCommon.And<[
-	GenericString extends LengthEqual<infer InferredLength>
+	ExtractLengthEqual<GenericString, unknown> extends LengthEqual<infer InferredLength>
 		? DCommon.IsEqual<GenericLength, InferredLength>
 		: true,
-	GenericString extends MinCharacters<infer InferredMin>
+	ExtractMinCharacters<GenericString, unknown> extends MinCharacters<infer InferredMin>
 		? DNumber.IsGreaterOrEqual<GenericLength, InferredMin>
 		: true,
-	GenericString extends MaxCharacters<infer InferredMax>
+	ExtractMaxCharacters<GenericString, unknown> extends MaxCharacters<infer InferredMax>
 		? DNumber.IsGreaterOrEqual<InferredMax, GenericLength>
 		: true,
 ]>;

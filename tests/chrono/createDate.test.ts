@@ -246,7 +246,7 @@ describe("create", () => {
 
 		DChrono.createDate(
 			// @ts-expect-error less than limit
-			"-271820-09-13",
+			"-271821-09-13",
 		);
 
 		DChrono.createDate("-271-09-13");

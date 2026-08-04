@@ -1,11 +1,11 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { LengthEqual, MaxElements, MinElements } from "./constraints";
+import type { ExtractLengthEqual, ExtractMaxElements, ExtractMinElements, LengthEqual, MaxElements, MinElements } from "./constraints";
 
 type RequireLengthEqualConstraint<
 	GenericArray extends readonly unknown[],
 	GenericMin extends number,
-> = GenericArray extends LengthEqual<infer InferredLength>
+> = ExtractLengthEqual<GenericArray, unknown> extends LengthEqual<infer InferredLength>
 	? DNumber.IsGreaterOrEqual<InferredLength, GenericMin> extends true
 		? unknown
 		: DCommon.ComputedTypeError<
@@ -16,7 +16,7 @@ type RequireLengthEqualConstraint<
 type RequireMaxElementsConstraint<
 	GenericArray extends readonly unknown[],
 	GenericMin extends number,
-> = GenericArray extends MaxElements<infer InferredMax>
+> = ExtractMaxElements<GenericArray, unknown> extends MaxElements<infer InferredMax>
 	? DNumber.IsGreaterOrEqual<InferredMax, GenericMin> extends true
 		? unknown
 		: DCommon.ComputedTypeError<
@@ -37,19 +37,21 @@ type RequireApplyMinElements<
 type ComputeMinElements<
 	GenericArray extends readonly unknown[],
 	GenericMin extends number,
-> = GenericArray extends LengthEqual<infer InferredLength>
-	? DNumber.IsGreaterOrEqual<InferredLength, GenericMin> extends true
-		? GenericArray
-		: never
-	: GenericArray extends MaxElements<infer InferredMax>
-		? DNumber.IsGreaterOrEqual<InferredMax, GenericMin> extends true
-			? GenericArray & MinElements<GenericMin>
+> = GenericArray extends unknown
+	? ExtractLengthEqual<GenericArray, unknown> extends LengthEqual<infer InferredLength>
+		? DNumber.IsGreaterOrEqual<InferredLength, GenericMin> extends true
+			? GenericArray
 			: never
-		: GenericArray extends MinElements<infer InferredMin>
-			? DNumber.IsGreaterOrEqual<InferredMin, GenericMin> extends true
-				? GenericArray
+		: ExtractMaxElements<GenericArray, unknown> extends MaxElements<infer InferredMax>
+			? DNumber.IsGreaterOrEqual<InferredMax, GenericMin> extends true
+				? GenericArray & MinElements<GenericMin>
+				: never
+			: ExtractMinElements<GenericArray, unknown> extends MinElements<infer InferredMin>
+				? DNumber.IsGreaterOrEqual<InferredMin, GenericMin> extends true
+					? GenericArray
+					: GenericArray & MinElements<GenericMin>
 				: GenericArray & MinElements<GenericMin>
-			: GenericArray & MinElements<GenericMin>;
+	: never;
 
 export function minElements<
 	GenericArray extends readonly unknown[],

@@ -1,26 +1,35 @@
 import type * as DCommon from "@scripts/common";
-import type { LengthEqual } from "../lengthEqual";
-import type { MaxCharacters } from "../maxCharacters";
-import type { MinCharacters } from "../minCharacters";
+import type { ExtractLengthEqual, LengthEqual } from "../lengthEqual";
+import type { ExtractMaxCharacters, MaxCharacters } from "../maxCharacters";
+import type { ExtractMinCharacters, MinCharacters } from "../minCharacters";
 
 type ApplyLengthEqual<
 	GenericOutput extends string,
 	GenericSource extends string,
-> = GenericSource extends LengthEqual<infer InferredLength>
+> = ExtractLengthEqual<
+	GenericSource,
+	unknown
+> extends LengthEqual<infer InferredLength>
 	? GenericOutput & LengthEqual<InferredLength>
 	: GenericOutput;
 
 type ApplyMinCharacters<
 	GenericOutput extends string,
 	GenericSource extends string,
-> = GenericSource extends MinCharacters<infer InferredMin>
+> = ExtractMinCharacters<
+	GenericSource,
+	unknown
+> extends MinCharacters<infer InferredMin>
 	? GenericOutput & MinCharacters<InferredMin>
 	: GenericOutput;
 
 type ApplyMaxCharacters<
 	GenericOutput extends string,
 	GenericSource extends string,
-> = GenericSource extends MaxCharacters<infer InferredMax>
+> = ExtractMaxCharacters<
+	GenericSource,
+	unknown
+> extends MaxCharacters<infer InferredMax>
 	? GenericOutput & MaxCharacters<InferredMax>
 	: GenericOutput;
 
