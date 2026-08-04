@@ -40,3 +40,4 @@ export type * from "./objectEntry";
 export type * from "./sortType";
 export type * from "./lastUnionElement";
 export type * from "./unionToTuple";
+export type * from "./cleanObjectEntry";

@@ -13,3 +13,4 @@ export * from "./when";
 export * from "./whenNot";
 export * from "./wrapValue";
 export * from "./enum";
+export * from "./equal";
