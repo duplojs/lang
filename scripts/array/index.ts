@@ -37,22 +37,17 @@ export * from "./findDuplicates";
 export * from "./shift";
 export * from "./unshift";
 export * from "./insert";
+export * from "./reverse";
+export * from "./notIncludes";
+export * from "./findLast";
+export * from "./findLastIndex";
+export * from "./findIndex";
+export * from "./isLastIndex";
+export * from "./slice";
+export * from "./lastIndexOf";
+export * from "./indexOf";
+export * from "./set";
 
+// export * from "./join"; // string
 // export * from "./notIncludes"; // tuple
-// export * from "./findLast";
-// export * from "./castMaxElements";
-// export * from "./maxOf";
-// export * from "./minOf";
-// export * from "./reverse";
-// export * from "./findIndex";
-// export * from "./findLastIndex";
-// export * from "./join";
-// export * from "./lastIndexOf";
-// export * from "./indexOf";
-// export * from "./slice";
-// export * from "./set";
-// export * from "./sum";
 // export * from "./toTuple" // tuple;
-// export * from "./isLastIndex";
-// export * from "./mapTuple"; // tuple
-// export * from "./withMaxElements";

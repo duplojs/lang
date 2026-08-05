@@ -1,4 +1,4 @@
-export function includes<
+export function notIncludes<
 	GenericArray extends readonly unknown[],
 	GenericValue extends GenericArray[number],
 >(
@@ -7,7 +7,7 @@ export function includes<
 	array: GenericArray,
 ) => boolean;
 
-export function includes<
+export function notIncludes<
 	GenericArray extends readonly unknown[],
 	GenericValue extends GenericArray[number],
 >(
@@ -15,7 +15,7 @@ export function includes<
 	value: GenericValue,
 ): boolean;
 
-export function includes(
+export function notIncludes(
 	...args:
 		| [value: unknown]
 		| [array: readonly unknown[], value: unknown]
@@ -23,10 +23,10 @@ export function includes(
 	if (args.length === 1) {
 		const [value] = args;
 
-		return (array: readonly unknown[]) => includes(array, value);
+		return (array: readonly unknown[]) => notIncludes(array, value);
 	}
 
 	const [array, value] = args;
 
-	return array.includes(value);
+	return !array.includes(value);
 }
