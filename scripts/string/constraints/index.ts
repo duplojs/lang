@@ -1,4 +1,4 @@
-export * from "./containsOnly";
+export * from "./allowedCharacters";
 export * from "./email";
 export * from "./format";
 export * from "./lengthEqual";

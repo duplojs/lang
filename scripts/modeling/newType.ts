@@ -1,11 +1,15 @@
-import { type UnionToIntersection, type Constraint, type ConstraintSymbol } from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 
 export interface NewType<
 	GenericName extends string = string,
-	GenericConstraint extends Constraint = Constraint<never>,
-> {
-	[ConstraintSymbol]: (
-		& UnionToIntersection<GenericConstraint>
-		& Constraint<"new-type", GenericName>
-	)[ConstraintSymbol];
+	GenericConstraint extends DCommon.Constraint = never,
+> extends DCommon.BaseConstraint<
+		DCommon.SimplifyType<
+			& Record<"new-type", GenericName>
+			& DCommon.NeverCoalescing<
+				GenericConstraint[DCommon.ConstraintSymbol],
+				{}
+			>
+		>
+	> {
 }

@@ -1,7 +1,7 @@
 import type * as DCommon from "@scripts/common";
 import type * as DArray from "@scripts/array";
 import type * as DTuple from "@scripts/tuple";
-import type { Format } from "./constraints";
+import type { ApplyFormat, Format } from "./constraints";
 import type { TemplateLiteralContainLargeType } from "./types";
 
 export interface SplitParams<
@@ -73,28 +73,28 @@ type SplitOutput<
 	GenericString extends string,
 	GenericSeparator extends string,
 	GenericLimit extends number = number,
-> = DCommon.RemoveConstraint<GenericString> extends infer InferredString extends string
-	? GenericString extends Format<string, infer InferredPattern>
-		? ComputeSplitOutput<InferredPattern, GenericSeparator, GenericLimit>
-		: ComputeSplitOutput<InferredString, GenericSeparator, GenericLimit>
-	: never;
+> = GenericString extends Format<string>
+	? ComputeSplitOutput<DCommon.RemoveConstraint<ApplyFormat<GenericString>>, GenericSeparator, GenericLimit>
+	: ComputeSplitOutput<DCommon.RemoveConstraint<GenericString>, GenericSeparator, GenericLimit>;
 
 export function split<
 	GenericString extends string,
 	GenericSeparator extends string,
+	GenericOutput = SplitOutput<GenericString, GenericSeparator>,
 >(
 	separator: GenericSeparator | RegExp,
-): (string: GenericString) => SplitOutput<GenericString, GenericSeparator>;
+): (string: GenericString) => DCommon.BreakGenericLink<GenericOutput>;
 
 export function split<
 	GenericString extends string,
 	GenericSeparator extends string,
 	GenericLimit extends number,
+	GenericOutput = SplitOutput<GenericString, GenericSeparator, GenericLimit>,
 >(
 	string: GenericString,
 	separator: GenericSeparator | RegExp,
 	params?: SplitParams<GenericLimit>,
-): SplitOutput<GenericString, GenericSeparator, GenericLimit>;
+): DCommon.BreakGenericLink<GenericOutput>;
 
 export function split(
 	...args:

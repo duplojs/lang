@@ -1,22 +1,23 @@
 import type * as DObject from "@scripts/object";
-import { type Constraint } from "./base";
+import { type BaseConstraint } from "./base";
 import { type IsNever, type IsEqual, type LastUnionElement } from "../../types";
+import { type GetConstraint } from "./get";
 
 type SeparateByComplexity<
-	GenericConstraint extends Constraint,
+	GenericConstraint extends BaseConstraint,
 	GenericLevel extends number = never,
 > = GenericConstraint extends any
 	? DObject.Split<GenericConstraint, GenericLevel> extends infer InferredSplitConstraint
 		? InferredSplitConstraint extends any
 			? GenericConstraint extends (
-					& (infer InferredSeparatedConstraints extends Constraint)
+					& (infer InferredSeparatedConstraints extends BaseConstraint)
 					& InferredSplitConstraint
 			)
 				? GenericConstraint extends (
-						& (infer InferredSeparatedCurrentConstraint extends Constraint)
+						& (infer InferredSeparatedCurrentConstraint extends BaseConstraint)
 						& InferredSeparatedConstraints
 				)
-					? IsEqual<InferredSeparatedCurrentConstraint, Constraint> extends true
+					? IsEqual<InferredSeparatedCurrentConstraint, BaseConstraint> extends true
 						? [InferredSeparatedConstraints, "complex"]
 						: [InferredSeparatedCurrentConstraint, "simple"]
 					: never
@@ -26,13 +27,13 @@ type SeparateByComplexity<
 	: never;
 
 type RemoveSimpleFromComplex<
-	GenericSimple extends Constraint,
-	GenericComplex extends Constraint,
+	GenericSimple extends BaseConstraint,
+	GenericComplex extends BaseConstraint,
 > = IsNever<GenericSimple> extends true
 	? GenericComplex
-	: LastUnionElement<GenericSimple> extends infer InferredLast extends Constraint
+	: LastUnionElement<GenericSimple> extends infer InferredLast extends BaseConstraint
 		? GenericComplex extends (
-			& (infer InferredRest extends Constraint)
+			& (infer InferredRest extends BaseConstraint)
 			& InferredLast
 		)
 			? RemoveSimpleFromComplex<
@@ -43,7 +44,7 @@ type RemoveSimpleFromComplex<
 		: never;
 
 type LoopWhileHasComplex<
-	GenericConstraint extends Constraint,
+	GenericConstraint extends BaseConstraint,
 	GenericAccumulator extends readonly never[] = never,
 > = 5 extends GenericAccumulator["length"]
 	? GenericConstraint
@@ -52,11 +53,11 @@ type LoopWhileHasComplex<
 		GenericAccumulator["length"]
 	> extends infer InferredResult
 		? [
-			Extract<InferredResult, [Constraint, "complex"]>,
-			Extract<InferredResult, [Constraint, "simple"]>,
+			Extract<InferredResult, [BaseConstraint, "complex"]>,
+			Extract<InferredResult, [BaseConstraint, "simple"]>,
 		] extends [
-			infer InferredComplexResult extends [Constraint, "complex"],
-			infer InferredSimpleResult extends [Constraint, "simple"],
+			infer InferredComplexResult extends [BaseConstraint, "complex"],
+			infer InferredSimpleResult extends [BaseConstraint, "simple"],
 		]
 			? IsNever<InferredComplexResult> extends true
 				? InferredSimpleResult[0]
@@ -67,7 +68,7 @@ type LoopWhileHasComplex<
 							InferredComplexResult[0]
 						>,
 						IsNever<GenericAccumulator> extends true
-							? [never, never]
+							? [never]
 							: [...GenericAccumulator, never]
 					>
 					| InferredSimpleResult[0]
@@ -76,6 +77,8 @@ type LoopWhileHasComplex<
 		: never;
 
 export type UnbundlesConstraint<
-	GenericConstraint extends Constraint,
-> = LoopWhileHasComplex<GenericConstraint>;
+	GenericConstraint extends BaseConstraint,
+> = LoopWhileHasComplex<
+	GetConstraint<GenericConstraint>
+>;
 

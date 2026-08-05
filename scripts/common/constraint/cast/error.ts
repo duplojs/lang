@@ -9,6 +9,6 @@ export interface CastError<
 	GenericValue extends unknown,
 	GenericConstraint extends Constraint,
 > extends ComputedTypeError<GenericReason> {
-	[CastErrorValueSymbol]: GenericValue;
+	[CastErrorValueSymbol]: Omit<GenericValue, keyof this>;
 	[CastErrorConstraintSymbol]: GenericConstraint;
 }

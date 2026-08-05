@@ -1,23 +1,38 @@
 import { DString, pipe, when, type ExpectType } from "@scripts";
 
-describe("containsOnly", () => {
+describe("isComposedOf", () => {
 	it("should validate characters from one range", () => {
-		expect(DString.containsOnly("azerty", "a-z")).toBe(true);
-		expect(DString.containsOnly("Azerty", "a-z")).toBe(false);
+		expect(DString.isComposedOf("azerty", "a-z")).toBe(true);
+		expect(DString.isComposedOf("Azerty", "a-z")).toBe(false);
 	});
 
 	it("should validate characters from multiple ranges", () => {
-		expect(DString.containsOnly("abc123", ["a-z", "0-9"])).toBe(true);
-		expect(DString.containsOnly("abc-123", ["a-z", "0-9"])).toBe(false);
+		expect(DString.isComposedOf("abc123", ["a-z", "0-9"])).toBe(true);
+		expect(DString.isComposedOf("abc-123", ["a-z", "0-9"])).toBe(false);
 	});
 
 	it("should narrow a string with a single range predicate outside pipe", () => {
 		const source = "abc" as string;
 
-		if (DString.containsOnly(source, "a-z")) {
+		if (DString.isComposedOf(source, "a-z")) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				string & DString.ContainsOnly<"a-z">,
+				string & DString.AllowedCharacters<"a-z">,
+				"strict"
+			>;
+		}
+	});
+
+	it("should narrow a constrained string with a single range predicate outside pipe", () => {
+		const source = "abc123" as (string & DString.AllowedCharacters<"a-z">) | (string & DString.AllowedCharacters<"0-9">);
+
+		if (DString.isComposedOf(source, "0-9")) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				(
+					| (string & DString.AllowedCharacters<"a-z"> & DString.AllowedCharacters<"0-9">)
+					| string & DString.AllowedCharacters<"0-9">
+				),
 				"strict"
 			>;
 		}
@@ -25,12 +40,12 @@ describe("containsOnly", () => {
 
 	it("should narrow a string with multiple range predicate outside pipe", () => {
 		const source = "abc123" as string;
-		const predicate = DString.containsOnly(["a-z", "0-9"]);
+		const predicate = DString.isComposedOf(["a-z", "0-9"]);
 
 		if (predicate(source)) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				string & DString.ContainsOnly<"a-z" | "0-9">,
+				string & DString.AllowedCharacters<"a-z"> & DString.AllowedCharacters<"0-9">,
 				"strict"
 			>;
 		}
@@ -40,11 +55,11 @@ describe("containsOnly", () => {
 		const result = pipe(
 			"abc",
 			when(
-				DString.containsOnly("a-z"),
+				DString.isComposedOf("a-z"),
 				(value) => {
 					type _CheckValue = ExpectType<
 							typeof value,
-							"abc" & DString.ContainsOnly<"a-z">,
+							"abc" & DString.AllowedCharacters<"a-z">,
 							"strict"
 					>;
 
@@ -60,11 +75,11 @@ describe("containsOnly", () => {
 		const result = pipe(
 			"ABC123",
 			when(
-				DString.containsOnly(["A-Z", "0-9"]),
+				DString.isComposedOf(["A-Z", "0-9"]),
 				(value) => {
 					type _CheckValue = ExpectType<
 							typeof value,
-							"ABC123" & DString.ContainsOnly<"A-Z" | "0-9">,
+							"ABC123" & DString.AllowedCharacters<"A-Z"> & DString.AllowedCharacters<"0-9">,
 							"strict"
 					>;
 

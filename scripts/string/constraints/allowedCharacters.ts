@@ -10,10 +10,10 @@ export type CharactersRange = Extract<
 	string
 >;
 
-export interface ContainsOnly<
+export interface AllowedCharacters<
 	GenericCharactersRange extends CharactersRange,
 > extends DCommon.Constraint<
-		"string-contains-only",
+		"string-allowed-characters",
 		Record<GenericCharactersRange, unknown>
 	> {
 }
