@@ -13,6 +13,10 @@ export type ExtractMaxCharacters<
 	? (
 		keyof GenericConstraint[DCommon.ConstraintSymbol][MaxCharactersConstraintName]
 	) extends infer InferredResult extends number
-		? MaxCharacters<InferredResult>
+		? DCommon.UnionToIntersection<
+			InferredResult extends any
+				? MaxCharacters<InferredResult>
+				: never
+		>
 		: GenericDefault
 	: GenericDefault;

@@ -39,12 +39,26 @@ export type RemoveConstraint<
 		>
 		: GenericValue
 ) extends infer InferredResult
-	? InferredResult extends BaseConstraint
-		? RemoveConstraintByShape<
-			InferredResult,
-			DObject.EveryCombination<
-				Pick<InferredResult, DCommon.ConstraintSymbol>
+	? (
+		InferredResult extends BaseConstraint
+			? RemoveConstraintByShape<
+				InferredResult,
+				DObject.Split<
+					Pick<InferredResult, DCommon.ConstraintSymbol>,
+					2
+				>
 			>
-		>
-		: InferredResult
+			: InferredResult
+	) extends infer InferredResult
+		? (
+			InferredResult extends BaseConstraint
+				? RemoveConstraintByShape<
+					InferredResult,
+					DObject.EveryCombination<
+						Pick<InferredResult, DCommon.ConstraintSymbol>
+					>
+				>
+				: InferredResult
+		)
+		: never
 	: never;

@@ -13,6 +13,10 @@ export type ExtractLessThan<
 	? (
 		keyof GenericConstraint[DCommon.ConstraintSymbol][LessThanConstraintName]
 	) extends infer InferredResult extends number
-		? LessThan<InferredResult>
+		? DCommon.UnionToIntersection<
+			InferredResult extends any
+				? LessThan<InferredResult>
+				: never
+		>
 		: GenericDefault
 	: GenericDefault;

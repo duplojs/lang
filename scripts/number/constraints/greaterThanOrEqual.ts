@@ -13,6 +13,10 @@ export type ExtractGreaterThanOrEqual<
 	? (
 		keyof GenericConstraint[DCommon.ConstraintSymbol][GreaterThanOrEqualConstraintName]
 	) extends infer InferredResult extends number
-		? GreaterThanOrEqual<InferredResult>
+		? DCommon.UnionToIntersection<
+			InferredResult extends any
+				? GreaterThanOrEqual<InferredResult>
+				: never
+		>
 		: GenericDefault
 	: GenericDefault;

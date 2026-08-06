@@ -10,10 +10,27 @@ export type CharactersRange = Extract<
 	string
 >;
 
+export type AllowedCharactersConstraintName = "string-allowed-characters";
+
 export interface AllowedCharacters<
 	GenericCharactersRange extends CharactersRange,
 > extends DCommon.Constraint<
-		"string-allowed-characters",
+		AllowedCharactersConstraintName,
 		Record<GenericCharactersRange, unknown>
 	> {
 }
+
+export type ExtractAllowedCharacters<
+	GenericConstraint extends unknown,
+	GenericDefault extends unknown = never,
+> = GenericConstraint extends AllowedCharacters<CharactersRange>
+	? (
+		keyof GenericConstraint[DCommon.ConstraintSymbol][AllowedCharactersConstraintName]
+	) extends infer InferredResult extends CharactersRange
+		? DCommon.UnionToIntersection<
+			InferredResult extends any
+				? AllowedCharacters<InferredResult>
+				: never
+		>
+		: GenericDefault
+	: GenericDefault;

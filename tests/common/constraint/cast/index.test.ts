@@ -1,79 +1,60 @@
-import { cast, type UnbundlesConstraint, type DString, type Constraint, type DModeling, type DNumber, type CastError, type RemoveConstraint, type DObject, type ConstraintSymbol, type UnionToIntersection, type IsEqual, type SimplifyTypeForce, type BaseConstraint, ToLargeEnsemble, type ExtractEqual, type RemoveDuplicateInUnion, type ExcludeEqual } from "@scripts";
-import { type EveryCombination } from "@scripts/object";
+import { cast, type DNumber, type CastError, type DString } from "@scripts";
 
 describe("cast", () => {
-	it("", () => {
-		type tt = UnbundlesConstraint<
-			& DString.MaxCharacters<10>
-			& DString.MaxCharacters<11>
-			& DString.MaxCharacters<12>
-		>;
+	it("cast maxCharacters", () => {
+		const value1: string & DString.MaxCharacters<12> = cast("" as string & DString.MaxCharacters<12>);
 
-		type kk = UnbundlesConstraint<
-			DString.MaxCharacters<10>
-			& DString.MaxCharacters<12>
-			& DString.AllowedCharacters<"0-9" | "A-Z">
-		>;
+		const value2: string & DString.MaxCharacters<12> = cast("" as string & DString.MaxCharacters<6>);
 
-		type oo = UnbundlesConstraint<
-			DString.MaxCharacters<12> & DString.AllowedCharacters<"0-9" | "A-Z">
-		>;
+		const value3: string & DString.MaxCharacters<12> = cast(
+			"" as string & DString.MaxCharacters<15> & CastError<
+				"Impossible to cast on MaxCharacters<12> because constraint MaxCharacters<15> from the value is more than.",
+				string & DString.MaxCharacters<15>,
+				DString.MaxCharacters<12>
+			>,
+		);
+		// @ts-expect-error cause error
+		const value35: string & DString.MaxCharacters<12> = cast("" as string & DString.MaxCharacters<15>);
 
-		type hh = UnbundlesConstraint<
-			DString.MaxCharacters<12> & Constraint<"0-9", Record<1 | 2, Record<3 | 4, unknown>>>
-		>;
+		const value4: string & DString.MaxCharacters<12> = cast("" as string & DString.LengthEqual<12>);
 
-		type bb = UnbundlesConstraint<
-			Constraint<"0-9" | "e", unknown> & Constraint<"0", unknown>
-		>;
+		const value5: string & DString.MaxCharacters<12> = cast("" as string & DString.LengthEqual<6>);
 
-		type jj = UnbundlesConstraint<
-			DString.AllowedCharacters<"0-9" | "A-Z">
-		>;
+		const value6: string & DString.MaxCharacters<12> = cast(
+			"" as string & DString.LengthEqual<15> & CastError<
+				"Impossible to cast on MaxCharacters<12> because constraint LengthEqual<15> from the value is more than.",
+				string & DString.LengthEqual<15>,
+				DString.MaxCharacters<12>
+			>,
+		);
+		// @ts-expect-error cause error
+		const value65: string & DString.MaxCharacters<12> = cast("" as string & DString.LengthEqual<15>);
+	});
 
-		type vv = UnbundlesConstraint<
-			DString.AllowedCharacters<"0-9" | "A-Z">
-			& DString.MaxCharacters<12 | 13>
-			& DString.MinCharacters<12 | 13>
-			& DString.MaxCharacters<10>
-		>;
+	it("cast minCharacters", () => {
+		const value1: string & DString.MinCharacters<12> = cast("" as string & DString.MinCharacters<12>);
 
-		type uu = UnbundlesConstraint<
-			& DString.AllowedCharacters<"0-9" | "A-Z">
-			& DString.AllowedCharacters<"A-z" | "a-z">
-			& DModeling.NewType<"test", DString.MaxCharacters<20>>
-			& DString.MaxCharacters<10>
-		>;
+		const value2: string & DString.MinCharacters<12> = cast("" as string & DString.MinCharacters<15>);
 
-		type yy = RemoveConstraint<
-			& string
-			& DString.AllowedCharacters<"0-9" | "A-Z">
-			& DString.AllowedCharacters<"A-z" | "a-z">
-			& DModeling.NewType<"test", DString.MaxCharacters<20>>
-			& DString.MaxCharacters<10>
-		>;
+		const value3: string & DString.MinCharacters<12> = cast(
+			"" as string & DString.MinCharacters<6> & CastError<
+				"Impossible to cast on MinCharacters<12> because constraint MinCharacters<6> from the value is less than.",
+				string & DString.MinCharacters<6>,
+				DString.MinCharacters<12>
+			>,
+		);
 
-		type oog = EveryCombination<
-			& DString.AllowedCharacters<"0-9" | "A-Z">
-			& DString.AllowedCharacters<"A-z" | "a-z">
-			& DModeling.NewType<"test", DString.MaxCharacters<20>>
-			& DString.MaxCharacters<10>,
-			3
-		>;
+		const value4: string & DString.MinCharacters<12> = cast("" as string & DString.LengthEqual<12>);
 
-		type hg = EveryCombination<
-			& DString.AllowedCharacters<"0-9" | "A-Z">
-			& DString.AllowedCharacters<"A-z" | "a-z">
-		>;
+		const value5: string & DString.MinCharacters<12> = cast("" as string & DString.LengthEqual<15>);
 
-		const value1: (
-			// | (string & DString.Email)
-			| (string & DString.MaxCharacters<10> & DString.MinCharacters<5>)
-			| (number & DNumber.LessThan<12>)
-			// | (string & DString.MinCharacters<10>)
-		) = cast("test" as (string & DString.MaxCharacters<5>) | (number & DNumber.LessThan<12>));
-
-		const value2: string & DString.MinCharacters<10> = cast("test");
+		const value6: string & DString.MinCharacters<12> = cast(
+			"" as string & DString.LengthEqual<6> & CastError<
+				"Impossible to cast on MaxCharacters<12> because constraint LengthEqual<6> from the value is less than.",
+				string & DString.LengthEqual<6>,
+				DString.MinCharacters<12>
+			>,
+		);
 	});
 
 	it("cast greaterThan", () => {

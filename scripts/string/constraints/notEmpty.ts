@@ -1,3 +1,3 @@
-import type * as DCommon from "@scripts/common";
+import { type MinCharacters } from "./minCharacters";
 
-export interface NotEmpty extends DCommon.Constraint<"string-not-empty"> {}
+export interface NotEmpty extends MinCharacters<1> {}

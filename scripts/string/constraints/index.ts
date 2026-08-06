@@ -6,7 +6,6 @@ export * from "./format";
 export * from "./lengthEqual";
 export * from "./maxCharacters";
 export * from "./minCharacters";
-export * from "./notBlank";
 export * from "./notEmpty";
 export * from "./trimmed";
 export * from "./url";

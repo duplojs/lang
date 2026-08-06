@@ -13,6 +13,10 @@ export type ExtractMinElements<
 	? (
 		keyof GenericConstraint[DCommon.ConstraintSymbol][MinElementsConstraintName]
 	) extends infer InferredResult extends number
-		? MinElements<InferredResult>
+		? DCommon.UnionToIntersection<
+			InferredResult extends any
+				? MinElements<InferredResult>
+				: never
+		>
 		: GenericDefault
 	: GenericDefault;

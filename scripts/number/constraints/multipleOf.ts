@@ -13,6 +13,10 @@ export type ExtractMultipleOf<
 	? (
 		keyof GenericConstraint[DCommon.ConstraintSymbol][MultipleOfConstraintName]
 	) extends infer InferredResult extends number
-		? MultipleOf<InferredResult>
+		? DCommon.UnionToIntersection<
+			InferredResult extends any
+				? MultipleOf<InferredResult>
+				: never
+		>
 		: GenericDefault
 	: GenericDefault;

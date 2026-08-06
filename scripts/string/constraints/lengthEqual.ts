@@ -13,6 +13,10 @@ export type ExtractLengthEqual<
 	? (
 		keyof GenericConstraint[DCommon.ConstraintSymbol][LengthEqualConstraintName]
 	) extends infer InferredResult extends number
-		? LengthEqual<InferredResult>
+		? DCommon.UnionToIntersection<
+			InferredResult extends any
+				? LengthEqual<InferredResult>
+				: never
+		>
 		: GenericDefault
 	: GenericDefault;

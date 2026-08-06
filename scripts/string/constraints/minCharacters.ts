@@ -13,6 +13,10 @@ export type ExtractMinCharacters<
 	? (
 		keyof GenericConstraint[DCommon.ConstraintSymbol][MinCharactersConstraintName]
 	) extends infer InferredResult extends number
-		? MinCharacters<InferredResult>
+		? DCommon.UnionToIntersection<
+			InferredResult extends any
+				? MinCharacters<InferredResult>
+				: never
+		>
 		: GenericDefault
 	: GenericDefault;
