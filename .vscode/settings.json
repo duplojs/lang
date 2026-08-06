@@ -5,8 +5,10 @@
 	"editor.tabSize": 4,
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
+	"editor.formatOnSave": false, 
+	"editor.defaultFormatter": "oxc.oxc-vscode",
 	"editor.codeActionsOnSave": {
-		"source.format.oxc": "explicit",
+		"source.format.oxc": "always",
 		"source.fixAll.oxc": "always",
 	},
 
