@@ -1,7 +1,7 @@
 import type * as DObject from "@scripts/object";
-import { type BaseConstraint } from "./base";
-import { type IsNever, type IsEqual, type LastUnionElement } from "../../types";
-import { type GetConstraint } from "./get";
+import type { BaseConstraint } from "./base";
+import type { IsNever, IsEqual, LastUnionElement } from "../../types";
+import type { GetConstraint } from "./get";
 
 type SeparateByComplexity<
 	GenericConstraint extends BaseConstraint,

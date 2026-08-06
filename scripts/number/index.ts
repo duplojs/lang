@@ -10,3 +10,6 @@ export * from "./betweenThanOrEqual";
 export * from "./sort";
 export * from "./min";
 export * from "./max";
+export * from "./sum";
+export * from "./minOf";
+export * from "./maxOf";

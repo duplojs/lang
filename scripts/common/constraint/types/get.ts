@@ -1,4 +1,4 @@
-import { type RemoveConstraint } from "./remove";
+import type { RemoveConstraint } from "./remove";
 
 export type GetConstraint<
 	GenericValue extends unknown,

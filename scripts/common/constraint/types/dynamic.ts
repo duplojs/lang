@@ -1,4 +1,4 @@
-import { type Constraint } from "./base";
+import type { Constraint } from "./base";
 
 export interface DynamicConstraint<
 	GenericName extends string = string,

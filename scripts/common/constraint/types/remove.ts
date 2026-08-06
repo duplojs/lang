@@ -1,6 +1,6 @@
 import type * as DObject from "@scripts/object";
 import type * as DCommon from "@scripts/common";
-import { type BaseConstraint } from "./base";
+import type { BaseConstraint } from "./base";
 
 type RemoveConstraintByShape<
 	GenericValue extends unknown,

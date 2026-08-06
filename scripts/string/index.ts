@@ -34,17 +34,15 @@ export * from "./pop";
 export * from "./shift";
 export * from "./to";
 export * from "./sortCompare";
+export * from "./padStart";
+export * from "./padEnd";
+export * from "./indexOf";
+export * from "./lastIndexOf";
+export * from "./slice";
+export * from "./repeat";
+export * from "./search";
+export * from "./substring";
+export * from "./charAt";
 
-// export * from "./extractAll";
 // export * from "./at";
-// export * from "./charAt";
-// export * from "./substring";
-// export * from "./search";
-// export * from "./match";
-// export * from "./matchAll";
-// export * from "./slice";
-// export * from "./padStart";
-// export * from "./padEnd";
-// export * from "./indexOf";
-// export * from "./lastIndexOf";
-// export * from "./repeat";
+// export * from "./extractAll"; // require DGenerator

@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import { type Format } from "../format";
+import type { Format } from "../format";
 
 export type ApplyFormat<
 	GenericValue extends string,
