@@ -2,40 +2,49 @@ import type * as DObject from "@scripts/object";
 import type * as DCommon from "@scripts/common";
 import type { BaseConstraint } from "./base";
 
+type Remove<
+	GenericValue extends unknown,
+	GenericShape extends object,
+	GenericLast extends object,
+> = GenericValue extends (
+	& infer InferredValue
+	& GenericShape
+)
+	? RemoveConstraintByShape<
+		InferredValue,
+		DCommon.ExcludeEqual<GenericShape, GenericLast>
+	>
+	: GenericValue;
+
 type RemoveConstraintByShape<
 	GenericValue extends unknown,
-	GenericSplitConstraint extends object = object,
-> = DCommon.IsNever<GenericSplitConstraint> extends true
+	GenericShape extends object,
+> = DCommon.IsNever<GenericShape> extends true
 	? GenericValue
-	: DCommon.LastUnionElement<GenericSplitConstraint> extends infer InferredSplitConstraint
-		? GenericValue extends (
-			& infer InferredValue
-			& InferredSplitConstraint
-		)
-			? RemoveConstraintByShape<
-				InferredValue,
-				Exclude<GenericSplitConstraint, InferredSplitConstraint>
-			>
-			: GenericValue
-		: never;
-
-type LoopWhileHasConstraint<
-	GenericValue extends unknown,
-	GenericAccumulator extends readonly never[] = never,
-> = 5 extends GenericAccumulator["length"]
-	? GenericValue
-	: GenericValue extends BaseConstraint
-		? LoopWhileHasConstraint<
-			RemoveConstraintByShape<
-				GenericValue,
-				Extract<DObject.Split<GenericValue, GenericAccumulator["length"]>, BaseConstraint>
-			>,
-			DCommon.IsNever<GenericAccumulator> extends true
-				? [never]
-				: [...GenericAccumulator, never]
-		>
-		: GenericValue;
+	: Remove<
+		GenericValue,
+		GenericShape,
+		DCommon.LastUnionElement<GenericShape>
+	>;
 
 export type RemoveConstraint<
 	GenericValue extends unknown,
-> = LoopWhileHasConstraint<GenericValue>;
+> = (
+	GenericValue extends BaseConstraint
+		? RemoveConstraintByShape<
+			GenericValue,
+			DObject.Split<
+				Pick<GenericValue, DCommon.ConstraintSymbol>
+			>
+		>
+		: GenericValue
+) extends infer InferredResult
+	? InferredResult extends BaseConstraint
+		? RemoveConstraintByShape<
+			InferredResult,
+			DObject.EveryCombination<
+				Pick<InferredResult, DCommon.ConstraintSymbol>
+			>
+		>
+		: InferredResult
+	: never;

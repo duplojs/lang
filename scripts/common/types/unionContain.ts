@@ -3,17 +3,19 @@ import type { IsEqual } from "./isEqual";
 export type UnionContain<
 	GenericUnion extends unknown,
 	GenericValue extends unknown,
-> = IsEqual<
+> = (
 	GenericValue extends any
-		? IsEqual<
+		? boolean extends (
 			| (
 				GenericUnion extends any
 					? IsEqual<GenericUnion, GenericValue>
 					: never
 			)
-			| false,
-			boolean
-		>
-		: never,
-	true
->;
+			| false
+		)
+			? true
+			: false
+		: never
+) extends true
+	? true
+	: false;

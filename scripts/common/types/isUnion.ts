@@ -1,12 +1,9 @@
 import type { IsEqual } from "./isEqual";
+import { type LastUnionElement } from "./lastUnionElement";
+import { type Not } from "./not";
 
 export type IsUnion<
 	GenericValue extends unknown,
-	GenericCloneValue extends unknown = GenericValue,
 > = IsEqual<GenericValue, never> extends true
 	? false
-	: GenericValue extends unknown
-		? IsEqual<GenericValue, GenericCloneValue> extends true
-			? false
-			: true
-		: never;
+	: Not<IsEqual<GenericValue, LastUnionElement<GenericValue>>>;

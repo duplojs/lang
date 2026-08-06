@@ -1,6 +1,6 @@
 import { type UnionContain } from "./unionContain";
 
-export type RemoveFromUnion<
+export type ExcludeEqual<
 	GenericUnion extends unknown,
 	GenericValue extends unknown,
 > = GenericUnion extends any

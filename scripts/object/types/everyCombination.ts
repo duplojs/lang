@@ -1,77 +1,38 @@
 import type * as DCommon from "@scripts/common";
+import { type Split } from "./split";
 
-type CreateEveryCombinationOnKey<
-	GenericObject extends object,
-	GenericMainKey extends keyof GenericObject,
-	GenericOtherKeys extends Exclude<keyof GenericObject, GenericMainKey>,
+type AddShape<
+	GenericSplitShape extends object,
 	GenericAccumulator extends object,
-> = DCommon.IsNever<GenericOtherKeys> extends true
-	? GenericAccumulator
-	: DCommon.LastUnionElement<GenericOtherKeys> extends infer InferredLastKey extends keyof GenericObject
-		? CreateEveryCombinationOnKey<
-			GenericObject,
-			GenericMainKey,
-			Exclude<GenericOtherKeys, InferredLastKey>,
-			(
-				{ [Remap in InferredLastKey]: GenericObject[InferredLastKey] }
-			) extends infer InferredResult extends object
-				? (
-					| GenericAccumulator
-					| (
-						& InferredResult
-						& GenericAccumulator
-					)
-				)
-				: never
-		>
-		: never;
+	GenericLast extends object,
+> = LoopWhileHasShape<
+	Exclude<GenericSplitShape, GenericLast>,
+	| GenericAccumulator
+	| (
+		& GenericAccumulator
+		& GenericLast
+	)
+>;
 
-type LoopOnEveryKeys<
-	GenericObject extends object,
-	GenericKeys extends keyof GenericObject,
-	GenericAccumulator extends object = never,
-> = DCommon.IsNever<GenericKeys> extends true
+type LoopWhileHasShape<
+	GenericSplitShape extends object,
+	GenericAccumulator extends object = GenericSplitShape,
+> = DCommon.IsNever<GenericSplitShape> extends true
 	? GenericAccumulator
-	: DCommon.LastUnionElement<GenericKeys> extends infer InferredLastKey extends keyof GenericObject
-		? LoopOnEveryKeys<
-			GenericObject,
-			Exclude<GenericKeys, InferredLastKey>,
-			| GenericAccumulator
-			| (
-				CreateEveryCombinationOnKey<
-					GenericObject,
-					InferredLastKey,
-					Exclude<keyof GenericObject, InferredLastKey>,
-					{ [Remap in InferredLastKey]: GenericObject[InferredLastKey] }
-				> extends infer InferredResult extends object
-					? InferredResult extends any
-						? {
-							[Prop in keyof InferredResult]: EveryCombination<
-								InferredResult[Prop]
-							> extends infer InferredSubResult
-								? InferredSubResult extends any
-									? (
-										& Omit<InferredResult, Prop>
-										& { [Remap in Prop]: InferredSubResult }
-									)
-									: never
-								: never
-						}[keyof InferredResult]
-						: never
-					: never
-		)
-		>
-		: never;
+	: AddShape<
+		GenericSplitShape,
+		GenericAccumulator,
+		DCommon.LastUnionElement<GenericSplitShape>
+	>;
 
 export type EveryCombination<
-	GenericValue extends unknown,
-> = GenericValue extends object
-	? DCommon.SimplifyTypeForce<
-		DCommon.RemoveDuplicateInUnion<
-			LoopOnEveryKeys<
-				GenericValue,
-				keyof GenericValue
-			>
+	GenericValue extends object,
+	GenericSplitMax extends number = never,
+> = Extract<
+	DCommon.SimplifyTypeForce<
+		LoopWhileHasShape<
+			Split<GenericValue, GenericSplitMax>
 		>
-	>
-	: GenericValue;
+	>,
+	object
+>;

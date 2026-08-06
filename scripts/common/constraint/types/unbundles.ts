@@ -1,84 +1,79 @@
 import type * as DObject from "@scripts/object";
-import type { BaseConstraint } from "./base";
-import type { IsNever, IsEqual, LastUnionElement } from "../../types";
-import type { GetConstraint } from "./get";
+import { type BaseConstraint } from "./base";
+import type * as DCommon from "@scripts/common";
 
-type SeparateByComplexity<
-	GenericConstraint extends BaseConstraint,
-	GenericLevel extends number = never,
-> = GenericConstraint extends any
-	? DObject.Split<GenericConstraint, GenericLevel> extends infer InferredSplitConstraint
-		? InferredSplitConstraint extends any
-			? GenericConstraint extends (
-					& (infer InferredSeparatedConstraints extends BaseConstraint)
-					& InferredSplitConstraint
-			)
-				? GenericConstraint extends (
-						& (infer InferredSeparatedCurrentConstraint extends BaseConstraint)
-						& InferredSeparatedConstraints
-				)
-					? IsEqual<InferredSeparatedCurrentConstraint, BaseConstraint> extends true
-						? [InferredSeparatedConstraints, "complex"]
-						: [InferredSeparatedCurrentConstraint, "simple"]
-					: never
-				: never
-			: never
+declare const RestSymbol: unique symbol;
+type RestSymbol = typeof RestSymbol;
+type Rest<
+	GenericConstraint extends BaseConstraint = BaseConstraint,
+> = [
+	GenericConstraint,
+	RestSymbol,
+];
+
+type UnwrapRest<
+	GenericValue extends unknown,
+> = GenericValue extends Rest
+	? GenericValue[0]
+	: GenericValue;
+
+type Separate<
+	GenericValue extends unknown,
+	GenericShape extends object,
+	GenericLast extends object,
+> = GenericValue extends (
+	& infer InferredRest
+	& GenericLast
+)
+	? GenericValue extends (
+		& infer InferredConstraint
+		& InferredRest
+	)
+		? (
+			| Extract<InferredConstraint, BaseConstraint>
+			| SeparateByShape<
+				InferredRest,
+				DCommon.ExcludeEqual<GenericShape, GenericLast>
+			>
+		)
 		: never
 	: never;
 
-type RemoveSimpleFromComplex<
-	GenericSimple extends BaseConstraint,
-	GenericComplex extends BaseConstraint,
-> = IsNever<GenericSimple> extends true
-	? GenericComplex
-	: LastUnionElement<GenericSimple> extends infer InferredLast extends BaseConstraint
-		? GenericComplex extends (
-			& (infer InferredRest extends BaseConstraint)
-			& InferredLast
-		)
-			? RemoveSimpleFromComplex<
-				Exclude<GenericSimple, InferredLast>,
-				InferredRest
-			>
-			: never
-		: never;
-
-type LoopWhileHasComplex<
-	GenericConstraint extends BaseConstraint,
-	GenericAccumulator extends readonly never[] = never,
-> = 5 extends GenericAccumulator["length"]
-	? GenericConstraint
-	: SeparateByComplexity<
-		GenericConstraint,
-		GenericAccumulator["length"]
-	> extends infer InferredResult
-		? [
-			Extract<InferredResult, [BaseConstraint, "complex"]>,
-			Extract<InferredResult, [BaseConstraint, "simple"]>,
-		] extends [
-			infer InferredComplexResult extends [BaseConstraint, "complex"],
-			infer InferredSimpleResult extends [BaseConstraint, "simple"],
-		]
-			? IsNever<InferredComplexResult> extends true
-				? InferredSimpleResult[0]
-				: (
-					| LoopWhileHasComplex<
-						RemoveSimpleFromComplex<
-							InferredSimpleResult[0],
-							InferredComplexResult[0]
-						>,
-						IsNever<GenericAccumulator> extends true
-							? [never]
-							: [...GenericAccumulator, never]
-					>
-					| InferredSimpleResult[0]
-				)
-			: never
-		: never;
+type SeparateByShape<
+	GenericValue extends unknown,
+	GenericShape extends object,
+> = DCommon.IsNever<GenericShape> extends true
+	? GenericValue extends BaseConstraint
+		? Rest<GenericValue>
+		: never
+	: Separate<
+		GenericValue,
+		GenericShape,
+		DCommon.LastUnionElement<GenericShape>
+	>;
 
 export type UnbundlesConstraint<
-	GenericConstraint extends BaseConstraint,
-> = LoopWhileHasComplex<
-	GetConstraint<GenericConstraint>
->;
+	GenericValue extends unknown,
+> = (
+	GenericValue extends BaseConstraint
+		? SeparateByShape<
+			GenericValue,
+			DObject.Split<
+				Pick<GenericValue, DCommon.ConstraintSymbol>
+			>
+		>
+		: GenericValue
+) extends infer InferredResult
+	? InferredResult extends Rest
+		? UnwrapRest<
+			SeparateByShape<
+				InferredResult[0],
+				DObject.EveryCombination<
+					Pick<InferredResult[0], DCommon.ConstraintSymbol>,
+					2
+				>
+			>
+		>
+		: InferredResult
+	: never;
 

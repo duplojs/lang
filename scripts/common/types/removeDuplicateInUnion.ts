@@ -1,20 +1,20 @@
-import { type IsEqual } from "./isEqual";
-import { type IsUnion } from "./isUnion";
+
+import { type ExcludeEqual } from "./excludeEqual";
+import { type IsNever } from "./isNever";
 import { type LastUnionElement } from "./lastUnionElement";
+
+type Remove<
+	GenericValue extends unknown,
+	GenericLast extends GenericValue,
+> = (
+	| GenericLast
+	| RemoveDuplicateInUnion<
+		ExcludeEqual<GenericValue, GenericLast>
+	>
+);
 
 export type RemoveDuplicateInUnion<
 	GenericValue extends unknown,
-> = IsUnion<GenericValue> extends true
-	? LastUnionElement<GenericValue> extends infer InferredValue
-		? (
-			| InferredValue
-			| RemoveDuplicateInUnion<
-				GenericValue extends any
-					? IsEqual<GenericValue, InferredValue> extends true
-						? never
-						: GenericValue
-					: never
-			>
-		)
-		: never
-	: GenericValue;
+> = IsNever<GenericValue> extends true
+	? never
+	: Remove<GenericValue, LastUnionElement<GenericValue>>;

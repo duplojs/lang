@@ -1,4 +1,5 @@
-import { cast, type UnbundlesConstraint, type DString, type Constraint, type DModeling, type DNumber, type CastError, type RemoveConstraint } from "@scripts";
+import { cast, type UnbundlesConstraint, type DString, type Constraint, type DModeling, type DNumber, type CastError, type RemoveConstraint, type DObject, type ConstraintSymbol, type UnionToIntersection, type IsEqual, type SimplifyTypeForce, type BaseConstraint, ToLargeEnsemble, type ExtractEqual, type RemoveDuplicateInUnion, type ExcludeEqual } from "@scripts";
+import { type EveryCombination } from "@scripts/object";
 
 describe("cast", () => {
 	it("", () => {
@@ -38,19 +39,31 @@ describe("cast", () => {
 		>;
 
 		type uu = UnbundlesConstraint<
-			& string
-			& DString.AllowedCharacters<"0-9">
-			& DString.AllowedCharacters<"A-Z">
+			& DString.AllowedCharacters<"0-9" | "A-Z">
+			& DString.AllowedCharacters<"A-z" | "a-z">
 			& DModeling.NewType<"test", DString.MaxCharacters<20>>
 			& DString.MaxCharacters<10>
 		>;
 
 		type yy = RemoveConstraint<
 			& string
-			& DString.AllowedCharacters<"0-9">
-			& DString.AllowedCharacters<"A-z">
+			& DString.AllowedCharacters<"0-9" | "A-Z">
+			& DString.AllowedCharacters<"A-z" | "a-z">
 			& DModeling.NewType<"test", DString.MaxCharacters<20>>
 			& DString.MaxCharacters<10>
+		>;
+
+		type oog = EveryCombination<
+			& DString.AllowedCharacters<"0-9" | "A-Z">
+			& DString.AllowedCharacters<"A-z" | "a-z">
+			& DModeling.NewType<"test", DString.MaxCharacters<20>>
+			& DString.MaxCharacters<10>,
+			3
+		>;
+
+		type hg = EveryCombination<
+			& DString.AllowedCharacters<"0-9" | "A-Z">
+			& DString.AllowedCharacters<"A-z" | "a-z">
 		>;
 
 		const value1: (
