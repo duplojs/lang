@@ -3,19 +3,18 @@ import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type ToLowerCaseOutput<
 	GenericString extends string,
-> = DCommon.RemoveConstraint<GenericString> extends infer InferredString extends string
-	? ReapplyAllSizeConstraints<
-		GenericString,
-		Lowercase<InferredString>,
-		"lengthEqual" | "maxCharacters"
-	>
-	: never;
+> = ReapplyAllSizeConstraints<
+	GenericString,
+	Lowercase<DCommon.RemoveConstraint<GenericString>>,
+	"lengthEqual" | "maxCharacters"
+>;
 
 export function toLowerCase<
 	GenericString extends string,
+	GenericOutput = ToLowerCaseOutput<GenericString>,
 >(
 	string: GenericString,
-): ToLowerCaseOutput<GenericString>;
+): DCommon.BreakGenericLink<GenericOutput>;
 
 export function toLowerCase(
 	string: string,

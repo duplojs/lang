@@ -3,19 +3,18 @@ import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type UncapitalizeOutput<
 	GenericString extends string,
-> = DCommon.RemoveConstraint<GenericString> extends infer InferredString extends string
-	? ReapplyAllSizeConstraints<
-		GenericString,
-		Uncapitalize<InferredString>,
-		"lengthEqual" | "maxCharacters"
-	>
-	: never;
+> = ReapplyAllSizeConstraints<
+	GenericString,
+	Uncapitalize<DCommon.RemoveConstraint<GenericString>>,
+	"lengthEqual" | "maxCharacters"
+>;
 
 export function uncapitalize<
 	GenericString extends string,
+	GenericOutput = UncapitalizeOutput<GenericString>,
 >(
 	string: GenericString,
-): UncapitalizeOutput<GenericString>;
+): DCommon.BreakGenericLink<GenericOutput>;
 
 export function uncapitalize(
 	string: string,

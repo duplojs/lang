@@ -11,9 +11,7 @@ type RemoveStringConstraints<
 		...infer InferredRest extends readonly string[],
 	]
 		? [
-			DCommon.RemoveConstraint<InferredHead> extends infer InferredString extends string
-				? InferredString
-				: never,
+			DCommon.RemoveConstraint<InferredHead>,
 			...RemoveStringConstraints<InferredRest>,
 		]
 		: string[];
@@ -22,33 +20,32 @@ type ConcatOutput<
 	GenericString extends string,
 	GenericElement extends string,
 	GenericElementsRest extends readonly string[] = [],
-> = DCommon.RemoveConstraint<GenericString> extends infer InferredString extends string
-	? DCommon.RemoveConstraint<GenericElement> extends infer InferredElement extends string
-		? ReapplyAllSizeConstraints<
-			GenericString,
-			`${InferredString}${InferredElement}${Join<RemoveStringConstraints<GenericElementsRest>>}`,
-			"lengthEqual" | "maxCharacters"
-		>
-		: never
-	: never;
+> = ReapplyAllSizeConstraints<
+	GenericString,
+	`${DCommon.RemoveConstraint<GenericString>}${DCommon.RemoveConstraint<GenericElement>}${Join<RemoveStringConstraints<GenericElementsRest>>}`,
+	"lengthEqual" | "maxCharacters"
+>;
 
 export function concat<
+	GenericString extends string,
 	GenericElement extends string,
+	GenericOutput = ConcatOutput<GenericString, GenericElement>,
 >(
 	element: GenericElement,
-): <GenericString extends string>(
+): (
 	string: GenericString,
-) => ConcatOutput<GenericString, GenericElement>;
+) => DCommon.BreakGenericLink<GenericOutput>;
 
 export function concat<
 	GenericString extends string,
 	GenericElement extends string,
 	GenericElementsRest extends readonly string[],
+	GenericOutput = ConcatOutput<GenericString, GenericElement, GenericElementsRest>,
 >(
 	string: GenericString,
 	element: GenericElement,
 	...elementsRest: GenericElementsRest
-): ConcatOutput<GenericString, GenericElement, GenericElementsRest>;
+): DCommon.BreakGenericLink<GenericOutput>;
 
 export function concat(
 	...args:

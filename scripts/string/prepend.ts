@@ -11,9 +11,7 @@ type RemoveStringConstraints<
 		...infer InferredRest extends readonly string[],
 	]
 		? [
-			DCommon.RemoveConstraint<InferredHead> extends infer InferredString extends string
-				? InferredString
-				: never,
+			DCommon.RemoveConstraint<InferredHead>,
 			...RemoveStringConstraints<InferredRest>,
 		]
 		: string[];
@@ -22,33 +20,32 @@ type PrependOutput<
 	GenericString extends string,
 	GenericElement extends string,
 	GenericElementsRest extends readonly string[] = [],
-> = DCommon.RemoveConstraint<GenericString> extends infer InferredString extends string
-	? DCommon.RemoveConstraint<GenericElement> extends infer InferredElement extends string
-		? ReapplyAllSizeConstraints<
-			GenericString,
-			`${InferredElement}${Join<RemoveStringConstraints<GenericElementsRest>>}${InferredString}`,
-			"lengthEqual" | "maxCharacters"
-		>
-		: never
-	: never;
+> = ReapplyAllSizeConstraints<
+	GenericString,
+	`${DCommon.RemoveConstraint<GenericElement>}${Join<RemoveStringConstraints<GenericElementsRest>>}${DCommon.RemoveConstraint<GenericString>}`,
+	"lengthEqual" | "maxCharacters"
+>;
 
 export function prepend<
+	GenericString extends string,
 	GenericElement extends string,
+	GenericOutput = PrependOutput<GenericString, GenericElement>,
 >(
 	element: GenericElement,
-): <GenericString extends string>(
+): (
 	string: GenericString,
-) => PrependOutput<GenericString, GenericElement>;
+) => DCommon.BreakGenericLink<GenericOutput>;
 
 export function prepend<
 	GenericString extends string,
 	GenericElement extends string,
 	GenericElementsRest extends readonly string[],
+	GenericOutput = PrependOutput<GenericString, GenericElement, GenericElementsRest>,
 >(
 	string: GenericString,
 	element: GenericElement,
 	...elementsRest: GenericElementsRest
-): PrependOutput<GenericString, GenericElement, GenericElementsRest>;
+): DCommon.BreakGenericLink<GenericOutput>;
 
 export function prepend(
 	...args:

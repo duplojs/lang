@@ -3,19 +3,18 @@ import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type ToUpperCaseOutput<
 	GenericString extends string,
-> = DCommon.RemoveConstraint<GenericString> extends infer InferredString extends string
-	? ReapplyAllSizeConstraints<
-		GenericString,
-		Uppercase<InferredString>,
-		"lengthEqual" | "maxCharacters"
-	>
-	: never;
+> = ReapplyAllSizeConstraints<
+	GenericString,
+	Uppercase<DCommon.RemoveConstraint<GenericString>>,
+	"lengthEqual" | "maxCharacters"
+>;
 
 export function toUpperCase<
 	GenericString extends string,
+	GenericOutput = ToUpperCaseOutput<GenericString>,
 >(
 	string: GenericString,
-): ToUpperCaseOutput<GenericString>;
+): DCommon.BreakGenericLink<GenericOutput>;
 
 export function toUpperCase(
 	string: string,
