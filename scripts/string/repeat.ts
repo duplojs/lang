@@ -1,3 +1,4 @@
+import type * as DNumber from "@scripts/number";
 import type { ReapplyAllowedCharacters } from "./constraints";
 
 type RepeatOutput<
@@ -6,17 +7,19 @@ type RepeatOutput<
 
 export function repeat<
 	GenericString extends string,
+	GenericCount extends number,
 >(
-	count: number,
+	count: GenericCount & DNumber.RequirePositiveInteger<GenericCount>,
 ): (
 	string: GenericString,
 ) => RepeatOutput<GenericString>;
 
 export function repeat<
 	GenericString extends string,
+	GenericCount extends number,
 >(
 	string: GenericString,
-	count: number,
+	count: GenericCount & DNumber.RequirePositiveInteger<GenericCount>,
 ): RepeatOutput<GenericString>;
 
 export function repeat(
@@ -26,7 +29,7 @@ export function repeat(
 ) {
 	if (args.length === 1) {
 		const [count] = args;
-		return (string: string) => repeat(string, count);
+		return (string: string) => repeat(string, count as never);
 	}
 
 	const [string, count] = args;

@@ -10,13 +10,23 @@ import type { StrictPositive } from "../strictPositive";
 
 type IsPositiveLiteral<
 	GenericNumber extends number,
-> = DCommon.RemoveConstraint<GenericNumber> extends infer InferredNumber extends number
-	? DCommon.IsEqual<InferredNumber, number> extends true
+> = GenericNumber extends DCommon.BaseConstraint
+	? false
+	: DCommon.IsEqual<GenericNumber, number> extends true
 		? false
-		: `${InferredNumber}` extends `-${string}`
+		: `${GenericNumber}` extends `-${string}`
 			? false
-			: true
-	: false;
+			: true;
+
+type IsIntegerLiteral<
+	GenericNumber extends number,
+> = GenericNumber extends DCommon.BaseConstraint
+	? false
+	: DCommon.IsEqual<GenericNumber, number> extends true
+		? false
+		: `${GenericNumber}` extends `${number}.${number}`
+			? false
+			: true;
 
 type HasPositiveConstraint<
 	GenericNumber extends number,
@@ -34,17 +44,7 @@ type HasIntegerConstraint<
 	GenericNumber extends number,
 > = DCommon.IsExtends<GenericNumber, Integer | SafeInteger | Odd | Even>;
 
-type IsIntegerLiteral<
-	GenericNumber extends number,
-> = DCommon.RemoveConstraint<GenericNumber> extends infer InferredNumber extends number
-	? DCommon.IsEqual<InferredNumber, number> extends true
-		? false
-		: `${InferredNumber}` extends `${number}.${number}`
-			? false
-			: true
-	: false;
-
-export type IsPositiveInteger<
+type ComputeIsPositiveInteger<
 	GenericNumber extends number,
 > = DCommon.And<[
 	DCommon.Or<[
@@ -56,3 +56,13 @@ export type IsPositiveInteger<
 		IsIntegerLiteral<GenericNumber>,
 	]>,
 ]>;
+
+export type IsPositiveInteger<
+	GenericNumber extends number,
+> = false extends (
+	GenericNumber extends unknown
+		? ComputeIsPositiveInteger<GenericNumber>
+		: never
+)
+	? false
+	: true;

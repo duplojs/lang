@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { type DNumber, DString, pipe, type ExpectType } from "@scripts";
 
 describe("repeat", () => {
 	it("should repeat a string", () => {
@@ -23,8 +23,15 @@ describe("repeat", () => {
 	});
 
 	it("should return an empty string for invalid counts", () => {
-		expect(DString.repeat("ha", -1)).toBe("");
-		expect(DString.repeat("ha", Number.POSITIVE_INFINITY)).toBe("");
+		expect(DString.repeat("ha", -1 as never)).toBe("");
+		expect(DString.repeat("ha", Number.POSITIVE_INFINITY as never)).toBe("");
+	});
+
+	it("should require a positive integer count", () => {
+		const count = 1 as number & DNumber.StrictPositive;
+
+		// @ts-expect-error count requires both positive and integer guarantees.
+		DString.repeat("ha", count);
 	});
 
 	it("should preserve allowed characters", () => {

@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { type DNumber, DString, pipe, type ExpectType } from "@scripts";
 
 describe("padEnd", () => {
 	it("should pad the end of a string", () => {
@@ -24,6 +24,13 @@ describe("padEnd", () => {
 
 	it("should keep strings that already reach the target length", () => {
 		expect(DString.padEnd("hello", 3, "0")).toBe("hello");
+	});
+
+	it("should require a positive integer target length", () => {
+		const targetLength = 1 as number & DNumber.StrictPositive;
+
+		// @ts-expect-error target length requires both positive and integer guarantees.
+		DString.padEnd("42", targetLength, "0");
 	});
 
 	it("should preserve only compatible size constraints", () => {

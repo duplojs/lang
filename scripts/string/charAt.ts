@@ -1,3 +1,4 @@
+import type * as DNumber from "@scripts/number";
 import type { CharactersRange, AllowedCharacters, MaxCharacters } from "./constraints";
 
 type CharAtOutput<
@@ -8,17 +9,19 @@ type CharAtOutput<
 
 export function charAt<
 	GenericString extends string,
+	GenericIndex extends number,
 >(
-	index: number,
+	index: GenericIndex & DNumber.RequirePositiveInteger<GenericIndex>,
 ): (
 	string: GenericString,
 ) => CharAtOutput<GenericString>;
 
 export function charAt<
 	GenericString extends string,
+	GenericIndex extends number,
 >(
 	string: GenericString,
-	index: number,
+	index: GenericIndex & DNumber.RequirePositiveInteger<GenericIndex>,
 ): CharAtOutput<GenericString>;
 
 export function charAt(
@@ -29,7 +32,7 @@ export function charAt(
 	if (args.length === 1) {
 		const [index] = args;
 
-		return (string: string) => charAt(string, index);
+		return (string: string) => charAt(string, index as never);
 	}
 
 	const [string, index] = args;

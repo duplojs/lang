@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import type * as DNumber from "@scripts/number";
 import type * as DArray from "@scripts/array";
 import type * as DTuple from "@scripts/tuple";
 import type { ApplyFormat, Format } from "./constraints";
@@ -7,7 +8,7 @@ import type { TemplateLiteralContainLargeType } from "./types";
 export interface SplitParams<
 	GenericLimit extends number,
 > {
-	limit: GenericLimit;
+	limit: GenericLimit & DNumber.RequirePositiveInteger<GenericLimit>;
 }
 
 type CountSplitGroups<

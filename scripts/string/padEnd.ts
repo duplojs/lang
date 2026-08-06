@@ -1,3 +1,4 @@
+import type * as DNumber from "@scripts/number";
 import type { ReapplyAllSizeConstraints } from "./constraints";
 
 type PadEndOutput<
@@ -6,8 +7,9 @@ type PadEndOutput<
 
 export function padEnd<
 	GenericString extends string,
+	GenericTargetLength extends number,
 >(
-	targetLength: number,
+	targetLength: GenericTargetLength & DNumber.RequirePositiveInteger<GenericTargetLength>,
 	padString: string,
 ): (
 	string: GenericString,
@@ -15,9 +17,10 @@ export function padEnd<
 
 export function padEnd<
 	GenericString extends string,
+	GenericTargetLength extends number,
 >(
 	string: GenericString,
-	targetLength: number,
+	targetLength: GenericTargetLength & DNumber.RequirePositiveInteger<GenericTargetLength>,
 	padString: string,
 ): PadEndOutput<GenericString>;
 
@@ -29,7 +32,7 @@ export function padEnd(
 	if (args.length === 2) {
 		const [targetLength, padString] = args;
 
-		return (string: string) => padEnd(string, targetLength, padString);
+		return (string: string) => padEnd(string, targetLength as never, padString);
 	}
 
 	const [string, targetLength, padString] = args;

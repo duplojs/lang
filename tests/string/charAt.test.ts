@@ -1,4 +1,4 @@
-import { DString, pipe, type ExpectType } from "@scripts";
+import { type DNumber, DString, pipe, type ExpectType } from "@scripts";
 
 describe("charAt", () => {
 	it("should return the character at index", () => {
@@ -24,6 +24,13 @@ describe("charAt", () => {
 
 	it("should return an empty string when the index is out of range", () => {
 		expect(DString.charAt("hello", 9)).toBe("");
+	});
+
+	it("should require a positive integer index", () => {
+		const index = 1 as number & DNumber.StrictPositive;
+
+		// @ts-expect-error index requires both positive and integer guarantees.
+		DString.charAt("hello", index);
 	});
 
 	it("should preserve allowed characters", () => {
