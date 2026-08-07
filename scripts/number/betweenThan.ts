@@ -1,6 +1,6 @@
 import type * as DCommon from "@scripts/common";
-import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, RequireLiteralNumber } from "./constraints";
-import type { IsGreater, IsGreaterOrEqual } from "./types";
+import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual } from "./constraints";
+import type { IsGreater, IsGreaterOrEqual, RequireLiteral } from "./types";
 
 type ApplyGreaterThan<
 	GenericValue extends number,
@@ -66,8 +66,8 @@ export function betweenThan<
 	const GenericGreater extends number,
 	const GenericLess extends number,
 >(
-	greater: GenericGreater & RequireLiteralNumber<GenericGreater>,
-	less: GenericLess & RequireLiteralNumber<GenericLess>,
+	greater: GenericGreater & RequireLiteral<GenericGreater>,
+	less: GenericLess & RequireLiteral<GenericLess>,
 ): (
 	value: GenericValue,
 ) => value is BetweenThanOutput<GenericValue, GenericGreater, GenericLess>;
@@ -78,8 +78,8 @@ export function betweenThan<
 	const GenericLess extends number,
 >(
 	value: GenericValue,
-	greater: GenericGreater & RequireLiteralNumber<GenericGreater>,
-	less: GenericLess & RequireLiteralNumber<GenericLess>,
+	greater: GenericGreater & RequireLiteral<GenericGreater>,
+	less: GenericLess & RequireLiteral<GenericLess>,
 ): value is BetweenThanOutput<GenericValue, GenericGreater, GenericLess>;
 
 export function betweenThan(

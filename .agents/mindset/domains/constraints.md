@@ -54,7 +54,7 @@ Les contraintes dynamiques servent notamment aux seuils et aux tailles :
 - `MinElements<2>`;
 - `GreaterThan<3>`.
 
-Quand la valeur paramétrique doit être connue par le type, refuser le type large correspondant avec `RequireLiteralNumber` ou une règle équivalente.
+Quand la valeur paramétrique doit être connue par le type, refuser le type large correspondant avec `RequireLiteral` ou une règle équivalente.
 
 ## 5. Compatibilité
 

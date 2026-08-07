@@ -40,7 +40,7 @@ type RequireApplyLengthEqual<
 	GenericLength extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericLength>
-	& DNumber.RequireLiteralNumber<GenericLength>
+	& DNumber.RequireLiteral<GenericLength>
 	& RequireLengthEqualConstraint<GenericString, GenericLength>
 	& RequireMinCharactersConstraint<GenericString, GenericLength>
 	& RequireMaxCharactersConstraint<GenericString, GenericLength>
