@@ -31,6 +31,12 @@ export default defineConfig({
 				"integrations/**/*.bench.ts",
 			],
 		},
+		typecheck: {
+			enabled: true,
+			tsconfig: "./tsconfig.test.json",
+			include: ["tests/**/*.test-d.ts"],
+			ignoreSourceErrors: true,
+		},
 	},
 	resolve: {
 		tsconfigPaths: true,

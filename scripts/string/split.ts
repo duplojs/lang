@@ -75,8 +75,15 @@ type SplitOutput<
 	GenericSeparator extends string,
 	GenericLimit extends number = number,
 > = GenericString extends Format<string>
-	? ComputeSplitOutput<DCommon.RemoveConstraint<ApplyFormat<GenericString>>, GenericSeparator, GenericLimit>
-	: ComputeSplitOutput<DCommon.RemoveConstraint<GenericString>, GenericSeparator, GenericLimit>;
+	? ComputeSplitOutput<
+		Extract<DCommon.RemoveConstraint<ApplyFormat<GenericString>>, string>,
+		GenericSeparator,
+		GenericLimit
+	>
+	: ComputeSplitOutput<
+		Extract<DCommon.RemoveConstraint<GenericString>, string>,
+		GenericSeparator, GenericLimit
+	>;
 
 export function split<
 	GenericString extends string,
@@ -84,7 +91,9 @@ export function split<
 	GenericOutput = SplitOutput<GenericString, GenericSeparator>,
 >(
 	separator: GenericSeparator | RegExp,
-): (string: GenericString) => DCommon.BreakGenericLink<GenericOutput>;
+): (
+	string: GenericString,
+) => DCommon.BreakGenericLink<GenericOutput>;
 
 export function split<
 	GenericString extends string,
@@ -104,6 +113,7 @@ export function split(
 ): any {
 	if (args.length === 1) {
 		const [separator] = args;
+
 		return (string: string) => split(string, separator);
 	}
 

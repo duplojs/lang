@@ -22,7 +22,7 @@ type ConcatOutput<
 	GenericElementsRest extends readonly string[] = [],
 > = ReapplyAllSizeConstraints<
 	GenericString,
-	`${DCommon.RemoveConstraint<GenericString>}${DCommon.RemoveConstraint<GenericElement>}${Join<RemoveStringConstraints<GenericElementsRest>>}`,
+	`${Extract<DCommon.RemoveConstraint<GenericString>, string>}${Extract<DCommon.RemoveConstraint<GenericElement>, string>}${Join<RemoveStringConstraints<GenericElementsRest>>}`,
 	"lengthEqual" | "maxCharacters"
 >;
 

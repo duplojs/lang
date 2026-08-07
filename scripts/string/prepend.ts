@@ -22,7 +22,7 @@ type PrependOutput<
 	GenericElementsRest extends readonly string[] = [],
 > = ReapplyAllSizeConstraints<
 	GenericString,
-	`${DCommon.RemoveConstraint<GenericElement>}${Join<RemoveStringConstraints<GenericElementsRest>>}${DCommon.RemoveConstraint<GenericString>}`,
+	`${Extract<DCommon.RemoveConstraint<GenericElement>, string>}${Join<RemoveStringConstraints<GenericElementsRest>>}${Extract<DCommon.RemoveConstraint<GenericString>, string>}`,
 	"lengthEqual" | "maxCharacters"
 >;
 

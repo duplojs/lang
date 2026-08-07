@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import { type Split } from "./split";
+import type { Split } from "./split";
 
 type AddShape<
 	GenericSplitShape extends object,

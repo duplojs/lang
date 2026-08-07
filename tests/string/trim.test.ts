@@ -8,7 +8,7 @@ describe("trim", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string,
+			string & DString.Trimmed,
 			"strict"
 		>;
 	});
@@ -19,7 +19,7 @@ describe("trim", () => {
 
 		type _CheckMaxResult = ExpectType<
 			typeof resultMax,
-			string & DString.MaxCharacters<10>,
+			string & DString.Trimmed & DString.MaxCharacters<10>,
 			"strict"
 		>;
 
@@ -28,7 +28,7 @@ describe("trim", () => {
 
 		type _CheckMinResult = ExpectType<
 			typeof resultMin,
-			string,
+			string & DString.Trimmed,
 			"strict"
 		>;
 
@@ -37,7 +37,7 @@ describe("trim", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			string,
+			string & DString.Trimmed,
 			"strict"
 		>;
 	});

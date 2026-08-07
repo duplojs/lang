@@ -1,10 +1,10 @@
-import type { ReapplyAllSizeConstraints } from "../constraints";
+import type { ReapplyAllSizeConstraints, Trimmed } from "../constraints";
 
 type TrimOutput<
 	GenericString extends string,
 > = ReapplyAllSizeConstraints<
 	GenericString,
-	string,
+	string & Trimmed,
 	"lengthEqual" | "minCharacters"
 >;
 

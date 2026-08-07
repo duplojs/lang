@@ -5,7 +5,7 @@ type CapitalizeOutput<
 	GenericString extends string,
 > = ReapplyAllSizeConstraints<
 	GenericString,
-	Capitalize<DCommon.RemoveConstraint<GenericString>>,
+	Capitalize<Extract<DCommon.RemoveConstraint<GenericString>, string>>,
 	"lengthEqual" | "maxCharacters"
 >;
 

@@ -5,7 +5,7 @@ type UncapitalizeOutput<
 	GenericString extends string,
 > = ReapplyAllSizeConstraints<
 	GenericString,
-	Uncapitalize<DCommon.RemoveConstraint<GenericString>>,
+	Uncapitalize<Extract<DCommon.RemoveConstraint<GenericString>, string>>,
 	"lengthEqual" | "maxCharacters"
 >;
 

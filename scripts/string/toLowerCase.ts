@@ -5,7 +5,7 @@ type ToLowerCaseOutput<
 	GenericString extends string,
 > = ReapplyAllSizeConstraints<
 	GenericString,
-	Lowercase<DCommon.RemoveConstraint<GenericString>>,
+	Lowercase<Extract<DCommon.RemoveConstraint<GenericString>, string>>,
 	"lengthEqual" | "maxCharacters"
 >;
 
