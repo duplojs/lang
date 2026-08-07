@@ -1,11 +1,11 @@
-import type * as DArrayTypes from "@scripts/array/types";
-import type * as DObject from "@scripts/object/types";
-import { type IsNever, type ToLargeEnsemble, type NeverCoalescing, type BreakGenericLink } from "@scripts/common/types";
+import type * as DArray from "@scripts/array";
+import type * as DObject from "@scripts/object";
 import { type ComputeCastArrayRule } from "./array";
-import { type GetConstraint, type Constraint, type UnbundlesConstraint, type RemoveConstraint } from "../types";
+import { type Constraint, type UnbundlesConstraint, type RemoveConstraint, type BaseConstraint } from "../types";
 import { type CastError } from "./error";
 import { type ComputeCastNumberRule } from "./number";
 import { type ComputeCastStringRule } from "./string";
+import { type BreakGenericLink, type ToLargeEnsemble, type NeverCoalescing, IsExtends, type UnionContain } from "../../types";
 
 export * from "./array";
 export * from "./error";
@@ -35,30 +35,44 @@ export interface ComputeCastRule<
 
 export type ComputeCast<
 	GenericValue extends unknown,
-	GenericExpectedConstraint extends Constraint,
-> = GenericExpectedConstraint extends any
-	? Extract<GenericValue, RemoveConstraint<GenericExpectedConstraint>> extends infer InferredValue
-		? IsNever<InferredValue> extends true
-			? never
-			: UnbundlesConstraint<GenericExpectedConstraint> extends infer InferredConstraint extends Constraint
-				? DArrayTypes.Unwrap<
-					NeverCoalescing<
-						Extract<
-							InferredConstraint extends any
-								? [
-									NeverCoalescing<
-										DObject.Values<ComputeCastRule<GenericValue, InferredConstraint>>,
-										CastError<"None of the intended constraints is possible on the current value.", GenericValue, InferredConstraint>
-									>,
-								]
-								: never,
-							[CastError<any, any, any>]
-						>,
-						unknown
-					>
-				>
-				: never
+	GenericExpectedValue extends Constraint,
+> = (
+	GenericExpectedValue extends any
+		? [UnbundlesConstraint<GenericExpectedValue>]
 		: never
+) extends infer InferredComputedExpectedValue extends [BaseConstraint]
+	? DArray.Unwrap<
+		NeverCoalescing<
+			Extract<
+				GenericValue extends any
+					? (
+						InferredComputedExpectedValue extends [infer InferredConstraint extends BaseConstraint]
+							? NeverCoalescing<
+								Extract<
+									InferredConstraint extends any
+										? [
+											NeverCoalescing<
+												DObject.Values<ComputeCastRule<GenericValue, InferredConstraint>>,
+												CastError<"None of the intended constraints is possible on the current value.", GenericValue, InferredConstraint>
+											>,
+										]
+										: never,
+									[CastError<any, any, any>]
+								>,
+								[unknown]
+							>
+							: never
+					) extends infer InferredResult
+						? UnionContain<InferredResult, [unknown]> extends true
+							? [unknown]
+							: InferredResult
+						: never
+					: never,
+				[CastError<any, any, any>]
+			>,
+			unknown
+		>
+	>
 	: never;
 
 export function cast<

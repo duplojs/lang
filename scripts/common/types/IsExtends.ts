@@ -1,6 +1,10 @@
 export type IsExtends<
 	GenericValueA extends unknown,
 	GenericValueB extends unknown,
-> = GenericValueA extends GenericValueB
-	? true
-	: false;
+> = (
+	GenericValueA extends GenericValueB
+		? true
+		: false
+) extends false
+	? false
+	: true;

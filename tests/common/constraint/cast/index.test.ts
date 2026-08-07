@@ -1,4 +1,4 @@
-import { cast, type DArray, type DNumber, type CastError, type DString, RemoveCastError, type ComputeCastNumberRule, type DObject } from "@scripts";
+import { cast, type DArray, type DNumber, type CastError, type DString, RemoveCastError, type ComputeCastNumberRule, type DObject, type ComputeCast } from "@scripts";
 
 describe("cast", () => {
 	it("cast maxCharacters", () => {
@@ -387,5 +387,66 @@ describe("cast", () => {
 		);
 		// @ts-expect-error cause error
 		const value105: number & DNumber.LessThanOrEqual<12> = cast(15);
+	});
+
+	it("expect union value", () => {
+		const value1: (
+			| (number & DNumber.LessThanOrEqual<12>)
+			| (string & DString.MaxCharacters<50>)
+		) = cast(1 as number & DNumber.LessThanOrEqual<6>);
+
+		const value2: (
+			| (number & DNumber.LessThanOrEqual<12>)
+			| (string & DString.MaxCharacters<50>)
+		) = cast(
+			1 as number & DNumber.LessThanOrEqual<15> & CastError<
+				"Impossible to cast on LessThanOrEqual<12> because constraint LessThanOrEqual<15> from the value is greater than.",
+				number & DNumber.LessThanOrEqual<15>,
+				DNumber.LessThanOrEqual<12>
+			>,
+		);
+		const value25: (
+			| (number & DNumber.LessThanOrEqual<12>)
+			| (string & DString.MaxCharacters<50>)
+		// @ts-expect-error cause error
+		) = cast(1 as number & DNumber.LessThanOrEqual<15>);
+
+		const value3: (
+			| (number & DNumber.LessThanOrEqual<12>)
+			| (string & DString.MaxCharacters<50>)
+		) = cast("" as string & DString.MaxCharacters<10>);
+
+		const value4: (
+			| (number & DNumber.LessThanOrEqual<12>)
+			| (string & DString.MaxCharacters<50>)
+		) = cast(
+			"" as string & DString.MaxCharacters<100> & CastError<
+				"Impossible to cast on MaxCharacters<50> because constraint MaxCharacters<100> from the value is more than.",
+				string & DString.MaxCharacters<100>,
+				DString.MaxCharacters<50>
+			>,
+		);
+		const value45: (
+			| (number & DNumber.LessThanOrEqual<12>)
+			| (string & DString.MaxCharacters<50>)
+		// @ts-expect-error cause error
+		) = cast("" as string & DString.MaxCharacters<100>);
+
+		const value5: (
+			| (number & DNumber.LessThanOrEqual<12>)
+			| (string & DString.MaxCharacters<50>)
+		) = cast(
+			"" as string & DString.MinCharacters<10> & CastError<
+				"Impossible to cast on MaxCharacters<50> because value does not have MaxCharacters constraint.",
+				string & DString.MinCharacters<10>,
+				DString.MaxCharacters<50>
+			>,
+		);
+
+		const value55: (
+			| (number & DNumber.LessThanOrEqual<12>)
+			| (string & DString.MaxCharacters<50>)
+		// @ts-expect-error cause error
+		) = cast("" as string & DString.MinCharacters<10>);
 	});
 });
