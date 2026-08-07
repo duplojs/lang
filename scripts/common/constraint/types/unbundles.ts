@@ -65,12 +65,11 @@ export type UnbundlesConstraint<
 		: GenericValue
 ) extends infer InferredResult
 	? (
-		InferredResult extends BaseConstraint
-			? SeparateByShape<
-				InferredResult,
-				DObject.Split<
-					Pick<InferredResult, DCommon.ConstraintSymbol>,
-					2
+		InferredResult extends Rest
+			? UnwrapRest<
+				SeparateByShape<
+					InferredResult[0],
+					Pick<InferredResult[0], DCommon.ConstraintSymbol>
 				>
 			>
 			: InferredResult
@@ -80,14 +79,28 @@ export type UnbundlesConstraint<
 				? UnwrapRest<
 					SeparateByShape<
 						InferredResult[0],
-						DObject.EveryCombination<
+						DObject.Split<
 							Pick<InferredResult[0], DCommon.ConstraintSymbol>,
 							2
 						>
 					>
 				>
 				: InferredResult
-		)
+		) extends infer InferredResult
+			? (
+				InferredResult extends Rest
+					? UnwrapRest<
+						SeparateByShape<
+							InferredResult[0],
+							DObject.EveryCombination<
+								Pick<InferredResult[0], DCommon.ConstraintSymbol>,
+								2
+							>
+						>
+					>
+					: InferredResult
+			)
+			: never
 		: never
 	: never;
 

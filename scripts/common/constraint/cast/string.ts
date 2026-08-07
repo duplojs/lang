@@ -5,10 +5,10 @@ import { type Constraint } from "../types";
 import { type CastError } from "./error";
 
 export interface ComputeCastStringRule<
-	GenericValue extends unknown,
-	GenericExpectedValue extends Constraint,
+	GenericValue extends string,
+	GenericExpectedConstraint extends Constraint,
 > {
-	maxCharacters: DString.ExtractMaxCharacters<GenericExpectedValue, unknown> extends DString.MaxCharacters<infer InferredTo>
+	maxCharacters: DString.ExtractMaxCharacters<GenericExpectedConstraint, unknown> extends DString.MaxCharacters<infer InferredTo>
 		? InferredTo extends number
 			? DString.ExtractMaxCharacters<GenericValue, unknown> extends DString.MaxCharacters<infer InferredFrom>
 				? InferredFrom extends number
@@ -17,7 +17,7 @@ export interface ComputeCastStringRule<
 						: CastError<
 							`Impossible to cast on MaxCharacters<${InferredTo}> because constraint MaxCharacters<${InferredFrom}> from the value is more than.`,
 							GenericValue,
-							GenericExpectedValue
+							GenericExpectedConstraint
 						>
 					: never
 				: DString.ExtractLengthEqual<GenericValue, unknown> extends DString.LengthEqual<infer InferredFrom>
@@ -27,18 +27,18 @@ export interface ComputeCastStringRule<
 							: CastError<
 								`Impossible to cast on MaxCharacters<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is more than.`,
 								GenericValue,
-								GenericExpectedValue
+								GenericExpectedConstraint
 							>
 						: never
 					: CastError<
 						`Impossible to cast on MaxCharacters<${InferredTo}> because value does not have MaxCharacters constraint.`,
 						GenericValue,
-						GenericExpectedValue
+						GenericExpectedConstraint
 					>
 			: never
 
 		: never;
-	minCharacters: DString.ExtractMinCharacters<GenericExpectedValue, unknown> extends DString.MinCharacters<infer InferredTo>
+	minCharacters: DString.ExtractMinCharacters<GenericExpectedConstraint, unknown> extends DString.MinCharacters<infer InferredTo>
 		? InferredTo extends number
 			? DString.ExtractMinCharacters<GenericValue, unknown> extends DString.MinCharacters<infer InferredFrom>
 				? InferredFrom extends number
@@ -47,7 +47,7 @@ export interface ComputeCastStringRule<
 						: CastError<
 							`Impossible to cast on MinCharacters<${InferredTo}> because constraint MinCharacters<${InferredFrom}> from the value is less than.`,
 							GenericValue,
-							GenericExpectedValue
+							GenericExpectedConstraint
 						>
 					: never
 				: DString.ExtractLengthEqual<GenericValue, unknown> extends DString.LengthEqual<infer InferredFrom>
@@ -57,13 +57,13 @@ export interface ComputeCastStringRule<
 							: CastError<
 								`Impossible to cast on MaxCharacters<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is less than.`,
 								GenericValue,
-								GenericExpectedValue
+								GenericExpectedConstraint
 							>
 						: never
 					: CastError<
 						`Impossible to cast on MinCharacters<${InferredTo}> because value does not have MinCharacters constraint.`,
 						GenericValue,
-						GenericExpectedValue
+						GenericExpectedConstraint
 					>
 			: never
 		: never;

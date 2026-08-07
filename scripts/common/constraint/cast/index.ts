@@ -35,14 +35,12 @@ export interface ComputeCastRule<
 
 export type ComputeCast<
 	GenericValue extends unknown,
-	GenericExpectedValue extends Constraint,
-> = GenericExpectedValue extends any
-	? Extract<GenericValue, RemoveConstraint<GenericExpectedValue>> extends infer InferredValue
+	GenericExpectedConstraint extends Constraint,
+> = GenericExpectedConstraint extends any
+	? Extract<GenericValue, RemoveConstraint<GenericExpectedConstraint>> extends infer InferredValue
 		? IsNever<InferredValue> extends true
 			? never
-			: UnbundlesConstraint<
-				Extract<GetConstraint<GenericExpectedValue>, Constraint>
-			> extends infer InferredConstraint extends Constraint
+			: UnbundlesConstraint<GenericExpectedConstraint> extends infer InferredConstraint extends Constraint
 				? DArrayTypes.Unwrap<
 					NeverCoalescing<
 						Extract<

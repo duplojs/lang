@@ -1,13 +1,14 @@
+// oxlint-disable @stylistic/max-len
 import type * as DArray from "@scripts/array/constraints";
 import type * as DNumber from "@scripts/number";
 import { type Constraint } from "../types";
 import { type CastError } from "./error";
 
 export interface ComputeCastArrayRule<
-	GenericValue extends unknown,
-	GenericExpectedValue extends Constraint,
+	GenericValue extends readonly unknown[],
+	GenericExpectedConstraint extends Constraint,
 > {
-	minElements: DArray.ExtractMinElements<GenericExpectedValue, unknown> extends DArray.MinElements<infer InferredTo>
+	minElements: DArray.ExtractMinElements<GenericExpectedConstraint, unknown> extends DArray.MinElements<infer InferredTo>
 		? InferredTo extends number
 			? DArray.ExtractMinElements<GenericValue, unknown> extends DArray.MinElements<infer InferredFrom>
 				? InferredFrom extends number
@@ -16,7 +17,7 @@ export interface ComputeCastArrayRule<
 						: CastError<
 							`Impossible to cast on MinElements<${InferredTo}> because constraint MinElements<${InferredFrom}> from the value is less than.`,
 							GenericValue,
-							GenericExpectedValue
+							GenericExpectedConstraint
 						>
 					: never
 				: DArray.ExtractLengthEqual<GenericValue, unknown> extends DArray.LengthEqual<infer InferredFrom>
@@ -26,17 +27,17 @@ export interface ComputeCastArrayRule<
 							: CastError<
 								`Impossible to cast on MinElements<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is less than.`,
 								GenericValue,
-								GenericExpectedValue
+								GenericExpectedConstraint
 							>
 						: never
 					: CastError<
 						`Impossible to cast on MinElements<${InferredTo}> because value does not have MinElements constraint.`,
 						GenericValue,
-						GenericExpectedValue
+						GenericExpectedConstraint
 					>
 			: never
 		: never;
-	maxElements: DArray.ExtractMaxElements<GenericExpectedValue, unknown> extends DArray.MaxElements<infer InferredTo>
+	maxElements: DArray.ExtractMaxElements<GenericExpectedConstraint, unknown> extends DArray.MaxElements<infer InferredTo>
 		? InferredTo extends number
 			? DArray.ExtractMaxElements<GenericValue, unknown> extends DArray.MaxElements<infer InferredFrom>
 				? InferredFrom extends number
@@ -45,7 +46,7 @@ export interface ComputeCastArrayRule<
 						: CastError<
 							`Impossible to cast on MaxElements<${InferredTo}> because constraint MaxElements<${InferredFrom}> from the value is more than.`,
 							GenericValue,
-							GenericExpectedValue
+							GenericExpectedConstraint
 						>
 					: never
 				: DArray.ExtractLengthEqual<GenericValue, unknown> extends DArray.LengthEqual<infer InferredFrom>
@@ -55,13 +56,13 @@ export interface ComputeCastArrayRule<
 							: CastError<
 								`Impossible to cast on MaxElements<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is more than.`,
 								GenericValue,
-								GenericExpectedValue
+								GenericExpectedConstraint
 							>
 						: never
 					: CastError<
 						`Impossible to cast on MaxElements<${InferredTo}> because value does not have MaxElements constraint.`,
 						GenericValue,
-						GenericExpectedValue
+						GenericExpectedConstraint
 					>
 			: never
 		: never;

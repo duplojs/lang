@@ -43,10 +43,7 @@ export type RemoveConstraint<
 		InferredResult extends BaseConstraint
 			? RemoveConstraintByShape<
 				InferredResult,
-				DObject.Split<
-					Pick<InferredResult, DCommon.ConstraintSymbol>,
-					2
-				>
+				Pick<InferredResult, DCommon.ConstraintSymbol>
 			>
 			: InferredResult
 	) extends infer InferredResult
@@ -54,11 +51,23 @@ export type RemoveConstraint<
 			InferredResult extends BaseConstraint
 				? RemoveConstraintByShape<
 					InferredResult,
-					DObject.EveryCombination<
-						Pick<InferredResult, DCommon.ConstraintSymbol>
+					DObject.Split<
+						Pick<InferredResult, DCommon.ConstraintSymbol>,
+						2
 					>
 				>
 				: InferredResult
-		)
+		) extends infer InferredResult
+			? (
+				InferredResult extends BaseConstraint
+					? RemoveConstraintByShape<
+						InferredResult,
+						DObject.EveryCombination<
+							Pick<InferredResult, DCommon.ConstraintSymbol>
+						>
+					>
+					: InferredResult
+			)
+			: never
 		: never
 	: never;
