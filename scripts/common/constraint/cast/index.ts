@@ -1,11 +1,13 @@
-import type * as DArray from "@scripts/array/types";
+import type * as DArrayTypes from "@scripts/array/types";
 import type * as DObject from "@scripts/object/types";
 import { type IsNever, type ToLargeEnsemble, type NeverCoalescing, type BreakGenericLink } from "@scripts/common/types";
+import { type ComputeCastArrayRule } from "./array";
 import { type GetConstraint, type Constraint, type UnbundlesConstraint, type RemoveConstraint } from "../types";
 import { type CastError } from "./error";
 import { type ComputeCastNumberRule } from "./number";
 import { type ComputeCastStringRule } from "./string";
 
+export * from "./array";
 export * from "./error";
 export * from "./number";
 export * from "./string";
@@ -24,6 +26,11 @@ export interface ComputeCastRule<
 			ComputeCastNumberRule<GenericValue, GenericConstraint>
 		>
 		: never;
+	array: GenericValue extends readonly unknown[]
+		? DObject.Values<
+			ComputeCastArrayRule<GenericValue, GenericConstraint>
+		>
+		: never;
 }
 
 export type ComputeCast<
@@ -36,7 +43,7 @@ export type ComputeCast<
 			: UnbundlesConstraint<
 				Extract<GetConstraint<GenericExpectedValue>, Constraint>
 			> extends infer InferredConstraint extends Constraint
-				? DArray.Unwrap<
+				? DArrayTypes.Unwrap<
 					NeverCoalescing<
 						Extract<
 							InferredConstraint extends any

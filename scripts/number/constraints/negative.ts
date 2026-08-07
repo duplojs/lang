@@ -1,3 +1,3 @@
-import type * as DCommon from "@scripts/common";
+import { type LessThanOrEqual } from "./lessThanOrEqual";
 
-export interface Negative extends DCommon.Constraint<"number-negative"> {}
+export interface Negative extends LessThanOrEqual<0> {}

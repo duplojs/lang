@@ -1,3 +1,3 @@
-import type * as DCommon from "@scripts/common";
+import { type GreaterThanOrEqual } from "./greaterThanOrEqual";
 
-export interface Positive extends DCommon.Constraint<"number-positive"> {}
+export interface Positive extends GreaterThanOrEqual<0> {}

@@ -1,3 +1,3 @@
-export type * from "./requireLiteralNumber";
-export type * from "./isPositiveInteger";
-export type * from "./requirePositiveInteger";
+export * from "./isPositiveInteger";
+export * from "./requireLiteralNumber";
+export * from "./requirePositiveInteger";

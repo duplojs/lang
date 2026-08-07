@@ -5,7 +5,6 @@ import type { ExtractGreaterThanOrEqual, GreaterThanOrEqual } from "../greaterTh
 import type { Integer } from "../integer";
 import type { Odd } from "../odd";
 import type { Positive } from "../positive";
-import type { SafeInteger } from "../safeInteger";
 import type { StrictPositive } from "../strictPositive";
 
 type IsPositiveLiteral<
@@ -42,7 +41,7 @@ type HasPositiveConstraint<
 
 type HasIntegerConstraint<
 	GenericNumber extends number,
-> = DCommon.IsExtends<GenericNumber, Integer | SafeInteger | Odd | Even>;
+> = DCommon.IsExtends<GenericNumber, Integer | Odd | Even>;
 
 type ComputeIsPositiveInteger<
 	GenericNumber extends number,

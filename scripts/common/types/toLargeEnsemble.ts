@@ -23,18 +23,22 @@ export type ToLargeEnsemble<
 									? readonly []
 									: GenericValue extends (infer InferredValue)[]
 										? ToLargeEnsemble<InferredValue>[]
-										: GenericValue extends Record<number, unknown> & object
-											? {
-												readonly [Prop in keyof GenericValue]: ToLargeEnsemble<
-													GenericValue[Prop]
-												>
-											}
-											: GenericValue extends (...args: infer InferredArgs) => infer InferredReturn
-												? (
-													...args: ToLargeEnsemble<InferredArgs>
-												) => ToLargeEnsemble<InferredReturn>
-												: GenericValue extends Promise<infer InferredValue>
-													? Promise<
-														ToLargeEnsemble<InferredValue>
+										: GenericValue extends readonly (infer InferredValue)[]
+											? readonly ToLargeEnsemble<InferredValue>[]
+											: GenericValue extends Record<number, unknown> & object
+												? {
+													readonly [Prop in keyof GenericValue]: ToLargeEnsemble<
+														GenericValue[Prop]
 													>
-													: GenericValue;
+												}
+												: GenericValue extends (
+													...args: infer InferredArgs
+												) => infer InferredReturn
+													? (
+														...args: ToLargeEnsemble<InferredArgs>
+													) => ToLargeEnsemble<InferredReturn>
+													: GenericValue extends Promise<infer InferredValue>
+														? Promise<
+															ToLargeEnsemble<InferredValue>
+														>
+														: GenericValue;
