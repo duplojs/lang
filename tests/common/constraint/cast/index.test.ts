@@ -389,7 +389,7 @@ describe("cast", () => {
 		const value105: number & DNumber.LessThanOrEqual<12> = cast(15);
 	});
 
-	it("expect union value", () => {
+	it("union value", () => {
 		const value1: (
 			| (number & DNumber.LessThanOrEqual<12>)
 			| (string & DString.MaxCharacters<50>)
@@ -448,5 +448,117 @@ describe("cast", () => {
 			| (string & DString.MaxCharacters<50>)
 		// @ts-expect-error cause error
 		) = cast("" as string & DString.MinCharacters<10>);
+
+		const value6: string & DString.MaxCharacters<50> = cast(
+			"" as (
+				| (string & DString.MaxCharacters<20>)
+				| (string & DString.MaxCharacters<30>)
+			),
+		);
+
+		const value7: string & DString.MaxCharacters<50> = cast(
+			"" as (
+				| (string & DString.MaxCharacters<20>)
+				| (string & DString.MaxCharacters<60>)
+			) & CastError<
+				"Impossible to cast on MaxCharacters<50> because constraint MaxCharacters<60> from the value is more than.",
+				string & DString.MaxCharacters<60>,
+				DString.MaxCharacters<50>
+			>,
+		);
+		const value75: string & DString.MaxCharacters<50> = cast(
+			// @ts-expect-error cause error
+			"" as (
+				| (string & DString.MaxCharacters<20>)
+				| (string & DString.MaxCharacters<60>)
+			),
+		);
+
+		const value8: (
+			| (string & DString.MaxCharacters<50>)
+			| (string & DString.NotEmpty)
+		) = cast(
+			"" as (
+				| (string & DString.MaxCharacters<20>)
+				| (string & DString.MinCharacters<20>)
+			),
+		);
+
+		const value9: (
+			| (string & DString.MaxCharacters<50>)
+			| (string & DString.NotEmpty)
+		) = cast(
+			"" as (
+				| (string & DString.MaxCharacters<20>)
+				| (string & DString.MaxCharacters<100>)
+			)
+			& (
+				| CastError<
+					"Impossible to cast on MaxCharacters<50> because constraint MaxCharacters<100> from the value is more than.",
+					string & DString.MaxCharacters<100>,
+					DString.MaxCharacters<50>
+				>
+				| & CastError<
+					"Impossible to cast on MinCharacters<1> because value does not have MinCharacters constraint.",
+					string & DString.MaxCharacters<100>,
+					DString.NotEmpty
+				>
+			),
+		);
+		const value95: (
+			| (string & DString.MaxCharacters<50>)
+			| (string & DString.NotEmpty)
+		) = cast(
+			// @ts-expect-error cause error
+			"" as (
+				| (string & DString.MaxCharacters<20>)
+				| (string & DString.MaxCharacters<100>)
+			),
+		);
+
+		const value10: (
+			| (string & DString.MaxCharacters<50> & DString.NotEmpty)
+			| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
+			| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
+		) = cast(
+			"" as (
+				| (string & DString.NotEmpty & DString.MaxCharacters<20>)
+				| (number & DNumber.GreaterThan<20> & DNumber.LessThan<90>)
+			),
+		);
+
+		const value11: (
+			| (string & DString.MaxCharacters<50> & DString.NotEmpty)
+			| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
+			| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
+		) = cast(
+			"" as (
+				| (string & DString.NotEmpty & DString.MaxCharacters<60>)
+				| (number & DNumber.GreaterThan<1> & DNumber.LessThan<90>)
+			)
+			& (
+				| CastError<
+					"Impossible to cast on MaxCharacters<50> because constraint MaxCharacters<60> from the value is more than.",
+					string & DString.NotEmpty & DString.MaxCharacters<60>,
+					DString.MaxCharacters<50>
+				>
+				| CastError<
+					"Impossible to cast on GreaterThan<10> because constraint GreaterThan<1> from the value is less than.",
+					number & DNumber.GreaterThan<1> & DNumber.LessThan<90>,
+					DNumber.GreaterThan<10>
+				>
+			),
+		);
+		const value115: (
+			| (string & DString.MaxCharacters<50> & DString.NotEmpty)
+			| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
+			| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
+		) = cast(
+			// @ts-expect-error cause error
+			"" as (
+				| (string & DString.NotEmpty & DString.MaxCharacters<60>)
+				| (number & DNumber.GreaterThan<1> & DNumber.LessThan<90>)
+			),
+		);
 	});
 });

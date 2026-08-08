@@ -53,7 +53,11 @@ export type ComputeCast<
 										? [
 											NeverCoalescing<
 												DObject.Values<ComputeCastRule<GenericValue, InferredConstraint>>,
-												CastError<"None of the intended constraints is possible on the current value.", GenericValue, InferredConstraint>
+												CastError<
+													"None of the intended constraints is possible on the current value.",
+													GenericValue,
+													InferredConstraint
+												>
 											>,
 										]
 										: never,
