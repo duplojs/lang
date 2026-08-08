@@ -1,6 +1,4 @@
-import { pipe, when, type ExpectType } from "@scripts";
-import type { StrictPositive } from "@scripts/number";
-import * as DNumber from "@scripts/number/isStrictPositive";
+import { DNumber, pipe, when, type ExpectType } from "@scripts";
 
 describe("isStrictPositive", () => {
 	it("should validate a strictly positive number", () => {
@@ -15,7 +13,7 @@ describe("isStrictPositive", () => {
 		if (DNumber.isStrictPositive(source)) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				number & StrictPositive,
+				number & DNumber.StrictPositive,
 				"strict"
 			>;
 		}
@@ -29,7 +27,7 @@ describe("isStrictPositive", () => {
 				(value) => {
 					type _CheckValue = ExpectType<
 						typeof value,
-						number & StrictPositive,
+						number & DNumber.StrictPositive,
 						"strict"
 					>;
 

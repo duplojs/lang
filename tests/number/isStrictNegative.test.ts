@@ -1,6 +1,4 @@
-import { pipe, when, type ExpectType } from "@scripts";
-import type { Negative, StrictNegative } from "@scripts/number";
-import * as DNumber from "@scripts/number/isStrictNegative";
+import { DNumber, pipe, when, type ExpectType } from "@scripts";
 
 describe("isStrictNegative", () => {
 	it("should validate a strictly negative number", () => {
@@ -15,14 +13,14 @@ describe("isStrictNegative", () => {
 		if (DNumber.isStrictNegative(source)) {
 			type _CheckCurrentSource = ExpectType<
 				typeof source,
-				number & Negative,
+				number & DNumber.Negative,
 				"strict"
 			>;
 
 			type _CheckExpectedSource = ExpectType<
 				typeof source,
 				// @ts-expect-error isStrictNegative should narrow with StrictNegative.
-				number & StrictNegative,
+				number & DNumber.StrictNegative,
 				"strict"
 			>;
 		}
@@ -36,7 +34,7 @@ describe("isStrictNegative", () => {
 				(value) => {
 					type _CheckValue = ExpectType<
 						typeof value,
-						number & Negative,
+						number & DNumber.Negative,
 						"strict"
 					>;
 

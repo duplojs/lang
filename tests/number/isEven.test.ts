@@ -1,6 +1,4 @@
-import { pipe, when, type ExpectType } from "@scripts";
-import type { Even } from "@scripts/number";
-import * as DNumber from "@scripts/number/isEven";
+import { DNumber, pipe, when, type ExpectType } from "@scripts";
 
 describe("isEven", () => {
 	it("should validate an even number", () => {
@@ -14,7 +12,7 @@ describe("isEven", () => {
 		if (DNumber.isEven(source)) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				number & Even,
+				number & DNumber.Even,
 				"strict"
 			>;
 		}
@@ -28,7 +26,7 @@ describe("isEven", () => {
 				(value) => {
 					type _CheckValue = ExpectType<
 						typeof value,
-						number & Even,
+						number & DNumber.Even,
 						"strict"
 					>;
 

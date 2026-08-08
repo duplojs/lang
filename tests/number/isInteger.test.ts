@@ -1,6 +1,4 @@
-import { pipe, when, type ExpectType } from "@scripts";
-import type { Integer } from "@scripts/number";
-import * as DNumber from "@scripts/number/isInteger";
+import { DNumber, pipe, when, type ExpectType } from "@scripts";
 
 describe("isInteger", () => {
 	it("should validate an integer", () => {
@@ -14,7 +12,7 @@ describe("isInteger", () => {
 		if (DNumber.isInteger(source)) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				number & Integer,
+				number & DNumber.Integer,
 				"strict"
 			>;
 		}
@@ -28,7 +26,7 @@ describe("isInteger", () => {
 				(value) => {
 					type _CheckValue = ExpectType<
 						typeof value,
-						number & Integer,
+						number & DNumber.Integer,
 						"strict"
 					>;
 

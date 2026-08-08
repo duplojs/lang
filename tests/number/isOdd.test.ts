@@ -1,6 +1,4 @@
-import { pipe, when, type ExpectType } from "@scripts";
-import type { Odd } from "@scripts/number";
-import * as DNumber from "@scripts/number/isOdd";
+import { DNumber, pipe, when, type ExpectType } from "@scripts";
 
 describe("isOdd", () => {
 	it("should validate an odd number", () => {
@@ -14,7 +12,7 @@ describe("isOdd", () => {
 		if (DNumber.isOdd(source)) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				number & Odd,
+				number & DNumber.Odd,
 				"strict"
 			>;
 		}
@@ -28,7 +26,7 @@ describe("isOdd", () => {
 				(value) => {
 					type _CheckValue = ExpectType<
 						typeof value,
-						number & Odd,
+						number & DNumber.Odd,
 						"strict"
 					>;
 

@@ -1,6 +1,4 @@
-import { pipe, when, type ExpectType } from "@scripts";
-import type { Negative } from "@scripts/number";
-import * as DNumber from "@scripts/number/isNegative";
+import { DNumber, pipe, when, type ExpectType } from "@scripts";
 
 describe("isNegative", () => {
 	it("should validate a negative number including zero", () => {
@@ -15,7 +13,7 @@ describe("isNegative", () => {
 		if (DNumber.isNegative(source)) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				number & Negative,
+				number & DNumber.Negative,
 				"strict"
 			>;
 		}
@@ -29,7 +27,7 @@ describe("isNegative", () => {
 				(value) => {
 					type _CheckValue = ExpectType<
 						typeof value,
-						number & Negative,
+						number & DNumber.Negative,
 						"strict"
 					>;
 

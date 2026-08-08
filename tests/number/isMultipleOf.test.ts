@@ -1,6 +1,4 @@
-import { pipe, when, type ExpectType } from "@scripts";
-import type { MultipleOf } from "@scripts/number";
-import * as DNumber from "@scripts/number/isMultipleOf";
+import { DNumber, pipe, when, type ExpectType } from "@scripts";
 
 describe("isMultipleOf", () => {
 	it("should validate a multiple", () => {
@@ -21,7 +19,7 @@ describe("isMultipleOf", () => {
 		if (DNumber.isMultipleOf(source, 3)) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				number & MultipleOf<3>,
+				number & DNumber.MultipleOf<3>,
 				"strict"
 			>;
 		}
@@ -35,7 +33,7 @@ describe("isMultipleOf", () => {
 				(value) => {
 					type _CheckValue = ExpectType<
 						typeof value,
-						number & MultipleOf<3>,
+						number & DNumber.MultipleOf<3>,
 						"strict"
 					>;
 
