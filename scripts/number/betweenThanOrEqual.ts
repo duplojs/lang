@@ -1,6 +1,6 @@
 import type * as DCommon from "@scripts/common";
 import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual } from "./constraints";
-import type { IsGreater, IsGreaterOrEqual, RequireLiteral } from "./types";
+import type { IsGreater, IsGreaterOrEqual, RequireSimpleLiteral } from "./types";
 
 type ApplyGreaterThanOrEqual<
 	GenericValue extends number,
@@ -66,8 +66,8 @@ export function betweenThanOrEqual<
 	const GenericGreater extends number,
 	const GenericLess extends number,
 >(
-	greater: GenericGreater & RequireLiteral<GenericGreater>,
-	less: GenericLess & RequireLiteral<GenericLess>,
+	greater: GenericGreater & RequireSimpleLiteral<GenericGreater>,
+	less: GenericLess & RequireSimpleLiteral<GenericLess>,
 ): (
 	value: GenericValue,
 ) => value is BetweenThanOrEqualOutput<GenericValue, GenericGreater, GenericLess>;
@@ -78,8 +78,8 @@ export function betweenThanOrEqual<
 	const GenericLess extends number,
 >(
 	value: GenericValue,
-	greater: GenericGreater & RequireLiteral<GenericGreater>,
-	less: GenericLess & RequireLiteral<GenericLess>,
+	greater: GenericGreater & RequireSimpleLiteral<GenericGreater>,
+	less: GenericLess & RequireSimpleLiteral<GenericLess>,
 ): value is BetweenThanOrEqualOutput<GenericValue, GenericGreater, GenericLess>;
 
 export function betweenThanOrEqual(

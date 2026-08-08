@@ -44,3 +44,4 @@ export * from "./unionContain";
 export * from "./unionToIntersection";
 export * from "./unionToTuple";
 export * from "./unwrapGetter";
+export * from "./forcePredicate";

@@ -29,7 +29,7 @@ type RequireApplyMaxCharacters<
 	GenericMax extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericMax>
-	& DNumber.RequireLiteral<GenericMax>
+	& DNumber.RequireSimpleLiteral<GenericMax>
 	& RequireLengthEqualConstraint<GenericString, GenericMax>
 	& RequireMinCharactersConstraint<GenericString, GenericMax>
 );

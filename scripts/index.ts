@@ -32,3 +32,6 @@ export * as DNumber from "./number";
 
 export * as M from "./modeling";
 export * as DModeling from "./modeling";
+
+export * as P from "./pattern";
+export * as DPattern from "./pattern";

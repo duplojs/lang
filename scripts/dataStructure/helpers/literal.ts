@@ -57,7 +57,7 @@ export function literal(
 		return TypeStructure(UndefinedType(), constraints);
 	}
 
-	type check = DCommon.ExpectType<
+	type _check = DCommon.ExpectType<
 		typeof values,
 		null,
 		"strict"

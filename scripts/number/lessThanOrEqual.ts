@@ -1,5 +1,5 @@
 import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual } from "./constraints";
-import type { IsGreater, IsGreaterOrEqual, RequireLiteral } from "./types";
+import type { IsGreater, IsGreaterOrEqual, RequireSimpleLiteral } from "./types";
 
 type LessThanOrEqualOutput<
 	GenericValue extends number,
@@ -28,7 +28,7 @@ export function lessThanOrEqual<
 	GenericValue extends number,
 	const GenericThreshold extends number,
 >(
-	threshold: GenericThreshold & RequireLiteral<GenericThreshold>,
+	threshold: GenericThreshold & RequireSimpleLiteral<GenericThreshold>,
 ): (
 	value: GenericValue,
 ) => value is LessThanOrEqualOutput<GenericValue, GenericThreshold>;
@@ -38,7 +38,7 @@ export function lessThanOrEqual<
 	const GenericThreshold extends number,
 >(
 	value: GenericValue,
-	threshold: GenericThreshold & RequireLiteral<GenericThreshold>,
+	threshold: GenericThreshold & RequireSimpleLiteral<GenericThreshold>,
 ): value is LessThanOrEqualOutput<GenericValue, GenericThreshold>;
 
 export function lessThanOrEqual(

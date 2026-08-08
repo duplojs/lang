@@ -1,8 +1,8 @@
 import type * as DCommon from "@scripts/common";
-import { type IsLiteral } from "./isLiteral";
+import type { IsLiteral } from "./isLiteral";
 
 export type RequireLiteral<
 	GenericNumber extends number,
 > = IsLiteral<GenericNumber> extends true
-	? DCommon.ComputedTypeError<"Must be a literal number, not the generic 'number'">
-	: unknown;
+	? unknown
+	: DCommon.ComputedTypeError<"Must be a literal number, not the generic 'number'">;

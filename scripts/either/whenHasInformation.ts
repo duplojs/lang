@@ -3,10 +3,7 @@ import type * as DKind from "@scripts/kind";
 import { isRight, type Right } from "./right";
 import { isLeft, type Left } from "./left";
 import { informationKind, valueKind } from "./kind";
-import type {
-	GetInformation,
-	GetValue,
-} from "./types";
+import type { GetInformation, GetValue } from "./types";
 
 type Either = Right | Left;
 

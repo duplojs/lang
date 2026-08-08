@@ -16,3 +16,5 @@ export * from "./shift";
 export * from "./split";
 export * from "./startsWith";
 export * from "./templateLiteralContainLargeType";
+export * from "./requireLiteral";
+export * from "./requireSimpleLiteral";

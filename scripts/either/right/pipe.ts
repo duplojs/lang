@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/max-params */
-import * as DCommon from "@scripts/common";
+/* oxlint-disable @typescript-eslint/max-params */
 import type { Right } from "./create";
 import { isLeft, type Left } from "../left";
 import { success, type Success } from "./success";

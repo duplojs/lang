@@ -1,13 +1,9 @@
-import * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import type { Right } from "./right";
 import type { Left } from "./left";
 import { informationKind, valueKind } from "./kind";
-import type {
-	GetInformation,
-	GetValue,
-} from "./types";
+import type { GetInformation, GetValue } from "./types";
 
 type Either = Right | Left;
 

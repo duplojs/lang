@@ -1,11 +1,11 @@
 import type { MultipleOf } from "./constraints";
-import type { RequireLiteral } from "./types";
+import type { RequireSimpleLiteral } from "./types";
 
 export function isMultipleOf<
 	GenericValue extends number,
 	const GenericMultiple extends number,
 >(
-	multiple: GenericMultiple,
+	multiple: GenericMultiple & RequireSimpleLiteral<GenericMultiple>,
 ): (
 	value: GenericValue,
 ) => value is GenericValue & MultipleOf<GenericMultiple>;
@@ -15,7 +15,7 @@ export function isMultipleOf<
 	const GenericMultiple extends number,
 >(
 	value: GenericValue,
-	multiple: GenericMultiple & RequireLiteral<GenericMultiple>,
+	multiple: GenericMultiple & RequireSimpleLiteral<GenericMultiple>,
 ): value is GenericValue & MultipleOf<GenericMultiple>;
 
 export function isMultipleOf(

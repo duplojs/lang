@@ -1,6 +1,7 @@
 export type * from "./types";
 
 export * from "./bindPrototypeMethods";
+export * from "./builder";
 export * from "./callThen";
 export * from "./constraint";
 export * from "./isType";
@@ -15,3 +16,7 @@ export * from "./whenNot";
 export * from "./wrapValue";
 export * from "./enum";
 export * from "./equal";
+export * from "./globalStore";
+export * from "./builder";
+export * from "./forward";
+export * from "./forwardLog";

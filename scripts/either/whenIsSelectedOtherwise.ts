@@ -4,10 +4,7 @@ import type * as DObject from "@scripts/object";
 import { informationKind, valueKind } from "./kind";
 import type { Left } from "./left";
 import type { Right } from "./right";
-import type {
-	GetInformation,
-	GetValue,
-} from "./types";
+import type { GetInformation, GetValue } from "./types";
 
 type Either = Right | Left;
 

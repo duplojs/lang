@@ -1,6 +1,6 @@
 import type * as DCommon from "@scripts/common";
 
-export type Expect<
+export type Unmatched<
 	GenericValue extends unknown,
 	GenericTuple extends readonly any[],
 > = DCommon.Or<[
@@ -10,10 +10,10 @@ export type Expect<
 	? GenericValue
 	: DCommon.IsUnion<GenericTuple> extends true
 		? DCommon.LastUnionElement<GenericTuple> extends infer InferredArray extends readonly any[]
-			? Expect<GenericValue, InferredArray> extends infer InferredResult
+			? Unmatched<GenericValue, InferredArray> extends infer InferredResult
 				? DCommon.IsEqual<InferredResult, never> extends true
 					? never
-					: Expect<
+					: Unmatched<
 						InferredResult,
 						Exclude<GenericTuple, InferredArray>
 					>
@@ -64,7 +64,7 @@ export type Expect<
 										? never
 										: InferredValueRest extends readonly []
 											? InferredValue
-											: Expect<
+											: Unmatched<
 												InferredValueRest,
 												InferredArrayRest
 											> extends infer InferredRestResult

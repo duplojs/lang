@@ -29,7 +29,7 @@ type RequireApplyMinElements<
 	GenericMin extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericMin>
-	& DNumber.RequireLiteral<GenericMin>
+	& DNumber.RequireSimpleLiteral<GenericMin>
 	& RequireLengthEqualConstraint<GenericArray, GenericMin>
 	& RequireMaxElementsConstraint<GenericArray, GenericMin>
 );

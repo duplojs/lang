@@ -4,10 +4,7 @@ import type { Left } from "./left";
 import type { Right } from "./right";
 import { valueKind, type informationKind } from "./kind";
 import { hasInformation } from "./hasInformation";
-import type {
-	GetInformation,
-	GetValue,
-} from "./types";
+import type { GetInformation, GetValue } from "./types";
 
 type Either = Right | Left;
 

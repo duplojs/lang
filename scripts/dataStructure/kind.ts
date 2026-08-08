@@ -1,3 +1,3 @@
 import * as DKind from "@scripts/kind";
 
-export const createKind = DKind.createNamespace("data-structure");
+export const createKind = DKind.createNamespace("DuplojsLangDataStructure");

@@ -29,7 +29,7 @@ type RequireApplyMinCharacters<
 	GenericMin extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericMin>
-	& DNumber.RequireLiteral<GenericMin>
+	& DNumber.RequireSimpleLiteral<GenericMin>
 	& RequireLengthEqualConstraint<GenericString, GenericMin>
 	& RequireMaxCharactersConstraint<GenericString, GenericMin>
 );

@@ -29,7 +29,7 @@ type RequireApplyMaxElements<
 	GenericMax extends number,
 > = (
 	& DNumber.ForbiddenNegative<GenericMax>
-	& DNumber.RequireLiteral<GenericMax>
+	& DNumber.RequireSimpleLiteral<GenericMax>
 	& RequireLengthEqualConstraint<GenericArray, GenericMax>
 	& RequireMinElementsConstraint<GenericArray, GenericMax>
 );

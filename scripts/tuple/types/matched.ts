@@ -1,6 +1,6 @@
 import type * as DCommon from "@scripts/common";
 
-export type Excerpt<
+export type Matched<
 	GenericValue extends unknown,
 	GenericArray extends readonly any[],
 > = GenericValue extends readonly any[]
@@ -11,7 +11,7 @@ export type Excerpt<
 		? never
 		: DCommon.IsUnion<GenericArray> extends true
 			? GenericArray extends any
-				? Excerpt<GenericValue, GenericArray>
+				? Matched<GenericValue, GenericArray>
 				: never
 			: (
 				| (
@@ -55,7 +55,7 @@ export type Excerpt<
 								? Extract<InferredValueFirst, any> extends InferredArrayFirst
 									? InferredArrayRest extends readonly []
 										? InferredValue
-										: Excerpt<
+										: Matched<
 											InferredValueRest,
 											InferredArrayRest
 										> extends infer InferredRestResult

@@ -214,6 +214,8 @@ function example(input: DNumber.Positive): void {
 
 Les namespaces DuploJS utilisent le préfixe `D` : `DArray`, `DEither`, `DIResolver`.
 
+Les imports doivent toujours être écrits sur une seule ligne. Ne pas indenter ni découper les imports sur plusieurs lignes, même lorsqu'ils contiennent plusieurs symboles.
+
 Éviter les deep imports et les imports nommés qui effacent le domaine d’origine.
 
 ```ts
@@ -225,19 +227,13 @@ import type { SomeType } from "./types/someType";
 Lorsque tout l’import contient uniquement des types, placer `type` sur la déclaration complète.
 
 ```ts
-import type {
-	FirstType,
-	SecondType,
-} from "./types";
+import type { FirstType, SecondType } from "./types";
 ```
 
 Pour un import mixte, marquer uniquement les symboles typés.
 
 ```ts
-import {
-	createValue,
-	type ValueOptions,
-} from "./value";
+import { createValue, type ValueOptions } from "./value";
 ```
 
 ## 10. Maintenir une structure de fichiers prévisible

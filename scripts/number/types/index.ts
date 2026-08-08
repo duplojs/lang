@@ -5,4 +5,5 @@ export * from "./isLess";
 export * from "./isLiteral";
 export * from "./isPositive";
 export * from "./requireLiteral";
+export * from "./requireSimpleLiteral";
 export * from "./toString";
