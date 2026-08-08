@@ -30,7 +30,7 @@ type ApplySplitLimit<
 	GenericLimit extends number,
 > = DCommon.IsEqual<GenericLimit, number> extends true
 	? GenericGroupNumber
-	: DTuple.Create<unknown, GenericGroupNumber> extends [
+	: DTuple.Create<unknown, GenericGroupNumber> extends readonly [
 		...DTuple.Create<unknown, GenericLimit>,
 		...unknown[],
 	]
