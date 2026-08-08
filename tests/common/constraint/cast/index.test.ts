@@ -1,4 +1,4 @@
-import { cast, type DArray, type DNumber, type CastError, type DString, RemoveCastError, type ComputeCastNumberRule, type DObject, type ComputeCast } from "@scripts";
+import { cast, type DArray, type DNumber, type CastError, type DString, ComputeCastConstraintArrayRule, type ComputeCastConstraint, type ComputeCastConstraintNumberRule } from "@scripts";
 
 describe("cast", () => {
 	it("cast maxCharacters", () => {
@@ -27,8 +27,12 @@ describe("cast", () => {
 				DString.MaxCharacters<12>
 			>,
 		);
-		// @ts-expect-error cause error
+			// @ts-expect-error cause error
 		const value65: string & DString.MaxCharacters<12> = cast("" as string & DString.LengthEqual<15>);
+
+		const value7: string & DString.MaxCharacters<12> = cast(
+			"" as string & DString.MaxCharacters<15> & DString.LengthEqual<6>,
+		);
 	});
 
 	it("cast minCharacters", () => {
@@ -51,10 +55,38 @@ describe("cast", () => {
 		const value6: string & DString.MinCharacters<12> = cast(
 			"" as string & DString.LengthEqual<6> & CastError<
 				"Impossible to cast on MaxCharacters<12> because constraint LengthEqual<6> from the value is less than.",
-				string & DString.LengthEqual<6>,
-				DString.MinCharacters<12>
+					string & DString.LengthEqual<6>,
+					DString.MinCharacters<12>
 			>,
 		);
+
+		const value7: string & DString.MinCharacters<12> = cast(
+			"" as string & DString.MinCharacters<6> & DString.LengthEqual<15>,
+		);
+	});
+
+	it("cast string lengthEqual", () => {
+		const value1: string & DString.LengthEqual<12> = cast("" as string & DString.LengthEqual<12>);
+
+		const value2: string & DString.LengthEqual<12> = cast(
+			"" as string & DString.LengthEqual<6> & CastError<
+				"Impossible to cast on LengthEqual<12> because constraint LengthEqual<6> from the value is not equal.",
+				string & DString.LengthEqual<6>,
+				DString.LengthEqual<12>
+			>,
+		);
+		// @ts-expect-error cause error
+		const value25: string & DString.LengthEqual<12> = cast("" as string & DString.LengthEqual<6>);
+
+		const value3: string & DString.LengthEqual<12> = cast(
+			"" as string & DString.MaxCharacters<12> & CastError<
+				"Impossible to cast on LengthEqual<12> because value does not have LengthEqual constraint.",
+				string & DString.MaxCharacters<12>,
+				DString.LengthEqual<12>
+			>,
+		);
+		// @ts-expect-error cause error
+		const value35: string & DString.LengthEqual<12> = cast("" as string & DString.MaxCharacters<12>);
 	});
 
 	it("cast maxElements", () => {
@@ -97,6 +129,42 @@ describe("cast", () => {
 			// @ts-expect-error cause error
 			[] as unknown as readonly unknown[] & DArray.LengthEqual<15>,
 		);
+
+		const value7: readonly unknown[] & DArray.MaxElements<2> = cast(
+			[] as unknown as readonly [unknown, unknown],
+		);
+
+		const value8: readonly unknown[] & DArray.MaxElements<2> = cast(
+			[] as unknown as readonly [unknown],
+		);
+
+		const value9: readonly unknown[] & DArray.MaxElements<2> = cast(
+			[] as unknown as readonly [unknown, unknown, unknown] & CastError<
+				"Impossible to cast on MaxElements<2> because constraint LengthEqual<3> from the value is more than.",
+				readonly [unknown, unknown, unknown],
+				DArray.MaxElements<2>
+			>,
+		);
+		const value95: readonly unknown[] & DArray.MaxElements<2> = cast(
+			// @ts-expect-error cause error
+			[] as unknown as readonly [unknown, unknown, unknown],
+		);
+
+		const value10: readonly unknown[] & DArray.MaxElements<2> = cast(
+			[] as unknown as readonly [unknown, ...unknown[]] & CastError<
+				"Impossible to cast on MaxElements<2> because value does not have MaxElements constraint.",
+				readonly [unknown, ...unknown[]],
+				DArray.MaxElements<2>
+			>,
+		);
+		const value105: readonly unknown[] & DArray.MaxElements<2> = cast(
+			// @ts-expect-error cause error
+			[] as unknown as readonly [unknown, ...unknown[]],
+		);
+
+		const value11: readonly unknown[] & DArray.MaxElements<12> = cast(
+			[] as unknown as readonly unknown[] & DArray.MaxElements<15> & DArray.LengthEqual<6>,
+		);
 	});
 
 	it("cast minElements", () => {
@@ -138,6 +206,97 @@ describe("cast", () => {
 		const value65: readonly unknown[] & DArray.MinElements<12> = cast(
 			// @ts-expect-error cause error
 			[] as unknown as readonly unknown[] & DArray.LengthEqual<6>,
+		);
+
+		const value7: readonly unknown[] & DArray.MinElements<2> = cast(
+			[] as unknown as readonly [unknown, unknown],
+		);
+
+		const value8: readonly unknown[] & DArray.MinElements<2> = cast(
+			[] as unknown as readonly [unknown, unknown, unknown],
+		);
+
+		const value9: readonly unknown[] & DArray.MinElements<2> = cast(
+			[] as unknown as readonly [unknown] & CastError<
+				"Impossible to cast on MinElements<2> because constraint MinElements<1> from the value is less than.",
+				readonly [unknown],
+				DArray.MinElements<2>
+			>,
+		);
+		const value95: readonly unknown[] & DArray.MinElements<2> = cast(
+			// @ts-expect-error cause error
+			[] as unknown as readonly [unknown],
+		);
+
+		const value10: readonly unknown[] & DArray.MinElements<2> = cast(
+			[] as unknown as readonly [unknown, unknown, ...unknown[]],
+		);
+
+		const value11: readonly [unknown, ...unknown[]] = cast(
+			[] as unknown as readonly unknown[] & DArray.MinElements<2>,
+		);
+
+		const value12: readonly [unknown, unknown, unknown, ...unknown[]] = cast(
+			[] as unknown as readonly unknown[] & DArray.MinElements<2> & CastError<
+				"Impossible to cast on MinElements<3> because constraint MinElements<2> from the value is less than.",
+				readonly unknown[] & DArray.MinElements<2>,
+				DArray.MinElements<3>
+			>,
+		);
+		const value125: readonly [unknown, unknown, unknown, ...unknown[]] = cast(
+			// @ts-expect-error cause error
+			[] as unknown as readonly unknown[] & DArray.MinElements<2>,
+		);
+
+		const value13: readonly [unknown, unknown] = cast(
+			[] as unknown as readonly unknown[] & DArray.LengthEqual<2>,
+		);
+
+		const value14: readonly unknown[] & DArray.MinElements<12> = cast(
+			[] as unknown as readonly unknown[] & DArray.MinElements<6> & DArray.LengthEqual<15>,
+		);
+	});
+
+	it("cast array lengthEqual", () => {
+		const value1: readonly unknown[] & DArray.LengthEqual<2> = cast(
+			[] as unknown as readonly unknown[] & DArray.LengthEqual<2>,
+		);
+
+		const value2: readonly unknown[] & DArray.LengthEqual<2> = cast(
+			[] as unknown as readonly unknown[] & DArray.LengthEqual<3> & CastError<
+				"Impossible to cast on LengthEqual<2> because constraint LengthEqual<3> from the value is not equal.",
+				readonly unknown[] & DArray.LengthEqual<3>,
+				DArray.LengthEqual<2>
+			>,
+		);
+		const value25: readonly unknown[] & DArray.LengthEqual<2> = cast(
+			// @ts-expect-error cause error
+			[] as unknown as readonly unknown[] & DArray.LengthEqual<3>,
+		);
+
+		const value3: readonly unknown[] & DArray.LengthEqual<2> = cast(
+			[] as unknown as readonly [unknown, unknown],
+		);
+
+		const value4: readonly [unknown, unknown] = cast(
+			[] as unknown as readonly unknown[] & DArray.LengthEqual<2>,
+		);
+
+		const value5: readonly unknown[] & DArray.LengthEqual<2> = cast(
+			// @ts-expect-error cause error
+			[] as unknown as [unknown, unknown, unknown],
+		);
+
+		const value6: readonly unknown[] & DArray.LengthEqual<2> = cast(
+			[] as unknown as readonly unknown[] & DArray.MinElements<2> & CastError<
+				"Impossible to cast on LengthEqual<2> because value does not have LengthEqual constraint.",
+				readonly unknown[] & DArray.MinElements<2>,
+				DArray.LengthEqual<2>
+			>,
+		);
+		const value65: readonly unknown[] & DArray.LengthEqual<2> = cast(
+			// @ts-expect-error cause error
+			[] as unknown as readonly unknown[] & DArray.MinElements<2>,
 		);
 	});
 
@@ -207,8 +366,12 @@ describe("cast", () => {
 				DNumber.GreaterThan<12>
 			>,
 		);
-		// @ts-expect-error cause error
+			// @ts-expect-error cause error
 		const value105: number & DNumber.GreaterThan<12> = cast(6);
+
+		const value11: number & DNumber.GreaterThan<12> = cast(
+			1 as number & DNumber.GreaterThan<6> & DNumber.GreaterThanOrEqual<15>,
+		);
 	});
 
 	it("cast greaterThanOrEqual", () => {
@@ -261,8 +424,12 @@ describe("cast", () => {
 				DNumber.GreaterThan<12>
 			>,
 		);
-		// @ts-expect-error cause error
+			// @ts-expect-error cause error
 		const value105: number & DNumber.GreaterThan<12> = cast(6);
+
+		const value11: number & DNumber.GreaterThanOrEqual<12> = cast(
+			1 as number & DNumber.GreaterThanOrEqual<6> & DNumber.GreaterThan<12>,
+		);
 	});
 
 	it("cast lessThan", () => {
@@ -331,8 +498,12 @@ describe("cast", () => {
 				DNumber.LessThan<12>
 			>,
 		);
-		// @ts-expect-error cause error
+			// @ts-expect-error cause error
 		const value105: number & DNumber.LessThan<12> = cast(15);
+
+		const value11: number & DNumber.LessThan<12> = cast(
+			1 as number & DNumber.LessThan<15> & DNumber.LessThanOrEqual<6>,
+		);
 	});
 
 	it("cast lessThanOrEqual", () => {
@@ -385,8 +556,12 @@ describe("cast", () => {
 				DNumber.LessThanOrEqual<12>
 			>,
 		);
-		// @ts-expect-error cause error
+			// @ts-expect-error cause error
 		const value105: number & DNumber.LessThanOrEqual<12> = cast(15);
+
+		const value11: number & DNumber.LessThanOrEqual<12> = cast(
+			1 as number & DNumber.LessThanOrEqual<15> & DNumber.LessThan<12>,
+		);
 	});
 
 	it("union value", () => {
@@ -550,15 +725,70 @@ describe("cast", () => {
 			),
 		);
 		const value115: (
-			| (string & DString.MaxCharacters<50> & DString.NotEmpty)
-			| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
-			| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
+				| (string & DString.MaxCharacters<50> & DString.NotEmpty)
+				| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
+				| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
 		) = cast(
 			// @ts-expect-error cause error
 			"" as (
 				| (string & DString.NotEmpty & DString.MaxCharacters<60>)
 				| (number & DNumber.GreaterThan<1> & DNumber.LessThan<90>)
 			),
+		);
+
+		const value12: (
+				| (string & DString.MaxCharacters<50> & DString.NotEmpty)
+				| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
+				| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
+		) = cast(
+			"" as string & DString.NotEmpty & DString.MaxCharacters<60> & DString.LengthEqual<20>,
+		);
+
+		const value13: (
+				| (string & DString.MaxCharacters<50> & DString.NotEmpty)
+				| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
+				| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
+		) = cast(
+			1 as number & DNumber.GreaterThan<1> & DNumber.GreaterThanOrEqual<20> & DNumber.LessThan<90>,
+		);
+
+		const value14: (
+			| (string & DString.MaxCharacters<50> & DString.NotEmpty)
+			| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
+			| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
+		) = cast(
+			[] as unknown as (
+				& readonly unknown[]
+				& DArray.MinElements<0>
+				& DArray.MaxElements<20>
+				& DArray.LengthEqual<5>
+			),
+		);
+	});
+
+	it("cast value", () => {
+		const value1: 1 | 2 | 3 = cast(1 as 1 | 2);
+
+		const value2: 1 | 2 | 3 = cast(
+			"" as "test" & CastError<
+				"Input value are not Extends",
+				"test",
+				1 | 2 | 3
+			>,
+		);
+		// @ts-expect-error cause error
+		const value25: 1 | 2 | 3 = cast("" as "test");
+
+		const value3: readonly ["test", 1, "test"] = cast(
+			[] as unknown as readonly (string | number)[] & DArray.LengthEqual<3> & CastError<
+				"Input value are not Extends",
+				[string | number, string | number, string | number],
+				readonly ["test", 1, "test"]
+			>,
+		);
+		const value35: readonly ["test", 1, "test"] = cast(
+			// @ts-expect-error cause error
+			[] as unknown as readonly (string | number)[] & DArray.LengthEqual<3>,
 		);
 	});
 });

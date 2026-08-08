@@ -1,15 +1,18 @@
 import { type ComputedTypeError } from "../../types";
-import { type BaseConstraint } from "../types";
 
 declare const CastErrorValueSymbol: unique symbol;
 declare const CastErrorExpectedValueSymbol: unique symbol;
 
 export type RemoveCastError<
 	GenericValue extends unknown,
-> = GenericValue extends CastError<infer InferredMessage, infer InferredValue, infer InferredExpectedConstraint>
+> = GenericValue extends CastError<
+	infer InferredMessage,
+	infer InferredValue,
+	infer InferredExpectedValue
+>
 	? GenericValue extends (
 		& infer InferredValue
-		& CastError<InferredMessage, InferredValue, InferredExpectedConstraint>
+		& CastError<InferredMessage, InferredValue, InferredExpectedValue>
 	)
 		? InferredValue
 		: GenericValue
@@ -18,8 +21,8 @@ export type RemoveCastError<
 export interface CastError<
 	GenericReason extends string,
 	GenericValue extends unknown,
-	GenericExpectedConstraint extends BaseConstraint,
+	GenericExpectedValue extends unknown,
 > extends ComputedTypeError<GenericReason> {
 	[CastErrorValueSymbol]: Omit<GenericValue, keyof this>;
-	[CastErrorExpectedValueSymbol]: GenericExpectedConstraint;
+	[CastErrorExpectedValueSymbol]: GenericExpectedValue;
 }

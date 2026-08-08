@@ -1,70 +1,110 @@
 // oxlint-disable @stylistic/max-len
 import type * as DNumber from "@scripts/number";
 import type * as DString from "@scripts/string";
-import { type Constraint } from "../types";
 import { type CastError } from "./error";
+import { type IsEqual, type NeverCoalescing } from "@scripts/common/types";
 
-export interface ComputeCastStringRule<
+export interface ComputeCastConstraintStringRule<
 	GenericValue extends string,
-	GenericExpectedConstraint extends Constraint,
+	GenericExpectedConstraint extends unknown,
 > {
 	maxCharacters: DString.ExtractMaxCharacters<GenericExpectedConstraint, unknown> extends DString.MaxCharacters<infer InferredTo>
 		? InferredTo extends number
-			? DString.ExtractMaxCharacters<GenericValue, unknown> extends DString.MaxCharacters<infer InferredFrom>
-				? InferredFrom extends number
-					? DNumber.IsGreaterOrEqual<InferredTo, InferredFrom> extends true
-						? unknown
-						: CastError<
-							`Impossible to cast on MaxCharacters<${InferredTo}> because constraint MaxCharacters<${InferredFrom}> from the value is more than.`,
-							GenericValue,
-							GenericExpectedConstraint
-						>
-					: never
-				: DString.ExtractLengthEqual<GenericValue, unknown> extends DString.LengthEqual<infer InferredFrom>
-					? InferredFrom extends number
-						? DNumber.IsGreaterOrEqual<InferredTo, InferredFrom> extends true
-							? unknown
-							: CastError<
-								`Impossible to cast on MaxCharacters<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is more than.`,
-								GenericValue,
-								GenericExpectedConstraint
-							>
+			? NeverCoalescing<
+				| (
+					DString.ExtractMaxCharacters<GenericValue, unknown> extends DString.MaxCharacters<infer InferredFrom>
+						? InferredFrom extends number
+							? DNumber.IsGreaterOrEqual<InferredTo, InferredFrom> extends true
+								? unknown
+								: CastError<
+									`Impossible to cast on MaxCharacters<${InferredTo}> because constraint MaxCharacters<${InferredFrom}> from the value is more than.`,
+									GenericValue,
+									GenericExpectedConstraint
+								>
+							: never
 						: never
-					: CastError<
-						`Impossible to cast on MaxCharacters<${InferredTo}> because value does not have MaxCharacters constraint.`,
-						GenericValue,
-						GenericExpectedConstraint
-					>
+				)
+				| (
+					DString.ExtractLengthEqual<GenericValue, unknown> extends DString.LengthEqual<infer InferredFrom>
+						? InferredFrom extends number
+							? DNumber.IsGreaterOrEqual<InferredTo, InferredFrom> extends true
+								? unknown
+								: CastError<
+									`Impossible to cast on MaxCharacters<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is more than.`,
+									GenericValue,
+									GenericExpectedConstraint
+								>
+							: never
+						: never
+				),
+				CastError<
+					`Impossible to cast on MaxCharacters<${InferredTo}> because value does not have MaxCharacters constraint.`,
+					GenericValue,
+					GenericExpectedConstraint
+				>
+			>
 			: never
 
 		: never;
 	minCharacters: DString.ExtractMinCharacters<GenericExpectedConstraint, unknown> extends DString.MinCharacters<infer InferredTo>
 		? InferredTo extends number
-			? DString.ExtractMinCharacters<GenericValue, unknown> extends DString.MinCharacters<infer InferredFrom>
-				? InferredFrom extends number
-					? DNumber.IsLessOrEqual<InferredTo, InferredFrom> extends true
-						? unknown
-						: CastError<
-							`Impossible to cast on MinCharacters<${InferredTo}> because constraint MinCharacters<${InferredFrom}> from the value is less than.`,
-							GenericValue,
-							GenericExpectedConstraint
-						>
-					: never
-				: DString.ExtractLengthEqual<GenericValue, unknown> extends DString.LengthEqual<infer InferredFrom>
-					? InferredFrom extends number
-						? DNumber.IsLessOrEqual<InferredTo, InferredFrom> extends true
-							? unknown
-							: CastError<
-								`Impossible to cast on MaxCharacters<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is less than.`,
-								GenericValue,
-								GenericExpectedConstraint
-							>
+			? NeverCoalescing<
+				| (
+					DString.ExtractMinCharacters<GenericValue, unknown> extends DString.MinCharacters<infer InferredFrom>
+						? InferredFrom extends number
+							? DNumber.IsLessOrEqual<InferredTo, InferredFrom> extends true
+								? unknown
+								: CastError<
+									`Impossible to cast on MinCharacters<${InferredTo}> because constraint MinCharacters<${InferredFrom}> from the value is less than.`,
+									GenericValue,
+									GenericExpectedConstraint
+								>
+							: never
 						: never
-					: CastError<
-						`Impossible to cast on MinCharacters<${InferredTo}> because value does not have MinCharacters constraint.`,
-						GenericValue,
-						GenericExpectedConstraint
-					>
+				)
+				| (
+					DString.ExtractLengthEqual<GenericValue, unknown> extends DString.LengthEqual<infer InferredFrom>
+						? InferredFrom extends number
+							? DNumber.IsLessOrEqual<InferredTo, InferredFrom> extends true
+								? unknown
+								: CastError<
+									`Impossible to cast on MaxCharacters<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is less than.`,
+									GenericValue,
+									GenericExpectedConstraint
+								>
+							: never
+						: never
+				),
+				CastError<
+					`Impossible to cast on MinCharacters<${InferredTo}> because value does not have MinCharacters constraint.`,
+					GenericValue,
+					GenericExpectedConstraint
+				>
+			>
+			: never
+		: never;
+	lengthEqual: DString.ExtractLengthEqual<GenericExpectedConstraint, unknown> extends DString.LengthEqual<infer InferredTo>
+		? InferredTo extends number
+			? NeverCoalescing<
+				| (
+					DString.ExtractLengthEqual<GenericValue, unknown> extends DString.LengthEqual<infer InferredFrom>
+						? InferredFrom extends number
+							? IsEqual<InferredTo, InferredFrom> extends true
+								? unknown
+								: CastError<
+									`Impossible to cast on LengthEqual<${InferredTo}> because constraint LengthEqual<${InferredFrom}> from the value is not equal.`,
+									GenericValue,
+									GenericExpectedConstraint
+								>
+							: never
+						: never
+				),
+				CastError<
+					`Impossible to cast on LengthEqual<${InferredTo}> because value does not have LengthEqual constraint.`,
+					GenericValue,
+					GenericExpectedConstraint
+				>
+			>
 			: never
 		: never;
 }

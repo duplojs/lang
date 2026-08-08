@@ -5,14 +5,14 @@ export type Create<
 	GenericLength extends number,
 	GenericLastTuple extends readonly unknown[] = [],
 > = DCommon.IsEqual<GenericLength, number> extends true
-	? GenericValue[]
+	? readonly GenericValue[]
 	: DCommon.IsEqual<GenericLength, 0> extends true
-		? []
+		? readonly []
 		: [...GenericLastTuple, GenericValue] extends infer InferredResult extends any[]
 			? DCommon.IsEqual<InferredResult["length"], GenericLength> extends true
-				? InferredResult
+				? readonly [...InferredResult]
 				: DCommon.IsEqual<InferredResult["length"], 1000> extends true
-					? [...InferredResult, ...GenericValue[]]
+					? readonly [...InferredResult, ...GenericValue[]]
 					: Create<
 						GenericValue,
 						GenericLength,

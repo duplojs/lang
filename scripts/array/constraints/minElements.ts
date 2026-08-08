@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import type * as DTuple from "@scripts/tuple";
 
 export type MinElementsConstraintName = "array-min-elements";
 
@@ -14,9 +15,18 @@ export type ExtractMinElements<
 		keyof GenericConstraint[DCommon.ConstraintSymbol][MinElementsConstraintName]
 	) extends infer InferredResult extends number
 		? DCommon.UnionToIntersection<
-			InferredResult extends any
-				? MinElements<InferredResult>
-				: never
+			| (
+				InferredResult extends any
+					? MinElements<InferredResult>
+					: never
+			)
+			| (
+				GenericConstraint extends DCommon.AnyTuple
+					? MinElements<DTuple.CountMinElement<GenericConstraint>>
+					: never
+			)
 		>
 		: GenericDefault
-	: GenericDefault;
+	: GenericConstraint extends DCommon.AnyTuple
+		? MinElements<DTuple.CountMinElement<GenericConstraint>>
+		: GenericDefault;

@@ -1,41 +1,42 @@
 import type * as DArray from "@scripts/array";
+import type * as DTuple from "@scripts/tuple";
 import type * as DObject from "@scripts/object";
-import { type ComputeCastArrayRule } from "./array";
-import { type Constraint, type UnbundlesConstraint, type RemoveConstraint, type BaseConstraint } from "../types";
+import { type ComputeCastConstraintArrayRule } from "./array";
+import { type UnbundlesConstraint, type BaseConstraint, type RemoveConstraint } from "../types";
 import { type CastError } from "./error";
-import { type ComputeCastNumberRule } from "./number";
-import { type ComputeCastStringRule } from "./string";
-import { type BreakGenericLink, type ToLargeEnsemble, type NeverCoalescing, IsExtends, type UnionContain } from "../../types";
+import { type ComputeCastConstraintNumberRule } from "./number";
+import { type ComputeCastConstraintStringRule } from "./string";
+import { type AnyTuple, type IsExtends, type BreakGenericLink, type NeverCoalescing, type UnionContain, type IsEqual } from "../../types";
 
 export * from "./array";
 export * from "./error";
 export * from "./number";
 export * from "./string";
 
-export interface ComputeCastRule<
+export interface ComputeCastConstraintRule<
 	GenericValue extends unknown,
-	GenericConstraint extends Constraint,
+	GenericConstraint extends unknown,
 > {
 	string: GenericValue extends string
 		? DObject.Values<
-			ComputeCastStringRule<GenericValue, GenericConstraint>
+			ComputeCastConstraintStringRule<GenericValue, GenericConstraint>
 		>
 		: never;
 	number: GenericValue extends number
 		? DObject.Values<
-			ComputeCastNumberRule<GenericValue, GenericConstraint>
+			ComputeCastConstraintNumberRule<GenericValue, GenericConstraint>
 		>
 		: never;
 	array: GenericValue extends readonly unknown[]
 		? DObject.Values<
-			ComputeCastArrayRule<GenericValue, GenericConstraint>
+			ComputeCastConstraintArrayRule<GenericValue, GenericConstraint>
 		>
 		: never;
 }
 
-export type ComputeCast<
+export type ComputeCastConstraint<
 	GenericValue extends unknown,
-	GenericExpectedValue extends Constraint,
+	GenericExpectedValue extends unknown,
 > = (
 	GenericExpectedValue extends any
 		? [UnbundlesConstraint<GenericExpectedValue>]
@@ -52,7 +53,9 @@ export type ComputeCast<
 									InferredConstraint extends any
 										? [
 											NeverCoalescing<
-												DObject.Values<ComputeCastRule<GenericValue, InferredConstraint>>,
+												DObject.Values<
+													ComputeCastConstraintRule<GenericValue, InferredConstraint>
+												>,
 												CastError<
 													"None of the intended constraints is possible on the current value.",
 													GenericValue,
@@ -79,22 +82,59 @@ export type ComputeCast<
 	>
 	: never;
 
+type ComputeTransformCastValue<
+	GenericValue extends unknown,
+> = GenericValue extends (string | number | AnyTuple)
+	? RemoveConstraint<GenericValue>
+	: GenericValue extends readonly unknown[]
+		? DArray.ExtractLengthEqual<GenericValue, unknown> extends DArray.LengthEqual<infer InferredLength>
+			? DTuple.Create<GenericValue[number], InferredLength>
+			: DArray.ExtractMinElements<GenericValue, unknown> extends DArray.MinElements<infer InferredMin>
+				? readonly [...DTuple.Create<GenericValue[number], InferredMin>, ...GenericValue]
+				: RemoveConstraint<GenericValue>
+		: never;
+
+export type ComputeCastValue<
+	GenericValue extends unknown,
+	GenericExpectedValue extends unknown,
+> = [
+	ComputeTransformCastValue<GenericValue>,
+	ComputeTransformCastValue<GenericExpectedValue>,
+] extends [
+	infer InferredValue,
+	infer InferredExpectedValue,
+]
+	? IsExtends<InferredValue, InferredExpectedValue> extends true
+		? unknown
+		: CastError<
+			"Input value are not Extends",
+			InferredValue,
+			InferredExpectedValue
+		>
+	: never;
+
 export function cast<
 	GenericInput extends unknown,
-	GenericResult extends (
-		& ToLargeEnsemble<RemoveConstraint<GenericInput>>
-		& Constraint
+	GenericExpectedValue extends unknown,
+	GenericError = (
+		ComputeCastConstraint<
+			GenericInput,
+			GenericExpectedValue
+		> extends infer InferredConstraintResult
+			? IsEqual<InferredConstraintResult, unknown> extends true
+				? ComputeCastValue<
+					GenericInput,
+					GenericExpectedValue
+				>
+				: InferredConstraintResult
+			: never
 	),
-	GenericError = ComputeCast<
-		GenericInput,
-		GenericResult
-	>,
 >(
 	input: (
 		& GenericInput
 		& BreakGenericLink<GenericError>
 	),
-): GenericResult;
+): GenericExpectedValue;
 
 export function cast(
 	input: any,

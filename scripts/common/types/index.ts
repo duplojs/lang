@@ -10,6 +10,7 @@ export * from "./anyValue";
 export * from "./breakGenericLink";
 export * from "./cleanObjectEntry";
 export * from "./clearClassKeys";
+export * from "./coalescing";
 export * from "./computedTypeError";
 export * from "./escapeVoid";
 export * from "./excludeEqual";

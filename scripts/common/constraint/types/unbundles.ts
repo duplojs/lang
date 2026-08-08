@@ -1,6 +1,7 @@
 import type * as DObject from "@scripts/object";
-import { type BaseConstraint } from "./base";
+import type * as DArray from "@scripts/array";
 import type * as DCommon from "@scripts/common";
+import { type BaseConstraint } from "./base";
 
 declare const RestSymbol: unique symbol;
 type RestSymbol = typeof RestSymbol;
@@ -62,7 +63,12 @@ export type UnbundlesConstraint<
 				Pick<GenericValue, DCommon.ConstraintSymbol>
 			>
 		>
-		: GenericValue
+		: GenericValue extends DCommon.AnyTuple
+			? (
+				| DArray.ExtractMinElements<GenericValue>
+				| DArray.ExtractLengthEqual<GenericValue>
+			)
+			: never
 ) extends infer InferredResult
 	? (
 		InferredResult extends Rest

@@ -20,19 +20,19 @@ type FigureGreaterThanTableValue = FigureGreaterThanTable[keyof FigureGreaterTha
 
 type CreateGreaterThanTable<
 	GenericSplitReference extends DCommon.AnyTuple<DString.Digit>,
-> = GenericSplitReference extends [
+> = GenericSplitReference extends readonly [
 	infer InferredFirst extends DString.Digit,
 	...infer InferredRest,
 ]
 	? InferredRest extends readonly []
-		? [FigureGreaterThanTable[InferredFirst]]
+		? readonly [FigureGreaterThanTable[InferredFirst]]
 		: CreateGreaterThanTable<
 			DCommon.Adaptor<
 				InferredRest,
 				DCommon.AnyTuple<DString.Digit>
 			>
 		> extends infer InferredRestResult extends DCommon.AnyTuple<FigureGreaterThanTableValue>
-			? [FigureGreaterThanTable[InferredFirst], ...InferredRestResult]
+			? readonly [FigureGreaterThanTable[InferredFirst], ...InferredRestResult]
 			: never
 	: never;
 
@@ -44,10 +44,10 @@ type CheckIsGreater<
 	: DCommon.IsEqual<GreaterSplitValue[0], GreaterTableReference[0][0]> extends true
 		? DCommon.IsEqual<GreaterSplitValue["length"], 1> extends true
 			? false
-			: [
+			: readonly [
 				DTuple.Shift<GreaterSplitValue>,
 				DTuple.Shift<GreaterTableReference>,
-			] extends [
+			] extends readonly [
 				infer InferredRestSplitValue extends DCommon.AnyTuple<DString.Digit>,
 				infer InferredRestSplitReference extends DCommon.AnyTuple<FigureGreaterThanTableValue>,
 			]
@@ -64,10 +64,10 @@ type toStringDecimal<
 type PrepareValues<
 	GenericValue extends number,
 	GenericReference extends number,
-> = [
+> = readonly [
 	toStringDecimal<GenericValue>,
 	toStringDecimal<GenericReference>,
-] extends [
+] extends readonly [
 	`${infer InferredValueInteger extends DString.Number}.${infer InferredValueDecimals extends DString.Number}`,
 	`${infer InferredReferenceInteger extends DString.Number}.${infer InferredReferenceDecimals extends DString.Number}`,
 ]
@@ -75,30 +75,30 @@ type PrepareValues<
 		DCommon.IsEqual<InferredValueDecimals, "0">,
 		DCommon.IsEqual<InferredReferenceDecimals, "0">,
 	]> extends true
-		? [InferredValueInteger, InferredReferenceInteger]
+		? readonly [InferredValueInteger, InferredReferenceInteger]
 		: DCommon.IsEqual<
 			InferredValueInteger,
 			InferredReferenceInteger
 		> extends true
-			? [
+			? readonly [
 				DString.Split<InferredValueDecimals, "">,
 				DString.Split<InferredReferenceDecimals, "">,
-			] extends [
+			] extends readonly [
 				infer InferredSplitValue extends DCommon.AnyTuple<DString.Digit>,
 				infer InferredSplitReference extends DCommon.AnyTuple<DString.Digit>,
 			]
 				? (
 					DCommon.IsEqual<InferredSplitValue["length"], InferredSplitReference["length"]> extends true
-						? [
+						? readonly [
 							DTuple.Join<InferredSplitValue, "">,
 							DTuple.Join<InferredSplitReference, "">,
 						]
 						: (
-							DTuple.Create<any, InferredSplitValue["length"]> extends [...DTuple.Create<any, InferredSplitReference["length"]>, ...any[]]
+							DTuple.Create<any, InferredSplitValue["length"]> extends readonly [...DTuple.Create<any, InferredSplitReference["length"]>, ...any[]]
 								? InferredSplitValue["length"]
 								: InferredSplitReference["length"]
 						) extends infer InferredLength extends number
-							? [
+							? readonly [
 								DTuple.Join<
 									Extract<
 										DCommon.IsEqual<InferredLength, InferredSplitValue["length"]> extends true
@@ -119,14 +119,14 @@ type PrepareValues<
 								>,
 							]
 							: never
-				) extends [
+				) extends readonly [
 					`${infer InferredResultValue}`,
 					`${infer InferredResultReference}`,
 				]
-					? [`${InferredResultValue}`, `${InferredResultReference}`]
+					? readonly [`${InferredResultValue}`, `${InferredResultReference}`]
 					: never
 				: never
-			: [InferredValueInteger, InferredReferenceInteger]
+			: readonly [InferredValueInteger, InferredReferenceInteger]
 	: never;
 
 type ComputeIsGreater<
@@ -135,7 +135,7 @@ type ComputeIsGreater<
 > = PrepareValues<
 	GenericValue,
 	GenericReference
-> extends [
+> extends readonly [
 	infer InferredValue extends DString.Number,
 	infer InferredReference extends DString.Number,
 ]
@@ -153,7 +153,7 @@ type ComputeIsGreater<
 				[
 					DString.Split<DString.Replace<InferredValue, "-", "">, "">,
 					DString.Split<DString.Replace<InferredReference, "-", "">, "">,
-				] extends [
+				] extends readonly [
 					infer InferredSplitValue extends DCommon.AnyTuple<DString.Digit>,
 					infer InferredSplitReference extends DCommon.AnyTuple<DString.Digit>,
 				]
@@ -162,7 +162,7 @@ type ComputeIsGreater<
 							InferredSplitValue,
 							CreateGreaterThanTable<InferredSplitReference>
 						>
-						: DTuple.Create<0, InferredSplitValue["length"]> extends [
+						: DTuple.Create<0, InferredSplitValue["length"]> extends readonly [
 							...DTuple.Create<0, InferredSplitReference["length"]>,
 							...0[],
 						]
