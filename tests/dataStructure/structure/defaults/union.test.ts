@@ -85,13 +85,13 @@ describe("UnionStructure", () => {
 		], []);
 		const stringCodec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
 		const numberCodec = DDataStructure.createCodec(
 			DDataStructure.TheNumber,
-			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []).is,
 			(data) => `number-${data}`,
 			(data) => Number(data.slice(7)),
 		);
@@ -265,7 +265,7 @@ describe("UnionStructure", () => {
 		], [unionConstraint]);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => String(data),
 		);
@@ -274,7 +274,7 @@ describe("UnionStructure", () => {
 		const encodeFailure = structure.encode({ codec }, "");
 		const emptyStringCodec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			() => "",
 		);

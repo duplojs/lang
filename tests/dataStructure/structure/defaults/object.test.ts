@@ -233,13 +233,13 @@ describe("ObjectStructure", () => {
 		}, []);
 		const stringCodec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
 		const numberCodec = DDataStructure.createCodec(
 			DDataStructure.TheNumber,
-			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []).is,
 			(data) => String(data),
 			(data) => Number(data),
 		);
@@ -338,7 +338,7 @@ describe("ObjectStructure", () => {
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => String(data),
 		);
@@ -468,7 +468,7 @@ describe("ObjectStructure", () => {
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			encode,
 			(data) => String(data),
 		);
@@ -495,7 +495,7 @@ describe("ObjectStructure", () => {
 		}, []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => Promise.resolve(data.length),
 			(data) => String(data),
 		);
@@ -515,13 +515,13 @@ describe("ObjectStructure", () => {
 		}, []);
 		const stringCodec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
 		const numberCodec = DDataStructure.createCodec(
 			DDataStructure.TheNumber,
-			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []).is,
 			(data) => String(data),
 			(data) => Number(data),
 		);
@@ -708,7 +708,7 @@ describe("ObjectStructure", () => {
 		}, []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => Promise.resolve(`name-${data}`),
 		);

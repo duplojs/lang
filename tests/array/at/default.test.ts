@@ -8,7 +8,7 @@ describe("at", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			"a" | "b" | "c" | undefined,
+			"a" | "b" | "c",
 			"strict"
 		>;
 	});
@@ -23,7 +23,7 @@ describe("at", () => {
 	});
 
 	it("should return a maybe element for tuple input with out of range index", () => {
-		const result = DArray.at(["a", "b"] as const, 4);
+		const result = DArray.at(["a" as const, "b" as const], 4);
 
 		expect(result).toBeUndefined();
 

@@ -414,7 +414,7 @@ describe("createStructure", () => {
 		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const codec = DDataStructure.createCodec(
 			fundamentalType,
-			encodedStructure,
+			encodedStructure.is,
 			(data) => data.toUpperCase(),
 			(data) => String(data),
 		);
@@ -516,7 +516,7 @@ describe("createStructure", () => {
 		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const codec = DDataStructure.createCodec(
 			fundamentalType,
-			encodedStructure,
+			encodedStructure.is,
 			(data) => data,
 			(data) => data,
 		);

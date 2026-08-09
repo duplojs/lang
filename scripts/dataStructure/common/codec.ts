@@ -5,24 +5,28 @@ import { type StructureValue, type Structure } from "../structure";
 import { createKind } from "../kind";
 import { type GetErrorHandler } from "./error";
 import { ErrorSymbol } from "./resultSymbol";
+import { type DObject } from "@scripts";
 
 export const codecKind = createKind("codec");
 
 export interface Codec<
 	GenericFundamentalType extends FundamentalType = FundamentalType,
-	GenericEncodedStructure extends Structure = Structure,
+	GenericEncodedValue extends unknown = unknown,
 > extends DKind.Kind<typeof codecKind> {
 	fundamentalType: GenericFundamentalType;
-	encodedStructure: GenericEncodedStructure;
+	predicateEncode(
+		input: unknown,
+		errorHandler?: GetErrorHandler
+	): input is GenericEncodedValue;
 	encode(
 		data: FundamentalTypeValue<GenericFundamentalType>,
 		errorHandler?: GetErrorHandler
 	): DCommon.MaybePromise<
-		| StructureValue<GenericEncodedStructure>
+		| GenericEncodedValue
 		| ErrorSymbol
 	>;
 	decode(
-		data: StructureValue<GenericEncodedStructure>,
+		data: GenericEncodedValue,
 		errorHandler?: GetErrorHandler
 	): DCommon.MaybePromise<
 		| FundamentalTypeValue<GenericFundamentalType>
@@ -34,19 +38,22 @@ export type CodecContext = Map<FundamentalType, Codec>;
 
 export function createCodec<
 	GenericFundamentalType extends FundamentalType = FundamentalType,
-	GenericEncodedStructure extends Structure = Structure,
+	GenericEncodedValue extends unknown = unknown,
 >(
 	fundamentalType: GenericFundamentalType,
-	encodedStructure: GenericEncodedStructure,
+	predicateEncode: (
+		input: unknown,
+		errorHandler?: GetErrorHandler,
+	) => input is GenericEncodedValue,
 	encode: (
 		data: FundamentalTypeValue<GenericFundamentalType>,
 		errorHandler?: GetErrorHandler,
 	) => DCommon.MaybePromise<
-		| StructureValue<GenericEncodedStructure>
+		| GenericEncodedValue
 		| ErrorSymbol
 	>,
 	decode: (
-		data: StructureValue<GenericEncodedStructure>,
+		data: GenericEncodedValue,
 		errorHandler?: GetErrorHandler,
 	) => DCommon.MaybePromise<
 		| FundamentalTypeValue<GenericFundamentalType>
@@ -54,11 +61,11 @@ export function createCodec<
 	>,
 ): Codec<
 	GenericFundamentalType,
-	GenericEncodedStructure
+	GenericEncodedValue
 > {
 	const self: DKind.Remove<Codec> = {
 		fundamentalType,
-		encodedStructure,
+		predicateEncode,
 		encode: (
 			data,
 			errorHandler,
@@ -67,9 +74,9 @@ export function createCodec<
 			(encodedData) => encodedData === ErrorSymbol
 				? ErrorSymbol
 				: DCommon.callThen(
-					encodedStructure.executeCheck(encodedData, errorHandler),
+					predicateEncode(encodedData, errorHandler),
 					(result) => errorHandler?.().setCurrentContext("default") ?? (
-						result === ErrorSymbol
+						result === false
 							? ErrorSymbol
 							: encodedData
 					),
@@ -80,8 +87,8 @@ export function createCodec<
 			data,
 			errorHandler,
 		) => errorHandler?.().setCurrentContext("decode") ?? DCommon.callThen(
-			encodedStructure.executeCheck(data, errorHandler),
-			(result) => result === ErrorSymbol
+			predicateEncode(data, errorHandler),
+			(result) => result === false
 				? ErrorSymbol
 				: DCommon.callThen(
 					decode(data as never, errorHandler),
@@ -109,10 +116,6 @@ export interface EncodeStructure<
 // This forces type rendering and can trigger recursion issues.
 // Some object manipulations and transformations can also cause problems.
 
-type GetEncodedStructureValue<
-	GenericValue extends object,
-> = GenericValue[keyof GenericValue];
-
 type TreatValue<
 	GenericEncodedStructure extends unknown,
 	GenericValue extends unknown,
@@ -121,10 +124,10 @@ type TreatValue<
 	? DCommon.NeverCoalescing<
 		GenericCodec extends Codec<
 			infer InferredFundamentalType,
-			infer InferredEncodedStructure
+			infer InferredEncodedValue
 		>
 			? GenericValue extends FundamentalTypeValue<InferredFundamentalType>
-				? StructureValue<InferredEncodedStructure>
+				? InferredEncodedValue
 				: never
 			: never,
 		GenericValue
@@ -136,7 +139,7 @@ export type EncodedValue<
 	GenericCodec extends Codec,
 > = GenericValue extends unknown
 	? TreatValue<
-		GetEncodedStructureValue<
+		DObject.Values<
 			EncodeStructure<GenericValue, GenericCodec>
 		>,
 		GenericValue,

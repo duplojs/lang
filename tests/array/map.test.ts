@@ -2,7 +2,7 @@ import { DArray, pipe, type ExpectType } from "@scripts";
 
 describe("map", () => {
 	it("should map values with callback params", () => {
-		const source = ["a", "bb", "ccc"] as const;
+		const source = ["a" as const, "bb" as const, "ccc" as const];
 		const result = DArray.map(
 			source,
 			(element, params) => {

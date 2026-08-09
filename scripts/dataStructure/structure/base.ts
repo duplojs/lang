@@ -83,7 +83,10 @@ export interface Structure<
 		| DEither.Right<"check-success", StructureValue<this>>
 		| DEither.Left<"check-error", Error>
 	>;
-	is(data: unknown): data is StructureValue<this>;
+	is(
+		data: unknown,
+		errorHandler?: GetErrorHandler
+	): data is StructureValue<this>;
 	encode<
 		GenericCodecs extends Record<string, Codec>,
 	>(
@@ -345,8 +348,8 @@ export function createStructure<
 
 				return DEither.right("check-success", data);
 			},
-			is: (data): data is never => {
-				const result = self.executeCheck(data);
+			is: (data, errorHandler): data is never => {
+				const result = self.executeCheck(data, errorHandler);
 				if (result instanceof Promise || result === ErrorSymbol) {
 					return false;
 				}

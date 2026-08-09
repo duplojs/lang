@@ -209,7 +209,7 @@ describe("RecordStructure", () => {
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);

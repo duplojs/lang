@@ -6,7 +6,7 @@ export type At<
 > = IsIndexOutOfRange<GenericArray, GenericIndex> extends true
 	? undefined
 	: IsIndexCovered<GenericArray, GenericIndex> extends true
-		? GenericArray[GenericIndex]
+		? GenericArray[number]
 		: GenericArray[number] | undefined;
 
 export function at<

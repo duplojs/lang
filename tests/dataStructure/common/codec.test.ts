@@ -5,26 +5,29 @@ describe("codec", () => {
 		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.NumberType(), []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			encodedStructure,
+			encodedStructure.is,
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
 
 		type _CheckCodec = ExpectType<
 			typeof codec,
-			DDataStructure.Codec<typeof DDataStructure.TheString, typeof encodedStructure>,
+			DDataStructure.Codec<
+				typeof DDataStructure.TheString,
+				DDataStructure.StructureValue<typeof encodedStructure>
+			>,
 			"strict"
 		>;
 
 		expect(DDataStructure.codecKind.has(codec)).toBe(true);
 		expect(codec.fundamentalType).toBe(DDataStructure.TheString);
-		expect(codec.encodedStructure).toBe(encodedStructure);
+		expect(codec.predicateEncode).toBe(encodedStructure.is);
 	});
 
 	it("encodes and validates encoded data", () => {
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -36,7 +39,7 @@ describe("codec", () => {
 		const getErrorHandler = DDataStructure.createGetErrorHandler();
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(_data, errorHandler) => {
 				errorHandler?.().addIssue(DDataStructure.TheString, "encode-error");
 				return DDataStructure.ErrorSymbol;
@@ -55,7 +58,7 @@ describe("codec", () => {
 		const getErrorHandler = DDataStructure.createGetErrorHandler();
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			() => "invalid" as never,
 			(data) => `value-${data}`,
 		);
@@ -70,7 +73,7 @@ describe("codec", () => {
 	it("decodes checked encoded data", () => {
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -82,7 +85,7 @@ describe("codec", () => {
 		const getErrorHandler = DDataStructure.createGetErrorHandler();
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -98,7 +101,7 @@ describe("codec", () => {
 		const getErrorHandler = DDataStructure.createGetErrorHandler();
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(_data, errorHandler) => {
 				errorHandler?.().addIssue(DDataStructure.TheString, "decode-error");
@@ -116,7 +119,7 @@ describe("codec", () => {
 	it("supports asynchronous encoders and decoders", async() => {
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => Promise.resolve(data.length),
 			(data) => Promise.resolve(`value-${data}`),
 		);
@@ -128,7 +131,7 @@ describe("codec", () => {
 	it("infers encoded values for matching codecs and falls back otherwise", () => {
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);

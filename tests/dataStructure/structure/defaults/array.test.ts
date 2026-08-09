@@ -86,7 +86,7 @@ describe("ArrayStructure", () => {
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
@@ -250,7 +250,7 @@ describe("ArrayStructure", () => {
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => String(data),
 		);
@@ -341,7 +341,7 @@ describe("ArrayStructure", () => {
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			encode,
 			(data) => String(data),
 		);
@@ -363,7 +363,7 @@ describe("ArrayStructure", () => {
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => Promise.resolve(data.length),
 			(data) => Promise.resolve(String(data)),
 		);

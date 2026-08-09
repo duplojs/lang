@@ -74,7 +74,7 @@ describe("TypeStructure", () => {
 		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -114,7 +114,7 @@ describe("TypeStructure", () => {
 		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => Promise.resolve(data.length),
 			(data) => `value-${data}`,
 		);
@@ -131,7 +131,7 @@ describe("TypeStructure", () => {
 		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(_data, errorHandler) => (
 				errorHandler?.().addIssue(DDataStructure.TheString, "encoded-error") ?? DDataStructure.ErrorSymbol
 			),
@@ -161,7 +161,7 @@ describe("TypeStructure", () => {
 		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -203,7 +203,7 @@ describe("TypeStructure", () => {
 		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data) => Promise.resolve(`value-${data}`),
 		);
@@ -220,7 +220,7 @@ describe("TypeStructure", () => {
 		const structure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(_data, errorHandler) => (
 				errorHandler?.().addIssue(DDataStructure.TheString, "decoded-error") ?? DDataStructure.ErrorSymbol
