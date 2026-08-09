@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import type * as DString from "@scripts/string";
 import type * as DKind from "@scripts/kind";
 import { createKind } from "../../kind";
 import { type ConstraintDefinition, createConstraint, type Constraint } from "../base";
@@ -17,7 +18,7 @@ export interface StringMinConstraint<
 > extends DCommon.UnionToIntersection<
 		& Constraint<
 			string,
-			string,
+			string & DString.MinCharacters<GenericMin>,
 			StringMinConstraintDefinition<GenericMin>
 		>
 		& DKind.Kind<typeof stringMinConstraintKind>

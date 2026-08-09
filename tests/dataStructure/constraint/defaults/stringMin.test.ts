@@ -1,4 +1,4 @@
-import { DDataStructure, type ExpectType } from "@scripts";
+import { DDataStructure, type DString, type ExpectType } from "@scripts";
 
 describe("StringMinConstraint", () => {
 	it("creates a synchronous string minimum constraint", () => {
@@ -11,7 +11,7 @@ describe("StringMinConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string,
+			string & DString.MinCharacters<3>,
 			"strict"
 		>;
 

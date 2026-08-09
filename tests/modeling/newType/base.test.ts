@@ -1,0 +1,517 @@
+import { DDataStructure, type DCommon, DEither, type DKind, DModeling, type DString, pipe, type ExpectType } from "@scripts";
+
+describe("NewTypeStructure", () => {
+	it("creates a named structure that preserves its inner structure and new type constraints", () => {
+		const stringMinConstraint = DDataStructure.stringMin(3);
+		const inner = DDataStructure.string();
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			inner,
+			[stringMinConstraint],
+		);
+
+		type _CheckStructure = ExpectType<
+			typeof structure,
+			DModeling.NewTypeStructure<
+				"user-name",
+				string,
+				readonly [DDataStructure.StringMinConstraint<3>]
+			>,
+			"strict"
+		>;
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			string & DModeling.NewType<"user-name", DString.MinCharacters<3>>,
+			"strict"
+		>;
+
+		expect(DModeling.newTypeStructureKind.has(structure)).toBe(true);
+		expect(structure.name).toBe("user-name");
+		expect(structure.definition.inner).toBe(inner);
+		expect(structure.definition.newTypeConstraints).toEqual([stringMinConstraint]);
+	});
+
+	it("checks the inner structure before applying new type constraints", () => {
+		const constraintExecuteCheck = vi.fn(
+			(data: string) => (
+				data.length >= 3
+					? DDataStructure.SuccessSymbol
+					: DDataStructure.ErrorSymbol
+			),
+		);
+		const constraint = {
+			...DDataStructure.stringMin(3),
+			executeCheck: constraintExecuteCheck,
+		} as DDataStructure.StringMinConstraint<3>;
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[constraint],
+		);
+
+		expect(structure.executeCheck("Jane")).toBe(DDataStructure.SuccessSymbol);
+		expect(constraintExecuteCheck).toHaveBeenCalledWith(
+			"Jane",
+			undefined,
+		);
+
+		constraintExecuteCheck.mockClear();
+		expect(structure.executeCheck(123)).toBe(DDataStructure.ErrorSymbol);
+		expect(constraintExecuteCheck).not.toHaveBeenCalled();
+
+		constraintExecuteCheck.mockClear();
+		expect(structure.executeCheck("Jo")).toBe(DDataStructure.ErrorSymbol);
+		expect(constraintExecuteCheck).toHaveBeenCalledOnce();
+	});
+
+	it("returns check errors from the new type constraint", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		);
+
+		expect(structure.check("Jane")).toStrictEqual(
+			DEither.right("check-success", "Jane"),
+		);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.check("Jo"),
+				"check-error",
+			).issues[0],
+		).toMatchObject({
+			data: "Jo",
+		});
+	});
+
+	it("narrows checked values to the unique new type", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		);
+		const input: unknown = "Jane";
+
+		if (structure.is(input)) {
+			type _CheckNarrowedInput = ExpectType<
+				typeof input,
+				string & DModeling.NewType<"user-name", DString.MinCharacters<3>>,
+				"strict"
+			>;
+		}
+	});
+
+	it("encodes the inner structure before checking new type and structure constraints", () => {
+		type UserName = string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+		const newTypeConstraintExecuteCheck = vi.fn(
+			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
+		);
+		const structureConstraintExecuteCheck = vi.fn(
+			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
+		);
+		const newTypeConstraint = {
+			...DDataStructure.stringMin(3),
+			executeCheck: newTypeConstraintExecuteCheck,
+		} as DDataStructure.StringMinConstraint<3>;
+		const structureConstraint = {
+			...DDataStructure.stringMin(2),
+			executeCheck: structureConstraintExecuteCheck,
+		} as unknown as DDataStructure.Constraint<UserName>;
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[newTypeConstraint],
+		).addConstraint(structureConstraint);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `decoded-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+		const data = "Jane" as DDataStructure.StructureValue<typeof structure>;
+
+		expect(structure.encode(codecs, data)).toStrictEqual(
+			DEither.right("encode-success", 4),
+		);
+		expect(newTypeConstraintExecuteCheck).toHaveBeenCalledWith(
+			"Jane",
+			expect.any(Function),
+		);
+		expect(structureConstraintExecuteCheck).toHaveBeenCalledWith(
+			"Jane",
+			expect.any(Function),
+		);
+		expect(newTypeConstraintExecuteCheck.mock.invocationCallOrder[0]).toBeLessThan(
+			structureConstraintExecuteCheck.mock.invocationCallOrder[0]!,
+		);
+	});
+
+	it("stops encoding when a new type constraint fails", () => {
+		type UserName = string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+		const structureConstraintExecuteCheck = vi.fn(
+			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
+		);
+		const structureConstraint = {
+			...DDataStructure.stringMin(2),
+			executeCheck: structureConstraintExecuteCheck,
+		} as unknown as DDataStructure.Constraint<UserName>;
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		).addConstraint(structureConstraint);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `decoded-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.unsafeEncode(codecs, "Jo"),
+				"encode-error",
+			).issues[0],
+		).toMatchObject({
+			context: "default",
+			data: "Jo",
+		});
+		expect(structureConstraintExecuteCheck).not.toHaveBeenCalled();
+	});
+
+	it("decodes the inner structure before checking new type and structure constraints", () => {
+		type UserName = string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+		const newTypeConstraintExecuteCheck = vi.fn(
+			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
+		);
+		const structureConstraintExecuteCheck = vi.fn(
+			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
+		);
+		const newTypeConstraint = {
+			...DDataStructure.stringMin(3),
+			executeCheck: newTypeConstraintExecuteCheck,
+		} as DDataStructure.StringMinConstraint<3>;
+		const structureConstraint = {
+			...DDataStructure.stringMin(2),
+			executeCheck: structureConstraintExecuteCheck,
+		} as unknown as DDataStructure.Constraint<UserName>;
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[newTypeConstraint],
+		).addConstraint(structureConstraint);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `decoded-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+
+		expect(structure.decode(codecs, 4)).toStrictEqual(
+			DEither.right("decode-success", "decoded-4"),
+		);
+		expect(newTypeConstraintExecuteCheck).toHaveBeenCalledWith(
+			"decoded-4",
+			expect.any(Function),
+		);
+		expect(structureConstraintExecuteCheck).toHaveBeenCalledWith(
+			"decoded-4",
+			expect.any(Function),
+		);
+		expect(newTypeConstraintExecuteCheck.mock.invocationCallOrder[0]).toBeLessThan(
+			structureConstraintExecuteCheck.mock.invocationCallOrder[0]!,
+		);
+	});
+
+	it("stops decoding when a new type constraint fails", () => {
+		type UserName = string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+		const structureConstraintExecuteCheck = vi.fn(
+			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
+		);
+		const structureConstraint = {
+			...DDataStructure.stringMin(2),
+			executeCheck: structureConstraintExecuteCheck,
+		} as unknown as DDataStructure.Constraint<UserName>;
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		).addConstraint(structureConstraint);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			() => "Jo",
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.unsafeDecode(codecs, 2),
+				"decode-error",
+			).issues[0],
+		).toMatchObject({
+			context: "default",
+			data: "Jo",
+		});
+		expect(structureConstraintExecuteCheck).not.toHaveBeenCalled();
+	});
+
+	it("maps a raw value to the new type after checking it", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		);
+		const result = structure.map("Jane");
+
+		type _CheckInput = ExpectType<
+			Parameters<typeof structure.map>[0],
+			string,
+			"strict"
+		>;
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				string & DModeling.NewType<"user-name", DString.MinCharacters<3>>
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		const invalidInput = "Jo";
+
+		expect(result).toStrictEqual(
+			DEither.right("map-success", "Jane"),
+		);
+		expect(DEither.isLeft(structure.map(invalidInput))).toBe(true);
+	});
+
+	it("maps a raw value to the new type in pipe", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		);
+		const result = pipe(
+			"Jane",
+			structure.map,
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				string & DModeling.NewType<"user-name", DString.MinCharacters<3>>
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(
+			DEither.right("map-success", "Jane"),
+		);
+	});
+
+	it("maps an encoded value to the new type with codecs", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `Jane-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+		const result = structure.map(codecs, 4);
+
+		type _CheckInput = ExpectType<
+			Parameters<typeof structure.map<typeof codecs>>[1],
+			number,
+			"strict"
+		>;
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				string & DModeling.NewType<"user-name", DString.MinCharacters<3>>
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		// @ts-expect-error codec mapping expects the encoded number input, not the raw string input.
+		structure.map(codecs, "Jane");
+		expect(result).toStrictEqual(
+			DEither.right("map-success", "Jane-4"),
+		);
+	});
+
+	it("maps an encoded value to the new type with codecs in pipe", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `Jane-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+		const result = pipe(
+			4,
+			structure.map(codecs),
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				string & DModeling.NewType<"user-name", DString.MinCharacters<3>>
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(
+			DEither.right("map-success", "Jane-4"),
+		);
+	});
+
+	it("asynchronously maps a raw value to the new type", async() => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		);
+		const result = structure.asyncMap("Jane");
+
+		type _CheckInput = ExpectType<
+			Parameters<typeof structure.asyncMap>[0],
+			string,
+			"strict"
+		>;
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<
+				| DEither.Right<
+					"map-success",
+					string & DModeling.NewType<"user-name", DString.MinCharacters<3>>
+				>
+				| DEither.Left<"map-error", DDataStructure.Error>
+			>,
+			"strict"
+		>;
+
+		const invalidInput = "Jo";
+		const invalidResult = await structure.asyncMap(invalidInput);
+
+		await expect(result).resolves.toStrictEqual(
+			DEither.right("map-success", "Jane"),
+		);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				invalidResult,
+				"map-error",
+			).issues[0],
+		).toMatchObject({
+			data: "Jo",
+		});
+	});
+
+	it("asynchronously maps an encoded value to the new type with codecs in pipe", async() => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.stringMin(3)],
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => Promise.resolve(data.length),
+			(data) => Promise.resolve(`Jane-${data}`),
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+		const result = pipe(
+			4,
+			structure.asyncMap(codecs),
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<
+				| DEither.Right<
+					"map-success",
+					string & DModeling.NewType<"user-name", DString.MinCharacters<3>>
+				>
+				| DEither.Left<"map-error", DDataStructure.Error>
+			>,
+			"strict"
+		>;
+
+		await expect(result).resolves.toStrictEqual(
+			DEither.right("map-success", "Jane-4"),
+		);
+	});
+
+	it("is asynchronous when its inner structure or a new type constraint is asynchronous", () => {
+		const asyncConstraintKind = DDataStructure.createKind("async-new-type-constraint");
+		const innerAsyncConstraintKind = DDataStructure.createKind("async-inner-constraint");
+		const asyncConstraintIsAsynchronous = vi.fn(() => true);
+		interface InnerAsyncConstraint extends DCommon.UnionToIntersection<
+			& DDataStructure.Constraint<string>
+			& DKind.Kind<typeof innerAsyncConstraintKind>
+		> {}
+		interface AsyncConstraint extends DCommon.UnionToIntersection<
+			& DDataStructure.Constraint<string>
+			& DKind.Kind<typeof asyncConstraintKind>
+		> {}
+		const innerAsyncConstraint = DDataStructure.createConstraint(
+			innerAsyncConstraintKind,
+			({ init }) => () => init<InnerAsyncConstraint>(
+				{},
+				{
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
+					isAsynchronous: () => true,
+				},
+			),
+		)();
+		const AsyncConstraint = DDataStructure.createConstraint(
+			asyncConstraintKind,
+			({ init }) => () => init<AsyncConstraint>(
+				{},
+				{
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
+					isAsynchronous: asyncConstraintIsAsynchronous,
+				},
+			),
+		);
+
+		const innerAsyncStructure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string([innerAsyncConstraint]),
+		);
+		const newTypeAsyncStructure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[AsyncConstraint()],
+		);
+
+		expect(innerAsyncStructure.isAsynchronous()).toBe(true);
+		expect(newTypeAsyncStructure.isAsynchronous()).toBe(true);
+		expect(asyncConstraintIsAsynchronous).toHaveBeenCalledOnce();
+	});
+});

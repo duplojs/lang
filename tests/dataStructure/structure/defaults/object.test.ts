@@ -243,10 +243,10 @@ describe("ObjectStructure", () => {
 			(data) => String(data),
 			(data) => Number(data),
 		);
-		const codecs = {
+		const codecs = DDataStructure.createCodecs({
 			stringCodec,
 			numberCodec,
-		};
+		});
 		const success = structure.encode(
 			codecs,
 			{
@@ -342,8 +342,8 @@ describe("ObjectStructure", () => {
 			(data) => data.length,
 			(data) => String(data),
 		);
-		const success = structure.encode({ codec }, { name: "Jane" });
-		const asyncSuccess = await structure.asyncEncode({ codec }, { name: "Jane" });
+		const success = structure.encode(DDataStructure.createCodecs({ codec }), { name: "Jane" });
+		const asyncSuccess = await structure.asyncEncode(DDataStructure.createCodecs({ codec }), { name: "Jane" });
 
 		expect(success).toStrictEqual(
 			DEither.right("encode-success", {
@@ -367,15 +367,15 @@ describe("ObjectStructure", () => {
 			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			age: DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		}, []);
-		const invalidKind = structure.encode({}, null as never);
-		const invalidMissingProperty = structure.encode({}, { name: "Jane" } as never);
-		const invalidUnknownProperty = structure.encode({}, {
+		const invalidKind = structure.encode(DDataStructure.createCodecs({}), null as never);
+		const invalidMissingProperty = structure.encode(DDataStructure.createCodecs({}), { name: "Jane" } as never);
+		const invalidUnknownProperty = structure.encode(DDataStructure.createCodecs({}), {
 			name: "Jane",
 			age: 30,
 			extra: true,
 		} as never);
 		const invalidProperty = structure.encode(
-			{},
+			DDataStructure.createCodecs({}),
 			{
 				name: 123,
 				age: 30,
@@ -412,11 +412,11 @@ describe("ObjectStructure", () => {
 		});
 		expect(
 			DEither.unwrapByInformationOrThrow(
-				structure.encode({}, new Date() as never),
+				structure.encode(DDataStructure.createCodecs({}), new Date() as never),
 				"encode-error",
 			).issues[0]?.path,
 		).toBe("");
-		expect(structure.encode({}, {
+		expect(structure.encode(DDataStructure.createCodecs({}), {
 			name: "Jane",
 			age: 30,
 			[Symbol("private")]: true,
@@ -472,8 +472,8 @@ describe("ObjectStructure", () => {
 			encode,
 			(data) => String(data),
 		);
-		const failure = structure.encode({ codec }, { name: "Jane" });
-		const asyncFailure = await structure.asyncEncode({ codec }, { name: "Jane" });
+		const failure = structure.encode(DDataStructure.createCodecs({ codec }), { name: "Jane" });
+		const asyncFailure = await structure.asyncEncode(DDataStructure.createCodecs({ codec }), { name: "Jane" });
 
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "encode-error").issues[0]
@@ -500,10 +500,10 @@ describe("ObjectStructure", () => {
 			(data) => String(data),
 		);
 
-		expect(structure.encode({ codec }, { name: "Jane" })).toStrictEqual(
+		expect(structure.encode(DDataStructure.createCodecs({ codec }), { name: "Jane" })).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
-		expect(await structure.asyncEncode({ codec }, { name: "Jane" })).toStrictEqual(
+		expect(await structure.asyncEncode(DDataStructure.createCodecs({ codec }), { name: "Jane" })).toStrictEqual(
 			DEither.right("encode-success", { name: 4 }),
 		);
 	});
@@ -525,10 +525,10 @@ describe("ObjectStructure", () => {
 			(data) => String(data),
 			(data) => Number(data),
 		);
-		const codecs = {
+		const codecs = DDataStructure.createCodecs({
 			stringCodec,
 			numberCodec,
-		};
+		});
 		const success = structure.decode(
 			codecs,
 			{
@@ -589,15 +589,15 @@ describe("ObjectStructure", () => {
 			name: DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			age: DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 		}, []);
-		const invalidKind = structure.decode({}, null as never);
-		const invalidMissingProperty = structure.decode({}, { name: "Jane" } as never);
-		const invalidUnknownProperty = structure.decode({}, {
+		const invalidKind = structure.decode(DDataStructure.createCodecs({}), null as never);
+		const invalidMissingProperty = structure.decode(DDataStructure.createCodecs({}), { name: "Jane" } as never);
+		const invalidUnknownProperty = structure.decode(DDataStructure.createCodecs({}), {
 			name: "Jane",
 			age: 30,
 			extra: true,
 		} as never);
 		const invalidProperty = structure.decode(
-			{},
+			DDataStructure.createCodecs({}),
 			{
 				name: 123,
 				age: 30,
@@ -634,11 +634,11 @@ describe("ObjectStructure", () => {
 		});
 		expect(
 			DEither.unwrapByInformationOrThrow(
-				structure.decode({}, new Date() as never),
+				structure.decode(DDataStructure.createCodecs({}), new Date() as never),
 				"decode-error",
 			).issues[0]?.path,
 		).toBe("");
-		expect(structure.decode({}, {
+		expect(structure.decode(DDataStructure.createCodecs({}), {
 			name: "Jane",
 			age: 30,
 			[Symbol("private")]: true,
@@ -687,8 +687,8 @@ describe("ObjectStructure", () => {
 			},
 			[failingConstraint],
 		);
-		const failure = structure.decode({}, { name: "Jane" });
-		const asyncFailure = await structure.asyncDecode({}, { name: "Jane" });
+		const failure = structure.decode(DDataStructure.createCodecs({}), { name: "Jane" });
+		const asyncFailure = await structure.asyncDecode(DDataStructure.createCodecs({}), { name: "Jane" });
 
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "decode-error").issues[0]
@@ -713,10 +713,10 @@ describe("ObjectStructure", () => {
 			(data) => Promise.resolve(`name-${data}`),
 		);
 
-		expect(structure.decode({ codec }, { name: 4 })).toStrictEqual(
+		expect(structure.decode(DDataStructure.createCodecs({ codec }), { name: 4 })).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
-		expect(await structure.asyncDecode({ codec }, { name: 4 })).toStrictEqual(
+		expect(await structure.asyncDecode(DDataStructure.createCodecs({ codec }), { name: 4 })).toStrictEqual(
 			DEither.right("decode-success", { name: "name-4" }),
 		);
 	});

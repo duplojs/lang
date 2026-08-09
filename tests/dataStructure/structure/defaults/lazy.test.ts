@@ -119,10 +119,10 @@ describe("LazyStructure", () => {
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
-		const encoded = structure.encode({ codec }, { name: "Jane" });
-		const asyncEncoded = await structure.asyncEncode({ codec }, { name: "Jane" });
-		const decoded = structure.decode({ codec }, { name: 4 });
-		const asyncDecoded = await structure.asyncDecode({ codec }, { name: 4 });
+		const encoded = structure.encode(DDataStructure.createCodecs({ codec }), { name: "Jane" });
+		const asyncEncoded = await structure.asyncEncode(DDataStructure.createCodecs({ codec }), { name: "Jane" });
+		const decoded = structure.decode(DDataStructure.createCodecs({ codec }), { name: 4 });
+		const asyncDecoded = await structure.asyncDecode(DDataStructure.createCodecs({ codec }), { name: 4 });
 
 		type _CheckEncoded = ExpectType<
 			typeof encoded,
@@ -244,10 +244,10 @@ describe("LazyStructure", () => {
 			DEither.right("check-success", "value"),
 		);
 		expect(structure.is("value")).toBe(false);
-		expect(structure.encode({}, "value")).toStrictEqual(
+		expect(structure.encode(DDataStructure.createCodecs({}), "value")).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
-		expect(structure.decode({}, "value")).toStrictEqual(
+		expect(structure.decode(DDataStructure.createCodecs({}), "value")).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
 	});

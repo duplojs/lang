@@ -1,23 +1,29 @@
 import type * as DCommon from "@scripts/common";
 
+type CreateShape<
+	GenericResult extends unknown,
+	GenericProp extends keyof any,
+> = GenericResult extends any
+	? { [RemapProp in GenericProp]: GenericResult }
+	: never;
+
 export type Split<
 	GenericValue extends unknown,
-	GenericMax extends number = never,
+	GenericMax extends number = 10,
 	GenericAccumulator extends readonly never[] = readonly [],
 > = GenericValue extends object
 	? GenericAccumulator["length"] extends GenericMax
 		? GenericValue
 		: {
 			[Prop in keyof GenericValue]: DCommon.NeverCoalescing<
-				Split<
-					GenericValue[Prop],
-					GenericMax,
-					[...GenericAccumulator, never]
-				> extends infer InferredResult
-					? InferredResult extends any
-						? { [RemapProp in Prop]: InferredResult }
-						: never
-					: never,
+				CreateShape<
+					Split<
+						GenericValue[Prop],
+						GenericMax,
+						[...GenericAccumulator, never]
+					>,
+					Prop
+				>,
 				{ [RemapProp in Prop]: never }
 			>
 		}[keyof GenericValue]

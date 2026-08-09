@@ -3,10 +3,10 @@ import * as DEither from "@scripts/either";
 import * as DCommon from "@scripts/common";
 import { type FundamentalType } from "../fundamentalType";
 import { createKind } from "../kind";
-import { createGetErrorHandler, ErrorSymbol, type GetErrorHandler, SuccessSymbol, type EncodedValue, type Codec, type CodecContext, type Error } from "../common";
+import { createGetErrorHandler, ErrorSymbol, type GetErrorHandler, SuccessSymbol, type EncodedValue, type Codec, type CodecContext, type Error, type Codecs } from "../common";
 import { type Constraint } from "../constraint";
 import { type StructureValue } from "./types";
-import { type StructureConstraintsValue } from "./types/ConstraintsValue";
+import { type StructureConstraintsValue } from "./types/constraintsValue";
 
 export class StructureClass {
 	private constructor() {}
@@ -88,60 +88,60 @@ export interface Structure<
 		errorHandler?: GetErrorHandler
 	): data is StructureValue<this>;
 	encode<
-		GenericCodecs extends Record<string, Codec>,
+		GenericCodecs extends Codecs,
 	>(
 		codecs: GenericCodecs,
 		data: StructureValue<this>,
 	): (
 		| DEither.Right<
 			"encode-success",
-			EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>
+			EncodedValue<StructureValue<this>, GenericCodecs>
 		>
 		| DEither.Left<"async-error", undefined>
 		| DEither.Left<"encode-error", Error>
 	);
 	asyncEncode<
-		GenericCodecs extends Record<string, Codec>,
+		GenericCodecs extends Codecs,
 	>(
 		codecs: GenericCodecs,
 		data: StructureValue<this>,
 	): Promise<
 		| DEither.Right<
 			"encode-success",
-			EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>
+			EncodedValue<StructureValue<this>, GenericCodecs>
 		>
 		| DEither.Left<"encode-error", Error>
 	>;
 	unsafeEncode<
-		GenericCodecs extends Record<string, Codec>,
+		GenericCodecs extends Codecs,
 	>(
 		codecs: GenericCodecs,
 		data: unknown,
 	): (
 		| DEither.Right<
 			"encode-success",
-			EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>
+			EncodedValue<StructureValue<this>, GenericCodecs>
 		>
 		| DEither.Left<"async-error", undefined>
 		| DEither.Left<"encode-error", Error>
 	);
 	asyncUnsafeEncode<
-		GenericCodecs extends Record<string, Codec>,
+		GenericCodecs extends Codecs,
 	>(
 		codecs: GenericCodecs,
 		data: unknown,
 	): Promise<
 		| DEither.Right<
 			"encode-success",
-			EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>
+			EncodedValue<StructureValue<this>, GenericCodecs>
 		>
 		| DEither.Left<"encode-error", Error>
 	>;
 	decode<
-		GenericCodecs extends Record<string, Codec>,
+		GenericCodecs extends Codecs,
 	>(
 		codecs: GenericCodecs,
-		data: EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>,
+		data: EncodedValue<StructureValue<this>, GenericCodecs>,
 	): (
 		| DEither.Right<
 			"decode-success",
@@ -151,10 +151,10 @@ export interface Structure<
 		| DEither.Left<"decode-error", Error>
 	);
 	asyncDecode<
-		GenericCodecs extends Record<string, Codec>,
+		GenericCodecs extends Codecs,
 	>(
 		codecs: GenericCodecs,
-		data: EncodedValue<StructureValue<this>, GenericCodecs[keyof GenericCodecs]>,
+		data: EncodedValue<StructureValue<this>, GenericCodecs>,
 	): Promise<
 		| DEither.Right<
 			"decode-success",
@@ -163,7 +163,7 @@ export interface Structure<
 		| DEither.Left<"decode-error", Error>
 	>;
 	unsafeDecode(
-		codecs: Record<string, Codec>,
+		codecs: Codecs,
 		data: unknown,
 	): (
 		| DEither.Right<
@@ -174,7 +174,7 @@ export interface Structure<
 		| DEither.Left<"decode-error", Error>
 	);
 	asyncUnsafeDecode(
-		codecs: Record<string, Codec>,
+		codecs: Codecs,
 		data: unknown,
 	): Promise<
 		| DEither.Right<
@@ -219,6 +219,14 @@ export interface CreateStructureInitParams<
 	isAsynchronous(self: GenericStructure): boolean;
 }
 
+export type CreateStructureInitRest<
+	GenericStructure extends Structure = Structure,
+> = {
+	[Prop in Exclude<keyof GenericStructure, keyof Structure>]: GenericStructure[Prop] extends DCommon.AnyFunction
+		? (self: GenericStructure, ...args: Parameters<GenericStructure[Prop]>) => ReturnType<GenericStructure[Prop]>
+		: GenericStructure[Prop]
+};
+
 export interface CreateStructureConstructorParams<
 	GenericKindHandler extends DKind.Handler = DKind.Handler,
 > {
@@ -229,7 +237,10 @@ export interface CreateStructureConstructorParams<
 		),
 	>(
 		definition: GenericStructure["definition"],
-		params: CreateStructureInitParams<GenericStructure>
+		params: CreateStructureInitParams<GenericStructure>,
+		...args: DCommon.IsNever<Exclude<keyof GenericStructure, keyof Structure>> extends true
+			? []
+			: [rest: CreateStructureInitRest<GenericStructure>]
 	): GenericStructure;
 }
 
@@ -257,9 +268,19 @@ export function createStructure<
 			executeDecode,
 			isAsynchronous,
 		},
+		...rest
 	) => {
 		let cachedIsAsynchronous: undefined | boolean = undefined;
 		const self = StructureClass.init({
+			...Object.fromEntries(
+				Object
+					.entries(rest[0] ?? {})
+					.map(
+						([key, prop]) => typeof prop === "function"
+							? [key, (...args: never[]) => (prop as DCommon.AnyFunction)(self, ...args)]
+							: [key, prop],
+					),
+			),
 			definition,
 			addConstraint: (...args) => init(
 				{
@@ -275,6 +296,7 @@ export function createStructure<
 					executeDecode,
 					isAsynchronous,
 				},
+				...rest,
 			) as never,
 			executeConstraints: (data, errorHandler) => definition.constraints.reduce<
 				DCommon.MaybePromise<SuccessSymbol | ErrorSymbol>
@@ -361,11 +383,7 @@ export function createStructure<
 			unsafeEncode: (codecs, data) => {
 				const errorHandler = createGetErrorHandler();
 				const result = self.executeEncode(
-					new Map<FundamentalType, Codec>(
-						Object.values(codecs).map(
-							(codec) => [codec.fundamentalType, codec],
-						),
-					),
+					codecs.context.value,
 					data,
 					errorHandler,
 				);
@@ -383,11 +401,7 @@ export function createStructure<
 			asyncUnsafeEncode: async(codecs, data) => {
 				const errorHandler = createGetErrorHandler();
 				const result = await self.executeEncode(
-					new Map<FundamentalType, Codec>(
-						Object.values(codecs).map(
-							(codec) => [codec.fundamentalType, codec],
-						),
-					),
+					codecs.context.value,
 					data,
 					errorHandler,
 				);
@@ -403,11 +417,7 @@ export function createStructure<
 			unsafeDecode: (codecs, data) => {
 				const errorHandler = createGetErrorHandler();
 				const result = self.executeDecode(
-					new Map<FundamentalType, Codec>(
-						Object.values(codecs).map(
-							(codec) => [codec.fundamentalType, codec],
-						),
-					),
+					codecs.context.value,
 					data,
 					errorHandler,
 				);
@@ -425,11 +435,7 @@ export function createStructure<
 			asyncUnsafeDecode: async(codecs, data) => {
 				const errorHandler = createGetErrorHandler();
 				const result = await self.executeDecode(
-					new Map<FundamentalType, Codec>(
-						Object.values(codecs).map(
-							(codec) => [codec.fundamentalType, codec],
-						),
-					),
+					codecs.context.value,
 					data,
 					errorHandler,
 				);

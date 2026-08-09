@@ -1,4 +1,4 @@
-import { DDataStructure, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DString, type ExpectType } from "@scripts";
 
 describe("string", () => {
 	it("creates a string type structure", () => {
@@ -47,7 +47,7 @@ describe("string", () => {
 			{
 				readonly user: {
 					readonly email: `${string}@${string}.${string}`;
-					readonly name: string;
+					readonly name: string & DString.MinCharacters<3>;
 				};
 			},
 			"strict"

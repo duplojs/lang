@@ -213,26 +213,27 @@ describe("RecordStructure", () => {
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
-		const encoded = structure.encode({ codec }, {
+		const codecs = DDataStructure.createCodecs({ codec });
+		const encoded = structure.encode(codecs, {
 			first: "Jane",
 			second: "John",
 		});
-		const asyncEncoded = await structure.asyncEncode({ codec }, {
+		const asyncEncoded = await structure.asyncEncode(codecs, {
 			first: "Jane",
 			second: "John",
 		});
-		const decoded = structure.decode({ codec }, {
+		const decoded = structure.decode(codecs, {
 			first: 4,
 			second: 5,
 		});
-		const asyncDecoded = await structure.asyncDecode({ codec }, {
+		const asyncDecoded = await structure.asyncDecode(codecs, {
 			first: 4,
 			second: 5,
 		});
 
 		type EncodedRecord = DDataStructure.EncodedValue<
 			DDataStructure.StructureValue<typeof structure>,
-			typeof codec
+			typeof codecs
 		>;
 		type _CheckEncodedRecord = ExpectType<
 			EncodedRecord,
@@ -311,20 +312,20 @@ describe("RecordStructure", () => {
 			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
-		const invalidEncodeKind = structure.encode({}, null as never);
-		const invalidEncodeKey = structure.encode({}, {
+		const invalidEncodeKind = structure.encode(DDataStructure.createCodecs({}), null as never);
+		const invalidEncodeKey = structure.encode(DDataStructure.createCodecs({}), {
 			name: "Jane",
 			extra: "value",
 		} as never);
-		const invalidEncodeValue = structure.encode({}, {
+		const invalidEncodeValue = structure.encode(DDataStructure.createCodecs({}), {
 			name: 123,
 		} as never);
-		const invalidDecodeKind = structure.decode({}, null as never);
-		const invalidDecodeKey = structure.decode({}, {
+		const invalidDecodeKind = structure.decode(DDataStructure.createCodecs({}), null as never);
+		const invalidDecodeKey = structure.decode(DDataStructure.createCodecs({}), {
 			name: "Jane",
 			extra: "value",
 		} as never);
-		const invalidDecodeValue = structure.decode({}, {
+		const invalidDecodeValue = structure.decode(DDataStructure.createCodecs({}), {
 			name: 123,
 		} as never);
 
@@ -411,10 +412,10 @@ describe("RecordStructure", () => {
 		expect(structure.check({ name: "Jane" })).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
-		expect(structure.encode({}, { name: "Jane" })).toStrictEqual(
+		expect(structure.encode(DDataStructure.createCodecs({}), { name: "Jane" })).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
-		expect(structure.decode({}, { name: "Jane" })).toStrictEqual(
+		expect(structure.decode(DDataStructure.createCodecs({}), { name: "Jane" })).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
 	});

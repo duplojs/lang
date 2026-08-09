@@ -90,10 +90,10 @@ describe("ArrayStructure", () => {
 			(data) => data.length,
 			(data) => `name-${data}`,
 		);
-		const encoded = structure.encode({ codec }, ["Jane", "John"]);
-		const asyncEncoded = await structure.asyncEncode({ codec }, ["Jane", "John"]);
-		const decoded = structure.decode({ codec }, [4, 5]);
-		const asyncDecoded = await structure.asyncDecode({ codec }, [4, 5]);
+		const encoded = structure.encode(DDataStructure.createCodecs({ codec }), ["Jane", "John"]);
+		const asyncEncoded = await structure.asyncEncode(DDataStructure.createCodecs({ codec }), ["Jane", "John"]);
+		const decoded = structure.decode(DDataStructure.createCodecs({ codec }), [4, 5]);
+		const asyncDecoded = await structure.asyncDecode(DDataStructure.createCodecs({ codec }), [4, 5]);
 		const encodedValue = DEither.unwrapByInformationOrThrow(
 			encoded,
 			"encode-success",
@@ -173,10 +173,10 @@ describe("ArrayStructure", () => {
 			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[],
 		);
-		const invalidEncodeKind = structure.encode({}, null as never);
-		const invalidEncodeElement = structure.encode({}, ["Jane", 123] as never);
-		const invalidDecodeKind = structure.decode({}, null as never);
-		const invalidDecodeElement = structure.decode({}, ["Jane", 123] as never);
+		const invalidEncodeKind = structure.encode(DDataStructure.createCodecs({}), null as never);
+		const invalidEncodeElement = structure.encode(DDataStructure.createCodecs({}), ["Jane", 123] as never);
+		const invalidDecodeKind = structure.decode(DDataStructure.createCodecs({}), null as never);
+		const invalidDecodeElement = structure.decode(DDataStructure.createCodecs({}), ["Jane", 123] as never);
 
 		expect(
 			DEither.unwrapByInformationOrThrow(
@@ -254,8 +254,8 @@ describe("ArrayStructure", () => {
 			(data) => data.length,
 			(data) => String(data),
 		);
-		const encoded = structure.encode({ codec }, ["Jane"]);
-		const decoded = await structure.asyncDecode({ codec }, [4]);
+		const encoded = structure.encode(DDataStructure.createCodecs({ codec }), ["Jane"]);
+		const decoded = await structure.asyncDecode(DDataStructure.createCodecs({ codec }), [4]);
 
 		expect(encoded).toStrictEqual(DEither.right("encode-success", [4]));
 		expect(decoded).toStrictEqual(DEither.right("decode-success", ["4"]));
@@ -296,8 +296,8 @@ describe("ArrayStructure", () => {
 			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 			[failingConstraint],
 		);
-		const encodeFailure = structure.encode({}, ["Jane"]);
-		const decodeFailure = await structure.asyncDecode({}, ["Jane"]);
+		const encodeFailure = structure.encode(DDataStructure.createCodecs({}), ["Jane"]);
+		const decodeFailure = await structure.asyncDecode(DDataStructure.createCodecs({}), ["Jane"]);
 
 		expect(
 			DEither.unwrapByInformationOrThrow(
@@ -345,7 +345,7 @@ describe("ArrayStructure", () => {
 			encode,
 			(data) => String(data),
 		);
-		const failure = structure.encode({ codec }, ["Jane"]);
+		const failure = structure.encode(DDataStructure.createCodecs({ codec }), ["Jane"]);
 
 		expect(
 			DEither.unwrapByInformationOrThrow(
@@ -368,16 +368,16 @@ describe("ArrayStructure", () => {
 			(data) => Promise.resolve(String(data)),
 		);
 
-		expect(structure.encode({ codec }, ["Jane"])).toStrictEqual(
+		expect(structure.encode(DDataStructure.createCodecs({ codec }), ["Jane"])).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
-		expect(await structure.asyncEncode({ codec }, ["Jane"])).toStrictEqual(
+		expect(await structure.asyncEncode(DDataStructure.createCodecs({ codec }), ["Jane"])).toStrictEqual(
 			DEither.right("encode-success", [4]),
 		);
-		expect(structure.decode({ codec }, [4])).toStrictEqual(
+		expect(structure.decode(DDataStructure.createCodecs({ codec }), [4])).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);
-		expect(await structure.asyncDecode({ codec }, [4])).toStrictEqual(
+		expect(await structure.asyncDecode(DDataStructure.createCodecs({ codec }), [4])).toStrictEqual(
 			DEither.right("decode-success", ["4"]),
 		);
 		expect(structure.isAsynchronous()).toBe(false);

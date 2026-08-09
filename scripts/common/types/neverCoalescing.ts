@@ -1,8 +1,8 @@
-import type { IsEqual } from "./isEqual";
+import { type IsNever } from "./isNever";
 
 export type NeverCoalescing<
 	GenericValue extends unknown,
 	GenericCoalescingValue extends unknown,
-> = IsEqual<GenericValue, never> extends true
+> = IsNever<GenericValue> extends true
 	? GenericCoalescingValue
 	: GenericValue;

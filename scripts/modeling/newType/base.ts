@@ -1,0 +1,386 @@
+import type * as DKind from "@scripts/kind";
+import * as DCommon from "@scripts/common";
+import * as DArray from "@scripts/array";
+import * as DEither from "@scripts/either";
+import * as DDataStructure from "@scripts/dataStructure";
+import { createKind } from "../kind";
+
+declare module "@scripts/dataStructure" {
+	export interface StructuresStore {
+		newType: NewTypeStructure;
+	}
+}
+
+export interface NewType<
+	GenericName extends string = string,
+	GenericConstraint extends DCommon.Constraint = never,
+> extends DCommon.BaseConstraint<
+		DCommon.SimplifyType<
+			& Record<"new-type", GenericName>
+			& DCommon.UnionToIntersection<
+				GenericConstraint[DCommon.ConstraintSymbol]
+			>
+		>
+	> {
+}
+
+export type NewTypeMap<
+	GenericValue extends unknown,
+	GenericRawValue = DCommon.RemoveConstraint<GenericValue>,
+> = GenericRawValue extends DDataStructure.FundamentalTypeValue<DDataStructure.FundamentalTypes>
+	? GenericRawValue
+	: GenericRawValue extends object
+		? keyof GenericRawValue extends string
+			? DCommon.IsExtends<DCommon.AnyFunction, GenericRawValue[keyof GenericRawValue]> extends true
+				? GenericRawValue
+				: { [Prop in keyof GenericRawValue]: NewTypeMap<GenericRawValue[Prop]> }
+			: GenericRawValue
+		: GenericRawValue;
+
+export const newTypeStructureKind = createKind("new-type-structure");
+
+export interface NewTypeStructureDefinition<
+	GenericNewTypeConstraint extends readonly DDataStructure.Constraint[] = readonly DDataStructure.Constraint[],
+> extends DDataStructure.StructureDefinition<readonly []> {
+	readonly inner: DDataStructure.Structure;
+	readonly newTypeConstraints: GenericNewTypeConstraint;
+}
+
+export interface NewTypeStructure<
+	GenericName extends string = string,
+	GenericValue extends unknown = unknown,
+	GenericNewTypeConstraint extends readonly DDataStructure.Constraint<GenericValue>[] =
+		readonly DDataStructure.Constraint<GenericValue>[],
+> extends DCommon.UnionToIntersection<
+		& DDataStructure.Structure<
+			(
+				& GenericValue
+				& DCommon.RemoveConstraint<
+					DCommon.UnionToIntersection<
+						DDataStructure.ConstraintValue<
+							DArray.Unwrap<GenericNewTypeConstraint>
+						>
+					>
+				>
+				& NewType<
+					GenericName,
+					DCommon.GetConstraint<
+						DCommon.UnionToIntersection<
+							DDataStructure.ConstraintValue<
+								DArray.Unwrap<GenericNewTypeConstraint>
+							>
+						>
+					>
+				>
+			),
+			NewTypeStructureDefinition<GenericNewTypeConstraint>
+		>
+		& DKind.Kind<typeof newTypeStructureKind>
+	> {
+	name: GenericName;
+
+	map<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+	): (
+		data: DDataStructure.EncodedValue<
+			NewTypeMap<
+				DDataStructure.StructureValue<this>
+			>,
+			GenericCodecs
+		>,
+	) => (
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	);
+	map<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+		data: DDataStructure.EncodedValue<
+			NewTypeMap<
+				DDataStructure.StructureValue<this>
+			>,
+			GenericCodecs
+		>,
+	): (
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	);
+	map(
+		data: NewTypeMap<
+			DDataStructure.StructureValue<this>
+		>
+	): (
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	);
+
+	asyncMap<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+	): (
+		data: DDataStructure.EncodedValue<
+			NewTypeMap<
+				DDataStructure.StructureValue<this>
+			>,
+			GenericCodecs
+		>,
+	) => Promise<
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	>;
+	asyncMap<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+		data: DDataStructure.EncodedValue<
+			NewTypeMap<
+				DDataStructure.StructureValue<this>
+			>,
+			GenericCodecs
+		>,
+	): Promise<
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	>;
+	asyncMap(
+		data: NewTypeMap<
+			DDataStructure.StructureValue<this>
+		>
+	): Promise<
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	>;
+}
+
+export const NewTypeStructure = DDataStructure.createStructure(
+	newTypeStructureKind,
+	({ init }) => <
+		GenericName extends string,
+		GenericStructure extends DDataStructure.Structure,
+		const GenericNewTypeConstraint extends readonly DDataStructure.Constraint<
+			DDataStructure.StructureValue<GenericStructure>
+		>[] = readonly [],
+	>(
+		name: GenericName,
+		structure: GenericStructure,
+		newTypeConstraints: GenericNewTypeConstraint = [] as never,
+	): NewTypeStructure<
+		GenericName,
+		DDataStructure.StructureValue<GenericStructure>,
+		DArray.Coalescing<GenericNewTypeConstraint>
+	> => init<NewTypeStructure>(
+		{
+			constraints: [],
+			newTypeConstraints: DArray.coalescing(newTypeConstraints),
+			inner: structure,
+		},
+		{
+			executeCheck: (self, data, errorHandler) => DCommon.callThen(
+				self.definition.inner.executeCheck(
+					data,
+					errorHandler,
+				),
+				(result) => result === DDataStructure.ErrorSymbol
+					? DDataStructure.ErrorSymbol
+					: self.definition.newTypeConstraints.reduce<
+						DCommon.MaybePromise<DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol>
+					>(
+						(accumulator, constraint) => DCommon.callThen(
+							accumulator,
+							(result) => result === DDataStructure.ErrorSymbol
+								? DDataStructure.ErrorSymbol
+								: constraint.executeCheck(data, errorHandler),
+						),
+						DDataStructure.SuccessSymbol,
+					),
+			),
+			executeEncode: (self, codec, data, errorHandler) => DCommon.callThen(
+				self.definition.inner.executeEncode(
+					codec,
+					data,
+					errorHandler,
+				),
+				(awaitedInnerResult) => awaitedInnerResult === DDataStructure.ErrorSymbol
+					? DDataStructure.ErrorSymbol
+					: DCommon.callThen(
+						self.definition.newTypeConstraints.reduce<
+							DCommon.MaybePromise<DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol>
+						>(
+							(accumulator, constraint) => DCommon.callThen(
+								accumulator,
+								(result) => result === DDataStructure.ErrorSymbol
+									? DDataStructure.ErrorSymbol
+									: constraint.executeCheck(data, errorHandler),
+							),
+							DDataStructure.SuccessSymbol,
+						),
+						(result) => result === DDataStructure.ErrorSymbol
+							? DDataStructure.ErrorSymbol
+							: DCommon.callThen(
+								self.executeConstraints(data, errorHandler),
+								(result) => result === DDataStructure.ErrorSymbol
+									? DDataStructure.ErrorSymbol
+									: awaitedInnerResult,
+							),
+					),
+			),
+			executeDecode: (self, codec, data, errorHandler) => DCommon.callThen(
+				self.definition.inner.executeDecode(
+					codec,
+					data,
+					errorHandler,
+				),
+				(awaitedInnerResult) => awaitedInnerResult === DDataStructure.ErrorSymbol
+					? DDataStructure.ErrorSymbol
+					: DCommon.callThen(
+						self.definition.newTypeConstraints.reduce<
+							DCommon.MaybePromise<DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol>
+						>(
+							(accumulator, constraint) => DCommon.callThen(
+								accumulator,
+								(result) => result === DDataStructure.ErrorSymbol
+									? DDataStructure.ErrorSymbol
+									: constraint.executeCheck(awaitedInnerResult, errorHandler),
+							),
+							DDataStructure.SuccessSymbol,
+						),
+						(result) => result === DDataStructure.ErrorSymbol
+							? DDataStructure.ErrorSymbol
+							: DCommon.callThen(
+								self.executeConstraints(awaitedInnerResult, errorHandler),
+								(result) => result === DDataStructure.ErrorSymbol
+									? DDataStructure.ErrorSymbol
+									: awaitedInnerResult,
+							),
+					),
+			),
+			isAsynchronous: (self) => (
+				self.definition.inner.isAsynchronous()
+				|| self.definition.newTypeConstraints.some(
+					(value) => value.isAsynchronous(),
+				)
+			),
+		},
+		{
+			name,
+			map: (
+				self,
+				...args: | [DDataStructure.Codecs, unknown]
+					| [DDataStructure.Codecs]
+					| [unknown]
+			): any => {
+				if (args.length === 1 && DDataStructure.codecsKind.has(args[0])) {
+					const [codecs] = args;
+					return (value: never) => self.map(codecs, value);
+				}
+
+				const errorHandler = DDataStructure.createGetErrorHandler();
+
+				if (args.length === 2) {
+					const [codecs, data] = args;
+
+					const result = self.executeDecode(
+						codecs.context.value,
+						data,
+						errorHandler,
+					);
+
+					if (result instanceof Promise) {
+						return DEither.left("async-error", undefined);
+					}
+
+					if (result === DDataStructure.ErrorSymbol) {
+						return DEither.left("map-error", errorHandler().createError());
+					}
+
+					return DEither.right("map-success", result as never);
+				}
+
+				const [data] = args;
+
+				const result = self.executeCheck(
+					data,
+					errorHandler,
+				);
+
+				if (result instanceof Promise) {
+					return DEither.left("async-error", undefined);
+				}
+
+				if (result === DDataStructure.ErrorSymbol) {
+					return DEither.left("map-error", errorHandler().createError());
+				}
+
+				return DEither.right("map-success", data as never);
+			},
+			asyncMap: (
+				self,
+				...args: | [DDataStructure.Codecs, unknown]
+					| [DDataStructure.Codecs]
+					| [unknown]
+			): any => {
+				if (args.length === 1 && DDataStructure.codecsKind.has(args[0])) {
+					const [codecs] = args;
+					return (value: never) => self.asyncMap(codecs, value);
+				}
+				return DCommon.justExec(async() => {
+					const errorHandler = DDataStructure.createGetErrorHandler();
+
+					if (args.length === 2) {
+						const [codecs, data] = args;
+
+						const result = await self.executeDecode(
+							codecs.context.value,
+							data,
+							errorHandler,
+						);
+
+						if (result === DDataStructure.ErrorSymbol) {
+							return DEither.left("map-error", errorHandler().createError());
+						}
+
+						return DEither.right("map-success", result as never);
+					}
+
+					const [data] = args;
+
+					const result = await self.executeCheck(
+						data,
+						errorHandler,
+					);
+
+					if (result === DDataStructure.ErrorSymbol) {
+						return DEither.left("map-error", errorHandler().createError());
+					}
+
+					return DEither.right("map-success", data as never);
+				});
+			},
+		},
+	) as never,
+);

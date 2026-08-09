@@ -24,6 +24,43 @@ describe("codec", () => {
 		expect(codec.predicateEncode).toBe(encodedStructure.is);
 	});
 
+	it("creates codecs with their definition and memoized context", () => {
+		const stringCodec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
+			(data) => data.length,
+			(data) => `value-${data}`,
+		);
+		const numberCodec = DDataStructure.createCodec(
+			DDataStructure.TheNumber,
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []).is,
+			(data) => String(data),
+			(data) => Number(data),
+		);
+		const codecs = DDataStructure.createCodecs({
+			stringCodec,
+			numberCodec,
+		});
+
+		type _CheckCodecs = ExpectType<
+			typeof codecs,
+			DDataStructure.Codecs<{
+				stringCodec: typeof stringCodec;
+				numberCodec: typeof numberCodec;
+			}>,
+			"strict"
+		>;
+
+		expect(DDataStructure.codecsKind.has(codecs)).toBe(true);
+		expect(codecs.definition).toEqual({
+			stringCodec,
+			numberCodec,
+		});
+		expect(codecs.context.value.get(DDataStructure.TheString)).toBe(stringCodec);
+		expect(codecs.context.value.get(DDataStructure.TheNumber)).toBe(numberCodec);
+		expect(codecs.context.value).toBe(codecs.context.value);
+	});
+
 	it("encodes and validates encoded data", () => {
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -135,14 +172,15 @@ describe("codec", () => {
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
+		const codecs = DDataStructure.createCodecs({ codec });
 
 		type _CheckEncodedValue = ExpectType<
-			DDataStructure.EncodedValue<string, typeof codec>,
+			DDataStructure.EncodedValue<string, typeof codecs>,
 			number,
 			"strict"
 		>;
 		type _CheckFallbackValue = ExpectType<
-			DDataStructure.EncodedValue<boolean, typeof codec>,
+			DDataStructure.EncodedValue<boolean, typeof codecs>,
 			boolean,
 			"strict"
 		>;

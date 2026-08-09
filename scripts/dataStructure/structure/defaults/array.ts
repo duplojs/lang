@@ -3,20 +3,20 @@ import * as DCommon from "@scripts/common";
 import { type Constraint } from "../../constraint";
 import { createStructure, type StructureDefinition, type Structure } from "../base";
 import { createKind } from "../../kind";
-import { type Codec, type EncodedValue, ErrorSymbol, SuccessSymbol } from "../../common";
+import { type Codecs, type EncodedValue, ErrorSymbol, SuccessSymbol } from "../../common";
 import { type StructureValue } from "../types";
 
 declare module "../../common" {
 	interface EncodeStructure<
 		GenericValue extends unknown,
-		GenericCodec extends Codec,
+		GenericCodecs extends Codecs,
 	> {
 		array: GenericValue extends readonly (infer InferredElement)[]
 			? GenericValue extends DCommon.AnyTuple
 				? never
 				: readonly EncodedValue<
 					InferredElement,
-					GenericCodec
+					GenericCodecs
 				>[]
 			: never;
 	}

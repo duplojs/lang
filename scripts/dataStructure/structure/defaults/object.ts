@@ -5,19 +5,19 @@ import { type Constraint } from "../../constraint";
 import { createStructure, type StructureDefinition, type Structure } from "../base";
 import { createKind } from "../../kind";
 import { type StructureValue } from "../types";
-import { type Codec, type EncodedValue, ErrorSymbol, SuccessSymbol } from "../../common";
+import { type Codecs, type EncodedValue, ErrorSymbol, SuccessSymbol } from "../../common";
 
 declare module "../../common" {
 	interface EncodeStructure<
 		GenericValue extends unknown,
-		GenericCodec extends Codec,
+		GenericCodecs extends Codecs,
 	> {
 		object: GenericValue extends object
 			? keyof GenericValue extends string
 				? {
 					[Prop in keyof GenericValue]: EncodedValue<
 						GenericValue[Prop],
-						GenericCodec
+						GenericCodecs
 					>
 				}
 				: never

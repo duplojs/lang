@@ -27,7 +27,7 @@ type LoopWhileHasShape<
 
 export type EveryCombination<
 	GenericValue extends object,
-	GenericSplitMax extends number = never,
+	GenericSplitMax extends number = 10,
 > = Extract<
 	DCommon.SimplifyTypeForce<
 		LoopWhileHasShape<

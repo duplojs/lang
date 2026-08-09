@@ -1,7 +1,6 @@
 import type * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
 import { type FundamentalTypeValue, type FundamentalType } from "../fundamentalType";
-import { type StructureValue, type Structure } from "../structure";
 import { createKind } from "../kind";
 import { type GetErrorHandler } from "./error";
 import { ErrorSymbol } from "./resultSymbol";
@@ -13,7 +12,7 @@ export interface Codec<
 	GenericFundamentalType extends FundamentalType = FundamentalType,
 	GenericEncodedValue extends unknown = unknown,
 > extends DKind.Kind<typeof codecKind> {
-	fundamentalType: GenericFundamentalType;
+	readonly fundamentalType: GenericFundamentalType;
 	predicateEncode(
 		input: unknown,
 		errorHandler?: GetErrorHandler
@@ -35,6 +34,15 @@ export interface Codec<
 }
 
 export type CodecContext = Map<FundamentalType, Codec>;
+
+export const codecsKind = createKind("codecs");
+
+export interface Codecs<
+	GenericCodecMapper extends Record<string, Codec> = Record<string, Codec>,
+> extends DKind.Kind<typeof codecsKind> {
+	readonly definition: GenericCodecMapper;
+	readonly context: DCommon.Memoized<CodecContext>;
+}
 
 export function createCodec<
 	GenericFundamentalType extends FundamentalType = FundamentalType,
@@ -101,9 +109,40 @@ export function createCodec<
 	return self as never;
 }
 
+type ForbiddenDuplicateFundamentalType<
+	GenericDefinition extends Record<string, Codec>,
+> = {
+	[Prop in keyof GenericDefinition]: [GenericDefinition[Prop]]
+}[keyof GenericDefinition] extends infer InferredResult extends [unknown]
+	? DCommon.IsEqual<DCommon.RemoveDuplicateInUnion<InferredResult>, InferredResult> extends true
+		? unknown
+		: DCommon.ComputedTypeError<"Several codecs use the same fundamental type.">
+	: never;
+
+export function createCodecs<
+	GenericDefinition extends Record<string, Codec>,
+>(
+	definition: (
+		& GenericDefinition
+		& ForbiddenDuplicateFundamentalType<GenericDefinition>
+	),
+): Codecs<GenericDefinition> {
+	return {
+		context: DCommon.memo(
+			() => new Map<FundamentalType, Codec>(
+				Object.values(definition).map(
+					(codec) => [codec.fundamentalType, codec],
+				),
+			),
+		),
+		definition,
+		[codecsKind.runTimeKey]: null,
+	} as never;
+}
+
 export interface EncodeStructure<
 	GenericValue extends unknown,
-	GenericCodec extends Codec,
+	GenericCodecs extends Codecs,
 > {
 
 }
@@ -136,13 +175,16 @@ type TreatValue<
 
 export type EncodedValue<
 	GenericValue extends unknown,
-	GenericCodec extends Codec,
+	GenericCodecs extends Codecs,
 > = GenericValue extends unknown
 	? TreatValue<
 		DObject.Values<
-			EncodeStructure<GenericValue, GenericCodec>
+			EncodeStructure<
+				GenericValue,
+				GenericCodecs
+			>
 		>,
 		GenericValue,
-		GenericCodec
+		DObject.Values<GenericCodecs["definition"]>
 	>
 	: never;
