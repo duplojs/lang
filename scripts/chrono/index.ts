@@ -40,8 +40,8 @@ export * from "./createTime";
 export * from "./createTimeOrThrow";
 export * from "./isSerializedTheDate";
 export * from "./isSerializedTheTime";
+export * from "./eachDate";
 
 export * from "./getters";
 export * from "./operators";
 
-// export * from "./each"; // require DGenerator

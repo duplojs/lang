@@ -48,6 +48,5 @@ export * from "./lastIndexOf";
 export * from "./indexOf";
 export * from "./set";
 
-// export * from "./join"; // string
 // export * from "./notIncludes"; // tuple
 // export * from "./toTuple" // tuple;

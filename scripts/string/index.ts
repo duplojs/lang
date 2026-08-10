@@ -28,6 +28,7 @@ export * from "./prepend";
 export * from "./test";
 export * from "./isIn";
 export * from "./extract";
+export * from "./extractAll";
 export * from "./normalize";
 export * from "./pop";
 export * from "./shift";
@@ -42,6 +43,6 @@ export * from "./repeat";
 export * from "./search";
 export * from "./substring";
 export * from "./charAt";
+export * from "./join";
 
 // export * from "./at";
-// export * from "./extractAll"; // require DGenerator
