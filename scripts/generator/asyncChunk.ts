@@ -29,8 +29,8 @@ export function asyncChunk(
 	return (async function *() {
 		let buffer: unknown[] = [];
 
-		for await (const element of iterator) {
-			buffer.push(element);
+		for await (const item of iterator) {
+			buffer.push(item);
 
 			if (buffer.length === size) {
 				yield buffer;

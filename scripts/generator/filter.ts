@@ -67,9 +67,17 @@ export function filter(
 	let index = 0;
 
 	return (function *() {
-		for (const element of iterator) {
-			if (predicate(element, { index })) {
-				yield element;
+		for (const item of iterator) {
+			if (
+				predicate(
+					item,
+					{
+						index,
+						self: iterator,
+					},
+				)
+			) {
+				yield item;
 			}
 			index++;
 		}

@@ -1,7 +1,7 @@
 export type * from "./types";
 
 export * from "./kind";
-export * from "./constraints";
+export type * from "./constraints";
 export * from "./at";
 export * from "./coalescing";
 export * from "./minElements";

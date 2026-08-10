@@ -1,9 +1,9 @@
-export * from "./absolute";
-export * from "./forbiddenNegative";
-export * from "./isGreater";
-export * from "./isLess";
-export * from "./isLiteral";
-export * from "./isPositive";
-export * from "./requireLiteral";
-export * from "./requireSimpleLiteral";
-export * from "./toString";
+export type * from "./absolute";
+export type * from "./forbiddenNegative";
+export type * from "./isGreater";
+export type * from "./isLess";
+export type * from "./isLiteral";
+export type * from "./isPositive";
+export type * from "./requireLiteral";
+export type * from "./requireSimpleLiteral";
+export type * from "./toString";

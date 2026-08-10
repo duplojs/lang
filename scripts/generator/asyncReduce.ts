@@ -65,9 +65,9 @@ export function asyncReduce(
 	return (async() => {
 		let index = 0;
 
-		for await (const element of iterator) {
+		for await (const item of iterator) {
 			const result = await theFunction({
-				element,
+				item,
 				index,
 				lastValue,
 				...DArray.reduceTools,

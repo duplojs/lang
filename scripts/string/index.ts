@@ -1,6 +1,6 @@
 export type * from "./types";
 
-export * from "./constraints";
+export type * from "./constraints";
 export * from "./maxCharacters";
 export * from "./minCharacters";
 export * from "./lengthEqual";

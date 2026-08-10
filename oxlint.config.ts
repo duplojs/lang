@@ -3,6 +3,14 @@ import { openConfig, testPreset } from "@duplojs/code-config/oxlint";
 
 export default defineConfig({
 	extends: [openConfig],
+	rules: {
+		"typescript/consistent-type-exports": [
+			"error",
+			{
+				fixMixedExportsWithInlineTypeSpecifier: true,
+			},
+		],
+	},
 	options: {
 		...openConfig.options,
 		typeAware: true,

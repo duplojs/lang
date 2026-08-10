@@ -8,10 +8,10 @@ import { type ComputeCastConstraintNumberRule } from "./number";
 import { type ComputeCastConstraintStringRule } from "./string";
 import { type AnyTuple, type IsExtends, type BreakGenericLink, type NeverCoalescing, type UnionContain, type IsEqual } from "../../types";
 
-export * from "./array";
-export * from "./error";
-export * from "./number";
-export * from "./string";
+export type * from "./array";
+export type * from "./error";
+export type * from "./number";
+export type * from "./string";
 
 export interface ComputeCastConstraintRule<
 	GenericValue extends unknown,

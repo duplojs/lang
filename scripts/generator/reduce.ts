@@ -128,9 +128,9 @@ export function reduce(
 
 	let index = 0;
 
-	for (const element of iterator) {
+	for (const item of iterator) {
 		const result = theFunction({
-			element,
+			item,
 			index,
 			lastValue,
 			...DArray.reduceTools,

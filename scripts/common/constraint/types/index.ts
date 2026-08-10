@@ -1,5 +1,5 @@
 export * from "./base";
-export * from "./dynamic";
-export * from "./get";
-export * from "./remove";
-export * from "./unbundles";
+export type * from "./dynamic";
+export type * from "./get";
+export type * from "./remove";
+export type * from "./unbundles";

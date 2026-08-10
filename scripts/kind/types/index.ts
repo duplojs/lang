@@ -1,3 +1,3 @@
-export * from "./getHandler";
-export * from "./getValue";
-export * from "./remove";
+export type * from "./getHandler";
+export type * from "./getValue";
+export type * from "./remove";

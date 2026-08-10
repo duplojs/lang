@@ -1,2 +1,2 @@
-export * from "./isPositiveInteger";
-export * from "./requirePositiveInteger";
+export type * from "./isPositiveInteger";
+export type * from "./requirePositiveInteger";

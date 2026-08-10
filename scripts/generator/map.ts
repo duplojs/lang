@@ -46,8 +46,14 @@ export function map(
 	let index = 0;
 
 	return (function *() {
-		for (const element of iterator) {
-			yield theFunction(element, { index });
+		for (const item of iterator) {
+			yield theFunction(
+				item,
+				{
+					index,
+					self: iterator,
+				},
+			);
 			index++;
 		}
 	})();

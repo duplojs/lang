@@ -64,9 +64,9 @@ export function asyncFilter(
 	let index = 0;
 
 	return (async function *() {
-		for await (const element of iterator) {
-			if (predicate(element, { index })) {
-				yield element;
+		for await (const item of iterator) {
+			if (predicate(item, { index })) {
+				yield item;
 			}
 			index++;
 		}

@@ -29,8 +29,8 @@ export function chunk(
 	return (function *() {
 		let buffer: unknown[] = [];
 
-		for (const element of iterator) {
-			buffer.push(element);
+		for (const item of iterator) {
+			buffer.push(item);
 
 			if (buffer.length === size) {
 				yield buffer;

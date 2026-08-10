@@ -51,8 +51,8 @@ export function asyncMap(
 	let index = 0;
 
 	return (async function *() {
-		for await (const element of iterator) {
-			yield await theFunction(element, { index });
+		for await (const item of iterator) {
+			yield await theFunction(item, { index });
 			index++;
 		}
 	})();

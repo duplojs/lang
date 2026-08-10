@@ -1,2 +1,2 @@
-export * from "./constraints";
-export * from "./value";
+export type * from "./constraints";
+export type * from "./value";

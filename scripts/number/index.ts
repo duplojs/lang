@@ -1,6 +1,6 @@
 export * from "./betweenThan";
 export * from "./betweenThanOrEqual";
-export * from "./constraints";
+export type * from "./constraints";
 export * from "./greaterThan";
 export * from "./greaterThanOrEqual";
 export * from "./isEven";
@@ -20,4 +20,4 @@ export * from "./min";
 export * from "./minOf";
 export * from "./sort";
 export * from "./sum";
-export * from "./types";
+export type * from "./types";

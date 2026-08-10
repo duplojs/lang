@@ -10,6 +10,7 @@ export * from "./memo";
 export * from "./memoObject";
 export * from "./mimeType";
 export * from "./pipe";
+export * from "./innerPipe";
 export * from "./unwrap";
 export * from "./when";
 export * from "./whenNot";
