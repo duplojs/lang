@@ -1,6 +1,6 @@
 import type * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
-import type * as DObject from "@scripts/object";
+import * as DObject from "@scripts/object";
 import { type Constraint } from "../../constraint";
 import { createStructure, type StructureDefinition, type Structure } from "../base";
 import { createKind } from "../../kind";
@@ -113,12 +113,7 @@ export const ObjectStructure = createStructure(
 		{
 			executeCheck: (self, data, errorHandler) => {
 				if (
-					typeof data !== "object"
-					|| data === null
-					|| (
-						data.constructor !== undefined
-						&& data.constructor.name !== "Object"
-					)
+					!DObject.isSimple(data)
 					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
@@ -158,12 +153,7 @@ export const ObjectStructure = createStructure(
 			},
 			executeEncode: (self, codecContext, data, errorHandler) => {
 				if (
-					typeof data !== "object"
-					|| data === null
-					|| (
-						data.constructor !== undefined
-						&& data.constructor.name !== "Object"
-					)
+					!DObject.isSimple(data)
 					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;
@@ -213,12 +203,7 @@ export const ObjectStructure = createStructure(
 			},
 			executeDecode: (self, codecContext, data, errorHandler) => {
 				if (
-					typeof data !== "object"
-					|| data === null
-					|| (
-						data.constructor !== undefined
-						&& data.constructor.name !== "Object"
-					)
+					!DObject.isSimple(data)
 					|| Object.getOwnPropertySymbols(data).length !== 0
 				) {
 					return errorHandler?.().addIssue(self, data) ?? ErrorSymbol;

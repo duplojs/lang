@@ -3,7 +3,6 @@
 export * from "./common";
 export * as DCommon from "./common";
 
-export * as K from "./kind";
 export * as DKind from "./kind";
 
 export * as O from "./object";

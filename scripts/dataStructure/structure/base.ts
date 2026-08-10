@@ -1,9 +1,8 @@
 import type * as DKind from "@scripts/kind";
 import * as DEither from "@scripts/either";
 import * as DCommon from "@scripts/common";
-import { type FundamentalType } from "../fundamentalType";
 import { createKind } from "../kind";
-import { createGetErrorHandler, ErrorSymbol, type GetErrorHandler, SuccessSymbol, type EncodedValue, type Codec, type CodecContext, type Error, type Codecs } from "../common";
+import { createGetErrorHandler, ErrorSymbol, type GetErrorHandler, SuccessSymbol, type EncodedValue, type CodecContext, type Error, type Codecs } from "../common";
 import { type Constraint } from "../constraint";
 import { type StructureValue } from "./types";
 import { type StructureConstraintsValue } from "./types/constraintsValue";
@@ -191,6 +190,7 @@ export interface Structure<
 			? []
 			: [] & DCommon.ComputedTypeError<"Contract error.">
 	): Structure<GenericValue>;
+	clone(): this;
 }
 
 export interface CreateStructureInitParams<
@@ -447,6 +447,16 @@ export function createStructure<
 				return DEither.right("decode-success", result as never);
 			},
 			contract: () => self as never,
+			clone: () => init(
+				definition,
+				{
+					executeCheck,
+					executeEncode,
+					executeDecode,
+					isAsynchronous,
+				},
+				...rest,
+			),
 			[kindHandler.runTimeKey]: null,
 			[structureKind.runTimeKey]: null,
 		});

@@ -4,18 +4,19 @@ import { createGlobalStore } from "./globalStore";
 import type { IsEqual, Adaptor, AnyFunction, ObjectKey } from "./types";
 import { createKind } from "./kind";
 
-const SymbolBuilderStore = Symbol.for("@duplojs/lang/builder");
+const BuilderStoreSymbol = Symbol("BuilderStoreSymbol");
+type BuilderStoreSymbol = typeof BuilderStoreSymbol;
 
 declare module "./globalStore" {
 	interface GlobalStore {
-		[SymbolBuilderStore]: Record<
+		[BuilderStoreSymbol]: Record<
 			string,
 			Record<string, Parameters<BuilderHandler["set"]>[1]>
 		>;
 	}
 }
 
-const builderStore = createGlobalStore(SymbolBuilderStore, {});
+const builderStore = createGlobalStore(BuilderStoreSymbol, {});
 
 export const builderKind = createKind<
 	"builder-base",

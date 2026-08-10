@@ -1,4 +1,4 @@
-import { cast, type DArray, type DNumber, type CastError, type DString, ComputeCastConstraintArrayRule, type ComputeCastConstraint, type ComputeCastConstraintNumberRule } from "@scripts";
+import { cast, type DArray, type DNumber, type CastError, type DString, ComputeCastConstraintArrayRule, type ComputeCastConstraint, type ComputeCastConstraintNumberRule, shameOnYou, type ExpectType } from "@scripts";
 
 describe("cast", () => {
 	it("cast maxCharacters", () => {
@@ -790,5 +790,47 @@ describe("cast", () => {
 			// @ts-expect-error cause error
 			[] as unknown as readonly (string | number)[] & DArray.LengthEqual<3>,
 		);
+	});
+
+	it("shameOnYou bypasses expected constraints while preserving the raw input contract", () => {
+		const value1 = shameOnYou<string & DString.MinCharacters<10>>("short");
+		const value2 = shameOnYou<
+			string & DString.MinCharacters<10> & DString.MaxCharacters<3>
+		>("value");
+		const value3 = shameOnYou<number & DNumber.GreaterThan<100>>(42);
+		const value4 = shameOnYou<
+			readonly unknown[] & DArray.MinElements<3>
+		>([]);
+
+		type _CheckValue1 = ExpectType<
+			typeof value1,
+			string & DString.MinCharacters<10>,
+			"strict"
+		>;
+		type _CheckValue2 = ExpectType<
+			typeof value2,
+			string & DString.MinCharacters<10> & DString.MaxCharacters<3>,
+			"strict"
+		>;
+		type _CheckValue3 = ExpectType<
+			typeof value3,
+			number & DNumber.GreaterThan<100>,
+			"strict"
+		>;
+		type _CheckValue4 = ExpectType<
+			typeof value4,
+			readonly unknown[] & DArray.MinElements<3>,
+			"strict"
+		>;
+
+		// @ts-expect-error the input must still match the expected raw value.
+		shameOnYou<string & DString.MinCharacters<10>>(42);
+		// @ts-expect-error the input must still match the expected raw tuple shape.
+		shameOnYou<readonly [string, number]>(["value"]);
+
+		expect(value1).toBe("short");
+		expect(value2).toBe("value");
+		expect(value3).toBe(42);
+		expect(value4).toEqual([]);
 	});
 });

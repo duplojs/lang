@@ -1,12 +1,12 @@
 import type * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
-import * as DArray from "@scripts/array";
+import type * as DArray from "@scripts/array";
 import * as DEither from "@scripts/either";
 import * as DDataStructure from "@scripts/dataStructure";
 import { createKind } from "../kind";
 
 declare module "@scripts/dataStructure" {
-	export interface StructuresStore {
+	interface StructuresStore {
 		newType: NewTypeStructure;
 	}
 }
@@ -30,10 +30,14 @@ export type NewTypeMap<
 > = GenericRawValue extends DDataStructure.FundamentalTypeValue<DDataStructure.FundamentalTypes>
 	? GenericRawValue
 	: GenericRawValue extends object
-		? keyof GenericRawValue extends string
-			? DCommon.IsExtends<DCommon.AnyFunction, GenericRawValue[keyof GenericRawValue]> extends true
-				? GenericRawValue
-				: { [Prop in keyof GenericRawValue]: NewTypeMap<GenericRawValue[Prop]> }
+		? DCommon.Or<[
+			DCommon.IsExtends<GenericRawValue, readonly any[]>,
+			DCommon.And<[
+				DCommon.IsExtends<keyof GenericRawValue, string>,
+				DCommon.Not<DCommon.IsExtends<DCommon.AnyFunction, GenericRawValue[keyof GenericRawValue]>>,
+			]>,
+		]> extends true
+			? { [Prop in keyof GenericRawValue]: NewTypeMap<GenericRawValue[Prop]> }
 			: GenericRawValue
 		: GenericRawValue;
 
@@ -77,9 +81,9 @@ export interface NewTypeStructure<
 		>
 		& DKind.Kind<typeof newTypeStructureKind>
 	> {
-	name: GenericName;
+	readonly name: GenericName;
 
-	map<
+	decodeMap<
 		GenericCodecs extends DDataStructure.Codecs,
 	>(
 		codecs: GenericCodecs,
@@ -98,7 +102,7 @@ export interface NewTypeStructure<
 		| DEither.Left<"async-error", undefined>
 		| DEither.Left<"map-error", DDataStructure.Error>
 	);
-	map<
+	decodeMap<
 		GenericCodecs extends DDataStructure.Codecs,
 	>(
 		codecs: GenericCodecs,
@@ -116,6 +120,7 @@ export interface NewTypeStructure<
 		| DEither.Left<"async-error", undefined>
 		| DEither.Left<"map-error", DDataStructure.Error>
 	);
+
 	map(
 		data: NewTypeMap<
 			DDataStructure.StructureValue<this>
@@ -129,7 +134,7 @@ export interface NewTypeStructure<
 		| DEither.Left<"map-error", DDataStructure.Error>
 	);
 
-	asyncMap<
+	asyncDecodeMap<
 		GenericCodecs extends DDataStructure.Codecs,
 	>(
 		codecs: GenericCodecs,
@@ -147,7 +152,7 @@ export interface NewTypeStructure<
 		>
 		| DEither.Left<"map-error", DDataStructure.Error>
 	>;
-	asyncMap<
+	asyncDecodeMap<
 		GenericCodecs extends DDataStructure.Codecs,
 	>(
 		codecs: GenericCodecs,
@@ -164,6 +169,7 @@ export interface NewTypeStructure<
 		>
 		| DEither.Left<"map-error", DDataStructure.Error>
 	>;
+
 	asyncMap(
 		data: NewTypeMap<
 			DDataStructure.StructureValue<this>
@@ -192,11 +198,11 @@ export const NewTypeStructure = DDataStructure.createStructure(
 	): NewTypeStructure<
 		GenericName,
 		DDataStructure.StructureValue<GenericStructure>,
-		DArray.Coalescing<GenericNewTypeConstraint>
+		GenericNewTypeConstraint
 	> => init<NewTypeStructure>(
 		{
 			constraints: [],
-			newTypeConstraints: DArray.coalescing(newTypeConstraints),
+			newTypeConstraints,
 			inner: structure,
 		},
 		{
@@ -288,40 +294,40 @@ export const NewTypeStructure = DDataStructure.createStructure(
 		},
 		{
 			name,
-			map: (
+			decodeMap: (
 				self,
 				...args: | [DDataStructure.Codecs, unknown]
 					| [DDataStructure.Codecs]
-					| [unknown]
 			): any => {
-				if (args.length === 1 && DDataStructure.codecsKind.has(args[0])) {
+				if (args.length === 1) {
 					const [codecs] = args;
-					return (value: never) => self.map(codecs, value);
+					return (value: never) => self.decodeMap(codecs, value);
 				}
 
 				const errorHandler = DDataStructure.createGetErrorHandler();
+				const [codecs, data] = args;
 
-				if (args.length === 2) {
-					const [codecs, data] = args;
+				const result = self.executeDecode(
+					codecs.context.value,
+					data,
+					errorHandler,
+				);
 
-					const result = self.executeDecode(
-						codecs.context.value,
-						data,
-						errorHandler,
-					);
-
-					if (result instanceof Promise) {
-						return DEither.left("async-error", undefined);
-					}
-
-					if (result === DDataStructure.ErrorSymbol) {
-						return DEither.left("map-error", errorHandler().createError());
-					}
-
-					return DEither.right("map-success", result as never);
+				if (result instanceof Promise) {
+					return DEither.left("async-error", undefined);
 				}
 
-				const [data] = args;
+				if (result === DDataStructure.ErrorSymbol) {
+					return DEither.left("map-error", errorHandler().createError());
+				}
+
+				return DEither.right("map-success", result as never);
+			},
+			map: (
+				self,
+				data,
+			): any => {
+				const errorHandler = DDataStructure.createGetErrorHandler();
 
 				const result = self.executeCheck(
 					data,
@@ -338,38 +344,21 @@ export const NewTypeStructure = DDataStructure.createStructure(
 
 				return DEither.right("map-success", data as never);
 			},
-			asyncMap: (
+			asyncDecodeMap: (
 				self,
 				...args: | [DDataStructure.Codecs, unknown]
 					| [DDataStructure.Codecs]
-					| [unknown]
 			): any => {
-				if (args.length === 1 && DDataStructure.codecsKind.has(args[0])) {
+				if (args.length === 1) {
 					const [codecs] = args;
-					return (value: never) => self.asyncMap(codecs, value);
+					return (value: never) => self.asyncDecodeMap(codecs, value);
 				}
 				return DCommon.justExec(async() => {
 					const errorHandler = DDataStructure.createGetErrorHandler();
+					const [codecs, data] = args;
 
-					if (args.length === 2) {
-						const [codecs, data] = args;
-
-						const result = await self.executeDecode(
-							codecs.context.value,
-							data,
-							errorHandler,
-						);
-
-						if (result === DDataStructure.ErrorSymbol) {
-							return DEither.left("map-error", errorHandler().createError());
-						}
-
-						return DEither.right("map-success", result as never);
-					}
-
-					const [data] = args;
-
-					const result = await self.executeCheck(
+					const result = await self.executeDecode(
+						codecs.context.value,
 						data,
 						errorHandler,
 					);
@@ -378,9 +367,26 @@ export const NewTypeStructure = DDataStructure.createStructure(
 						return DEither.left("map-error", errorHandler().createError());
 					}
 
-					return DEither.right("map-success", data as never);
+					return DEither.right("map-success", result as never);
 				});
 			},
+			asyncMap: (
+				self,
+				data,
+			): any => DCommon.justExec(async() => {
+				const errorHandler = DDataStructure.createGetErrorHandler();
+
+				const result = await self.executeCheck(
+					data,
+					errorHandler,
+				);
+
+				if (result === DDataStructure.ErrorSymbol) {
+					return DEither.left("map-error", errorHandler().createError());
+				}
+
+				return DEither.right("map-success", data as never);
+			}),
 		},
 	) as never,
 );

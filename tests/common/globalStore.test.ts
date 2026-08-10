@@ -20,7 +20,6 @@ it("globalStore", () => {
 	myStore.set("toto");
 
 	expect(myStore.value).toBe("toto");
-	expect((Object as any)[Symbol.for("@duplojs/lang/global-store")].testStore).toBe("toto");
 
 	const myCloneStore = createGlobalStore("testStore", "test");
 

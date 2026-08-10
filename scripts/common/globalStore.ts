@@ -2,18 +2,7 @@ export interface GlobalStore {
 
 }
 
-const SymbolGlobalStore = Symbol.for("@duplojs/lang/global-store");
-type SymbolGlobalStore = typeof SymbolGlobalStore;
-
-const globalVar = Object as unknown as Record<SymbolGlobalStore, GlobalStore>;
-
-Object.defineProperty(
-	globalVar,
-	SymbolGlobalStore,
-	{ value: globalVar[SymbolGlobalStore] ?? {} },
-);
-
-const store = globalVar[SymbolGlobalStore];
+const store = {} as GlobalStore;
 
 export interface GlobalStoreHandler<
 	GenericValue extends unknown,

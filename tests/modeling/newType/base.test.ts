@@ -332,10 +332,10 @@ describe("NewTypeStructure", () => {
 			(data) => `Jane-${data}`,
 		);
 		const codecs = DDataStructure.createCodecs({ string: codec });
-		const result = structure.map(codecs, 4);
+		const result = structure.decodeMap(codecs, 4);
 
 		type _CheckInput = ExpectType<
-			Parameters<typeof structure.map<typeof codecs>>[1],
+			Parameters<typeof structure.decodeMap<typeof codecs>>[1],
 			number,
 			"strict"
 		>;
@@ -351,7 +351,9 @@ describe("NewTypeStructure", () => {
 		>;
 
 		// @ts-expect-error codec mapping expects the encoded number input, not the raw string input.
-		structure.map(codecs, "Jane");
+		structure.decodeMap(codecs, "Jane");
+		// @ts-expect-error map is only for raw values; codec mapping uses decodeMap.
+		structure.map(codecs, 4);
 		expect(result).toStrictEqual(
 			DEither.right("map-success", "Jane-4"),
 		);
@@ -372,7 +374,7 @@ describe("NewTypeStructure", () => {
 		const codecs = DDataStructure.createCodecs({ string: codec });
 		const result = pipe(
 			4,
-			structure.map(codecs),
+			structure.decodeMap(codecs),
 		);
 
 		type _CheckResult = ExpectType<
@@ -447,7 +449,7 @@ describe("NewTypeStructure", () => {
 		const codecs = DDataStructure.createCodecs({ string: codec });
 		const result = pipe(
 			4,
-			structure.asyncMap(codecs),
+			structure.asyncDecodeMap(codecs),
 		);
 
 		type _CheckResult = ExpectType<
@@ -465,6 +467,8 @@ describe("NewTypeStructure", () => {
 		await expect(result).resolves.toStrictEqual(
 			DEither.right("map-success", "Jane-4"),
 		);
+		// @ts-expect-error asyncMap is only for raw values; codec mapping uses asyncDecodeMap.
+		void structure.asyncMap(codecs, 4);
 	});
 
 	it("is asynchronous when its inner structure or a new type constraint is asynchronous", () => {

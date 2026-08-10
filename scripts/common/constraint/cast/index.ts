@@ -141,3 +141,11 @@ export function cast(
 ): any {
 	return input;
 }
+
+export function shameOnYou<
+	GenericOutput extends unknown,
+>(
+	value: NoInfer<RemoveConstraint<GenericOutput>>,
+): GenericOutput {
+	return value as never;
+}
