@@ -9,7 +9,7 @@ import type { GetInformation, GetValue } from "./types";
 type Either = Right | Left;
 
 export function unwrapByInformation<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericInformation extends (
 		GenericInput extends Either
 			? GetInformation<GenericInput>
@@ -24,7 +24,7 @@ export function unwrapByInformation<
 	: GenericInput;
 
 export function unwrapByInformation<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	GenericInformation extends(
 		GenericInput extends Either
 			? GetInformation<GenericInput>
@@ -46,15 +46,15 @@ export function unwrapByInformation(
 		const [information] = args;
 
 		return (input: unknown) => unwrapByInformation(
-			input,
+			input as never,
 			information as never,
 		);
 	}
 
 	const [input, information] = args;
 
-	if (hasInformation(input, information as never)) {
-		return valueKind.getValue(input);
+	if (hasInformation(input as never, information as never)) {
+		return valueKind.getValue(input as never);
 	}
 
 	return input;

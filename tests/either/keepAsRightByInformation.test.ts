@@ -1,4 +1,4 @@
-import { DEither, pipe, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("keepAsRightByInformation", () => {
 	it("should convert selected left values to right values", () => {
@@ -37,5 +37,30 @@ describe("keepAsRightByInformation", () => {
 			DEither.Success<42>,
 			"strict"
 		>;
+	});
+
+	it("should preserve inference for a directly nested decodeMap result", () => {
+		const structure = DModeling.NewTypeStructure(
+			"nested-number",
+			DDataStructure.number(),
+		);
+		const codecs = DDataStructure.createCodecs({});
+		const result = DEither.keepAsRightByInformation(
+			structure.decodeMap(codecs, 42),
+			"map-success",
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				number & DModeling.NewType<"nested-number">
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(DEither.right("map-success", 42));
 	});
 });

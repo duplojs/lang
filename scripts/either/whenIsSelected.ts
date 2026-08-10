@@ -26,7 +26,7 @@ type ForbiddenMoreKey<
 >;
 
 export function whenIsSelected<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -66,7 +66,7 @@ export function whenIsSelected<
 );
 
 export function whenIsSelected<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -122,7 +122,7 @@ export function whenIsSelected(
 		const [selector, theFunction] = args;
 
 		return (input: unknown) => whenIsSelected(
-			input,
+			input as never,
 			selector as never,
 			theFunction,
 		);

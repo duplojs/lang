@@ -1,4 +1,4 @@
-import { DEither, pipe, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("keepAsRightSelection", () => {
 	it("should convert selected left values to right values", () => {
@@ -50,6 +50,36 @@ describe("keepAsRightSelection", () => {
 		type _CheckResult = ExpectType<
 			typeof result,
 			DEither.Success<42>,
+			"strict"
+		>;
+	});
+
+	it("should preserve decodeMap inference in a direct nested call", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[],
+		);
+		const codecs = DDataStructure.createCodecs({});
+		const result = DEither.keepAsRightSelection(
+			structure.decodeMap(codecs, "Jane"),
+			{
+				"map-success": true,
+				"async-error": false,
+				"map-error": false,
+			},
+		);
+
+		expect(result).toStrictEqual(DEither.right("map-success", "Jane"));
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				string & DModeling.NewType<"user-name">
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
 			"strict"
 		>;
 	});

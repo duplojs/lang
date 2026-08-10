@@ -43,7 +43,7 @@ type CallbackSelectedKind<
 >;
 
 export function whenIsSelectedOtherwise<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -63,7 +63,7 @@ export function whenIsSelectedOtherwise<
 ): (input: GenericInput) => GenericOutput | GenericOtherwiseOutput;
 
 export function whenIsSelectedOtherwise<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -101,7 +101,7 @@ export function whenIsSelectedOtherwise(
 		const [selector, theFunction, otherwiseFunction] = args;
 
 		return (input: unknown) => whenIsSelectedOtherwise(
-			input,
+			input as never,
 			selector as never,
 			theFunction,
 			otherwiseFunction,

@@ -1,3 +1,4 @@
+import type * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import type { Left } from "./left";
@@ -54,7 +55,7 @@ type SelectedInput<
 );
 
 export function forwardAssertsSelection<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	GenericSelector extends Record<
 		DKind.GetValue<
 			typeof informationKind,
@@ -70,7 +71,7 @@ export function forwardAssertsSelection<
 >;
 
 export function forwardAssertsSelection<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		DKind.GetValue<
 			typeof informationKind,
@@ -94,7 +95,7 @@ export function forwardAssertsSelection(
 	if (args.length === 1) {
 		const [selector] = args;
 
-		return (input: unknown) => forwardAssertsSelection(input, selector as never);
+		return (input: unknown) => forwardAssertsSelection(input as never, selector as never);
 	}
 
 	const [input, selector] = args;

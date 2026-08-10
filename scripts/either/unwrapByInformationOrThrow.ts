@@ -25,7 +25,7 @@ export class HasNotInformationError extends DKind.parentClass(
 type Either = Right | Left;
 
 export function unwrapByInformationOrThrow<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericInformation extends (
 		GenericInput extends Either
 			? GetInformation<GenericInput>
@@ -43,7 +43,7 @@ export function unwrapByInformationOrThrow<
 >;
 
 export function unwrapByInformationOrThrow<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	GenericInformation extends(
 		GenericInput extends Either
 			? GetInformation<GenericInput>
@@ -68,15 +68,15 @@ export function unwrapByInformationOrThrow(
 		const [information] = args;
 
 		return (input: unknown) => unwrapByInformationOrThrow(
-			input,
+			input as never,
 			information as never,
 		);
 	}
 
 	const [input, information] = args;
 
-	if (hasInformation(input, information as never)) {
-		return valueKind.getValue(input);
+	if (hasInformation(input as never, information as never)) {
+		return valueKind.getValue(input as never);
 	}
 
 	throw new HasNotInformationError(input, information);

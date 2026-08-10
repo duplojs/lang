@@ -9,7 +9,7 @@ import type { GetInformation } from "./types";
 type Either = Right | Left;
 
 export function hasInformation<
-	const GenericInput extends unknown,
+	const GenericInput extends Either | DCommon.AnyValue,
 	GenericInformation extends(
 		GenericInput extends Either
 			? GetInformation<GenericInput>
@@ -26,7 +26,7 @@ export function hasInformation<
 >;
 
 export function hasInformation<
-	const GenericInput extends unknown,
+	const GenericInput extends Either | DCommon.AnyValue,
 	GenericInformation extends(
 		GenericInput extends Either
 			? GetInformation<GenericInput>
@@ -49,7 +49,7 @@ export function hasInformation(
 	if (args.length === 1) {
 		const [information] = args;
 
-		return (input: unknown) => hasInformation(input, information as never);
+		return (input: unknown) => hasInformation(input as never, information as never);
 	}
 
 	const [input, information] = args;

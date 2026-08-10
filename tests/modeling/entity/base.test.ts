@@ -98,20 +98,24 @@ describe("EntityStructure", () => {
 		const nameConstraint = {
 			...DDataStructure.stringMin(3),
 			executeCheck: nameConstraintExecuteCheck,
-		} as DDataStructure.StringMinConstraint<3>;
+		};
+		const name = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[nameConstraint],
+		);
 		const structure = DModeling.EntityStructure(
 			"user",
 			() => ({
-				name: DModeling.NewTypeStructure(
-					"user-name",
-					DDataStructure.string(),
-					[nameConstraint],
-				),
+				name,
 			}),
 		);
 		const entity = structure.new({
-			name: "Jane",
-		} as never);
+			name: DEither.unwrapByInformationOrThrow(
+				name.map("Jane"),
+				"map-success",
+			),
+		});
 
 		expect(structure.executeCheck(entity)).toBe(DDataStructure.SuccessSymbol);
 		expect(nameConstraintExecuteCheck).toHaveBeenCalledWith(
@@ -371,8 +375,6 @@ describe("EntityStructure", () => {
 
 		// @ts-expect-error codec mapping expects the encoded number property, not the raw string property.
 		structure.decodeMap(codecs, { name: "Jane" });
-		// @ts-expect-error map is only for raw values; codec mapping uses decodeMap.
-		structure.map(codecs, { name: 4 });
 		expect(result).toStrictEqual(
 			DEither.right("map-success", structure.new({ name: "Jane-4" } as never)),
 		);
@@ -516,8 +518,6 @@ describe("EntityStructure", () => {
 		await expect(result).resolves.toStrictEqual(
 			DEither.right("map-success", structure.new({ name: "Jane-4" } as never)),
 		);
-		// @ts-expect-error asyncMap is only for raw values; codec mapping uses asyncDecodeMap.
-		void structure.asyncMap(codecs, { name: 4 });
 	});
 
 	it("is asynchronous when one of its properties is asynchronous", () => {

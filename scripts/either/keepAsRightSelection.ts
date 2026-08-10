@@ -1,3 +1,4 @@
+import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import { informationKind, valueKind } from "./kind";
@@ -22,7 +23,7 @@ type ForbiddenMoreKey<
 >;
 
 export function keepAsRightSelection<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -53,7 +54,7 @@ export function keepAsRightSelection<
 	: GenericInput;
 
 export function keepAsRightSelection<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -90,7 +91,7 @@ export function keepAsRightSelection(
 	if (args.length === 1) {
 		const [selector] = args;
 
-		return (input: unknown) => keepAsRightSelection(input, selector as never);
+		return (input: unknown) => keepAsRightSelection(input as never, selector as never);
 	}
 
 	const [input, selector] = args;

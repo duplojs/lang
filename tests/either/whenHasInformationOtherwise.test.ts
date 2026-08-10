@@ -1,4 +1,4 @@
-import { DEither, pipe, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("whenHasInformationOtherwise", () => {
 	it("should map matching information and type the otherwise value", () => {
@@ -63,5 +63,44 @@ describe("whenHasInformationOtherwise", () => {
 		);
 
 		expect(result).toBe("message");
+	});
+
+	it("should preserve inference for a directly nested decodeMap result", () => {
+		const structure = DModeling.NewTypeStructure(
+			"nested-number",
+			DDataStructure.number(),
+		);
+		const codecs = DDataStructure.createCodecs({});
+		const result = DEither.whenHasInformationOtherwise(
+			structure.decodeMap(codecs, 42),
+			"map-success",
+			(value) => {
+				type _CheckValue = ExpectType<
+					typeof value,
+					number & DModeling.NewType<"nested-number">,
+					"strict"
+				>;
+
+				return "mapped" as const;
+			},
+			(value) => {
+				type _CheckValue = ExpectType<
+					typeof value,
+					| DEither.Left<"async-error", undefined>
+					| DEither.Left<"map-error", DDataStructure.Error>,
+					"strict"
+				>;
+
+				return "otherwise" as const;
+			},
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			"mapped" | "otherwise",
+			"strict"
+		>;
+
+		expect(result).toBe("mapped");
 	});
 });

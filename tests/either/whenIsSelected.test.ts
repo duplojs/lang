@@ -1,4 +1,4 @@
-import { DEither, pipe, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("whenIsSelected", () => {
 	it("should map selected information and keep unselected values", () => {
@@ -67,5 +67,41 @@ describe("whenIsSelected", () => {
 		);
 
 		expect(result).toBe("plain");
+	});
+
+	it("should preserve decodeMap inference in a direct nested call", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[],
+		);
+		const codecs = DDataStructure.createCodecs({});
+		const result = DEither.whenIsSelected(
+			structure.decodeMap(codecs, "Jane"),
+			{
+				"map-success": true,
+				"async-error": false,
+				"map-error": false,
+			},
+			(value) => {
+				type _CheckValue = ExpectType<
+					typeof value,
+					string & DModeling.NewType<"user-name">,
+					"strict"
+				>;
+
+				return "selected" as const;
+			},
+		);
+
+		expect(result).toBe("selected");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| "selected"
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
 	});
 });

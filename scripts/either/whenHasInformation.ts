@@ -8,7 +8,7 @@ import type { GetInformation, GetValue } from "./types";
 type Either = Right | Left;
 
 export function whenHasInformation<
-	const GenericInput extends unknown,
+	const GenericInput extends Either | DCommon.AnyValue,
 	GenericInformation extends(
 		GenericInput extends Either
 			? GetInformation<Extract<GenericInput, Either>>
@@ -34,7 +34,7 @@ export function whenHasInformation<
 );
 
 export function whenHasInformation<
-	const GenericInput extends unknown,
+	const GenericInput extends Either | DCommon.AnyValue,
 	GenericInformation extends(
 		GenericInput extends Either
 			? GetInformation<Extract<GenericInput, Either>>
@@ -76,7 +76,7 @@ export function whenHasInformation(
 		const [information, theFunction] = args;
 
 		return (input: unknown) => whenHasInformation(
-			input,
+			input as never,
 			information as never,
 			theFunction,
 		);

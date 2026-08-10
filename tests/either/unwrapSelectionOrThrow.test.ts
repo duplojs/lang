@@ -1,4 +1,4 @@
-import { DEither, pipe, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("unwrapSelectionOrThrow", () => {
 	it("should unwrap selected information", () => {
@@ -67,5 +67,30 @@ describe("unwrapSelectionOrThrow", () => {
 				expect(error.selector).toBe(selector);
 			}
 		}
+	});
+
+	it("should preserve decodeMap inference in a direct nested call", () => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[],
+		);
+		const codecs = DDataStructure.createCodecs({});
+		const result = DEither.unwrapSelectionOrThrow(
+			structure.decodeMap(codecs, "Jane"),
+			{
+				"map-success": true,
+				"async-error": false,
+				"map-error": false,
+			},
+		);
+
+		expect(result).toBe("Jane");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			string & DModeling.NewType<"user-name">,
+			"strict"
+		>;
 	});
 });

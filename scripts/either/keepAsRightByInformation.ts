@@ -9,7 +9,7 @@ import type { GetInformation, GetValue } from "./types";
 type Either = Right | Left;
 
 export function keepAsRightByInformation<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericInformation extends (
 		GenericInput extends Either
 			? GetInformation<GenericInput>
@@ -34,7 +34,7 @@ export function keepAsRightByInformation<
 	: GenericInput;
 
 export function keepAsRightByInformation<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericInformation extends (
 		GenericInput extends Either
 			? GetInformation<GenericInput>
@@ -66,14 +66,14 @@ export function keepAsRightByInformation(
 		const [information] = args;
 
 		return (input: unknown) => keepAsRightByInformation(
-			input,
+			input as never,
 			information as never,
 		);
 	}
 
 	const [input, information] = args;
 
-	if (hasInformation(input, information as never)) {
+	if (hasInformation(input as never, information as never)) {
 		if (isLeft(input)) {
 			return right(
 				informationKind.getValue(input),

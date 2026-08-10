@@ -1,3 +1,4 @@
+import type * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import type { Left } from "./left";
@@ -34,7 +35,7 @@ type ForbiddenMoreKey<
 >;
 
 export function unwrapSelectionOrThrow<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -56,7 +57,7 @@ export function unwrapSelectionOrThrow<
 >;
 
 export function unwrapSelectionOrThrow<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -86,7 +87,7 @@ export function unwrapSelectionOrThrow(
 	if (args.length === 1) {
 		const [selector] = args;
 
-		return (input: unknown) => unwrapSelectionOrThrow(input, selector as never);
+		return (input: unknown) => unwrapSelectionOrThrow(input as never, selector as never);
 	}
 
 	const [input, selector] = args;

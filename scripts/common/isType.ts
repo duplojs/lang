@@ -1,4 +1,4 @@
-import type { IsEqual, AnyFunction, BreakGenericLink } from "./types";
+import type { IsEqual, AnyFunction, AnyValue, BreakGenericLink } from "./types";
 
 interface Type {
 	string: [string, never];
@@ -59,7 +59,7 @@ type EligibleType<
 }[keyof Type];
 
 export function isType<
-	GenericInput extends unknown,
+	GenericInput extends AnyValue,
 	GenericType extends EligibleType<GenericInput>,
 >(
 	type: GenericType,
@@ -69,7 +69,7 @@ export function isType<
 >;
 
 export function isType<
-	GenericInput extends unknown,
+	GenericInput extends AnyValue,
 	GenericType extends EligibleType<GenericInput>,
 >(
 	input: GenericInput,
@@ -88,7 +88,7 @@ export function isType(
 		const [type] = args;
 
 		return (input: unknown) => isType(
-			input,
+			input as AnyValue,
 			type as never,
 		);
 	}

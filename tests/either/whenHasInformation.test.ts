@@ -1,4 +1,4 @@
-import { DEither, pipe, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("whenHasInformation", () => {
 	it("should map values matching one information", () => {
@@ -59,5 +59,36 @@ describe("whenHasInformation", () => {
 		);
 
 		expect(result).toBe(input);
+	});
+
+	it("should preserve inference for a directly nested decodeMap result", () => {
+		const structure = DModeling.NewTypeStructure(
+			"nested-number",
+			DDataStructure.number(),
+		);
+		const codecs = DDataStructure.createCodecs({});
+		const result = DEither.whenHasInformation(
+			structure.decodeMap(codecs, 42),
+			"map-success",
+			(value) => {
+				type _CheckValue = ExpectType<
+					typeof value,
+					number & DModeling.NewType<"nested-number">,
+					"strict"
+				>;
+
+				return "mapped" as const;
+			},
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| "mapped"
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		expect(result).toBe("mapped");
 	});
 });

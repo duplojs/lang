@@ -1,3 +1,4 @@
+import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import type { Right } from "./right";
@@ -22,7 +23,7 @@ type ForbiddenMoreKey<
 >;
 
 export function unwrapSelection<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -56,7 +57,7 @@ export function unwrapSelection<
 );
 
 export function unwrapSelection<
-	GenericInput extends unknown,
+	GenericInput extends Either | DCommon.AnyValue,
 	const GenericSelector extends Record<
 		GetInformation<Extract<GenericInput, Either>>,
 		boolean
@@ -98,7 +99,7 @@ export function unwrapSelection(
 	if (args.length === 1) {
 		const [selector] = args;
 
-		return (input: unknown) => unwrapSelection(input, selector as never);
+		return (input: unknown) => unwrapSelection(input as never, selector as never);
 	}
 
 	const [input, selector] = args;

@@ -1,4 +1,4 @@
-import { DEither, pipe, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("unwrapByInformationOrThrow", () => {
 	it("should unwrap matching information", () => {
@@ -57,5 +57,25 @@ describe("unwrapByInformationOrThrow", () => {
 				expect(error.information).toStrictEqual(["success"]);
 			}
 		}
+	});
+
+	it("should preserve inference for a directly nested decodeMap result", () => {
+		const structure = DModeling.NewTypeStructure(
+			"nested-number",
+			DDataStructure.number(),
+		);
+		const codecs = DDataStructure.createCodecs({});
+		const result = DEither.unwrapByInformationOrThrow(
+			structure.decodeMap(codecs, 42),
+			"map-success",
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			number & DModeling.NewType<"nested-number">,
+			"strict"
+		>;
+
+		expect(result).toBe(42);
 	});
 });

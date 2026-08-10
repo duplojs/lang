@@ -1,4 +1,4 @@
-import { DEither, pipe, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("hasInformation", () => {
 	it("should check one information or multiple informations", () => {
@@ -32,5 +32,25 @@ describe("hasInformation", () => {
 				"strict"
 			>;
 		}
+	});
+
+	it("should infer information from a directly nested decodeMap result", () => {
+		const structure = DModeling.NewTypeStructure(
+			"nested-number",
+			DDataStructure.number(),
+		);
+		const codecs = DDataStructure.createCodecs({});
+		const result = DEither.hasInformation(
+			structure.decodeMap(codecs, 42),
+			"map-success",
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			boolean,
+			"strict"
+		>;
+
+		expect(result).toBe(true);
 	});
 });
