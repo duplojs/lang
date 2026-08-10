@@ -35,3 +35,6 @@ export * as DModeling from "./modeling";
 
 export * as P from "./pattern";
 export * as DPattern from "./pattern";
+
+export * as G from "./generator";
+export * as DGenerator from "./generator";

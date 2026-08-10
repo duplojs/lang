@@ -9,8 +9,8 @@ export interface GroupOutputResult<
 }
 
 export function groupOutput<
+	const GenericGroupName extends string,
 	GenericGroupValue extends unknown,
-	GenericGroupName extends string,
 >(
 	group: GenericGroupName,
 ): (
@@ -21,8 +21,8 @@ export function groupOutput<
 >;
 
 export function groupOutput<
+	const GenericGroupName extends string,
 	GenericGroupValue extends unknown,
-	GenericGroupName extends string,
 >(
 	group: GenericGroupName,
 	value: GenericGroupValue,
@@ -58,56 +58,65 @@ export interface GroupTheFunctionParams {
 export type GroupResult<
 	GenericOutput extends GroupOutputResult,
 > = DCommon.SimplifyTopLevel<{
-	readonly [Output in GenericOutput as Output["group"]]?: readonly [Output["value"], ...Output["value"][]]
+	readonly [Output in GenericOutput as Output["group"]]?:
+	readonly [Output["value"], ...Output["value"][]]
 }>;
 
 export function group<
-	GenericArray extends readonly unknown[],
+	GenericItem extends unknown,
 	GenericOutput extends GroupOutputResult,
 >(
 	theFunction: (
-		element: GenericArray[number],
+		item: GenericItem,
 		params: GroupTheFunctionParams,
 	) => GenericOutput,
 ): (
-	array: GenericArray,
+	iterator: Iterable<GenericItem>,
 ) => GroupResult<GenericOutput>;
 
 export function group<
-	GenericElement extends unknown,
+	GenericItem extends unknown,
 	GenericOutput extends GroupOutputResult,
 >(
-	array: readonly GenericElement[],
+	iterator: Iterable<GenericItem>,
 	theFunction: (
-		element: GenericElement,
+		item: GenericItem,
 		params: GroupTheFunctionParams,
 	) => GenericOutput,
 ): GroupResult<GenericOutput>;
 
 export function group(
 	...args:
-		| [array: readonly unknown[], theFunction: DCommon.AnyFunction<any, GroupOutputResult>]
 		| [theFunction: DCommon.AnyFunction<any, GroupOutputResult>]
+		| [iterator: Iterable<unknown>, theFunction: DCommon.AnyFunction<any, GroupOutputResult>]
 ): any {
 	if (args.length === 1) {
 		const [theFunction] = args;
-		return (array: readonly unknown[]) => group(array, theFunction);
+		return (iterator: Iterable<unknown>) => group(iterator, theFunction);
 	}
-	const [array, theFunction] = args;
+
+	const [iterator, theFunction] = args;
 
 	const result: Record<string, unknown[]> = {};
 
-	for (let index = 0; index < array.length; index++) {
-		const { group, value } = theFunction(array[index], {
-			index,
-			output: groupOutput,
-		});
+	let index = 0;
+
+	for (const item of iterator) {
+		const { group, value } = theFunction(
+			item,
+			{
+				index,
+				output: groupOutput,
+			},
+		);
 
 		if (result[group]) {
 			result[group].push(value);
 		} else {
 			result[group] = [value];
 		}
+
+		index++;
 	}
 
 	return result;
