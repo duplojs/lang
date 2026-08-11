@@ -3,7 +3,7 @@ import type * as DNumber from "@scripts/number";
 import type * as DArray from "@scripts/array";
 import type * as DTuple from "@scripts/tuple";
 import type { ApplyFormat, Format } from "./constraints";
-import type { TemplateLiteralContainLargeType } from "./types";
+import type { IsKeyPattern } from "./types";
 
 export interface SplitParams<
 	GenericLimit extends number,
@@ -44,7 +44,7 @@ type ComputeSplitOutput<
 > = DCommon.Or<[
 	DCommon.IsEqual<GenericString, string>,
 	DCommon.IsEqual<GenericSeparator, "">,
-	TemplateLiteralContainLargeType<GenericSeparator>,
+	IsKeyPattern<GenericSeparator>,
 ]> extends true
 	? string[] & DArray.MinElements<ApplySplitLimit<1, GenericLimit>>
 	: CountSplitGroups<
@@ -59,7 +59,7 @@ type ComputeSplitOutput<
 				& string[]
 				& DArray.MinElements<InferredOutputLength>
 				& (
-					TemplateLiteralContainLargeType<GenericString> extends true
+					IsKeyPattern<GenericString> extends true
 						? unknown
 						: (
 							& DArray.LengthEqual<InferredOutputLength>

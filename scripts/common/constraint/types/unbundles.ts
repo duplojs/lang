@@ -1,5 +1,7 @@
 import type * as DObject from "@scripts/object";
 import type * as DArray from "@scripts/array";
+import type * as DNumber from "@scripts/number";
+import type * as DString from "@scripts/string";
 import type * as DCommon from "@scripts/common";
 import { type BaseConstraint } from "./base";
 
@@ -56,19 +58,36 @@ type SeparateByShape<
 export type UnbundlesConstraint<
 	GenericValue extends unknown,
 > = (
-	GenericValue extends BaseConstraint
-		? SeparateByShape<
-			GenericValue,
-			DObject.Split<
-				Pick<GenericValue, DCommon.ConstraintSymbol>
+	| (
+		GenericValue extends BaseConstraint
+			? SeparateByShape<
+				GenericValue,
+				DObject.Split<
+					Pick<GenericValue, DCommon.ConstraintSymbol>
+				>
 			>
-		>
-		: GenericValue extends DCommon.AnyTuple
+			: never
+	)
+	| (
+		GenericValue extends DCommon.AnyTuple
 			? (
 				| DArray.ExtractMinElements<GenericValue>
+				| DArray.ExtractMaxElements<GenericValue>
 				| DArray.ExtractLengthEqual<GenericValue>
 			)
-			: never
+			: GenericValue extends number
+				? (
+					| DNumber.ExtractGreaterThanOrEqual<GenericValue>
+					| DNumber.ExtractLessThanOrEqual<GenericValue>
+				)
+				: GenericValue extends string
+					? (
+						| DString.ExtractLengthEqual<GenericValue>
+						| DString.ExtractMinCharacters<GenericValue>
+						| DString.ExtractMaxCharacters<GenericValue>
+					)
+					: never
+	)
 ) extends infer InferredResult
 	? (
 		InferredResult extends Rest

@@ -22,11 +22,25 @@ export type ExtractMinElements<
 			)
 			| (
 				GenericConstraint extends DCommon.AnyTuple
-					? MinElements<DTuple.CountMinElement<GenericConstraint>>
+					? MinElements<
+						DTuple.CountMinElement<
+							Extract<
+								DCommon.RemoveConstraint<GenericConstraint>,
+								DCommon.AnyTuple
+							>
+						>
+					>
 					: never
 			)
 		>
 		: GenericDefault
 	: GenericConstraint extends DCommon.AnyTuple
-		? MinElements<DTuple.CountMinElement<GenericConstraint>>
+		? MinElements<
+			DTuple.CountMinElement<
+				Extract<
+					DCommon.RemoveConstraint<GenericConstraint>,
+					DCommon.AnyTuple
+				>
+			>
+		>
 		: GenericDefault;

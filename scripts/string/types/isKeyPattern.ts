@@ -1,4 +1,4 @@
-export type TemplateLiteralContainLargeType<
+export type IsKeyPattern<
 	GenericValue extends string,
 > = (
 	GenericValue extends string

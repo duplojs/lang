@@ -3,7 +3,7 @@ import type * as DTuple from "@scripts/tuple";
 import type * as DObject from "@scripts/object";
 import { type ComputeCastConstraintArrayRule } from "./array";
 import { type UnbundlesConstraint, type BaseConstraint, type RemoveConstraint } from "../types";
-import { type CastError } from "./error";
+import { type CastError, type RemoveCastError } from "./error";
 import { type ComputeCastConstraintNumberRule } from "./number";
 import { type ComputeCastConstraintStringRule } from "./string";
 import { type AnyTuple, type IsExtends, type BreakGenericLink, type NeverCoalescing, type UnionContain, type IsEqual } from "../../types";
@@ -117,16 +117,18 @@ export function cast<
 	GenericInput extends unknown,
 	GenericExpectedValue extends unknown,
 	GenericError = (
-		ComputeCastConstraint<
-			GenericInput,
-			GenericExpectedValue
-		> extends infer InferredConstraintResult
-			? IsEqual<InferredConstraintResult, unknown> extends true
-				? ComputeCastValue<
-					GenericInput,
-					GenericExpectedValue
-				>
-				: InferredConstraintResult
+		RemoveCastError<GenericInput> extends infer InferredInput
+			? ComputeCastConstraint<
+				InferredInput,
+				GenericExpectedValue
+			> extends infer InferredConstraintResult
+				? IsEqual<InferredConstraintResult, unknown> extends true
+					? ComputeCastValue<
+						InferredInput,
+						GenericExpectedValue
+					>
+					: InferredConstraintResult
+				: never
 			: never
 	),
 >(

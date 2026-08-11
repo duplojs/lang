@@ -14,9 +14,22 @@ export type ExtractMaxElements<
 		keyof GenericConstraint[DCommon.ConstraintSymbol][MaxElementsConstraintName]
 	) extends infer InferredResult extends number
 		? DCommon.UnionToIntersection<
-			InferredResult extends any
-				? MaxElements<InferredResult>
-				: never
+			| (
+				InferredResult extends any
+					? MaxElements<InferredResult>
+					: never
+			)
+			| (
+				GenericConstraint extends DCommon.AnyTuple
+					? number extends GenericConstraint["length"]
+						? never
+						: MaxElements<GenericConstraint["length"]>
+					: never
+			)
 		>
 		: GenericDefault
-	: GenericDefault;
+	: GenericConstraint extends DCommon.AnyTuple
+		? number extends GenericConstraint["length"]
+			? GenericDefault
+			: MaxElements<GenericConstraint["length"]>
+		: GenericDefault;

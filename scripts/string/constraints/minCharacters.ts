@@ -1,4 +1,6 @@
 import type * as DCommon from "@scripts/common";
+import { type CountMinCharacters, type IsLiteral } from "../types";
+import { type IsTemplateLiteral } from "../types/isTemplateLiteral";
 
 export type MinCharactersConstraintName = "string-min-characters";
 
@@ -14,9 +16,42 @@ export type ExtractMinCharacters<
 		keyof GenericConstraint[DCommon.ConstraintSymbol][MinCharactersConstraintName]
 	) extends infer InferredResult extends number
 		? DCommon.UnionToIntersection<
-			InferredResult extends any
-				? MinCharacters<InferredResult>
-				: never
+			| (
+				InferredResult extends any
+					? MinCharacters<InferredResult>
+					: never
+			)
+			| (
+				GenericConstraint extends string
+					? DCommon.Or<[
+						IsLiteral<GenericConstraint>,
+						IsTemplateLiteral<GenericConstraint>,
+					]> extends true
+						? MinCharacters<
+							CountMinCharacters<
+								Extract<
+									DCommon.RemoveConstraint<GenericConstraint>,
+									string
+								>
+							>
+						>
+						: never
+					: never
+			)
 		>
 		: GenericDefault
-	: GenericDefault;
+	: GenericConstraint extends string
+		? DCommon.Or<[
+			IsLiteral<GenericConstraint>,
+			IsTemplateLiteral<GenericConstraint>,
+		]> extends true
+			? MinCharacters<
+				CountMinCharacters<
+					Extract<
+						DCommon.RemoveConstraint<GenericConstraint>,
+						string
+					>
+				>
+			>
+			: GenericDefault
+		: GenericDefault;

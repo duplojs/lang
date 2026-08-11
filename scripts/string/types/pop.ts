@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { TemplateLiteralContainLargeType } from "./templateLiteralContainLargeType";
+import type { IsKeyPattern } from "./isKeyPattern";
 
 type _Pop<
 	GenericValue extends string,
@@ -16,7 +16,7 @@ type _Pop<
 
 export type Pop<
 	GenericValue extends string,
-> = TemplateLiteralContainLargeType<GenericValue> extends true
+> = IsKeyPattern<GenericValue> extends true
 	? string
 	: DCommon.IsEqual<GenericValue, ""> extends true
 		? ""

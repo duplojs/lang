@@ -39,7 +39,7 @@ describe("filter", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			("a" | "b")[],
+			("a" | "b")[] & DArray.MaxElements<4>,
 			"strict"
 		>;
 	});

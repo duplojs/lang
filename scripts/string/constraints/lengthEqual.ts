@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import { type IsLiteral, type Length } from "../types";
 
 export type LengthEqualConstraintName = "string-length-equal";
 
@@ -14,9 +15,36 @@ export type ExtractLengthEqual<
 		keyof GenericConstraint[DCommon.ConstraintSymbol][LengthEqualConstraintName]
 	) extends infer InferredResult extends number
 		? DCommon.UnionToIntersection<
-			InferredResult extends any
-				? LengthEqual<InferredResult>
-				: never
+			| (
+				InferredResult extends any
+					? LengthEqual<InferredResult>
+					: never
+			)
+			| (
+				GenericConstraint extends string
+					? IsLiteral<GenericConstraint> extends true
+						? LengthEqual<
+							Length<
+								Extract<
+									DCommon.RemoveConstraint<GenericConstraint>,
+									string
+								>
+							>
+						>
+						: never
+					: never
+			)
 		>
 		: GenericDefault
-	: GenericDefault;
+	: GenericConstraint extends string
+		? IsLiteral<GenericConstraint> extends true
+			? LengthEqual<
+				Length<
+					Extract<
+						DCommon.RemoveConstraint<GenericConstraint>,
+						string
+					>
+				>
+			>
+			: GenericDefault
+		: GenericDefault;

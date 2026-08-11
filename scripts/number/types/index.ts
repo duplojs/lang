@@ -1,4 +1,5 @@
 export type * from "./absolute";
+export type * from "./addOne";
 export type * from "./forbiddenNegative";
 export type * from "./isGreater";
 export type * from "./isLess";

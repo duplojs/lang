@@ -351,7 +351,7 @@ describe("cast", () => {
 
 		const value9: number & DNumber.GreaterThan<12> = cast(
 			12 as 12 & CastError<
-				"Impossible to cast on GreaterThan<12> because literal value '12' is less than or equal.",
+				"Impossible to cast on GreaterThan<12> because constraint GreaterThanOrEqual<12> from the value is less than or equal.",
 				12,
 				DNumber.GreaterThan<12>
 			>,
@@ -361,7 +361,7 @@ describe("cast", () => {
 
 		const value10: number & DNumber.GreaterThan<12> = cast(
 			6 as 6 & CastError<
-				"Impossible to cast on GreaterThan<12> because literal value '6' is less than or equal.",
+				"Impossible to cast on GreaterThan<12> because constraint GreaterThanOrEqual<6> from the value is less than or equal.",
 				6,
 				DNumber.GreaterThan<12>
 			>,
@@ -417,15 +417,15 @@ describe("cast", () => {
 
 		const value9: number & DNumber.GreaterThanOrEqual<12> = cast(12);
 
-		const value10: number & DNumber.GreaterThan<12> = cast(
+		const value10: number & DNumber.GreaterThanOrEqual<12> = cast(
 			6 as 6 & CastError<
-				"Impossible to cast on GreaterThan<12> because literal value '6' is less than or equal.",
+				"Impossible to cast on GreaterThanOrEqual<12> because constraint GreaterThanOrEqual<6> from the value is less than.",
 				6,
-				DNumber.GreaterThan<12>
+				DNumber.GreaterThanOrEqual<12>
 			>,
 		);
 			// @ts-expect-error cause error
-		const value105: number & DNumber.GreaterThan<12> = cast(6);
+		const value105: number & DNumber.GreaterThanOrEqual<12> = cast(6);
 
 		const value11: number & DNumber.GreaterThanOrEqual<12> = cast(
 			1 as number & DNumber.GreaterThanOrEqual<6> & DNumber.GreaterThan<12>,
@@ -483,7 +483,7 @@ describe("cast", () => {
 
 		const value9: number & DNumber.LessThan<12> = cast(
 			12 as 12 & CastError<
-				"Impossible to cast on LessThan<12> because literal value '12' is greater than or equal.",
+				"Impossible to cast on LessThan<12> because constraint LessThanOrEqual<12> from the value is greater than or equal.",
 				12,
 				DNumber.LessThan<12>
 			>,
@@ -493,7 +493,7 @@ describe("cast", () => {
 
 		const value10: number & DNumber.LessThan<12> = cast(
 			15 as 15 & CastError<
-				"Impossible to cast on LessThan<12> because literal value '15' is greater than or equal.",
+				"Impossible to cast on LessThan<12> because constraint LessThanOrEqual<15> from the value is greater than or equal.",
 				15,
 				DNumber.LessThan<12>
 			>,
@@ -551,7 +551,7 @@ describe("cast", () => {
 
 		const value10: number & DNumber.LessThanOrEqual<12> = cast(
 			15 as 15 & CastError<
-				"Impossible to cast on LessThanOrEqual<12> because literal value '15' is greater than.",
+				"Impossible to cast on LessThanOrEqual<12> because constraint LessThanOrEqual<15> from the value is greater than.",
 				15,
 				DNumber.LessThanOrEqual<12>
 			>,
@@ -707,7 +707,7 @@ describe("cast", () => {
 			| (number & DNumber.GreaterThan<10> & DNumber.LessThan<100>)
 			| (readonly unknown[] & DArray.MinElements<1> & DArray.MaxElements<10>)
 		) = cast(
-			"" as (
+			"" as unknown as (
 				| (string & DString.NotEmpty & DString.MaxCharacters<60>)
 				| (number & DNumber.GreaterThan<1> & DNumber.LessThan<90>)
 			)
@@ -769,15 +769,15 @@ describe("cast", () => {
 	it("cast value", () => {
 		const value1: 1 | 2 | 3 = cast(1 as 1 | 2);
 
-		const value2: 1 | 2 | 3 = cast(
+		const value2: number = cast(
 			"" as "test" & CastError<
 				"Input value are not Extends",
 				"test",
-				1 | 2 | 3
+				number
 			>,
 		);
 		// @ts-expect-error cause error
-		const value25: 1 | 2 | 3 = cast("" as "test");
+		const value25: number = cast("" as "test");
 
 		const value3: readonly ["test", 1, "test"] = cast(
 			[] as unknown as readonly (string | number)[] & DArray.LengthEqual<3> & CastError<

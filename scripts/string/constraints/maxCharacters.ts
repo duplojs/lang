@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import { type IsLiteral, type Length } from "../types";
 
 export type MaxCharactersConstraintName = "string-max-characters";
 
@@ -14,9 +15,36 @@ export type ExtractMaxCharacters<
 		keyof GenericConstraint[DCommon.ConstraintSymbol][MaxCharactersConstraintName]
 	) extends infer InferredResult extends number
 		? DCommon.UnionToIntersection<
-			InferredResult extends any
-				? MaxCharacters<InferredResult>
-				: never
+			| (
+				InferredResult extends any
+					? MaxCharacters<InferredResult>
+					: never
+			)
+			| (
+				GenericConstraint extends string
+					? IsLiteral<GenericConstraint> extends true
+						? MaxCharacters<
+							Length<
+								Extract<
+									DCommon.RemoveConstraint<GenericConstraint>,
+									string
+								>
+							>
+						>
+						: never
+					: never
+			)
 		>
 		: GenericDefault
-	: GenericDefault;
+	: GenericConstraint extends string
+		? IsLiteral<GenericConstraint> extends true
+			? MaxCharacters<
+				Length<
+					Extract<
+						DCommon.RemoveConstraint<GenericConstraint>,
+						string
+					>
+				>
+			>
+			: GenericDefault
+		: GenericDefault;

@@ -1,3 +1,4 @@
+export type * from "./countMinCharacters";
 export type * from "./digit";
 export type * from "./endsWith";
 export type * from "./first";
@@ -12,9 +13,9 @@ export type * from "./normalizeForm";
 export type * from "./number";
 export type * from "./pop";
 export type * from "./replace";
+export type * from "./requireLiteral";
+export type * from "./requireSimpleLiteral";
 export type * from "./shift";
 export type * from "./split";
 export type * from "./startsWith";
-export type * from "./templateLiteralContainLargeType";
-export type * from "./requireLiteral";
-export type * from "./requireSimpleLiteral";
+export type * from "./isKeyPattern";

@@ -5,11 +5,13 @@ export type CountMinElement<
 	GenericAccumulator extends readonly never[] = [],
 > = number extends GenericTuple["length"]
 	? GenericTuple extends readonly [infer __, ...infer InferredRest]
-		? InferredRest extends DCommon.AnyTuple
-			? CountMinElement<
-				InferredRest,
-				[...GenericAccumulator, never]
-			>
-			: [...GenericAccumulator, never]["length"]
+		? [...GenericAccumulator, never] extends infer InferredAccumulator extends readonly never[]
+			? InferredRest extends DCommon.AnyTuple
+				? CountMinElement<
+					InferredRest,
+					InferredAccumulator
+				>
+				: InferredAccumulator["length"]
+			: never
 		: never
 	: GenericTuple["length"];

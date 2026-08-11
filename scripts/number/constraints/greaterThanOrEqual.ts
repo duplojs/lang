@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import { type IsLiteral } from "../types";
 
 export type GreaterThanOrEqualConstraintName = "number-greater-than-or-equal";
 
@@ -14,9 +15,32 @@ export type ExtractGreaterThanOrEqual<
 		keyof GenericConstraint[DCommon.ConstraintSymbol][GreaterThanOrEqualConstraintName]
 	) extends infer InferredResult extends number
 		? DCommon.UnionToIntersection<
-			InferredResult extends any
-				? GreaterThanOrEqual<InferredResult>
-				: never
+			| (
+				InferredResult extends any
+					? GreaterThanOrEqual<InferredResult>
+					: never
+			)
+			| (
+				GenericConstraint extends number
+					? IsLiteral<GenericConstraint> extends true
+						? GreaterThanOrEqual<
+							Extract<
+								DCommon.RemoveConstraint<GenericConstraint>,
+								number
+							>
+						>
+						: never
+					: never
+			)
 		>
 		: GenericDefault
-	: GenericDefault;
+	: GenericConstraint extends number
+		? IsLiteral<GenericConstraint> extends true
+			? GreaterThanOrEqual<
+				Extract<
+					DCommon.RemoveConstraint<GenericConstraint>,
+					number
+				>
+			>
+			: GenericDefault
+		: GenericDefault;

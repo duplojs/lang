@@ -23,6 +23,6 @@ export interface CastError<
 	GenericValue extends unknown,
 	GenericExpectedValue extends unknown,
 > extends ComputedTypeError<GenericReason> {
-	[CastErrorValueSymbol]: Omit<GenericValue, keyof this>;
+	[CastErrorValueSymbol]: RemoveCastError<GenericValue>;
 	[CastErrorExpectedValueSymbol]: GenericExpectedValue;
 }
