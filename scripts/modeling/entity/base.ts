@@ -3,7 +3,6 @@ import * as DCommon from "@scripts/common";
 import * as DDataStructure from "@scripts/dataStructure";
 import * as DEither from "@scripts/either";
 import * as DObject from "@scripts/object";
-import type * as DString from "@scripts/string";
 import { createKind } from "../kind";
 import { type NewType, type NewTypeMap } from "../newType";
 import { EntityNameStructure } from "./entityName";
@@ -40,6 +39,12 @@ export interface Entity<
 		GenericName
 	> {
 }
+
+export type GetEntityName<
+	GenericEntity extends Entity,
+> = GenericEntity extends Entity<infer InferredName>
+	? InferredName
+	: never;
 
 export const entityStructureKind = createKind("entity-structure");
 
@@ -186,30 +191,6 @@ export interface EntityStructure<
 	>;
 }
 
-type ForbiddenMissingNewType<
-	GenericValue extends unknown,
-	GenericPath extends readonly string[] = readonly [],
-> = GenericValue extends NewType
-	? never
-	: GenericValue extends object
-		? DCommon.Or<[
-			DCommon.IsExtends<GenericValue, readonly any[]>,
-			DCommon.And<[
-				DCommon.IsExtends<keyof GenericValue, string>,
-				DCommon.Not<DCommon.IsExtends<DCommon.AnyFunction, GenericValue[keyof GenericValue]>>,
-			]>,
-		]> extends true
-			? {
-				[Prop in keyof GenericValue]: ForbiddenMissingNewType<
-					GenericValue[Prop],
-					readonly [...GenericPath, `${Extract<Prop, string | number>}`]
-				>
-			}[keyof GenericValue]
-			: GenericValue extends Entity
-				? EntityMap<DKind.Remove<GenericValue>>
-				: DCommon.ComputedTypeError<`Value at '${DString.Join<GenericPath>}' is not a NewType.`>
-		: DCommon.ComputedTypeError<`Value at '${DString.Join<GenericPath>}' is not a NewType.`>;
-
 export const EntityStructure = DDataStructure.createStructure(
 	entityStructureKind,
 	({ init }) => <
@@ -218,13 +199,7 @@ export const EntityStructure = DDataStructure.createStructure(
 		const GenericProperties extends DDataStructure.ShapeObjectStructureValue<GenericShape>,
 	>(
 		name: GenericName,
-		shape: () => (
-			& GenericShape
-			& DCommon.NeverCoalescing<
-				ForbiddenMissingNewType<GenericProperties>,
-				unknown
-			>
-		),
+		shape: () => GenericShape,
 	): EntityStructure<
 		GenericName,
 		GenericProperties

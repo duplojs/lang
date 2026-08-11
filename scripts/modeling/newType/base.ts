@@ -50,6 +50,32 @@ export interface NewTypeStructureDefinition<
 	readonly newTypeConstraints: GenericNewTypeConstraint;
 }
 
+export type ComputeNewType<
+	GenericName extends string,
+	GenericValue extends unknown,
+	GenericNewTypeConstraint extends readonly DDataStructure.Constraint<GenericValue>[],
+	GenericIntersectionConstraintValue = DCommon.UnionToIntersection<
+		DDataStructure.ConstraintValue<
+			DArray.Unwrap<GenericNewTypeConstraint>
+		>
+	>,
+	GenericClearValue = DCommon.RemoveConstraint<
+		GenericIntersectionConstraintValue
+	>,
+> = (
+		& GenericValue
+		& GenericClearValue
+		& NewType<
+			GenericName,
+			GenericIntersectionConstraintValue extends (
+				& GenericClearValue
+				& infer InferredConstraint extends DCommon.BaseConstraint
+			)
+				? InferredConstraint
+				: never
+		>
+);
+
 export interface NewTypeStructure<
 	GenericName extends string = string,
 	GenericValue extends unknown = unknown,
@@ -57,26 +83,7 @@ export interface NewTypeStructure<
 		readonly DDataStructure.Constraint<GenericValue>[],
 > extends DCommon.UnionToIntersection<
 		& DDataStructure.Structure<
-			(
-				& GenericValue
-				& DCommon.RemoveConstraint<
-					DCommon.UnionToIntersection<
-						DDataStructure.ConstraintValue<
-							DArray.Unwrap<GenericNewTypeConstraint>
-						>
-					>
-				>
-				& NewType<
-					GenericName,
-					DCommon.GetConstraint<
-						DCommon.UnionToIntersection<
-							DDataStructure.ConstraintValue<
-								DArray.Unwrap<GenericNewTypeConstraint>
-							>
-						>
-					>
-				>
-			),
+			ComputeNewType<GenericName, GenericValue, GenericNewTypeConstraint>,
 			NewTypeStructureDefinition<GenericNewTypeConstraint>
 		>
 		& DKind.Kind<typeof newTypeStructureKind>
@@ -190,11 +197,11 @@ export const NewTypeStructure = DDataStructure.createStructure(
 		GenericStructure extends DDataStructure.Structure,
 		const GenericNewTypeConstraint extends readonly DDataStructure.Constraint<
 			DDataStructure.StructureValue<GenericStructure>
-		>[] = readonly [],
+		>[],
 	>(
 		name: GenericName,
 		structure: GenericStructure,
-		newTypeConstraints: GenericNewTypeConstraint = [] as never,
+		newTypeConstraints: GenericNewTypeConstraint,
 	): NewTypeStructure<
 		GenericName,
 		DDataStructure.StructureValue<GenericStructure>,

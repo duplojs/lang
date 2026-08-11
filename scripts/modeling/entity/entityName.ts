@@ -10,24 +10,20 @@ declare module "@scripts/dataStructure" {
 
 export const entityNameStructureKind = DDataStructure.createKind("entity-name-structure");
 
-export interface EntityNameStructure<
-	GenericName extends string = string,
-> extends DCommon.UnionToIntersection<
+export interface EntityNameStructure extends DCommon.UnionToIntersection<
 		& DDataStructure.Structure<
-			GenericName
+			unknown
 		>
 		& DKind.Kind<typeof entityNameStructureKind>
-	> {
-	readonly name: GenericName;
+> {
+	readonly name: string;
 }
 
 export const EntityNameStructure = DDataStructure.createStructure(
 	entityNameStructureKind,
-	({ init }) => <
-		GenericName extends string,
-	>(
-		name: GenericName,
-	): EntityNameStructure<GenericName> => init<
+	({ init }) => (
+		name: string,
+	) => init<
 		EntityNameStructure
 	>(
 		{ constraints: [] },
@@ -44,5 +40,5 @@ export const EntityNameStructure = DDataStructure.createStructure(
 			isAsynchronous: () => false,
 		},
 		{ name },
-	) as never,
+	),
 );

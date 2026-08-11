@@ -50,6 +50,7 @@ describe("unwrapByInformation", () => {
 		const structure = DModeling.NewTypeStructure(
 			"nested-number",
 			DDataStructure.number(),
+			[],
 		);
 		const codecs = DDataStructure.createCodecs({});
 		const result = DEither.unwrapByInformation(

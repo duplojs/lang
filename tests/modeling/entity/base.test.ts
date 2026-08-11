@@ -543,6 +543,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string([AsyncConstraint()]),
+					[],
 				),
 			}),
 		);

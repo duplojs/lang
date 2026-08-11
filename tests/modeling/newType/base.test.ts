@@ -507,6 +507,7 @@ describe("NewTypeStructure", () => {
 		const innerAsyncStructure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string([innerAsyncConstraint]),
+			[],
 		);
 		const newTypeAsyncStructure = DModeling.NewTypeStructure(
 			"user-name",

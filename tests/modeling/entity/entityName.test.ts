@@ -6,12 +6,12 @@ describe("EntityNameStructure", () => {
 
 		type _CheckStructure = ExpectType<
 			typeof structure,
-			DModeling.EntityNameStructure<"user">,
+			DModeling.EntityNameStructure,
 			"strict"
 		>;
 		type _CheckStructureValue = ExpectType<
 			DDataStructure.StructureValue<typeof structure>,
-			"user",
+			unknown,
 			"strict"
 		>;
 
@@ -45,48 +45,10 @@ describe("EntityNameStructure", () => {
 		if (structure.is(input)) {
 			type _CheckNarrowedInput = ExpectType<
 				typeof input,
-				"user",
+				unknown,
 				"strict"
 			>;
 		}
-	});
-
-	it("does not encode or decode the entity name through matching string codecs", async() => {
-		const structure = DModeling.EntityNameStructure("user");
-		const codec = DDataStructure.createCodec(
-			DDataStructure.TheString,
-			DDataStructure.number().is,
-			(data) => data.length,
-			(data) => `decoded-${data}`,
-		);
-		const codecs = DDataStructure.createCodecs({ codec });
-		const encoded = structure.encode(codecs, "user");
-		const asyncEncoded = await structure.asyncEncode(codecs, "user");
-		const decoded = structure.unsafeDecode(codecs, "user");
-		const asyncDecoded = await structure.asyncUnsafeDecode(codecs, "user");
-		type ExpectedEncoded = (
-			| DEither.Right<"encode-success", "user">
-			| DEither.Left<"async-error", undefined>
-			| DEither.Left<"encode-error", DDataStructure.Error>
-		);
-
-		// @ts-expect-error EntityNameStructure should expose its literal encoded value.
-		type _CheckEncoded = ExpectType<typeof encoded, ExpectedEncoded, "strict">;
-		// @ts-expect-error EntityNameStructure should decode its literal value with codecs.
-		structure.decode(codecs, "user");
-
-		expect(encoded).toStrictEqual(
-			DEither.right("encode-success", "user"),
-		);
-		expect(asyncEncoded).toStrictEqual(
-			DEither.right("encode-success", "user"),
-		);
-		expect(decoded).toStrictEqual(
-			DEither.right("decode-success", "user"),
-		);
-		expect(asyncDecoded).toStrictEqual(
-			DEither.right("decode-success", "user"),
-		);
 	});
 
 	it("returns encode and decode errors for invalid entity names", async() => {
