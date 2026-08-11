@@ -1,5 +1,5 @@
 import type * as DKind from "@scripts/kind";
-import type * as DDataStructure from "@scripts/dataStructure";
+import * as DDataStructure from "@scripts/dataStructure";
 import { createKind } from "../kind";
 import { type EntityStructure, type Entity, type GetEntityName } from "../entity";
 
@@ -21,7 +21,7 @@ export interface Flag<
 const flagHandlerKind = createKind("flag-handler");
 
 export interface FlagHandler<
-	GenericEntity extends Entity & Record<string, unknown> = Entity & Record<string, unknown>,
+	GenericEntity extends Entity = Entity,
 	GenericName extends string = string,
 	GenericValue extends unknown = unknown,
 > extends DKind.Kind<typeof flagHandlerKind> {
@@ -77,11 +77,11 @@ export interface FlagHandler<
 export function createFlag<
 	GenericEntityStructure extends EntityStructure,
 	GenericName extends Capitalize<string>,
-	GenericValueStructure extends DDataStructure.Structure,
+	GenericValueStructure extends DDataStructure.Structure = DDataStructure.Structure<null>,
 >(
 	entityStructure: GenericEntityStructure,
 	name: GenericName,
-	valueStructure: GenericValueStructure,
+	valueStructure: GenericValueStructure = DDataStructure.TypeStructure(DDataStructure.NullType(), []) as never,
 ): FlagHandler<
 	DDataStructure.StructureValue<GenericEntityStructure>,
 	GenericName,
