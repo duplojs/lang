@@ -424,6 +424,81 @@ describe("EntityStructure", () => {
 		);
 	});
 
+	it("returns an async error when synchronously mapping an asynchronous entity property", () => {
+		const asyncConstraintKind = DDataStructure.createKind("sync-entity-map-async-constraint");
+		interface AsyncConstraint extends DCommon.UnionToIntersection<
+			& DDataStructure.Constraint<string>
+			& DKind.Kind<typeof asyncConstraintKind>
+		> {}
+		const AsyncConstraint = DDataStructure.createConstraint(
+			asyncConstraintKind,
+			({ init }) => () => init<AsyncConstraint>(
+				{},
+				{
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
+					isAsynchronous: () => true,
+				},
+			),
+		);
+		const structure = DModeling.EntityStructure(
+			"user",
+			() => ({
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string([AsyncConstraint()]),
+					[],
+				),
+			}),
+		);
+
+		expect(structure.map({ name: "Jane" })).toStrictEqual(
+			DEither.left("async-error", undefined),
+		);
+	});
+
+	it("returns an async error when synchronously decoding an entity with an asynchronous codec", () => {
+		const structure = DModeling.EntityStructure(
+			"user",
+			() => ({
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.stringMin(3)],
+				),
+			}),
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => Promise.resolve(`Jane-${data}`),
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+
+		expect(structure.decodeMap(codecs, { name: 4 })).toStrictEqual(
+			DEither.left("async-error", undefined),
+		);
+	});
+
+	it("returns map errors when runtime mapping receives a non object input", async() => {
+		const structure = DModeling.EntityStructure(
+			"user",
+			() => ({
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.stringMin(3)],
+				),
+			}),
+		);
+		const codecs = DDataStructure.createCodecs({});
+
+		expect(DEither.isLeft(structure.map(null as never))).toBe(true);
+		expect(DEither.isLeft(structure.decodeMap(codecs, null as never))).toBe(true);
+		expect(DEither.isLeft(await structure.asyncDecodeMap(codecs, null as never))).toBe(true);
+		expect(DEither.isLeft(await structure.asyncMap(null as never))).toBe(true);
+	});
+
 	it("asynchronously maps a raw property object to an entity", async() => {
 		const structure = DModeling.EntityStructure(
 			"user",
@@ -518,6 +593,37 @@ describe("EntityStructure", () => {
 		await expect(result).resolves.toStrictEqual(
 			DEither.right("map-success", structure.new({ name: "Jane-4" } as never)),
 		);
+	});
+
+	it("returns a map error when asynchronously decoding an invalid entity", async() => {
+		const structure = DModeling.EntityStructure(
+			"user",
+			() => ({
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.stringMin(3)],
+				),
+			}),
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			() => Promise.resolve("Jo"),
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+		const result = await structure.asyncDecodeMap(codecs, { name: 2 });
+
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				result,
+				"map-error",
+			).issues[0],
+		).toMatchObject({
+			data: "Jo",
+			path: "name",
+		});
 	});
 
 	it("is asynchronous when one of its properties is asynchronous", () => {
