@@ -1,5 +1,7 @@
+import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
 import { type IsLiteral, type Length } from "../types";
+import { type LengthEqual } from "./lengthEqual";
 
 export type MaxCharactersConstraintName = "string-max-characters";
 
@@ -10,14 +12,14 @@ export interface MaxCharacters<
 export type ExtractMaxCharacters<
 	GenericConstraint extends unknown,
 	GenericDefault extends unknown = never,
-> = GenericConstraint extends MaxCharacters<number>
-	? (
-		keyof GenericConstraint[DCommon.ConstraintSymbol][MaxCharactersConstraintName]
-	) extends infer InferredResult extends number
-		? DCommon.UnionToIntersection<
+> = GenericConstraint extends unknown
+	? DCommon.Coalescing<
+		DCommon.UnionToIntersection<
 			| (
-				InferredResult extends any
-					? MaxCharacters<InferredResult>
+				GenericConstraint extends MaxCharacters<infer InferredMax>
+					? InferredMax extends number
+						? MaxCharacters<InferredMax>
+						: never
 					: never
 			)
 			| (
@@ -34,17 +36,36 @@ export type ExtractMaxCharacters<
 						: never
 					: never
 			)
-		>
-		: GenericDefault
-	: GenericConstraint extends string
-		? IsLiteral<GenericConstraint> extends true
-			? MaxCharacters<
-				Length<
-					Extract<
-						DCommon.RemoveConstraint<GenericConstraint>,
-						string
-					>
-				>
-			>
-			: GenericDefault
-		: GenericDefault;
+			| (
+				GenericConstraint extends LengthEqual<infer InferredLength>
+					? InferredLength extends number
+						? MaxCharacters<InferredLength>
+						: never
+					: never
+			)
+		>,
+		unknown,
+		GenericDefault
+	>
+	: never;
+
+export type ComputeMaxCharactersCompatibility<
+	GenericValue extends unknown,
+	GenericExpect extends unknown,
+	GenericDefault extends unknown = never,
+> = DCommon.NeverCoalescing<
+	(
+		ExtractMaxCharacters<GenericExpect, unknown> extends MaxCharacters<infer InferredTo>
+			? InferredTo extends number
+				? ExtractMaxCharacters<GenericValue, unknown> extends MaxCharacters<infer InferredFrom>
+					? InferredFrom extends number
+						? DNumber.IsGreaterOrEqual<InferredTo, InferredFrom> extends true
+							? DCommon.CompatibilityConstraintResult<true, InferredFrom, InferredTo>
+							: DCommon.CompatibilityConstraintResult<false, InferredFrom, InferredTo>
+						: never
+					: never
+				: never
+			: never
+	),
+	GenericDefault
+>;

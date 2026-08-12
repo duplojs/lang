@@ -6,6 +6,7 @@ export type * from "./lessThan";
 export type * from "./lessThanOrEqual";
 export type * from "./multipleOf";
 export type * from "./negative";
+export type * from "./notZero";
 export type * from "./odd";
 export type * from "./positive";
 export type * from "./safe";

@@ -8,6 +8,7 @@ export type * from "./map";
 export type * from "./matched";
 export type * from "./mergeUnion";
 export type * from "./pop";
+export type * from "./requireTuple";
 export type * from "./reverse";
 export type * from "./shift";
 export type * from "./unmatched";

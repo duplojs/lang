@@ -15,7 +15,7 @@ export type * from "./string";
 
 export interface ComputeCastConstraintRule<
 	GenericValue extends unknown,
-	GenericConstraint extends unknown,
+	GenericConstraint extends BaseConstraint,
 > {
 	string: GenericValue extends string
 		? DObject.Values<

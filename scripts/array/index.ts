@@ -38,6 +38,7 @@ export * from "./shift";
 export * from "./unshift";
 export * from "./insert";
 export * from "./reverse";
+export * from "./infer";
 export * from "./notIncludes";
 export * from "./findLast";
 export * from "./findLastIndex";

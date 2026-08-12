@@ -1,5 +1,7 @@
+import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
 import type * as DTuple from "@scripts/tuple";
+import { type LengthEqual } from "./lengthEqual";
 
 export type MinElementsConstraintName = "array-min-elements";
 
@@ -10,14 +12,14 @@ export interface MinElements<
 export type ExtractMinElements<
 	GenericConstraint extends unknown,
 	GenericDefault extends unknown = never,
-> = GenericConstraint extends MinElements<number>
-	? (
-		keyof GenericConstraint[DCommon.ConstraintSymbol][MinElementsConstraintName]
-	) extends infer InferredResult extends number
-		? DCommon.UnionToIntersection<
+> = GenericConstraint extends unknown
+	? DCommon.Coalescing<
+		DCommon.UnionToIntersection<
 			| (
-				InferredResult extends any
-					? MinElements<InferredResult>
+				GenericConstraint extends MinElements<infer InferredMin>
+					? InferredMin extends number
+						? MinElements<InferredMin>
+						: never
 					: never
 			)
 			| (
@@ -32,15 +34,36 @@ export type ExtractMinElements<
 					>
 					: never
 			)
-		>
-		: GenericDefault
-	: GenericConstraint extends DCommon.AnyTuple
-		? MinElements<
-			DTuple.CountMinElement<
-				Extract<
-					DCommon.RemoveConstraint<GenericConstraint>,
-					DCommon.AnyTuple
-				>
-			>
-		>
-		: GenericDefault;
+			| (
+				GenericConstraint extends LengthEqual<infer InferredLength>
+					? InferredLength extends number
+						? MinElements<InferredLength>
+						: never
+					: never
+			)
+		>,
+		unknown,
+		GenericDefault
+	>
+	: never;
+
+export type ComputeMinElementsCompatibility<
+	GenericValue extends unknown,
+	GenericExpect extends unknown,
+	GenericDefault extends unknown = never,
+> = DCommon.NeverCoalescing<
+	(
+		ExtractMinElements<GenericExpect, unknown> extends MinElements<infer InferredTo>
+			? InferredTo extends number
+				? ExtractMinElements<GenericValue, unknown> extends MinElements<infer InferredFrom>
+					? InferredFrom extends number
+						? DNumber.IsLessOrEqual<InferredTo, InferredFrom> extends true
+							? DCommon.CompatibilityConstraintResult<true, InferredFrom, InferredTo>
+							: DCommon.CompatibilityConstraintResult<false, InferredFrom, InferredTo>
+						: never
+					: never
+				: never
+			: never
+	),
+	GenericDefault
+>;

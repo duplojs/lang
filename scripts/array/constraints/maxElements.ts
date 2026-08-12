@@ -1,4 +1,6 @@
+import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
+import { type LengthEqual } from "./lengthEqual";
 
 export type MaxElementsConstraintName = "array-max-elements";
 
@@ -9,14 +11,14 @@ export interface MaxElements<
 export type ExtractMaxElements<
 	GenericConstraint extends unknown,
 	GenericDefault extends unknown = never,
-> = GenericConstraint extends MaxElements<number>
-	? (
-		keyof GenericConstraint[DCommon.ConstraintSymbol][MaxElementsConstraintName]
-	) extends infer InferredResult extends number
-		? DCommon.UnionToIntersection<
+> = GenericConstraint extends unknown
+	? DCommon.Coalescing<
+		DCommon.UnionToIntersection<
 			| (
-				InferredResult extends any
-					? MaxElements<InferredResult>
+				GenericConstraint extends MaxElements<infer InferredMax>
+					? InferredMax extends number
+						? MaxElements<InferredMax>
+						: never
 					: never
 			)
 			| (
@@ -26,10 +28,36 @@ export type ExtractMaxElements<
 						: MaxElements<GenericConstraint["length"]>
 					: never
 			)
-		>
-		: GenericDefault
-	: GenericConstraint extends DCommon.AnyTuple
-		? number extends GenericConstraint["length"]
-			? GenericDefault
-			: MaxElements<GenericConstraint["length"]>
-		: GenericDefault;
+			| (
+				GenericConstraint extends LengthEqual<infer InferredLength>
+					? InferredLength extends number
+						? MaxElements<InferredLength>
+						: never
+					: never
+			)
+		>,
+		unknown,
+		GenericDefault
+	>
+	: never;
+
+export type ComputeMaxElementsCompatibility<
+	GenericValue extends unknown,
+	GenericExpect extends unknown,
+	GenericDefault extends unknown = never,
+> = DCommon.NeverCoalescing<
+	(
+		ExtractMaxElements<GenericExpect, unknown> extends MaxElements<infer InferredTo>
+			? InferredTo extends number
+				? ExtractMaxElements<GenericValue, unknown> extends MaxElements<infer InferredFrom>
+					? InferredFrom extends number
+						? DNumber.IsGreaterOrEqual<InferredTo, InferredFrom> extends true
+							? DCommon.CompatibilityConstraintResult<true, InferredFrom, InferredTo>
+							: DCommon.CompatibilityConstraintResult<false, InferredFrom, InferredTo>
+						: never
+					: never
+				: never
+			: never
+	),
+	GenericDefault
+>;

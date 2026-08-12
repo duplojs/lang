@@ -1,8 +1,8 @@
-import type { IsEqual } from "./isEqual";
+import { type IsNever } from "./isNever";
 
 export type FixDeepFunctionInfer<
 	GenericValue extends unknown,
 	GenericValueInfer extends unknown,
-> = IsEqual<GenericValueInfer, never> extends true
+> = IsNever<GenericValueInfer> extends true
 	? NoInfer<GenericValue>
 	: GenericValueInfer;
