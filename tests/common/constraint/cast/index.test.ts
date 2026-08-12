@@ -54,9 +54,9 @@ describe("cast", () => {
 
 		const value6: string & DString.MinCharacters<12> = cast(
 			"" as string & DString.LengthEqual<6> & CastError<
-				"Impossible to cast on MaxCharacters<12> because constraint LengthEqual<6> from the value is less than.",
-					string & DString.LengthEqual<6>,
-					DString.MinCharacters<12>
+				"Impossible to cast on MinCharacters<12> because constraint LengthEqual<6> from the value is less than.",
+				string & DString.LengthEqual<6>,
+				DString.MinCharacters<12>
 			>,
 		);
 
@@ -80,7 +80,7 @@ describe("cast", () => {
 
 		const value3: string & DString.LengthEqual<12> = cast(
 			"" as string & DString.MaxCharacters<12> & CastError<
-				"Impossible to cast on LengthEqual<12> because value does not have LengthEqual constraint.",
+				"Impossible to cast on LengthEqual because value does not have LengthEqual constraint.",
 				string & DString.MaxCharacters<12>,
 				DString.LengthEqual<12>
 			>,
@@ -152,7 +152,7 @@ describe("cast", () => {
 
 		const value10: readonly unknown[] & DArray.MaxElements<2> = cast(
 			[] as unknown as readonly [unknown, ...unknown[]] & CastError<
-				"Impossible to cast on MaxElements<2> because value does not have MaxElements constraint.",
+				"Impossible to cast on MaxElements because value does not have MaxElements constraint.",
 				readonly [unknown, ...unknown[]],
 				DArray.MaxElements<2>
 			>,
@@ -218,7 +218,7 @@ describe("cast", () => {
 
 		const value9: readonly unknown[] & DArray.MinElements<2> = cast(
 			[] as unknown as readonly [unknown] & CastError<
-				"Impossible to cast on MinElements<2> because constraint MinElements<1> from the value is less than.",
+				"Impossible to cast on MinElements<2> because constraint LengthEqual<1> from the value is less than.",
 				readonly [unknown],
 				DArray.MinElements<2>
 			>,
@@ -289,7 +289,7 @@ describe("cast", () => {
 
 		const value6: readonly unknown[] & DArray.LengthEqual<2> = cast(
 			[] as unknown as readonly unknown[] & DArray.MinElements<2> & CastError<
-				"Impossible to cast on LengthEqual<2> because value does not have LengthEqual constraint.",
+				"Impossible to cast on LengthEqual because value does not have LengthEqual constraint.",
 				readonly unknown[] & DArray.MinElements<2>,
 				DArray.LengthEqual<2>
 			>,
@@ -339,7 +339,7 @@ describe("cast", () => {
 
 		const value7: number & DNumber.GreaterThan<12> = cast(
 			1 as number & CastError<
-				"Impossible to cast on GreaterThan<12> because value does not have compatible constraint.",
+				"Impossible to cast on GreaterThan because value does not have compatible constraint.",
 				number,
 				DNumber.GreaterThan<12>
 			>,
@@ -405,7 +405,7 @@ describe("cast", () => {
 
 		const value7: number & DNumber.GreaterThanOrEqual<12> = cast(
 			1 as number & CastError<
-				"Impossible to cast on GreaterThanOrEqual<12> because value does not have compatible constraint.",
+				"Impossible to cast on GreaterThanOrEqual because value does not have compatible constraint.",
 				number,
 				DNumber.GreaterThanOrEqual<12>
 			>,
@@ -471,7 +471,7 @@ describe("cast", () => {
 
 		const value7: number & DNumber.LessThan<12> = cast(
 			1 as number & CastError<
-				"Impossible to cast on LessThan<12> because value does not have compatible constraint.",
+				"Impossible to cast on LessThan because value does not have compatible constraint.",
 				number,
 				DNumber.LessThan<12>
 			>,
@@ -537,7 +537,7 @@ describe("cast", () => {
 
 		const value7: number & DNumber.LessThanOrEqual<12> = cast(
 			1 as number & CastError<
-				"Impossible to cast on LessThanOrEqual<12> because value does not have compatible constraint.",
+				"Impossible to cast on LessThanOrEqual because value does not have compatible constraint.",
 				number,
 				DNumber.LessThanOrEqual<12>
 			>,
@@ -612,7 +612,7 @@ describe("cast", () => {
 			| (string & DString.MaxCharacters<50>)
 		) = cast(
 			"" as string & DString.MinCharacters<10> & CastError<
-				"Impossible to cast on MaxCharacters<50> because value does not have MaxCharacters constraint.",
+				"Impossible to cast on MaxCharacters because value does not have MaxCharacters constraint.",
 				string & DString.MinCharacters<10>,
 				DString.MaxCharacters<50>
 			>,
@@ -674,7 +674,7 @@ describe("cast", () => {
 					DString.MaxCharacters<50>
 				>
 				| & CastError<
-					"Impossible to cast on MinCharacters<1> because value does not have MinCharacters constraint.",
+					"Impossible to cast on MinCharacters because value does not have MinCharacters constraint.",
 					string & DString.MaxCharacters<100>,
 					DString.NotEmpty
 				>
