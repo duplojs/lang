@@ -4,6 +4,7 @@ export type * from "./forbiddenNegative";
 export type * from "./isGreater";
 export type * from "./isLess";
 export type * from "./isLiteral";
+export type * from "./isNegative";
 export type * from "./isPositive";
 export type * from "./requireLiteral";
 export type * from "./requireSimpleLiteral";

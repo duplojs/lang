@@ -44,5 +44,6 @@ export * from "./search";
 export * from "./substring";
 export * from "./charAt";
 export * from "./join";
-
-// export * from "./at";
+export * from "./at";
+export * from "./first";
+export * from "./last";

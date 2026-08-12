@@ -19,3 +19,6 @@ export type * from "./shift";
 export type * from "./split";
 export type * from "./startsWith";
 export type * from "./isKeyPattern";
+export type * from "./at";
+export type * from "./first";
+export type * from "./last";

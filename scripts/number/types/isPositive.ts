@@ -1,7 +1,7 @@
 import type * as DCommon from "@scripts/common";
-import type * as DString from "@scripts/string";
+import type { IsNegative } from "./isNegative";
 
 export type IsPositive<
 	GenericValue extends number,
-> = DCommon.Not<DString.Includes<`${GenericValue}`, "-">>;
+> = DCommon.Not<IsNegative<GenericValue>>;
 
