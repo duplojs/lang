@@ -1,6 +1,7 @@
 import type * as DKind from "@scripts/kind";
 import type * as DCommon from "@scripts/common";
 import * as DDataStructure from "@scripts/dataStructure";
+import { createKind } from "../kind";
 
 declare module "@scripts/dataStructure" {
 	interface StructuresStore {
@@ -8,7 +9,7 @@ declare module "@scripts/dataStructure" {
 	}
 }
 
-export const entityNameStructureKind = DDataStructure.createKind("entity-name-structure");
+export const entityNameStructureKind = createKind("entity-name-structure");
 
 export interface EntityNameStructure extends DCommon.UnionToIntersection<
 		& DDataStructure.Structure<

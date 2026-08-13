@@ -1,13 +1,17 @@
 import type * as DCommon from "@scripts/common";
 import type * as DDataStructure from "@scripts/dataStructure";
+import type * as DKind from "@scripts/kind";
 import { createNewEntity, type ForbiddenTopLevelNewType, type NewTypeStructure } from "../newType";
 import { createEntity, type ForbiddenMissingNewTypeInEntityShape } from "./helper";
 import { type EntityStructure } from "./base";
 import { createFlag, type FlagHandler } from "../flag";
+import { createKind } from "../kind";
+
+export const namespaceKind = createKind("namespace");
 
 export interface EntityNamespace<
-	GenericEntityName extends Capitalize<string>,
-> {
+	GenericEntityName extends Capitalize<string> = Capitalize<string>,
+> extends DKind.Kind<typeof namespaceKind> {
 	readonly name: GenericEntityName;
 
 	createNewType<
@@ -95,5 +99,6 @@ export function createEntityNamespace<
 			`${entityName}${name}` as never,
 			valueStructure,
 		),
-	};
+		[namespaceKind.runTimeKey]: null,
+	} satisfies DKind.Remove<EntityNamespace> as never;
 }

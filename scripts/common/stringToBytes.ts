@@ -1,10 +1,9 @@
-/* oxlint-disable id-length */
+/* eslint-disable id-length */
 import * as DKind from "@scripts/kind";
 import * as DString from "@scripts/string";
-import { createKind } from "./kind";
 
 export class InvalidBytesInStringError extends DKind.parentClass(
-	createKind("invalid-bytes-in-string-error"),
+	"invalid-bytes-in-string-error",
 	Error,
 ) {
 	public constructor(
@@ -27,20 +26,18 @@ const unitMapper = {
 
 export type BytesInString = `${number}${keyof typeof unitMapper}`;
 
-export function stringToBytes(input: BytesInString | number): number;
-
-export function stringToBytes(input: BytesInString | number): number {
-	if (typeof input === "number") {
-		return input;
+export function stringToBytes(bytesInString: BytesInString | number) {
+	if (typeof bytesInString === "number") {
+		return bytesInString;
 	}
 
-	const regExpResults = parseRegExp.exec(input);
+	const regExpResults = parseRegExp.exec(bytesInString);
 
 	const { rawValue, unit } = regExpResults?.groups ?? {};
 	const value = parseFloat(rawValue ?? "");
 
-	if (Number.isNaN(value) || !unit || !DString.isKeyof(unit, unitMapper)) {
-		throw new InvalidBytesInStringError(input);
+	if (isNaN(value) || !unit || !DString.isKeyof(unit, unitMapper)) {
+		throw new InvalidBytesInStringError(bytesInString);
 	}
 
 	return Math.floor(unitMapper[unit] * value);

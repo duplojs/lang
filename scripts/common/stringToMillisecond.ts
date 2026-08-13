@@ -1,10 +1,9 @@
-/* oxlint-disable id-length */
+/* eslint-disable id-length */
 import * as DKind from "@scripts/kind";
 import * as DString from "@scripts/string";
-import { createKind } from "./kind";
 
 export class InvalidMillisecondInStringError extends DKind.parentClass(
-	createKind("invalid-millisecond-in-string-error"),
+	"invalid-millisecond-in-string-error",
 	Error,
 ) {
 	public constructor(
@@ -25,38 +24,31 @@ const unitMapper = {
 
 const parseRegExp = /(?<rawValue>[0-9.]+)(?<unit>ms|s|m|h|d|w)/;
 
-export type MillisecondInString =
-	| `${number}${keyof typeof unitMapper}`
-	| `${number}.${number}${keyof typeof unitMapper}`;
+export type TimeInString = `${number}${keyof typeof unitMapper}`;
 
 export function stringToMillisecond(
-	input: MillisecondInString | number,
-	...additionalInputs: (MillisecondInString | number)[]
-): number;
-
-export function stringToMillisecond(
-	input: MillisecondInString | number,
-	...additionalInputs: (MillisecondInString | number)[]
+	millisecondInString: TimeInString | number,
+	...millisecondInStrings: (TimeInString | number)[]
 ): number {
-	if (typeof input === "number") {
-		return input;
+	if (typeof millisecondInString === "number") {
+		return millisecondInString;
 	}
 
-	const result = parseRegExp.exec(input);
+	const result = parseRegExp.exec(millisecondInString);
 
 	const { rawValue, unit } = result?.groups ?? {};
 	const value = parseFloat(rawValue ?? "");
 
-	if (Number.isNaN(value) || !unit || !DString.isKeyof(unit, unitMapper)) {
-		throw new InvalidMillisecondInStringError(input);
+	if (isNaN(value) || !unit || !DString.isKeyof(unit, unitMapper)) {
+		throw new InvalidMillisecondInStringError(millisecondInString);
 	}
 
 	const millisecond = Math.floor(value * unitMapper[unit]);
 
-	const [additionalInput, ...restAdditionalInputs] = additionalInputs;
+	const [otherMillisecondInString, ...restMillisecondInStrings] = millisecondInStrings;
 
-	if (additionalInput) {
-		return millisecond + stringToMillisecond(additionalInput, ...restAdditionalInputs);
+	if (otherMillisecondInString) {
+		return millisecond + stringToMillisecond(otherMillisecondInString, ...restMillisecondInStrings);
 	}
 
 	return millisecond;
