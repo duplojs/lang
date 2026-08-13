@@ -59,17 +59,28 @@ describe("isType", () => {
 	});
 
 	it("narrows the direct input", () => {
-		const input = "value" as string | number;
+		const format = (input: string | number) => {
+			if (DCommon.isType(input, "string")) {
+				type _CheckInput = ExpectType<
+					typeof input,
+					string,
+					"strict"
+				>;
 
-		if (DCommon.isType(input, "string")) {
-			type _CheckInput = ExpectType<
-				typeof input,
-				string,
-				"strict"
-			>;
+				return input.toUpperCase();
+			} else {
+				type _CheckInput = ExpectType<
+					typeof input,
+					number,
+					"strict"
+				>;
 
-			expect(input).toBe("value");
-		}
+				return input.toFixed(2);
+			}
+		};
+
+		expect(format("value")).toBe("VALUE");
+		expect(format(42)).toBe("42.00");
 	});
 
 	it("preserves narrowing in a pipe", () => {

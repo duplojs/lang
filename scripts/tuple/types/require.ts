@@ -1,6 +1,6 @@
 import type * as DCommon from "@scripts/common";
 
-export type RequireTuple<
+export type Require<
 	GenericValue extends unknown,
 > = GenericValue extends DCommon.AnyTuple
 	? unknown

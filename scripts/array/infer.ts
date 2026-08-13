@@ -74,7 +74,7 @@ export function infer<
 >(
 	input: (
 		& GenericInput
-		& DTuple.RequireTuple<GenericInput>
+		& DTuple.Require<GenericInput>
 		& DCommon.ForbiddenUnion<GenericInput>
 		& DCommon.BreakGenericLink<
 			DCommon.ContainExtends<GenericConstraint, DCommon.ComputedTypeError<string>> extends true
