@@ -1,5 +1,5 @@
 import type * as DObject from "@scripts/object";
-import type { Adaptor, AnyFunction, AnyTuple, ComputedTypeError, IsEqual, NeverCoalescing, Or, UnionToIntersection } from "./types";
+import type { AnyFunction, AnyTuple, ComputedTypeError, IsEqual, NeverCoalescing, Or, UnionToIntersection } from "./types";
 
 export type Transformer<
 	GenericValue extends unknown,
@@ -11,7 +11,7 @@ export type Transformer<
 		: GenericValue extends readonly [infer InferredFirst, ...infer InferredRest]
 			? [
 				Transformer<InferredFirst, GenericMethodName>,
-				...Adaptor<Transformer<InferredRest, GenericMethodName>, readonly unknown[]>,
+				...Extract<Transformer<InferredRest, GenericMethodName>, readonly unknown[]>,
 			]
 			: GenericValue extends readonly []
 				? []

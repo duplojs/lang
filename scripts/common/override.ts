@@ -1,6 +1,6 @@
 import { createGlobalStore } from "./globalStore";
 import type * as DObject from "@scripts/object";
-import type { ObjectKey, Adaptor, AnyFunction, AnyValue } from "./types";
+import type { ObjectKey, AnyFunction, AnyValue } from "./types";
 
 const SymbolOverrideStore = Symbol.for("@duplojs/lang/override");
 
@@ -41,7 +41,7 @@ export interface OverrideHandler<
 		>,
 	>(
 		property: GenericProperty,
-		value: Adaptor<GenericInterface[GenericProperty], AnyValue>
+		value: Extract<GenericInterface[GenericProperty], AnyValue>
 	): void;
 
 	apply(input: GenericInterface): GenericInterface;

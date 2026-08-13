@@ -27,7 +27,7 @@ type CreateGreaterThanTable<
 	? InferredRest extends readonly []
 		? readonly [FigureGreaterThanTable[InferredFirst]]
 		: CreateGreaterThanTable<
-			DCommon.Adaptor<
+			Extract<
 				InferredRest,
 				DCommon.AnyTuple<DString.Digit>
 			>

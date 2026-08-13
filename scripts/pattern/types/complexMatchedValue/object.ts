@@ -31,7 +31,7 @@ export type ComplexMatchedObject<
 								& {
 									-readonly [Prop in keyof InferredPatternValue]: Extract<
 										ComplexMatchedValue<
-											InferredInput[DCommon.Adaptor<Prop, keyof InferredInput>],
+											InferredInput[Extract<Prop, keyof InferredInput>],
 											InferredPatternValue[Prop]
 										>,
 										any
@@ -45,7 +45,7 @@ export type ComplexMatchedObject<
 											DObject.GetPropsWithValue<
 												Pick<
 													InferredResult,
-													DCommon.Adaptor<keyof InferredPatternValue, keyof InferredResult>
+													Extract<keyof InferredPatternValue, keyof InferredResult>
 												>,
 												never
 											>,

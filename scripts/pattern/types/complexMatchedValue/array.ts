@@ -35,7 +35,7 @@ type ComplexMatchedArrayTuple<
 								...(
 									InferredPatternRest extends readonly []
 										? InferredInput
-										: DCommon.Adaptor<
+										: Extract<
 											ComplexMatchedValue<
 												InferredInput,
 												InferredPatternRest
@@ -89,7 +89,7 @@ type ComplexMatchedTupleTuple<
 										? never
 										: [
 											InferredResult,
-											...DCommon.Adaptor<
+											...Extract<
 												(
 													DCommon.IsEqual<
 														inferredPatternValueRest[number],

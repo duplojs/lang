@@ -39,7 +39,7 @@ export type GetIncompleteUnion<
 					? DObject.FlatObject<{
 						[Prop in (InferredPatternValue extends any ? keyof InferredPatternValue : never)]:
 						GetIncompleteUnion<
-							InferredInput[DCommon.Adaptor<Prop, keyof InferredInput>],
+							InferredInput[Extract<Prop, keyof InferredInput>],
 							Extract<InferredPatternValue, { [SubProp in Prop]: any }>[Prop]
 						>
 					}>

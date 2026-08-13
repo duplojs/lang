@@ -1,7 +1,7 @@
 import * as DKind from "@scripts/kind";
 import type * as DObject from "@scripts/object";
 import { createGlobalStore } from "./globalStore";
-import type { IsEqual, Adaptor, AnyFunction, ObjectKey } from "./types";
+import type { IsEqual, AnyFunction, ObjectKey } from "./types";
 import { createKind } from "./kind";
 
 const BuilderStoreSymbol = Symbol("BuilderStoreSymbol");
@@ -59,7 +59,7 @@ export interface BuilderHandler<
 > {
 	set<
 		GenericMethodName extends DObject.GetPropsWithValueExtends<GenericBuilder, AnyFunction>,
-		GenericMethod extends Adaptor<GenericBuilder[GenericMethodName], AnyFunction>,
+		GenericMethod extends Extract<GenericBuilder[GenericMethodName], AnyFunction>,
 	>(
 		method: GenericMethodName,
 		theFunction: (

@@ -39,7 +39,7 @@ type UnFlatTuple<
 			DCommon.IsEqual<InferredElementPath, `[${GenericLastTuple["length"]}]`> extends true
 				? [
 					...GenericLastTuple,
-					GenericObject[DCommon.Adaptor<InferredElementPath, keyof GenericObject>],
+					GenericObject[Extract<InferredElementPath, keyof GenericObject>],
 				]
 				: [
 					...GenericLastTuple,
@@ -47,7 +47,7 @@ type UnFlatTuple<
 						RemoveFirstFromKey<
 							Pick<
 								GenericObject,
-								DCommon.Adaptor<InferredElementPath, keyof GenericObject>
+								Extract<InferredElementPath, keyof GenericObject>
 							>,
 							`[${GenericLastTuple["length"]}]`
 						>
@@ -64,7 +64,7 @@ type UnFlatTuple<
 
 export type UnFlatObject<
 	GenericObject extends object,
-> = GroupPath<DCommon.Adaptor<keyof GenericObject, string>> extends infer InferredGroupedPath
+> = GroupPath<Extract<keyof GenericObject, string>> extends infer InferredGroupedPath
 	? (
 		InferredGroupedPath extends [
 			infer InferredFirst extends string,
@@ -74,26 +74,26 @@ export type UnFlatObject<
 				? UnFlatTuple<GenericObject, InferredGroupedPath>
 				: DCommon.IsEqual<InferredFirst, "[number]"> extends true
 					? DCommon.IsEqual<InferredFirst, InferredPath> extends true
-						? GenericObject[DCommon.Adaptor<InferredFirst, keyof GenericObject>][]
+						? GenericObject[Extract<InferredFirst, keyof GenericObject>][]
 						: UnFlatObject<
 							RemoveFirstFromKey<
 								Pick<
 									GenericObject,
-									DCommon.Adaptor<InferredPath, keyof GenericObject>
+									Extract<InferredPath, keyof GenericObject>
 								>,
 								InferredFirst
 							>
 						>[]
 					: DCommon.IsEqual<InferredFirst, InferredPath> extends true
 						? {
-							[Prop in InferredFirst]: GenericObject[DCommon.Adaptor<Prop, keyof GenericObject>]
+							[Prop in InferredFirst]: GenericObject[Extract<Prop, keyof GenericObject>]
 						}
 						: {
 							[Prop in InferredFirst]: UnFlatObject<
 								RemoveFirstFromKey<
 									Pick<
 										GenericObject,
-										DCommon.Adaptor<InferredPath, keyof GenericObject>
+										Extract<InferredPath, keyof GenericObject>
 									>,
 									InferredFirst
 								>

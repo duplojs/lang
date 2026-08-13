@@ -8,7 +8,7 @@ type ComputeResultWithOmitIsObject<
 	Omit<GenericInput, GetPropsWithValue<GenericOmitValue, true>> extends infer InferredValue extends object
 		? PartialKeys<
 			InferredValue,
-			DCommon.Adaptor<
+			Extract<
 				| GetPropsWithValue<GenericOmitValue, boolean>
 				| GetPropsWithValue<GenericOmitValue, boolean | undefined>
 				| GetPropsWithValue<GenericOmitValue, true | undefined>,
@@ -32,7 +32,7 @@ type OmitOutput<
 	: DCommon.SimplifyTopLevel<
 		Omit<
 			GenericInput,
-			DCommon.Adaptor<GenericOmitValue, readonly DCommon.ObjectKey[]>[number]
+			Extract<GenericOmitValue, readonly DCommon.ObjectKey[]>[number]
 		>
 	>;
 

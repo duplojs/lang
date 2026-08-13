@@ -1,5 +1,4 @@
 export type * from "./IsExtends";
-export type * from "./adaptor";
 export type * from "./and";
 export type * from "./anyConstructor";
 export type * from "./anyFunction";

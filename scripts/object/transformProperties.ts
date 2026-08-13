@@ -16,14 +16,14 @@ type TransformPropertiesOutput<
 	& {
 		[Prop in keyof GenericTransformObject]: (
 			| ReturnType<
-				DCommon.Adaptor<
+				Extract<
 					GenericTransformObject[Prop],
 					DCommon.AnyFunction
 				>
 			>
 		| (
 			undefined extends GenericTransformObject[Prop]
-				? GenericObjectInput[DCommon.Adaptor<Prop, keyof GenericObjectInput>]
+				? GenericObjectInput[Extract<Prop, keyof GenericObjectInput>]
 				: never
 
 		)

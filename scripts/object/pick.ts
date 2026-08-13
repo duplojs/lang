@@ -7,7 +7,7 @@ type ComputeResultWithPickIsObject<
 > = DCommon.SimplifyTopLevel<
 	& Pick<
 		GenericInput,
-		DCommon.Adaptor<
+		Extract<
 			GetPropsWithValue<GenericPickValue, true>,
 			keyof GenericInput
 		>
@@ -15,7 +15,7 @@ type ComputeResultWithPickIsObject<
 	& Partial<
 		Pick<
 			GenericInput,
-			DCommon.Adaptor<
+			Extract<
 				| GetPropsWithValue<GenericPickValue, boolean>
 				| GetPropsWithValue<GenericPickValue, boolean | undefined>
 				| GetPropsWithValue<GenericPickValue, true | undefined>,
@@ -39,7 +39,7 @@ type PickOutput<
 	: DCommon.SimplifyTopLevel<
 		Pick<
 			GenericInput,
-			DCommon.Adaptor<GenericPickValue, readonly DCommon.ObjectKey[]>[number]
+			Extract<GenericPickValue, readonly DCommon.ObjectKey[]>[number]
 		>
 	>;
 

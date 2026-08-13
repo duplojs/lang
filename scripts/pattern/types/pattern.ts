@@ -54,7 +54,7 @@ type ArrayPattern<
 								? never
 								: readonly [
 									Pattern<InferredFirst>,
-									...DCommon.Adaptor<
+									...Extract<
 										Pattern<InferredRest>,
 										readonly any[]
 									>,
@@ -130,7 +130,7 @@ export type PatternValue<
 				: GenericPattern extends readonly [infer inferredFirst, ...infer inferredRest]
 					? DCommon.IsEqual<inferredRest, readonly []> extends true
 						? [PatternValue<inferredFirst>]
-						: [PatternValue<inferredFirst>, ...DCommon.Adaptor<PatternValue<inferredRest>, any[]>]
+						: [PatternValue<inferredFirst>, ...Extract<PatternValue<inferredRest>, any[]>]
 					: GenericPattern extends readonly []
 						? []
 						: GenericPattern extends readonly any[]

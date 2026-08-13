@@ -63,7 +63,7 @@ type ComplexUnMatchedTupleTuple<
 											DCommon.IsEqual<InferredResultFirst, never> extends true
 												? InferredInputFirst
 												: InferredResultFirst,
-											...DCommon.Adaptor<
+											...Extract<
 												DCommon.IsEqual<InferredResultRest, never> extends true
 													? InferredPatternValueRest
 													: InferredResultRest,

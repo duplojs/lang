@@ -14,7 +14,7 @@ type ToOutput<
 	{
 		[Prop in keyof GenericShapeObject]: (
 			| ReturnType<
-				DCommon.Adaptor<
+				Extract<
 					GenericShapeObject[Prop],
 					DCommon.AnyFunction
 				>
