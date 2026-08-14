@@ -41,7 +41,7 @@ describe("capitalize", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			Capitalize<string> & DString.MinCharacters<5> & DString.LengthEqual<5>,
+			Capitalize<string> & DString.LengthEqual<5>,
 			"strict"
 		>;
 	});

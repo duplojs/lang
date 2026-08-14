@@ -8,7 +8,7 @@ describe("padStart", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string,
+			string & DString.MinCharacters<2>,
 			"strict"
 		>;
 	});

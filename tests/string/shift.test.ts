@@ -8,7 +8,7 @@ describe("shift", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string,
+			string & DString.MaxCharacters<5>,
 			"strict"
 		>;
 	});

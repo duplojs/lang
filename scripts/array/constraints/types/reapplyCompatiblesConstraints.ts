@@ -8,8 +8,11 @@ type ApplyLengthEqual<
 	GenericSource extends readonly unknown[],
 	GenericReapplyConstraint extends "maxElements" | "minElements" | "lengthEqual",
 > = "lengthEqual" extends GenericReapplyConstraint
-	? (
-		ExtractLengthEqual<GenericSource, unknown> extends LengthEqual<infer InferredLength>
+	? DCommon.Or<[
+		DCommon.ContainExtends<GenericSource, LengthEqual<number>>,
+		DCommon.Not<DCommon.IsExtends<GenericOutput, DCommon.AnyTuple>>,
+	]> extends true
+		? ExtractLengthEqual<GenericSource, unknown> extends LengthEqual<infer InferredLength>
 			? (
 				& GenericOutput
 				& DCommon.UnionToIntersection<
@@ -19,7 +22,7 @@ type ApplyLengthEqual<
 				>
 			)
 			: GenericOutput
-	)
+		: GenericOutput
 	: GenericOutput;
 
 type ApplyMinElements<
@@ -27,8 +30,14 @@ type ApplyMinElements<
 	GenericSource extends readonly unknown[],
 	GenericReapplyConstraint extends "maxElements" | "minElements" | "lengthEqual",
 > = "minElements" extends GenericReapplyConstraint
-	? (
-		ExtractMinElements<GenericSource, unknown> extends MinElements<infer InferredMin>
+	? DCommon.Or<[
+		DCommon.ContainExtends<GenericSource, MinElements<number>>,
+		DCommon.And<[
+			DCommon.Not<DCommon.ContainExtends<GenericOutput, LengthEqual<number>>>,
+			DCommon.Not<DCommon.IsExtends<GenericOutput, DCommon.AnyTuple>>,
+		]>,
+	]> extends true
+		? ExtractMinElements<GenericSource, unknown> extends MinElements<infer InferredMin>
 			? (
 				& GenericOutput
 				& DCommon.UnionToIntersection<
@@ -38,7 +47,7 @@ type ApplyMinElements<
 				>
 			)
 			: GenericOutput
-	)
+		: GenericOutput
 	: GenericOutput;
 
 type ApplyMaxElements<
@@ -46,15 +55,23 @@ type ApplyMaxElements<
 	GenericSource extends readonly unknown[],
 	GenericReapplyConstraint extends "maxElements" | "minElements" | "lengthEqual",
 > = "maxElements" extends GenericReapplyConstraint
-	? ExtractMaxElements<GenericSource, unknown> extends MaxElements<infer InferredMax>
-		? (
-			& GenericOutput
-			& DCommon.UnionToIntersection<
-				InferredMax extends number
-					? MaxElements<InferredMax>
-					: never
-			>
-		)
+	? DCommon.Or<[
+		DCommon.ContainExtends<GenericSource, MaxElements<number>>,
+		DCommon.And<[
+			DCommon.Not<DCommon.ContainExtends<GenericOutput, LengthEqual<number>>>,
+			DCommon.Not<DCommon.IsExtends<GenericOutput, DCommon.AnyTuple>>,
+		]>,
+	]> extends true
+		? ExtractMaxElements<GenericSource, unknown> extends MaxElements<infer InferredMax>
+			? (
+				& GenericOutput
+				& DCommon.UnionToIntersection<
+					InferredMax extends number
+						? MaxElements<InferredMax>
+						: never
+				>
+			)
+			: GenericOutput
 		: GenericOutput
 	: GenericOutput;
 

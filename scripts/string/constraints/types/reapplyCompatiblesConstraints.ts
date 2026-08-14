@@ -1,16 +1,19 @@
 import type * as DCommon from "@scripts/common";
-import type { IsLiteral } from "../../types";
 import type { ExtractLengthEqual, LengthEqual } from "../lengthEqual";
 import type { ExtractMaxCharacters, MaxCharacters } from "../maxCharacters";
 import type { ExtractMinCharacters, MinCharacters } from "../minCharacters";
+import { type IsLiteral } from "../../types";
 
 type ApplyLengthEqual<
 	GenericOutput extends string,
 	GenericSource extends string,
 	GenericReapplyConstraint extends "maxCharacters" | "minCharacters" | "lengthEqual",
 > = "lengthEqual" extends GenericReapplyConstraint
-	? (
-		ExtractLengthEqual<GenericSource, unknown> extends LengthEqual<infer InferredLength>
+	? DCommon.Or<[
+		DCommon.ContainExtends<GenericSource, LengthEqual<number>>,
+		DCommon.Not<IsLiteral<GenericOutput>>,
+	]> extends true
+		? ExtractLengthEqual<GenericSource, unknown> extends LengthEqual<infer InferredLength>
 			? (
 				& GenericOutput
 				& DCommon.UnionToIntersection<
@@ -20,7 +23,7 @@ type ApplyLengthEqual<
 				>
 			)
 			: GenericOutput
-	)
+		: GenericOutput
 	: GenericOutput;
 
 type ApplyMinCharacters<
@@ -28,8 +31,14 @@ type ApplyMinCharacters<
 	GenericSource extends string,
 	GenericReapplyConstraint extends "maxCharacters" | "minCharacters" | "lengthEqual",
 > = "minCharacters" extends GenericReapplyConstraint
-	? (
-		ExtractMinCharacters<GenericSource, unknown> extends MinCharacters<infer InferredMin>
+	? DCommon.Or<[
+		DCommon.ContainExtends<GenericSource, MinCharacters<number>>,
+		DCommon.And<[
+			DCommon.Not<DCommon.ContainExtends<GenericOutput, LengthEqual<number>>>,
+			DCommon.Not<IsLiteral<GenericOutput>>,
+		]>,
+	]> extends true
+		? ExtractMinCharacters<GenericSource, unknown> extends MinCharacters<infer InferredMin>
 			? (
 				& GenericOutput
 				& DCommon.UnionToIntersection<
@@ -39,7 +48,7 @@ type ApplyMinCharacters<
 				>
 			)
 			: GenericOutput
-	)
+		: GenericOutput
 	: GenericOutput;
 
 type ApplyMaxCharacters<
@@ -47,15 +56,23 @@ type ApplyMaxCharacters<
 	GenericSource extends string,
 	GenericReapplyConstraint extends "maxCharacters" | "minCharacters" | "lengthEqual",
 > = "maxCharacters" extends GenericReapplyConstraint
-	? ExtractMaxCharacters<GenericSource, unknown> extends MaxCharacters<infer InferredMax>
-		? (
-			& GenericOutput
-			& DCommon.UnionToIntersection<
-				InferredMax extends number
-					? MaxCharacters<InferredMax>
-					: never
-			>
-		)
+	? DCommon.Or<[
+		DCommon.ContainExtends<GenericSource, MaxCharacters<number>>,
+		DCommon.And<[
+			DCommon.Not<DCommon.ContainExtends<GenericOutput, LengthEqual<number>>>,
+			DCommon.Not<IsLiteral<GenericOutput>>,
+		]>,
+	]> extends true
+		? ExtractMaxCharacters<GenericSource, unknown> extends MaxCharacters<infer InferredMax>
+			? (
+				& GenericOutput
+				& DCommon.UnionToIntersection<
+					InferredMax extends number
+						? MaxCharacters<InferredMax>
+						: never
+				>
+			)
+			: GenericOutput
 		: GenericOutput
 	: GenericOutput;
 
@@ -63,18 +80,16 @@ export type ReapplyCompatiblesConstraints<
 	GenericSource extends string,
 	GenericOutput extends string,
 	GenericReapplyConstraint extends "maxCharacters" | "minCharacters" | "lengthEqual" = "maxCharacters" | "minCharacters" | "lengthEqual",
-> = IsLiteral<Extract<DCommon.RemoveConstraint<GenericSource>, string>> extends true
-	? GenericOutput
-	: ApplyMaxCharacters<
-		ApplyMinCharacters<
-			ApplyLengthEqual<
-				GenericOutput,
-				GenericSource,
-				GenericReapplyConstraint
-			>,
+> = ApplyMaxCharacters<
+	ApplyMinCharacters<
+		ApplyLengthEqual<
+			GenericOutput,
 			GenericSource,
 			GenericReapplyConstraint
 		>,
 		GenericSource,
 		GenericReapplyConstraint
-	>;
+	>,
+	GenericSource,
+	GenericReapplyConstraint
+>;

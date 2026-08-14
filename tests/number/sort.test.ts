@@ -9,7 +9,7 @@ describe("sort", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			readonly number[] & DArray.LengthEqual<3> & DArray.MinElements<3> & DArray.MaxElements<3>,
+			readonly number[] & DArray.LengthEqual<3>,
 			"strict"
 		>;
 	});
