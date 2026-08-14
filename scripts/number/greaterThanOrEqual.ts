@@ -1,5 +1,4 @@
 import type * as DCommon from "@scripts/common";
-import type { CompatibilityConstraintResult } from "@scripts/common";
 import type { ComputeGreaterThanOrEqualCompatibility, GreaterThanOrEqual, IsImpossibleToApplyGreaterThanOrEqual } from "./constraints";
 import type { RequireSimpleLiteral } from "./types";
 
@@ -12,9 +11,9 @@ type GreaterThanOrEqualOutput<
 		: ComputeGreaterThanOrEqualCompatibility<
 			GenericValue,
 			GreaterThanOrEqual<GenericThreshold>,
-			CompatibilityConstraintResult<false, number, number>
+			DCommon.CompatibilityConstraintResult<false, number, number>
 		> extends infer InferredResult
-			? InferredResult extends CompatibilityConstraintResult<true>
+			? InferredResult extends DCommon.CompatibilityConstraintResult<true>
 				? GenericValue
 				: GenericValue & GreaterThanOrEqual<GenericThreshold>
 			: never

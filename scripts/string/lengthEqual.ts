@@ -1,6 +1,5 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { CompatibilityConstraintResult } from "@scripts/common";
 import type { ComputeLengthEqualCompatibility, ExtractLengthEqual, ExtractMaxCharacters, ExtractMinCharacters, IsImpossibleToApplyLengthEqual, LengthEqual, MaxCharacters, MinCharacters } from "./constraints";
 
 type RequireLengthEqualConstraint<
@@ -63,9 +62,9 @@ type LengthEqualOutput<
 		: ComputeLengthEqualCompatibility<
 			GenericString,
 			LengthEqual<GenericLength>,
-			CompatibilityConstraintResult<false, number, number>
+			DCommon.CompatibilityConstraintResult<false, number, number>
 		> extends infer InferredResult
-			? InferredResult extends CompatibilityConstraintResult<true>
+			? InferredResult extends DCommon.CompatibilityConstraintResult<true>
 				? GenericString
 				: GenericString & LengthEqual<GenericLength>
 			: never

@@ -1,6 +1,5 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { CompatibilityConstraintResult } from "@scripts/common";
 import type { ComputeMinElementsCompatibility, ExtractLengthEqual, ExtractMaxElements, IsImpossibleToApplyMinElements, LengthEqual, MaxElements, MinElements } from "./constraints";
 
 type RequireLengthEqualConstraint<
@@ -51,9 +50,9 @@ type MinElementsOutput<
 		: ComputeMinElementsCompatibility<
 			GenericArray,
 			MinElements<GenericMin>,
-			CompatibilityConstraintResult<false, number, number>
+			DCommon.CompatibilityConstraintResult<false, number, number>
 		> extends infer InferredResult
-			? InferredResult extends CompatibilityConstraintResult<true>
+			? InferredResult extends DCommon.CompatibilityConstraintResult<true>
 				? GenericArray
 				: GenericArray & MinElements<GenericMin>
 			: never

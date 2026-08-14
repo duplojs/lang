@@ -1,6 +1,5 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { CompatibilityConstraintResult } from "@scripts/common";
 import type { ComputeMaxElementsCompatibility, ExtractLengthEqual, ExtractMinElements, IsImpossibleToApplyMaxElements, LengthEqual, MaxElements, MinElements } from "./constraints";
 
 type RequireLengthEqualConstraint<
@@ -51,9 +50,9 @@ type MaxElementsOutput<
 		: ComputeMaxElementsCompatibility<
 			GenericArray,
 			MaxElements<GenericMax>,
-			CompatibilityConstraintResult<false, number, number>
+			DCommon.CompatibilityConstraintResult<false, number, number>
 		> extends infer InferredResult
-			? InferredResult extends CompatibilityConstraintResult<true>
+			? InferredResult extends DCommon.CompatibilityConstraintResult<true>
 				? GenericArray
 				: GenericArray & MaxElements<GenericMax>
 			: never

@@ -1,4 +1,4 @@
-import { type IsEqual, type AnyFunction, type AnyValue, type EscapeVoid, type FixDeepFunctionInfer, type BreakGenericLink } from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import { type PatternValue, type Pattern } from "../types/pattern";
 import { isResult, type PatternResult, result } from "../result";
 import { type ComplexMatchedValue, type ComplexUnMatchedValue } from "../types";
@@ -12,23 +12,23 @@ export function match<
 >(
 	input: GenericInput,
 ): MatchBuilder<
-	IsEqual<GenericInput, unknown> extends true
-		? AnyValue
+	DCommon.IsEqual<GenericInput, unknown> extends true
+		? DCommon.AnyValue
 		: GenericInput
 >;
 
 export function match<
 	GenericInput extends unknown,
 	GenericInputValue extends Exclude<
-		IsEqual<GenericInput, unknown> extends true
-			? AnyValue
+		DCommon.IsEqual<GenericInput, unknown> extends true
+			? DCommon.AnyValue
 			: GenericInput,
 		PatternResult
 	>,
 	GenericInputPatternResult extends Extract<GenericInput, PatternResult>,
 	const GenericPattern extends Pattern<GenericInputValue>,
 	GenericPatternValue extends PatternValue<GenericPattern>,
-	GenericOutput extends AnyValue | EscapeVoid,
+	GenericOutput extends DCommon.AnyValue | DCommon.EscapeVoid,
 	GenericMatchedValue extends Extract<
 		ComplexMatchedValue<
 			GenericInputValue,
@@ -37,7 +37,7 @@ export function match<
 		any
 	>,
 >(
-	pattern: FixDeepFunctionInfer<
+	pattern: DCommon.FixDeepFunctionInfer<
 		Pattern<GenericInputValue>,
 		GenericPattern
 	>,
@@ -50,9 +50,9 @@ export function match<
 			any
 		>,
 	) => GenericOutput,
-): (input: GenericInput | GenericInputValue | GenericInputPatternResult) => BreakGenericLink<(
+): (input: GenericInput | GenericInputValue | GenericInputPatternResult) => DCommon.BreakGenericLink<(
 	| (
-		IsEqual<GenericMatchedValue, never> extends true
+		DCommon.IsEqual<GenericMatchedValue, never> extends true
 			? never
 			: PatternResult<GenericOutput>
 	)
@@ -69,15 +69,15 @@ export function match<
 export function match<
 	GenericInput extends unknown,
 	GenericInputValue extends Exclude<
-		IsEqual<GenericInput, unknown> extends true
-			? AnyValue
+		DCommon.IsEqual<GenericInput, unknown> extends true
+			? DCommon.AnyValue
 			: GenericInput,
 		PatternResult
 	>,
 	GenericInputPatternResult extends Extract<GenericInput, PatternResult>,
 	const GenericPattern extends Pattern<GenericInputValue>,
 	GenericPatternValue extends PatternValue<GenericPattern>,
-	GenericOutput extends AnyValue | EscapeVoid,
+	GenericOutput extends DCommon.AnyValue | DCommon.EscapeVoid,
 	GenericMatchedValue extends Extract<
 		ComplexMatchedValue<
 			GenericInputValue,
@@ -87,7 +87,7 @@ export function match<
 	>,
 >(
 	input: GenericInput | GenericInputValue | GenericInputPatternResult,
-	pattern: FixDeepFunctionInfer<
+	pattern: DCommon.FixDeepFunctionInfer<
 		Pattern<GenericInputValue>,
 		GenericPattern
 	>,
@@ -100,9 +100,9 @@ export function match<
 			any
 		>,
 	) => GenericOutput,
-): BreakGenericLink<
+): DCommon.BreakGenericLink<
 	| (
-		IsEqual<GenericMatchedValue, never> extends true
+		DCommon.IsEqual<GenericMatchedValue, never> extends true
 			? never
 			: PatternResult<GenericOutput>
 	)
@@ -117,7 +117,7 @@ export function match<
 >;
 
 export function match(
-	...args: [unknown, Pattern, AnyFunction] | [Pattern, AnyFunction] | [unknown]
+	...args: [unknown, Pattern, DCommon.AnyFunction] | [Pattern, DCommon.AnyFunction] | [unknown]
 ) {
 	if (args.length === 1) {
 		const [input] = args;

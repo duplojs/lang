@@ -1,5 +1,5 @@
+import * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
-import { type ComputedTypeError, createBuilder, type Builder, type FixDeepFunctionInfer, type IsEqual } from "@scripts/common";
 import { type ComplexMatchedValue, type ComplexUnMatchedValue, type Pattern, type PatternValue } from "../types";
 import { isMatch } from "../isMatch";
 import { createKind } from "../kind";
@@ -17,12 +17,12 @@ export interface MatchBuilderDefinition {
 export interface MatchBuilder<
 	GenericValue extends unknown = never,
 	GenericResult extends unknown = never,
-> extends Builder<MatchBuilderDefinition> {
+> extends DCommon.Builder<MatchBuilderDefinition> {
 	with<
 		const GenericPattern extends Pattern<GenericValue>,
 		GenericOutput extends unknown,
 	>(
-		pattern: FixDeepFunctionInfer<
+		pattern: DCommon.FixDeepFunctionInfer<
 			Pattern<GenericValue>,
 			GenericPattern
 		>,
@@ -90,10 +90,10 @@ export interface MatchBuilder<
 		GenericOutput | GenericResult
 	>;
 
-	exhaustive: IsEqual<GenericValue, never> extends true
+	exhaustive: DCommon.IsEqual<GenericValue, never> extends true
 		? () => GenericResult
 		: (
-			& ComputedTypeError<"Pattern are not exhaustive.">
+			& DCommon.ComputedTypeError<"Pattern are not exhaustive.">
 			& { restValue: GenericValue }
 		);
 
@@ -113,99 +113,104 @@ export class InvalidExhaustivePatternError extends DKind.parentClass(
 	}
 }
 
-export const matchBuilder = createBuilder<
-	MatchBuilder<unknown, unknown> & Pick<MatchBuilder<never, unknown>, "exhaustive">
->("@duplojs/utils/pattern/match");
+export const matchBuilder = DCommon.justExec(() => {
+	const builder = DCommon.createBuilder<
+		& MatchBuilder<unknown, unknown>
+		& Pick<MatchBuilder<never, unknown>, "exhaustive">
+	>("@duplojs/utils/pattern/match");
 
-matchBuilder.set(
-	"with",
-	({
-		args: [pattern, theFunction],
-		accumulator,
-		next,
-	}) => next({
-		...accumulator,
-		matchers: [
-			...accumulator.matchers,
-			{
-				isMatch: isMatch(pattern),
-				theFunction,
+	builder.set(
+		"with",
+		({
+			args: [pattern, theFunction],
+			accumulator,
+			next,
+		}) => next({
+			...accumulator,
+			matchers: [
+				...accumulator.matchers,
+				{
+					isMatch: isMatch(pattern),
+					theFunction,
+				},
+			],
+		}),
+	);
+
+	builder.set(
+		"when",
+		({
+			args: [predicate, theFunction],
+			accumulator,
+			next,
+		}) => next({
+			...accumulator,
+			matchers: [
+				...accumulator.matchers,
+				{
+					isMatch: predicate,
+					theFunction,
+				},
+			],
+		}),
+	);
+
+	builder.set(
+		"whenNot",
+		({
+			args: [predicate, theFunction],
+			accumulator,
+			next,
+		}) => next({
+			...accumulator,
+			matchers: [
+				...accumulator.matchers,
+				{
+					isMatch: (value) => !predicate(value),
+					theFunction,
+				},
+			],
+		}),
+	);
+
+	builder.set(
+		"exhaustive",
+		({
+			accumulator: {
+				input,
+				matchers,
 			},
-		],
-	}),
-);
-
-matchBuilder.set(
-	"when",
-	({
-		args: [predicate, theFunction],
-		accumulator,
-		next,
-	}) => next({
-		...accumulator,
-		matchers: [
-			...accumulator.matchers,
-			{
-				isMatch: predicate,
-				theFunction,
-			},
-		],
-	}),
-);
-
-matchBuilder.set(
-	"whenNot",
-	({
-		args: [predicate, theFunction],
-		accumulator,
-		next,
-	}) => next({
-		...accumulator,
-		matchers: [
-			...accumulator.matchers,
-			{
-				isMatch: (value) => !predicate(value),
-				theFunction,
-			},
-		],
-	}),
-);
-
-matchBuilder.set(
-	"exhaustive",
-	({
-		accumulator: {
-			input,
-			matchers,
-		},
-	}) => {
+		}) => {
 		// eslint-disable-next-line @typescript-eslint/prefer-for-of
-		for (let index = 0; index < matchers.length; index++) {
-			if (matchers[index]!.isMatch(input)) {
-				return matchers[index]!.theFunction(input);
+			for (let index = 0; index < matchers.length; index++) {
+				if (matchers[index]!.isMatch(input)) {
+					return matchers[index]!.theFunction(input);
+				}
 			}
-		}
 
-		throw new InvalidExhaustivePatternError(input);
-	},
-);
-
-matchBuilder.set(
-	"otherwise",
-	({
-		args: [theFunction],
-		accumulator: {
-			input,
-			matchers,
+			throw new InvalidExhaustivePatternError(input);
 		},
-	}) => {
-		// eslint-disable-next-line @typescript-eslint/prefer-for-of
-		for (let index = 0; index < matchers.length; index++) {
-			if (matchers[index]!.isMatch(input)) {
-				return matchers[index]!.theFunction(input);
-			}
-		}
+	);
 
-		return theFunction(input);
-	},
-);
+	builder.set(
+		"otherwise",
+		({
+			args: [theFunction],
+			accumulator: {
+				input,
+				matchers,
+			},
+		}) => {
+		// eslint-disable-next-line @typescript-eslint/prefer-for-of
+			for (let index = 0; index < matchers.length; index++) {
+				if (matchers[index]!.isMatch(input)) {
+					return matchers[index]!.theFunction(input);
+				}
+			}
+
+			return theFunction(input);
+		},
+	);
+
+	return builder;
+});
