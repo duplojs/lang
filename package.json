@@ -96,6 +96,21 @@
       "import": "./dist/generator/index.mjs",
       "require": "./dist/generator/index.cjs",
       "types": "./dist/generator/index.d.ts"
+    },
+    "./invocation": {
+      "import": "./dist/invocation/index.mjs",
+      "require": "./dist/invocation/index.cjs",
+      "types": "./dist/invocation/index.d.ts"
+    },
+    "./path": {
+      "import": "./dist/path/index.mjs",
+      "require": "./dist/path/index.cjs",
+      "types": "./dist/path/index.d.ts"
+    },
+    "./printer": {
+      "import": "./dist/printer/index.mjs",
+      "require": "./dist/printer/index.cjs",
+      "types": "./dist/printer/index.d.ts"
     }
   },
   "devDependencies": {

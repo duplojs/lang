@@ -3,7 +3,6 @@
 export * from "./common";
 export * as DCommon from "./common";
 
-export * as K from "./kind";
 export * as DKind from "./kind";
 
 export * as O from "./object";
@@ -41,3 +40,7 @@ export * as DGenerator from "./generator";
 
 export * as I from "./invocation";
 export * as DInvocation from "./invocation";
+
+export * as DPath from "./path";
+
+export * as DPrinter from "./printer";
