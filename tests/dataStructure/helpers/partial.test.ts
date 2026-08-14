@@ -77,6 +77,33 @@ describe("partial", () => {
 		);
 	});
 
+	it("adds undefined to an existing union without an undefined branch", () => {
+		const structure = DDataStructure.partial(
+			DDataStructure.object({
+				value: DDataStructure.union([
+					DDataStructure.string(),
+					DDataStructure.number(),
+				]),
+			}),
+		);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			{
+				readonly value?: string | number | undefined;
+			},
+			"strict"
+		>;
+
+		expect(
+			(structure.definition.shape.value[0]!.value as DDataStructure.UnionStructure)
+				.definition.values,
+		).toHaveLength(3);
+		expect(structure.check({})).toStrictEqual(
+			DEither.right("check-success", {}),
+		);
+	});
+
 	it("keeps an undefined structure unchanged", () => {
 		const structure = DDataStructure.partial(
 			DDataStructure.object({

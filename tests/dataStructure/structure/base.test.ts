@@ -331,6 +331,21 @@ describe("createStructure", () => {
 		);
 	});
 
+	it("adds methods to the structure prototype", () => {
+		const prototype = DDataStructure.StructureClass.prototype as DDataStructure.Structure;
+
+		try {
+			DDataStructure.StructureClass.addToPrototype(
+				"contract",
+				(() => "prototype-contract") as never,
+			);
+
+			expect(prototype.contract()).toBe("prototype-contract");
+		} finally {
+			delete (prototype as Partial<DDataStructure.Structure>).contract;
+		}
+	});
+
 	it("returns check results for synchronous, asynchronous and predicate usages", async() => {
 		const syncStructureKind = DDataStructure.createKind("test-sync-check-structure");
 		const asyncStructureKind = DDataStructure.createKind("test-async-check-structure");
@@ -401,6 +416,40 @@ describe("createStructure", () => {
 		expect(syncStructure.is("value")).toBe(true);
 		expect(syncStructure.is(123)).toBe(false);
 		expect(asyncStructure.is("value")).toBe(false);
+	});
+
+	it("clones a structure with the same behavior", () => {
+		const testStructureKind = DDataStructure.createKind("test-clone-structure");
+		const executeCheck = vi.fn(
+			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
+		);
+
+		const TestStructure = DDataStructure.createStructure(
+			testStructureKind,
+			({ init }) => () => init(
+				{ constraints: [] },
+				{
+					executeCheck,
+					executeEncode: (_self, _codecContext, data) => data,
+					executeDecode: (_self, _codecContext, data) => data,
+					isAsynchronous: () => false,
+				},
+			),
+		);
+
+		const structure = TestStructure();
+		const clonedStructure = structure.clone();
+
+		expect(clonedStructure).not.toBe(structure);
+		expect(clonedStructure.definition).toStrictEqual(structure.definition);
+		expect(clonedStructure.check("value")).toStrictEqual(
+			DEither.right("check-success", "value"),
+		);
+		expect(executeCheck).toHaveBeenCalledWith(
+			clonedStructure,
+			"value",
+			expect.any(Function),
+		);
 	});
 
 	it("wraps synchronous and asynchronous encode results", async() => {

@@ -33,4 +33,24 @@ describe("throttling", () => {
 			"strict"
 		>;
 	});
+
+	it("should keep an existing flow exit", async() => {
+		vi.useFakeTimers();
+
+		const stopFlowKind = DInvocation.createKind("test-throttling-stop-flow");
+		const stopFlow = DInvocation.createFlowController(
+			stopFlowKind,
+			({ exitFlow, init }) => () => init(
+				() => exitFlow(DEither.left("stopped")),
+			),
+		);
+		const useFlow = DInvocation.flow(
+			stopFlow(),
+			DInvocation.throttling("10ms"),
+			() => "accepted",
+		);
+		const result = useFlow(undefined);
+
+		await expect(result).resolves.toStrictEqual(DEither.left("stopped"));
+	});
 });

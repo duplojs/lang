@@ -101,6 +101,22 @@ describe("RecordStructure", () => {
 		);
 	});
 
+	it("ignores non literal key branches when computing required keys", () => {
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.UnionStructure([
+				DDataStructure.TypeStructure(DDataStructure.StringLiteralType("name"), []),
+				DDataStructure.object({}) as never,
+			], []) as never,
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			[],
+		);
+
+		expect(structure.definition.requiredKeys).toStrictEqual(["name"]);
+		expect(structure.check({ name: "Jane" })).toStrictEqual(
+			DEither.right("check-success", { name: "Jane" }),
+		);
+	});
+
 	it("allows partial literal key records when the value structure accepts undefined", () => {
 		const structure = DDataStructure.RecordStructure(
 			DDataStructure.TypeStructure(DDataStructure.StringLiteralType("deletedAt"), []),
@@ -381,6 +397,23 @@ describe("RecordStructure", () => {
 			data: 123,
 			path: "{record value: name}",
 		});
+	});
+
+	it("returns encode and decode errors when constraints fail after conversion", () => {
+		const structure = DDataStructure.RecordStructure(
+			DDataStructure.TypeStructure(DDataStructure.StringLiteralType("name"), []),
+			DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			[DDataStructure.refine(() => false)],
+		);
+		const encoded = structure.encode(DDataStructure.createCodecs({}), { name: "Jane" });
+		const decoded = structure.decode(DDataStructure.createCodecs({}), { name: "Jane" });
+
+		expect(
+			DEither.unwrapByInformationOrThrow(encoded, "encode-error").issues,
+		).toHaveLength(1);
+		expect(
+			DEither.unwrapByInformationOrThrow(decoded, "decode-error").issues,
+		).toHaveLength(1);
 	});
 
 	it("returns async errors for asynchronous key or value structures in synchronous APIs", () => {

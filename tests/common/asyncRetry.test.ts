@@ -1,6 +1,10 @@
 import { DCommon, type ExpectType } from "@scripts";
 
 describe("asyncRetry", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
 	it("retries while the check function rejects the result", async() => {
 		let attempt = 0;
 		const result = DCommon.useAsyncRetry(
@@ -28,6 +32,30 @@ describe("asyncRetry", () => {
 		);
 
 		expect(result).toBe(2);
+		expect(attempt).toBe(2);
+	});
+
+	it("waits between retries when a sleep duration is configured", async() => {
+		vi.useFakeTimers();
+
+		let attempt = 0;
+		const result = DCommon.useAsyncRetry(
+			() => Promise.resolve(++attempt),
+			(output) => output < 2,
+			{
+				maxRetry: 3,
+				timeToSleep: 10,
+			},
+		);
+
+		await Promise.resolve();
+		expect(attempt).toBe(1);
+
+		await vi.advanceTimersByTimeAsync(9);
+		expect(attempt).toBe(1);
+
+		await vi.advanceTimersByTimeAsync(1);
+		await expect(result).resolves.toBe(2);
 		expect(attempt).toBe(2);
 	});
 
