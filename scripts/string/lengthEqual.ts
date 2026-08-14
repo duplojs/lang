@@ -1,6 +1,7 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { ExtractLengthEqual, ExtractMaxCharacters, ExtractMinCharacters, LengthEqual, MaxCharacters, MinCharacters } from "./constraints";
+import type { CompatibilityConstraintResult } from "@scripts/common";
+import type { ComputeLengthEqualCompatibility, ExtractLengthEqual, ExtractMaxCharacters, ExtractMinCharacters, IsImpossibleToApplyLengthEqual, LengthEqual, MaxCharacters, MinCharacters } from "./constraints";
 
 type RequireLengthEqualConstraint<
 	GenericString extends string,
@@ -53,28 +54,21 @@ type RequireApplyLengthEqualBoolean<
 	? unknown
 	: RequireApplyLengthEqual<GenericString, GenericLength>;
 
-type IsLengthEqualCompatible<
-	GenericString extends string,
-	GenericLength extends number,
-> = DCommon.And<[
-	ExtractLengthEqual<GenericString, unknown> extends LengthEqual<infer InferredLength>
-		? DCommon.IsEqual<GenericLength, InferredLength>
-		: true,
-	ExtractMinCharacters<GenericString, unknown> extends MinCharacters<infer InferredMin>
-		? DNumber.IsGreaterOrEqual<GenericLength, InferredMin>
-		: true,
-	ExtractMaxCharacters<GenericString, unknown> extends MaxCharacters<infer InferredMax>
-		? DNumber.IsGreaterOrEqual<InferredMax, GenericLength>
-		: true,
-]>;
-
 type LengthEqualOutput<
 	GenericString extends string,
 	GenericLength extends number,
 > = GenericString extends unknown
-	? IsLengthEqualCompatible<GenericString, GenericLength> extends true
-		? GenericString & LengthEqual<GenericLength>
-		: never
+	? IsImpossibleToApplyLengthEqual<GenericString, LengthEqual<GenericLength>> extends true
+		? never
+		: ComputeLengthEqualCompatibility<
+			GenericString,
+			LengthEqual<GenericLength>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
+				? GenericString
+				: GenericString & LengthEqual<GenericLength>
+			: never
 	: never;
 
 export function lengthEqual<

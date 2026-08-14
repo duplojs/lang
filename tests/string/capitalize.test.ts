@@ -8,7 +8,7 @@ describe("capitalize", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			"Hello world" & DString.MinCharacters<11> & DString.LengthEqual<11>,
+			"Hello world",
 			"strict"
 		>;
 	});

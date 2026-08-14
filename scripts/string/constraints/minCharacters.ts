@@ -2,7 +2,8 @@ import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
 import { type CountMinCharacters, type IsLiteral } from "../types";
 import { type IsTemplateLiteral } from "../types/isTemplateLiteral";
-import { type LengthEqual } from "./lengthEqual";
+import { type ExtractLengthEqual, type LengthEqual } from "./lengthEqual";
+import { type ExtractMaxCharacters, type MaxCharacters } from "./maxCharacters";
 
 export type MinCharactersConstraintName = "string-min-characters";
 
@@ -73,3 +74,42 @@ export type ComputeMinCharactersCompatibility<
 	),
 	GenericDefault
 >;
+
+export type IsImpossibleToApplyMinCharacters<
+	GenericValue extends unknown,
+	GenericExpect extends unknown,
+> = DCommon.NeverCoalescing<
+	(
+		GenericValue extends string
+			? ExtractMinCharacters<GenericExpect, unknown> extends MinCharacters<infer InferredTo>
+				? InferredTo extends number
+					? (
+						| (
+							ExtractLengthEqual<GenericValue, unknown> extends LengthEqual<infer InferredLength>
+								? InferredLength extends number
+									? DNumber.IsGreaterOrEqual<InferredLength, InferredTo> extends true
+										? false
+										: true
+									: never
+								: never
+						)
+						| (
+							ExtractMaxCharacters<GenericValue, unknown> extends MaxCharacters<infer InferredMax>
+								? InferredMax extends number
+									? DNumber.IsGreaterOrEqual<InferredMax, InferredTo> extends true
+										? false
+										: true
+									: never
+								: never
+						)
+					)
+					: never
+				: true
+			: false
+	),
+	false
+> extends infer InferredResult
+	? DCommon.ContainExtends<InferredResult, true> extends true
+		? true
+		: false
+	: never;

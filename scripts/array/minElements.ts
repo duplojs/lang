@@ -1,6 +1,7 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { ExtractLengthEqual, ExtractMaxElements, ExtractMinElements, LengthEqual, MaxElements, MinElements } from "./constraints";
+import type { CompatibilityConstraintResult } from "@scripts/common";
+import type { ComputeMinElementsCompatibility, ExtractLengthEqual, ExtractMaxElements, IsImpossibleToApplyMinElements, LengthEqual, MaxElements, MinElements } from "./constraints";
 
 type RequireLengthEqualConstraint<
 	GenericArray extends readonly unknown[],
@@ -45,19 +46,17 @@ type MinElementsOutput<
 	GenericArray extends readonly unknown[],
 	GenericMin extends number,
 > = GenericArray extends unknown
-	? ExtractLengthEqual<GenericArray, unknown> extends LengthEqual<infer InferredLength>
-		? DNumber.IsGreaterOrEqual<InferredLength, GenericMin> extends true
-			? GenericArray
-			: never
-		: ExtractMaxElements<GenericArray, unknown> extends MaxElements<infer InferredMax>
-			? DNumber.IsGreaterOrEqual<InferredMax, GenericMin> extends true
-				? GenericArray & MinElements<GenericMin>
-				: never
-			: ExtractMinElements<GenericArray, unknown> extends MinElements<infer InferredMin>
-				? DNumber.IsGreaterOrEqual<InferredMin, GenericMin> extends true
-					? GenericArray
-					: GenericArray & MinElements<GenericMin>
+	? IsImpossibleToApplyMinElements<GenericArray, MinElements<GenericMin>> extends true
+		? never
+		: ComputeMinElementsCompatibility<
+			GenericArray,
+			MinElements<GenericMin>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
+				? GenericArray
 				: GenericArray & MinElements<GenericMin>
+			: never
 	: never;
 
 export function minElements<

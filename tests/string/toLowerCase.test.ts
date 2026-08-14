@@ -8,7 +8,7 @@ describe("toLowerCase", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			"hello" & DString.MinCharacters<5>,
+			"hello",
 			"strict"
 		>;
 	});

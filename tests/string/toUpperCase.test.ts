@@ -8,7 +8,7 @@ describe("toUpperCase", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			"HELLO" & DString.MinCharacters<5>,
+			"HELLO",
 			"strict"
 		>;
 	});

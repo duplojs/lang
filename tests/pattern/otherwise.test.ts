@@ -48,7 +48,7 @@ describe("otherwise", () => {
 
 		type check = ExpectType<
 			typeof result,
-			("TEST" & DString.MinCharacters<4>) | 50,
+			"TEST" | 50,
 			"strict"
 		>;
 	});
@@ -67,9 +67,8 @@ describe("otherwise", () => {
 
 		type check = ExpectType<
 			typeof result,
-			("TITI" & DString.MinCharacters<4>) | 50,
+			"TITI" | 50,
 			"strict"
 		>;
 	});
 });
-

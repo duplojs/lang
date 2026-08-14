@@ -1,6 +1,7 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { ExtractLengthEqual, ExtractMaxElements, ExtractMinElements, LengthEqual, MaxElements, MinElements } from "./constraints";
+import type { CompatibilityConstraintResult } from "@scripts/common";
+import type { ComputeLengthEqualCompatibility, ExtractLengthEqual, ExtractMaxElements, ExtractMinElements, IsImpossibleToApplyLengthEqual, LengthEqual, MaxElements, MinElements } from "./constraints";
 
 type RequireLengthEqualConstraint<
 	GenericArray extends readonly unknown[],
@@ -53,28 +54,21 @@ type RequireApplyLengthEqualBoolean<
 	? unknown
 	: RequireApplyLengthEqual<GenericArray, GenericLength>;
 
-type IsLengthEqualCompatible<
-	GenericArray extends readonly unknown[],
-	GenericLength extends number,
-> = DCommon.And<[
-	ExtractLengthEqual<GenericArray, unknown> extends LengthEqual<infer InferredLength>
-		? DCommon.IsEqual<GenericLength, InferredLength>
-		: true,
-	ExtractMinElements<GenericArray, unknown> extends MinElements<infer InferredMin>
-		? DNumber.IsGreaterOrEqual<GenericLength, InferredMin>
-		: true,
-	ExtractMaxElements<GenericArray, unknown> extends MaxElements<infer InferredMax>
-		? DNumber.IsGreaterOrEqual<InferredMax, GenericLength>
-		: true,
-]>;
-
 type LengthEqualOutput<
 	GenericArray extends readonly unknown[],
 	GenericLength extends number,
 > = GenericArray extends unknown
-	? IsLengthEqualCompatible<GenericArray, GenericLength> extends true
-		? GenericArray & LengthEqual<GenericLength>
-		: never
+	? IsImpossibleToApplyLengthEqual<GenericArray, LengthEqual<GenericLength>> extends true
+		? never
+		: ComputeLengthEqualCompatibility<
+			GenericArray,
+			LengthEqual<GenericLength>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
+				? GenericArray
+				: GenericArray & LengthEqual<GenericLength>
+			: never
 	: never;
 
 export function lengthEqual<

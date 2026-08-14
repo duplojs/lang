@@ -1,6 +1,7 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { ExtractLengthEqual, ExtractMaxCharacters, ExtractMinCharacters, LengthEqual, MaxCharacters, MinCharacters } from "./constraints";
+import type { CompatibilityConstraintResult } from "@scripts/common";
+import type { ComputeMinCharactersCompatibility, ExtractLengthEqual, ExtractMaxCharacters, LengthEqual, MaxCharacters, MinCharacters, IsImpossibleToApplyMinCharacters } from "./constraints";
 
 type RequireLengthEqualConstraint<
 	GenericString extends string,
@@ -45,19 +46,17 @@ type MinCharactersOutput<
 	GenericString extends string,
 	GenericMin extends number,
 > = GenericString extends unknown
-	? ExtractLengthEqual<GenericString, unknown> extends LengthEqual<infer InferredLength>
-		? DNumber.IsGreaterOrEqual<InferredLength, GenericMin> extends true
-			? GenericString
-			: never
-		: ExtractMaxCharacters<GenericString, unknown> extends MaxCharacters<infer InferredMax>
-			? DNumber.IsGreaterOrEqual<InferredMax, GenericMin> extends true
-				? GenericString & MinCharacters<GenericMin>
-				: never
-			: ExtractMinCharacters<GenericString, unknown> extends MinCharacters<infer InferredMin>
-				? DNumber.IsGreaterOrEqual<InferredMin, GenericMin> extends true
-					? GenericString
-					: GenericString & MinCharacters<GenericMin>
+	? IsImpossibleToApplyMinCharacters<GenericString, MinCharacters<GenericMin>> extends true
+		? never
+		: ComputeMinCharactersCompatibility<
+			GenericString,
+			MinCharacters<GenericMin>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
+				? GenericString
 				: GenericString & MinCharacters<GenericMin>
+			: never
 	: never;
 
 export function minCharacters<

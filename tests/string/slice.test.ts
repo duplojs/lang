@@ -8,7 +8,7 @@ describe("slice", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string & DString.MaxCharacters<11>,
+			string,
 			"strict"
 		>;
 	});

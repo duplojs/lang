@@ -1,4 +1,5 @@
 import type * as DCommon from "@scripts/common";
+import type { IsLiteral } from "../../types";
 import type { ExtractLengthEqual, LengthEqual } from "../lengthEqual";
 import type { ExtractMaxCharacters, MaxCharacters } from "../maxCharacters";
 import type { ExtractMinCharacters, MinCharacters } from "../minCharacters";
@@ -62,16 +63,18 @@ export type ReapplyCompatiblesConstraints<
 	GenericSource extends string,
 	GenericOutput extends string,
 	GenericReapplyConstraint extends "maxCharacters" | "minCharacters" | "lengthEqual" = "maxCharacters" | "minCharacters" | "lengthEqual",
-> = ApplyMaxCharacters<
-	ApplyMinCharacters<
-		ApplyLengthEqual<
-			GenericOutput,
+> = IsLiteral<Extract<DCommon.RemoveConstraint<GenericSource>, string>> extends true
+	? GenericOutput
+	: ApplyMaxCharacters<
+		ApplyMinCharacters<
+			ApplyLengthEqual<
+				GenericOutput,
+				GenericSource,
+				GenericReapplyConstraint
+			>,
 			GenericSource,
 			GenericReapplyConstraint
 		>,
 		GenericSource,
 		GenericReapplyConstraint
-	>,
-	GenericSource,
-	GenericReapplyConstraint
->;
+	>;

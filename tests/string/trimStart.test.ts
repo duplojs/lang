@@ -8,7 +8,7 @@ describe("trimStart", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string & DString.MaxCharacters<9>,
+			string,
 			"strict"
 		>;
 	});

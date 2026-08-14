@@ -1,6 +1,7 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import { type LengthEqual } from "./lengthEqual";
+import { type ExtractLengthEqual, type LengthEqual } from "./lengthEqual";
+import { type ExtractMinElements, type MinElements } from "./minElements";
 
 export type MaxElementsConstraintName = "array-max-elements";
 
@@ -61,3 +62,42 @@ export type ComputeMaxElementsCompatibility<
 	),
 	GenericDefault
 >;
+
+export type IsImpossibleToApplyMaxElements<
+	GenericValue extends unknown,
+	GenericExpect extends unknown,
+> = DCommon.NeverCoalescing<
+	(
+		GenericValue extends readonly unknown[]
+			? ExtractMaxElements<GenericExpect, unknown> extends MaxElements<infer InferredTo>
+				? InferredTo extends number
+					? (
+						| (
+							ExtractLengthEqual<GenericValue, unknown> extends LengthEqual<infer InferredLength>
+								? InferredLength extends number
+									? DNumber.IsGreaterOrEqual<InferredTo, InferredLength> extends true
+										? false
+										: true
+									: never
+								: never
+						)
+						| (
+							ExtractMinElements<GenericValue, unknown> extends MinElements<infer InferredMin>
+								? InferredMin extends number
+									? DNumber.IsGreaterOrEqual<InferredTo, InferredMin> extends true
+										? false
+										: true
+									: never
+								: never
+						)
+					)
+					: never
+				: true
+			: false
+	),
+	false
+> extends infer InferredResult
+	? DCommon.ContainExtends<InferredResult, true> extends true
+		? true
+		: false
+	: never;

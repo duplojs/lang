@@ -1,6 +1,7 @@
 import type * as DNumber from "@scripts/number";
 import type * as DCommon from "@scripts/common";
-import type { ExtractLengthEqual, ExtractMaxElements, ExtractMinElements, LengthEqual, MaxElements, MinElements } from "./constraints";
+import type { CompatibilityConstraintResult } from "@scripts/common";
+import type { ComputeMaxElementsCompatibility, ExtractLengthEqual, ExtractMinElements, IsImpossibleToApplyMaxElements, LengthEqual, MaxElements, MinElements } from "./constraints";
 
 type RequireLengthEqualConstraint<
 	GenericArray extends readonly unknown[],
@@ -45,19 +46,17 @@ type MaxElementsOutput<
 	GenericArray extends readonly unknown[],
 	GenericMax extends number,
 > = GenericArray extends unknown
-	? ExtractLengthEqual<GenericArray, unknown> extends LengthEqual<infer InferredLength>
-		? DNumber.IsGreaterOrEqual<GenericMax, InferredLength> extends true
-			? GenericArray
-			: never
-		: ExtractMinElements<GenericArray, unknown> extends MinElements<infer InferredMin>
-			? DNumber.IsGreaterOrEqual<GenericMax, InferredMin> extends true
-				? GenericArray & MaxElements<GenericMax>
-				: never
-			: ExtractMaxElements<GenericArray, unknown> extends MaxElements<infer InferredMax>
-				? DNumber.IsGreaterOrEqual<GenericMax, InferredMax> extends true
-					? GenericArray
-					: GenericArray & MaxElements<GenericMax>
+	? IsImpossibleToApplyMaxElements<GenericArray, MaxElements<GenericMax>> extends true
+		? never
+		: ComputeMaxElementsCompatibility<
+			GenericArray,
+			MaxElements<GenericMax>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
+				? GenericArray
 				: GenericArray & MaxElements<GenericMax>
+			: never
 	: never;
 
 export function maxElements<
