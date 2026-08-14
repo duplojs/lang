@@ -389,7 +389,7 @@ describe("UnionStructure", () => {
 			[],
 		);
 
-		structure.addConstraint(
+		const struct = structure.addConstraint(
 			DDataStructure.RefineConstraint(
 				(value) => {
 					type check = ExpectType<
@@ -399,6 +399,16 @@ describe("UnionStructure", () => {
 					>;
 					return true;
 				},
+				DDataStructure.RefineConstraint(
+					(value) => {
+						type check = ExpectType<
+						typeof value,
+						string | number,
+						"strict"
+						>;
+						return true;
+					},
+				),
 			),
 		);
 
@@ -416,8 +426,7 @@ describe("UnionStructure", () => {
 			),
 		);
 
-		structure.addConstraint(
-			// @ts-expect-error wrong refine type
+		const result = structure.addConstraint(
 			DDataStructure.RefineConstraint(
 				(value: string | number | bigint): value is bigint => false,
 			),

@@ -1,4 +1,4 @@
-import { DDataStructure, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DString, type ExpectType } from "@scripts";
 
 describe("partial", () => {
 	it("makes every object property optional", () => {
@@ -37,7 +37,7 @@ describe("partial", () => {
 		type _CheckStructureValue = ExpectType<
 			DDataStructure.StructureValue<typeof structure>,
 			{
-				readonly email?: `${string}@${string}.${string}` | undefined;
+				readonly email?: string & DString.Email | undefined;
 			},
 			"strict"
 		>;

@@ -1,4 +1,4 @@
-import { DDataStructure, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DString, type ExpectType } from "@scripts";
 
 describe("union", () => {
 	it("creates a union structure from helper structures", () => {
@@ -71,7 +71,7 @@ describe("union", () => {
 			DDataStructure.StructureValue<typeof structure>,
 			| {
 				readonly kind: "user";
-				readonly email: `${string}@${string}.${string}`;
+				readonly email: string & DString.Email;
 				readonly active: boolean;
 			}
 			| {

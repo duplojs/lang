@@ -7,15 +7,20 @@ export const constraintKind = createKind("constraint");
 
 export interface ConstraintDefinition {}
 
-declare const symbolBivarious: unique symbol;
+declare const BivariousSymbol: unique symbol;
 
 export interface Constraint<
 	GenericInput extends unknown = unknown,
 	GenericChecked extends GenericInput = GenericInput,
 	GenericDefinition extends ConstraintDefinition = ConstraintDefinition,
-> extends DKind.Kind<typeof constraintKind, GenericChecked> {
+> extends DKind.Kind<
+		typeof constraintKind,
+		DCommon.IsEqual<GenericInput, GenericChecked> extends true
+			? any
+			: GenericChecked
+	> {
 	readonly definition: GenericDefinition;
-	readonly [symbolBivarious]?: DCommon.IsUnion<GenericInput> extends true
+	readonly [BivariousSymbol]?: DCommon.IsUnion<GenericInput> extends true
 		? (input: GenericInput) => void
 		: unknown;
 	executeCheck(

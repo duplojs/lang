@@ -11,7 +11,7 @@ describe("MinElementsConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			readonly unknown[] & DArray.MinElements<2>,
+			DArray.MinElements<2>,
 			"strict"
 		>;
 

@@ -12,7 +12,7 @@ describe("UrlConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.Url,
+			DString.Url,
 			"strict"
 		>;
 

@@ -11,7 +11,7 @@ describe("MaxElementsConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			readonly unknown[] & DArray.MaxElements<2>,
+			DArray.MaxElements<2>,
 			"strict"
 		>;
 

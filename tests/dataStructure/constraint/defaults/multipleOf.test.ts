@@ -11,7 +11,7 @@ describe("MultipleOfConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			number & DNumber.MultipleOf<3>,
+			DNumber.MultipleOf<3>,
 			"strict"
 		>;
 

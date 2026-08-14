@@ -46,7 +46,7 @@ describe("string", () => {
 			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
-					readonly email: `${string}@${string}.${string}`;
+					readonly email: string & DString.Email;
 					readonly name: string & DString.MinCharacters<3>;
 				};
 			},

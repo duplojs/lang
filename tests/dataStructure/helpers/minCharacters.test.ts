@@ -1,6 +1,6 @@
 import { DDataStructure, DEither, type DString, type ExpectType } from "@scripts";
 
-describe("stringMin", () => {
+describe("minCharacters", () => {
 	it("creates a string minimum constraint", () => {
 		const constraint = DDataStructure.minCharacters(3);
 
@@ -11,7 +11,7 @@ describe("stringMin", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.MinCharacters<3>,
+			DString.MinCharacters<3>,
 			"strict"
 		>;
 

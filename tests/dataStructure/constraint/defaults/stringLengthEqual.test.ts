@@ -11,7 +11,7 @@ describe("StringLengthEqualConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.LengthEqual<3>,
+			DString.LengthEqual<3>,
 			"strict"
 		>;
 

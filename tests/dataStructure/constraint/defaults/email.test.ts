@@ -11,7 +11,7 @@ describe("EmailConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.Email,
+			DString.Email,
 			"strict"
 		>;
 

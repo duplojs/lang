@@ -1,4 +1,4 @@
-import { DDataStructure, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DString, type ExpectType } from "@scripts";
 
 describe("object", () => {
 	it("creates an object structure from helper shapes", () => {
@@ -56,7 +56,7 @@ describe("object", () => {
 					readonly profile: {
 						readonly name: string;
 						readonly contact: {
-							readonly email: `${string}@${string}.${string}`;
+							readonly email: string & DString.Email;
 						};
 					};
 				};
@@ -70,7 +70,7 @@ describe("object", () => {
 					readonly profile: {
 						readonly name: string;
 						readonly contact: {
-							readonly email: `${string}@${string}.${string}`;
+							readonly email: string & DString.Email;
 						};
 					};
 				};

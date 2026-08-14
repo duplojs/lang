@@ -11,7 +11,7 @@ describe("SafeConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			number & DNumber.Safe,
+			DNumber.Safe,
 			"strict"
 		>;
 

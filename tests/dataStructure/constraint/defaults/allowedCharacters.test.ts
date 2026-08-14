@@ -11,7 +11,7 @@ describe("AllowedCharactersConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.AllowedCharacters<"a-z">,
+			DString.AllowedCharacters<"a-z">,
 			"strict"
 		>;
 

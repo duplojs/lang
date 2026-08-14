@@ -11,7 +11,7 @@ describe("StrictNegativeConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			number & DNumber.StrictNegative,
+			DNumber.StrictNegative,
 			"strict"
 		>;
 

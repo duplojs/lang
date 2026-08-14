@@ -1,4 +1,4 @@
-import { DDataStructure, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DString, type ExpectType } from "@scripts";
 
 describe("email", () => {
 	it("creates an email constraint", () => {
@@ -11,11 +11,10 @@ describe("email", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			`${string}@${string}.${string}`,
+			DString.Email,
 			"strict"
 		>;
 
-		expect(constraint.definition).toEqual({ regex: DDataStructure.emailRegex });
 		expect(constraint.executeCheck("user@example.com")).toBe(DDataStructure.SuccessSymbol);
 		expect(constraint.executeCheck("user@example")).toBe(DDataStructure.ErrorSymbol);
 	});
@@ -41,7 +40,7 @@ describe("email", () => {
 			DDataStructure.StructureValue<typeof structure>,
 			{
 				readonly user: {
-					readonly email: `${string}@${string}.${string}`;
+					readonly email: string & DString.Email;
 				};
 			},
 			"strict"

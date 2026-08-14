@@ -1,4 +1,4 @@
-import { DDataStructure, DEither, type ExpectType } from "@scripts";
+import { DDataStructure, DEither, type DString, type ExpectType } from "@scripts";
 
 describe("nullable", () => {
 	it("keeps structure constraints when adding null to a non-union structure", () => {
@@ -9,7 +9,7 @@ describe("nullable", () => {
 		type _CheckStructure = ExpectType<
 			typeof structure,
 			DDataStructure.UnionStructure<
-				| `${string}@${string}.${string}`
+				| string & DString.Email
 				| null,
 				readonly []
 			>,
@@ -17,7 +17,7 @@ describe("nullable", () => {
 		>;
 		type _CheckStructureValue = ExpectType<
 			DDataStructure.StructureValue<typeof structure>,
-			| `${string}@${string}.${string}`
+			| string & DString.Email
 			| null,
 			"strict"
 		>;

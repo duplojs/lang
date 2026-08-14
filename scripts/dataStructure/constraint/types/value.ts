@@ -1,6 +1,22 @@
-import { type constraintKind, type Constraint } from "../base";
-import type * as DKind from "@scripts/kind";
+import type * as DCommon from "@scripts/common";
+import { type Constraint } from "../base";
 
 export type ConstraintValue<
 	GenericConstraint extends Constraint,
-> = DKind.GetValue<typeof constraintKind, GenericConstraint>;
+> = GenericConstraint extends Constraint<infer InferredInput, infer InferredOutput>
+	? DCommon.Or<[
+		DCommon.IsEqual<InferredInput, InferredOutput>,
+		DCommon.IsEqual<InferredOutput, any>,
+	]> extends true
+		? InferredInput
+		: InferredOutput extends (
+			& infer InferredRest
+			& InferredInput
+		)
+			? DCommon.Coalescing<
+				InferredRest,
+				unknown,
+				InferredInput
+			>
+			: InferredInput
+	: never;

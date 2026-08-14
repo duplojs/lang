@@ -582,6 +582,12 @@ describe("NewTypeStructure", () => {
 			[],
 		);
 
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			string & DModeling.NewType<"user-name", never>,
+			"strict"
+		>;
+
 		expect(structure.map("Jane")).toStrictEqual(
 			DEither.left("async-error", undefined),
 		);

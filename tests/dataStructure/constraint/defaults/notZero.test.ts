@@ -11,7 +11,7 @@ describe("NotZeroConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			number & DNumber.NotZero,
+			DNumber.NotZero,
 			"strict"
 		>;
 

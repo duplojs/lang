@@ -11,7 +11,7 @@ describe("NotEmptyConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.NotEmpty,
+			DString.NotEmpty,
 			"strict"
 		>;
 

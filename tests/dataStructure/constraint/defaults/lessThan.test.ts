@@ -11,7 +11,7 @@ describe("LessThanConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			number & DNumber.LessThan<3>,
+			DNumber.LessThan<3>,
 			"strict"
 		>;
 

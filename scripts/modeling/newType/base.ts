@@ -54,13 +54,14 @@ export type ComputeNewType<
 	GenericName extends string,
 	GenericValue extends unknown,
 	GenericNewTypeConstraint extends readonly DDataStructure.Constraint<GenericValue>[],
-	GenericIntersectionConstraintValue = DCommon.UnionToIntersection<
-		DDataStructure.ConstraintValue<
-			DArray.Unwrap<GenericNewTypeConstraint>
-		>
+	GenericIntersectionConstraintValue = DDataStructure.ConstraintValue<
+		DArray.Unwrap<GenericNewTypeConstraint>
 	>,
-	GenericClearValue = DCommon.RemoveConstraint<
-		GenericIntersectionConstraintValue
+	GenericClearValue = DCommon.NeverCoalescing<
+		DCommon.RemoveConstraint<
+			GenericIntersectionConstraintValue
+		>,
+		unknown
 	>,
 > = (
 		& GenericValue

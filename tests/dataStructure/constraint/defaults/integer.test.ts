@@ -11,7 +11,7 @@ describe("IntegerConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			number & DNumber.Integer,
+			DNumber.Integer,
 			"strict"
 		>;
 

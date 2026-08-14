@@ -11,7 +11,7 @@ describe("ArrayLengthEqualConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			readonly unknown[] & DArray.LengthEqual<2>,
+			DArray.LengthEqual<2>,
 			"strict"
 		>;
 

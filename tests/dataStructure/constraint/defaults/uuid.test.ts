@@ -11,7 +11,7 @@ describe("UuidConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.Uuid,
+			DString.Uuid,
 			"strict"
 		>;
 

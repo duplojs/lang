@@ -11,7 +11,7 @@ describe("EvenConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			number & DNumber.Even,
+			DNumber.Even,
 			"strict"
 		>;
 

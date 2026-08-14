@@ -11,7 +11,7 @@ describe("BetweenThanConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			number & DNumber.GreaterThan<1> & DNumber.LessThan<3>,
+			DNumber.GreaterThan<1> & DNumber.LessThan<3>,
 			"strict"
 		>;
 

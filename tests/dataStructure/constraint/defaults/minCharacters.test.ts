@@ -11,7 +11,7 @@ describe("StringMinConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.MinCharacters<3>,
+			DString.MinCharacters<3>,
 			"strict"
 		>;
 

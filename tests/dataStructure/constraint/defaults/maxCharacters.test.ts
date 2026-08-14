@@ -11,7 +11,7 @@ describe("MaxCharactersConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & DString.MaxCharacters<3>,
+			DString.MaxCharacters<3>,
 			"strict"
 		>;
 

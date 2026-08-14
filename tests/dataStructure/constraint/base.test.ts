@@ -48,7 +48,7 @@ describe("createConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			string & { readonly minLength: 3 },
+			{ readonly minLength: 3 },
 			"strict"
 		>;
 
