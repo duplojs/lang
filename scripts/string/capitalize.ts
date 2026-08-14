@@ -3,11 +3,13 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type CapitalizeOutput<
 	GenericString extends string,
-> = ReapplyCompatiblesConstraints<
-	GenericString,
-	Capitalize<Extract<DCommon.RemoveConstraint<GenericString>, string>>,
-	"minCharacters"
->;
+> = GenericString extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericString,
+		Capitalize<Extract<DCommon.RemoveConstraint<GenericString>, string>>,
+		"minCharacters" | "lengthEqual"
+	>
+	: never;
 
 export function capitalize<
 	GenericString extends string,
