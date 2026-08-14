@@ -4,8 +4,7 @@ import * as DCommon from "@scripts/common";
 import { createKind } from "../kind";
 import { createGetErrorHandler, ErrorSymbol, type GetErrorHandler, SuccessSymbol, type EncodedValue, type CodecContext, type Error, type Codecs } from "../common";
 import { type Constraint } from "../constraint";
-import { type StructureValue } from "./types";
-import { type StructureConstraintsValue } from "./types/constraintsValue";
+import { type StructureConstraintsValue, type StructureValue } from "./types";
 
 export class StructureClass {
 	private constructor() {}
@@ -18,6 +17,15 @@ export class StructureClass {
 		}
 
 		return self as Structure;
+	}
+
+	public static addToPrototype<
+		GenericProp extends keyof Structure,
+	>(
+		prop: GenericProp,
+		value: Structure[GenericProp],
+	) {
+		StructureClass.prototype[prop as never] = value as never;
 	}
 }
 
@@ -34,7 +42,7 @@ export interface Structure<
 	GenericDefinition extends StructureDefinition<
 		readonly Constraint<GenericValue>[]
 	> = StructureDefinition<readonly Constraint<GenericValue>[]>,
-> extends StructureClass, DKind.Kind<
+> extends DKind.Kind<
 		typeof structureKind,
 		(
 			& GenericValue
@@ -47,7 +55,10 @@ export interface Structure<
 	addConstraint<
 		const GenericNewConstraints extends DCommon.AnyTuple<Constraint<GenericValue>>,
 	>(
-		...args: GenericNewConstraints
+		...args: DCommon.FixDeepFunctionInfer<
+			GenericNewConstraints,
+			DCommon.AnyTuple<Constraint<GenericValue>>
+		>
 	): Structure<
 		GenericValue,
 		StructureDefinition<

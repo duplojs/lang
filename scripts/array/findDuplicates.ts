@@ -1,6 +1,6 @@
 /* oxlint-disable @typescript-eslint/prefer-for-of */
-import type * as DCommon from "@scripts/common";
 import * as DChrono from "@scripts/chrono";
+import { type MinElements } from "./constraints";
 
 export type EligibleDuplicateElement = (
 	| string
@@ -17,7 +17,7 @@ export function findDuplicates<
 	GenericArray extends readonly EligibleDuplicateElement[],
 >(
 	array: GenericArray,
-): undefined | DCommon.AnyTuple<GenericArray[number]>;
+): undefined | (GenericArray[number][] & MinElements<1>);
 
 export function findDuplicates(
 	array: EligibleDuplicateElement[],

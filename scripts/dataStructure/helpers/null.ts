@@ -3,7 +3,7 @@ import { TypeStructure } from "../structure";
 import { NullType } from "../type";
 
 function nullHelper<
-	GenericConstraints extends readonly Constraint<null>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<null>[] = readonly [],
 >(
 	constraints: GenericConstraints = [] as never,
 ) {

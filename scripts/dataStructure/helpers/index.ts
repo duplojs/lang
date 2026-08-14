@@ -17,7 +17,7 @@ export * from "./partial";
 export * from "./record";
 export * from "./required";
 export * from "./string";
-export * from "./stringMin";
+export * from "./minCharacters";
 export * from "./time";
 export * from "./undefined";
 export * from "./union";

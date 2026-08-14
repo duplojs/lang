@@ -64,17 +64,32 @@ export function maxCharacters<
 
 export function maxCharacters<
 	GenericString extends string,
+>(
+	max: number,
+): (
+	string: GenericString,
+) => boolean;
+
+export function maxCharacters<
+	GenericString extends string,
 	const GenericMax extends number,
 >(
 	string: GenericString,
 	max: GenericMax & RequireApplyMaxCharacters<GenericString, GenericMax>,
 ): string is ComputeMaxCharacters<GenericString, GenericMax>;
 
+export function maxCharacters<
+	GenericString extends string,
+>(
+	string: GenericString,
+	max: number,
+): boolean;
+
 export function maxCharacters(
 	...args:
 		| [max: number]
 		| [string: string, max: number]
-) {
+): any {
 	if (args.length === 1) {
 		const [max] = args;
 

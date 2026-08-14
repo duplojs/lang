@@ -3,7 +3,7 @@ import { BigintType } from "../type";
 import { type Constraint } from "../constraint";
 
 export function bigint<
-	GenericConstraints extends readonly Constraint<bigint>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<bigint>[] = readonly [],
 >(
 	constraints: GenericConstraints = [] as never,
 ) {

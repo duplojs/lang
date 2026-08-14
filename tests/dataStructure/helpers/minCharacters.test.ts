@@ -2,11 +2,11 @@ import { DDataStructure, DEither, type DString, type ExpectType } from "@scripts
 
 describe("stringMin", () => {
 	it("creates a string minimum constraint", () => {
-		const constraint = DDataStructure.stringMin(3);
+		const constraint = DDataStructure.minCharacters(3);
 
 		type _CheckConstraint = ExpectType<
 			typeof constraint,
-			DDataStructure.StringMinConstraint<3>,
+			DDataStructure.MinCharactersConstraint<3>,
 			"strict"
 		>;
 		type _CheckConstraintValue = ExpectType<
@@ -23,7 +23,7 @@ describe("stringMin", () => {
 	it("can constrain a string helper inside nested object helpers", () => {
 		const structure = DDataStructure.object({
 			user: DDataStructure.object({
-				name: DDataStructure.string([DDataStructure.stringMin(3)]),
+				name: DDataStructure.string([DDataStructure.minCharacters(3)]),
 			}),
 		});
 		const input = {

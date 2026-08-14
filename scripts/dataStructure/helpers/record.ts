@@ -7,7 +7,7 @@ export function record<
 		| TypeStructure<string>
 	),
 	GenericValueStructure extends Structure,
-	GenericConstraints extends readonly Constraint<
+	const GenericConstraints extends readonly Constraint<
 		RecordStructureValue<
 			GenericKey,
 			GenericValueStructure

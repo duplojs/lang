@@ -5,7 +5,7 @@ describe("EntityStructure", () => {
 		const name = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const age = DModeling.NewTypeStructure(
 			"user-age",
@@ -63,7 +63,7 @@ describe("EntityStructure", () => {
 		const name = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const structure = DModeling.EntityStructure(
 			"user",
@@ -96,7 +96,7 @@ describe("EntityStructure", () => {
 			),
 		);
 		const nameConstraint = {
-			...DDataStructure.stringMin(3),
+			...DDataStructure.minCharacters(3),
 			executeCheck: nameConstraintExecuteCheck,
 		};
 		const name = DModeling.NewTypeStructure(
@@ -139,7 +139,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -174,7 +174,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -201,7 +201,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 				age: DModeling.NewTypeStructure(
 					"user-age",
@@ -258,7 +258,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -300,7 +300,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -337,7 +337,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -387,7 +387,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -463,7 +463,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -487,7 +487,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -506,7 +506,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -557,7 +557,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);
@@ -602,7 +602,7 @@ describe("EntityStructure", () => {
 				name: DModeling.NewTypeStructure(
 					"user-name",
 					DDataStructure.string(),
-					[DDataStructure.stringMin(3)],
+					[DDataStructure.minCharacters(3)],
 				),
 			}),
 		);

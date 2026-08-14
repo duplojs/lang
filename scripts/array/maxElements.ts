@@ -64,17 +64,32 @@ export function maxElements<
 
 export function maxElements<
 	GenericArray extends readonly unknown[],
+>(
+	max: number,
+): (
+	array: GenericArray,
+) => boolean;
+
+export function maxElements<
+	GenericArray extends readonly unknown[],
 	const GenericMax extends number,
 >(
 	array: GenericArray,
 	max: GenericMax & RequireApplyMaxElements<GenericArray, GenericMax>,
 ): array is ComputeMaxElements<GenericArray, GenericMax>;
 
+export function maxElements<
+	GenericArray extends readonly unknown[],
+>(
+	array: GenericArray,
+	max: number,
+): boolean;
+
 export function maxElements(
 	...args:
 		| [max: number]
 		| [array: readonly unknown[], max: number]
-) {
+): any {
 	if (args.length === 1) {
 		const [max] = args;
 

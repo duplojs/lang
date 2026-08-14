@@ -1,6 +1,6 @@
 import type * as DCommon from "@scripts/common";
-import type * as DString from "@scripts/string";
 import type * as DKind from "@scripts/kind";
+import * as DString from "@scripts/string";
 import { createKind } from "../../kind";
 import { type ConstraintDefinition, createConstraint, type Constraint } from "../base";
 import { ErrorSymbol, SuccessSymbol } from "../../common";
@@ -13,7 +13,7 @@ export interface StringMinConstraintDefinition<
 	readonly min: GenericMin;
 }
 
-export interface StringMinConstraint<
+export interface MinCharactersConstraint<
 	GenericMin extends number = number,
 > extends DCommon.UnionToIntersection<
 		& Constraint<
@@ -25,16 +25,19 @@ export interface StringMinConstraint<
 	> {
 }
 
-export const StringMinConstraint = createConstraint(
+export const MinCharactersConstraint = createConstraint(
 	stringMinConstraintKind,
 	({ init }) => <
 		GenericMin extends number,
 	>(min: GenericMin) => init<
-		StringMinConstraint<GenericMin>
+		MinCharactersConstraint<GenericMin>
 	>(
 		{ min },
 		{
-			executeCheck: (self, data, errorHandler) => data.length >= self.definition.min
+			executeCheck: (self, data, errorHandler) => DString.minCharacters(
+				data,
+				self.definition.min,
+			)
 				? SuccessSymbol
 				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
 			isAsynchronous: () => false,

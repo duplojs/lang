@@ -1,4 +1,4 @@
-import { DDataStructure, type ExpectType } from "@scripts";
+import { DDataStructure, type DString, type ExpectType } from "@scripts";
 
 describe("EmailConstraint", () => {
 	it("creates a synchronous email constraint", () => {
@@ -11,11 +11,10 @@ describe("EmailConstraint", () => {
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			`${string}@${string}.${string}`,
+			string & DString.Email,
 			"strict"
 		>;
 
-		expect(constraint.definition).toEqual({ regex: DDataStructure.emailRegex });
 		expect(constraint.isAsynchronous()).toBe(false);
 	});
 

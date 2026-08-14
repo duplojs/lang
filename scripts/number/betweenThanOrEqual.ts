@@ -74,6 +74,15 @@ export function betweenThanOrEqual<
 
 export function betweenThanOrEqual<
 	GenericValue extends number,
+>(
+	greater: number,
+	less: number,
+): (
+	value: GenericValue,
+) => boolean;
+
+export function betweenThanOrEqual<
+	GenericValue extends number,
 	const GenericGreater extends number,
 	const GenericLess extends number,
 >(
@@ -81,6 +90,14 @@ export function betweenThanOrEqual<
 	greater: GenericGreater & RequireSimpleLiteral<GenericGreater>,
 	less: GenericLess & RequireSimpleLiteral<GenericLess>,
 ): value is BetweenThanOrEqualOutput<GenericValue, GenericGreater, GenericLess>;
+
+export function betweenThanOrEqual<
+	GenericValue extends number,
+>(
+	value: GenericValue,
+	greater: number,
+	less: number,
+): boolean;
 
 export function betweenThanOrEqual(
 	...args:

@@ -3,7 +3,7 @@ import { TypeStructure } from "../structure";
 import { NumberType } from "../type";
 
 export function number<
-	GenericConstraints extends readonly Constraint<number>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<number>[] = readonly [],
 >(
 	constraints: GenericConstraints = [] as never,
 ) {

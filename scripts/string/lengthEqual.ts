@@ -81,17 +81,32 @@ export function lengthEqual<
 
 export function lengthEqual<
 	GenericString extends string,
+>(
+	length: number,
+): (
+	string: GenericString,
+) => boolean;
+
+export function lengthEqual<
+	GenericString extends string,
 	const GenericLength extends number,
 >(
 	string: GenericString,
 	length: GenericLength & RequireApplyLengthEqual<GenericString, GenericLength>,
 ): string is ComputeLengthEqual<GenericString, GenericLength>;
 
+export function lengthEqual<
+	GenericString extends string,
+>(
+	string: GenericString,
+	length: number,
+): boolean;
+
 export function lengthEqual(
 	...args:
 		| [length: number]
 		| [string: string, length: number]
-) {
+): any {
 	if (args.length === 1) {
 		const [length] = args;
 

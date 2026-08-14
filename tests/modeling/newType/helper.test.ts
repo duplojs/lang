@@ -5,7 +5,7 @@ describe("createNewEntity", () => {
 		const structure = DModeling.createNewEntity(
 			"UserName",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 
 		type _CheckStructure = ExpectType<
@@ -13,7 +13,7 @@ describe("createNewEntity", () => {
 			DModeling.NewTypeStructure<
 				"UserName",
 				string,
-				readonly [DDataStructure.StringMinConstraint<3>]
+				readonly [DDataStructure.MinCharactersConstraint<3>]
 			>,
 			"strict"
 		>;

@@ -4,7 +4,7 @@ import { TypeStructure } from "../structure";
 import { TimeType } from "../type";
 
 export function time<
-	GenericConstraints extends readonly Constraint<DChrono.TheTime>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<DChrono.TheTime>[] = readonly [],
 >(
 	constraints: GenericConstraints = [] as never,
 ) {

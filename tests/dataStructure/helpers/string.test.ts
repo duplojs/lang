@@ -32,7 +32,7 @@ describe("string", () => {
 		const structure = DDataStructure.object({
 			user: DDataStructure.object({
 				email: DDataStructure.string([DDataStructure.email()]),
-				name: DDataStructure.string([DDataStructure.stringMin(3)]),
+				name: DDataStructure.string([DDataStructure.minCharacters(3)]),
 			}),
 		});
 		const input = {

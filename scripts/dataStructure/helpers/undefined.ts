@@ -3,7 +3,7 @@ import { TypeStructure } from "../structure";
 import { UndefinedType } from "../type";
 
 function undefinedHelper<
-	GenericConstraints extends readonly Constraint<undefined>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<undefined>[] = readonly [],
 >(
 	constraints: GenericConstraints = [] as never,
 ) {

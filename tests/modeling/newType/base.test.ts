@@ -2,7 +2,7 @@ import { DDataStructure, type DCommon, DEither, type DKind, DModeling, type DStr
 
 describe("NewTypeStructure", () => {
 	it("creates a named structure that preserves its inner structure and new type constraints", () => {
-		const stringMinConstraint = DDataStructure.stringMin(3);
+		const stringMinConstraint = DDataStructure.minCharacters(3);
 		const inner = DDataStructure.string();
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
@@ -15,7 +15,7 @@ describe("NewTypeStructure", () => {
 			DModeling.NewTypeStructure<
 				"user-name",
 				string,
-				readonly [DDataStructure.StringMinConstraint<3>]
+				readonly [DDataStructure.MinCharactersConstraint<3>]
 			>,
 			"strict"
 		>;
@@ -40,9 +40,9 @@ describe("NewTypeStructure", () => {
 			),
 		);
 		const constraint = {
-			...DDataStructure.stringMin(3),
+			...DDataStructure.minCharacters(3),
 			executeCheck: constraintExecuteCheck,
-		} as DDataStructure.StringMinConstraint<3>;
+		} as DDataStructure.MinCharactersConstraint<3>;
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
@@ -68,7 +68,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 
 		expect(structure.check("Jane")).toStrictEqual(
@@ -89,14 +89,14 @@ describe("NewTypeStructure", () => {
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const nextConstraint = {
-			...DDataStructure.stringMin(2),
+			...DDataStructure.minCharacters(2),
 			executeCheck: nextConstraintExecuteCheck,
-		} as DDataStructure.StringMinConstraint<2>;
+		} as DDataStructure.MinCharactersConstraint<2>;
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
 			[
-				DDataStructure.stringMin(3),
+				DDataStructure.minCharacters(3),
 				nextConstraint,
 			],
 		);
@@ -109,7 +109,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const input: unknown = "Jane";
 
@@ -131,11 +131,11 @@ describe("NewTypeStructure", () => {
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const newTypeConstraint = {
-			...DDataStructure.stringMin(3),
+			...DDataStructure.minCharacters(3),
 			executeCheck: newTypeConstraintExecuteCheck,
-		} as DDataStructure.StringMinConstraint<3>;
+		} as DDataStructure.MinCharactersConstraint<3>;
 		const structureConstraint = {
-			...DDataStructure.stringMin(2),
+			...DDataStructure.minCharacters(2),
 			executeCheck: structureConstraintExecuteCheck,
 		} as unknown as DDataStructure.Constraint<UserName>;
 		const structure = DModeling.NewTypeStructure(
@@ -174,13 +174,13 @@ describe("NewTypeStructure", () => {
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const structureConstraint = {
-			...DDataStructure.stringMin(2),
+			...DDataStructure.minCharacters(2),
 			executeCheck: structureConstraintExecuteCheck,
 		} as unknown as DDataStructure.Constraint<UserName>;
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		).addConstraint(structureConstraint);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -206,7 +206,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -231,14 +231,14 @@ describe("NewTypeStructure", () => {
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const nextConstraint = {
-			...DDataStructure.stringMin(2),
+			...DDataStructure.minCharacters(2),
 			executeCheck: nextConstraintExecuteCheck,
-		} as DDataStructure.StringMinConstraint<2>;
+		} as DDataStructure.MinCharactersConstraint<2>;
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
 			[
-				DDataStructure.stringMin(3),
+				DDataStructure.minCharacters(3),
 				nextConstraint,
 			],
 		);
@@ -263,11 +263,11 @@ describe("NewTypeStructure", () => {
 
 	it("stops encoding when a structure constraint fails", () => {
 		type UserName = string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
-		const structureConstraint = DDataStructure.stringMin(5) as unknown as DDataStructure.Constraint<UserName>;
+		const structureConstraint = DDataStructure.minCharacters(5) as unknown as DDataStructure.Constraint<UserName>;
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		).addConstraint(structureConstraint);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -296,11 +296,11 @@ describe("NewTypeStructure", () => {
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const newTypeConstraint = {
-			...DDataStructure.stringMin(3),
+			...DDataStructure.minCharacters(3),
 			executeCheck: newTypeConstraintExecuteCheck,
-		} as DDataStructure.StringMinConstraint<3>;
+		} as DDataStructure.MinCharactersConstraint<3>;
 		const structureConstraint = {
-			...DDataStructure.stringMin(2),
+			...DDataStructure.minCharacters(2),
 			executeCheck: structureConstraintExecuteCheck,
 		} as unknown as DDataStructure.Constraint<UserName>;
 		const structure = DModeling.NewTypeStructure(
@@ -338,13 +338,13 @@ describe("NewTypeStructure", () => {
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const structureConstraint = {
-			...DDataStructure.stringMin(2),
+			...DDataStructure.minCharacters(2),
 			executeCheck: structureConstraintExecuteCheck,
 		} as unknown as DDataStructure.Constraint<UserName>;
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		).addConstraint(structureConstraint);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -371,14 +371,14 @@ describe("NewTypeStructure", () => {
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const nextConstraint = {
-			...DDataStructure.stringMin(2),
+			...DDataStructure.minCharacters(2),
 			executeCheck: nextConstraintExecuteCheck,
-		} as DDataStructure.StringMinConstraint<2>;
+		} as DDataStructure.MinCharactersConstraint<2>;
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
 			[
-				DDataStructure.stringMin(3),
+				DDataStructure.minCharacters(3),
 				nextConstraint,
 			],
 		);
@@ -403,11 +403,11 @@ describe("NewTypeStructure", () => {
 
 	it("stops decoding when a structure constraint fails", () => {
 		type UserName = string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
-		const structureConstraint = DDataStructure.stringMin(5) as unknown as DDataStructure.Constraint<UserName>;
+		const structureConstraint = DDataStructure.minCharacters(5) as unknown as DDataStructure.Constraint<UserName>;
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		).addConstraint(structureConstraint);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -431,7 +431,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const result = structure.map("Jane");
 
@@ -463,7 +463,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const result = pipe(
 			"Jane",
@@ -490,7 +490,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -530,7 +530,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -591,7 +591,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -610,7 +610,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const result = structure.asyncMap("Jane");
 
@@ -651,7 +651,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -688,7 +688,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.stringMin(3)],
+			[DDataStructure.minCharacters(3)],
 		);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,

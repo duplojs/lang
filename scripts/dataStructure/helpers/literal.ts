@@ -8,7 +8,7 @@ export type LiteralValue = string | number | bigint | boolean | undefined | null
 
 export function literal<
 	const GenericValue extends LiteralValue | DCommon.AnyTuple<LiteralValue>,
-	GenericConstraints extends readonly Constraint<
+	const GenericConstraints extends readonly Constraint<
 		GenericValue extends readonly unknown[]
 			? GenericValue[number]
 			: GenericValue

@@ -64,17 +64,32 @@ export function minCharacters<
 
 export function minCharacters<
 	GenericString extends string,
+>(
+	min: number,
+): (
+	string: GenericString,
+) => boolean;
+
+export function minCharacters<
+	GenericString extends string,
 	const GenericMin extends number,
 >(
 	string: GenericString,
 	min: GenericMin & RequireApplyMinCharacters<GenericString, GenericMin>,
 ): string is ComputeMinCharacters<GenericString, GenericMin>;
 
+export function minCharacters<
+	GenericString extends string,
+>(
+	string: GenericString,
+	min: number,
+): boolean;
+
 export function minCharacters(
 	...args:
 		| [min: number]
 		| [string: string, min: number]
-) {
+): any {
 	if (args.length === 1) {
 		const [min] = args;
 

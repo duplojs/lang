@@ -3,7 +3,7 @@ import { LazyStructure, type StructureValue, type Structure } from "../structure
 
 export function lazy<
 	GenericStructure extends Structure,
-	GenericConstraints extends readonly Constraint<StructureValue<GenericStructure>>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<StructureValue<GenericStructure>>[] = readonly [],
 >(
 	getStructure: () => GenericStructure,
 	constraints: GenericConstraints = [] as never,

@@ -41,7 +41,7 @@ export const UnionStructure = createStructure(
 	({ init }) => <
 		GenericValues extends DCommon.AnyTuple<Structure>,
 		GenericValue extends StructureValue<GenericValues[number]>,
-		const GenericConstraints extends readonly Constraint<GenericValue>[] = readonly [],
+		const GenericConstraints extends readonly Constraint<GenericValue>[],
 	>(
 		values: GenericValues,
 		constraints: GenericConstraints,

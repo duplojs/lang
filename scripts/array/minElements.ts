@@ -64,17 +64,32 @@ export function minElements<
 
 export function minElements<
 	GenericArray extends readonly unknown[],
+>(
+	min: number,
+): (
+	array: GenericArray,
+) => boolean;
+
+export function minElements<
+	GenericArray extends readonly unknown[],
 	const GenericMin extends number,
 >(
 	array: GenericArray,
 	min: GenericMin & RequireApplyMinElements<GenericArray, GenericMin>,
 ): array is ComputeMinElements<GenericArray, GenericMin>;
 
+export function minElements<
+	GenericArray extends readonly unknown[],
+>(
+	array: GenericArray,
+	min: number,
+): boolean;
+
 export function minElements(
 	...args:
 		| [min: number]
 		| [array: readonly unknown[], min: number]
-) {
+): any {
 	if (args.length === 1) {
 		const [min] = args;
 

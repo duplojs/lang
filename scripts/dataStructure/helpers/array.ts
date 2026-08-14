@@ -3,7 +3,7 @@ import { ArrayStructure, type StructureValue, type Structure } from "../structur
 
 export function array<
 	GenericStructure extends Structure,
-	GenericConstraints extends readonly Constraint<readonly StructureValue<GenericStructure>[]>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<readonly StructureValue<GenericStructure>[]>[] = readonly [],
 >(
 	element: GenericStructure,
 	constraints: GenericConstraints = [] as never,

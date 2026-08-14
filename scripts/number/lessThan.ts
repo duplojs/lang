@@ -35,17 +35,32 @@ export function lessThan<
 
 export function lessThan<
 	GenericValue extends number,
+>(
+	threshold: number,
+): (
+	value: GenericValue,
+) => boolean;
+
+export function lessThan<
+	GenericValue extends number,
 	const GenericThreshold extends number,
 >(
 	value: GenericValue,
 	threshold: GenericThreshold & RequireSimpleLiteral<GenericThreshold>,
 ): value is LessThanOutput<GenericValue, GenericThreshold>;
 
+export function lessThan<
+	GenericValue extends number,
+>(
+	value: GenericValue,
+	threshold: number,
+): boolean;
+
 export function lessThan(
 	...args:
 		| [threshold: number]
 		| [value: number, threshold: number]
-) {
+): any {
 	if (args.length === 1) {
 		const [threshold] = args;
 

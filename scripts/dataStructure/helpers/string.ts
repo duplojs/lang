@@ -3,7 +3,7 @@ import { TypeStructure } from "../structure";
 import { StringType } from "../type";
 
 export function string<
-	GenericConstraints extends readonly Constraint<string>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<string>[] = readonly [],
 >(
 	constraints: GenericConstraints = [] as never,
 ) {

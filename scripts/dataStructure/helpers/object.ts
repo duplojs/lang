@@ -3,7 +3,7 @@ import { ObjectStructure, type ShapeObjectStructureValue, type ShapeObjectStruct
 
 export function object<
 	GenericShape extends ShapeObjectStructure,
-	GenericConstraints extends readonly Constraint<ShapeObjectStructureValue<GenericShape>>[] = readonly [],
+	const GenericConstraints extends readonly Constraint<ShapeObjectStructureValue<GenericShape>>[] = readonly [],
 >(
 	shape: GenericShape,
 	constraints: GenericConstraints = [] as never,

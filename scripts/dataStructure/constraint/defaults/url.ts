@@ -1,0 +1,37 @@
+import type * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
+import * as DString from "@scripts/string";
+import { createKind } from "../../kind";
+import { type ConstraintDefinition, createConstraint, type Constraint } from "../base";
+import { ErrorSymbol, SuccessSymbol } from "../../common";
+
+export const urlConstraintKind = createKind("url-constraint");
+
+export interface UrlConstraintDefinition extends ConstraintDefinition {
+	readonly params?: DString.IsUrlParams;
+}
+
+export interface UrlConstraint extends DCommon.UnionToIntersection<
+	& Constraint<
+		string,
+		string & DString.Url,
+		UrlConstraintDefinition
+	>
+	& DKind.Kind<typeof urlConstraintKind>
+> {}
+
+export const UrlConstraint = createConstraint(
+	urlConstraintKind,
+	({ init }) => (params?: DString.IsUrlParams) => init<UrlConstraint>(
+		{ params },
+		{
+			executeCheck: (self, data, errorHandler) => DString.isUrl(
+				data,
+				self.definition.params,
+			)
+				? SuccessSymbol
+				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+			isAsynchronous: () => false,
+		},
+	),
+);

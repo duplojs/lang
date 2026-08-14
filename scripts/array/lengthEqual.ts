@@ -81,17 +81,32 @@ export function lengthEqual<
 
 export function lengthEqual<
 	GenericArray extends readonly unknown[],
+>(
+	length: number,
+): (
+	array: GenericArray,
+) => boolean;
+
+export function lengthEqual<
+	GenericArray extends readonly unknown[],
 	const GenericLength extends number,
 >(
 	array: GenericArray,
 	length: GenericLength & RequireApplyLengthEqual<GenericArray, GenericLength>,
 ): array is ComputeLengthEqual<GenericArray, GenericLength>;
 
+export function lengthEqual<
+	GenericArray extends readonly unknown[],
+>(
+	array: GenericArray,
+	length: number,
+): boolean;
+
 export function lengthEqual(
 	...args:
 		| [length: number]
 		| [array: readonly unknown[], length: number]
-) {
+): any {
 	if (args.length === 1) {
 		const [length] = args;
 
