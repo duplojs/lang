@@ -34,7 +34,14 @@ type RequireApplyMaxElements<
 	& RequireMinElementsConstraint<GenericArray, GenericMax>
 );
 
-type ComputeMaxElements<
+type RequireApplyMaxElementsBoolean<
+	GenericArray extends readonly unknown[],
+	GenericMax extends number,
+> = DCommon.IsEqual<GenericMax, number> extends true
+	? unknown
+	: RequireApplyMaxElements<GenericArray, GenericMax>;
+
+type MaxElementsOutput<
 	GenericArray extends readonly unknown[],
 	GenericMax extends number,
 > = GenericArray extends unknown
@@ -60,12 +67,13 @@ export function maxElements<
 	max: GenericMax & RequireApplyMaxElements<GenericArray, GenericMax>,
 ): (
 	array: GenericArray,
-) => array is ComputeMaxElements<GenericArray, GenericMax>;
+) => array is MaxElementsOutput<GenericArray, GenericMax>;
 
 export function maxElements<
 	GenericArray extends readonly unknown[],
+	const GenericMax extends number,
 >(
-	max: number,
+	max: GenericMax & RequireApplyMaxElementsBoolean<GenericArray, GenericMax>,
 ): (
 	array: GenericArray,
 ) => boolean;
@@ -76,13 +84,14 @@ export function maxElements<
 >(
 	array: GenericArray,
 	max: GenericMax & RequireApplyMaxElements<GenericArray, GenericMax>,
-): array is ComputeMaxElements<GenericArray, GenericMax>;
+): array is MaxElementsOutput<GenericArray, GenericMax>;
 
 export function maxElements<
 	GenericArray extends readonly unknown[],
+	const GenericMax extends number,
 >(
 	array: GenericArray,
-	max: number,
+	max: GenericMax & RequireApplyMaxElementsBoolean<GenericArray, GenericMax>,
 ): boolean;
 
 export function maxElements(

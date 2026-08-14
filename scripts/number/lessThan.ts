@@ -1,3 +1,4 @@
+import type * as DCommon from "@scripts/common";
 import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual } from "./constraints";
 import type { IsGreater, IsGreaterOrEqual, RequireSimpleLiteral } from "./types";
 
@@ -24,19 +25,30 @@ type LessThanOutput<
 					: GenericValue & LessThan<GenericThreshold>
 	: never;
 
+type RequireApplyLessThan<
+	GenericThreshold extends number,
+> = RequireSimpleLiteral<GenericThreshold>;
+
+type RequireApplyLessThanBoolean<
+	GenericThreshold extends number,
+> = DCommon.IsEqual<GenericThreshold, number> extends true
+	? unknown
+	: RequireApplyLessThan<GenericThreshold>;
+
 export function lessThan<
 	GenericValue extends number,
 	const GenericThreshold extends number,
 >(
-	threshold: GenericThreshold & RequireSimpleLiteral<GenericThreshold>,
+	threshold: GenericThreshold & RequireApplyLessThan<GenericThreshold>,
 ): (
 	value: GenericValue,
 ) => value is LessThanOutput<GenericValue, GenericThreshold>;
 
 export function lessThan<
 	GenericValue extends number,
+	const GenericThreshold extends number,
 >(
-	threshold: number,
+	threshold: GenericThreshold & RequireApplyLessThanBoolean<GenericThreshold>,
 ): (
 	value: GenericValue,
 ) => boolean;
@@ -46,14 +58,15 @@ export function lessThan<
 	const GenericThreshold extends number,
 >(
 	value: GenericValue,
-	threshold: GenericThreshold & RequireSimpleLiteral<GenericThreshold>,
+	threshold: GenericThreshold & RequireApplyLessThan<GenericThreshold>,
 ): value is LessThanOutput<GenericValue, GenericThreshold>;
 
 export function lessThan<
 	GenericValue extends number,
+	const GenericThreshold extends number,
 >(
 	value: GenericValue,
-	threshold: number,
+	threshold: GenericThreshold & RequireApplyLessThanBoolean<GenericThreshold>,
 ): boolean;
 
 export function lessThan(

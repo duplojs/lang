@@ -46,6 +46,13 @@ type RequireApplyLengthEqual<
 	& RequireMaxElementsConstraint<GenericArray, GenericLength>
 );
 
+type RequireApplyLengthEqualBoolean<
+	GenericArray extends readonly unknown[],
+	GenericLength extends number,
+> = DCommon.IsEqual<GenericLength, number> extends true
+	? unknown
+	: RequireApplyLengthEqual<GenericArray, GenericLength>;
+
 type IsLengthEqualCompatible<
 	GenericArray extends readonly unknown[],
 	GenericLength extends number,
@@ -61,7 +68,7 @@ type IsLengthEqualCompatible<
 		: true,
 ]>;
 
-type ComputeLengthEqual<
+type LengthEqualOutput<
 	GenericArray extends readonly unknown[],
 	GenericLength extends number,
 > = GenericArray extends unknown
@@ -77,12 +84,13 @@ export function lengthEqual<
 	length: GenericLength & RequireApplyLengthEqual<GenericArray, GenericLength>,
 ): (
 	array: GenericArray,
-) => array is ComputeLengthEqual<GenericArray, GenericLength>;
+) => array is LengthEqualOutput<GenericArray, GenericLength>;
 
 export function lengthEqual<
 	GenericArray extends readonly unknown[],
+	const GenericLength extends number,
 >(
-	length: number,
+	length: GenericLength & RequireApplyLengthEqualBoolean<GenericArray, GenericLength>,
 ): (
 	array: GenericArray,
 ) => boolean;
@@ -93,13 +101,14 @@ export function lengthEqual<
 >(
 	array: GenericArray,
 	length: GenericLength & RequireApplyLengthEqual<GenericArray, GenericLength>,
-): array is ComputeLengthEqual<GenericArray, GenericLength>;
+): array is LengthEqualOutput<GenericArray, GenericLength>;
 
 export function lengthEqual<
 	GenericArray extends readonly unknown[],
+	const GenericLength extends number,
 >(
 	array: GenericArray,
-	length: number,
+	length: GenericLength & RequireApplyLengthEqualBoolean<GenericArray, GenericLength>,
 ): boolean;
 
 export function lengthEqual(

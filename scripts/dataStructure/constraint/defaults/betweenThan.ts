@@ -1,4 +1,4 @@
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import * as DNumber from "@scripts/number";
 import { createKind } from "../../kind";
@@ -43,8 +43,8 @@ export const BetweenThanConstraint = createConstraint(
 		{
 			executeCheck: (self, data, errorHandler) => DNumber.betweenThan(
 				data,
-				self.definition.greater,
-				self.definition.less,
+				DCommon.forward<number>(self.definition.greater),
+				DCommon.forward<number>(self.definition.less),
 			)
 				? SuccessSymbol
 				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,

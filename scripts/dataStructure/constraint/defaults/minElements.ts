@@ -1,4 +1,4 @@
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import * as DArray from "@scripts/array";
 import { createKind } from "../../kind";
@@ -36,7 +36,7 @@ export const MinElementsConstraint = createConstraint(
 		{
 			executeCheck: (self, data, errorHandler) => DArray.minElements(
 				data,
-				self.definition.min,
+				DCommon.forward<number>(self.definition.min),
 			)
 				? SuccessSymbol
 				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,

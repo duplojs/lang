@@ -46,6 +46,13 @@ type RequireApplyLengthEqual<
 	& RequireMaxCharactersConstraint<GenericString, GenericLength>
 );
 
+type RequireApplyLengthEqualBoolean<
+	GenericString extends string,
+	GenericLength extends number,
+> = DCommon.IsEqual<GenericLength, number> extends true
+	? unknown
+	: RequireApplyLengthEqual<GenericString, GenericLength>;
+
 type IsLengthEqualCompatible<
 	GenericString extends string,
 	GenericLength extends number,
@@ -61,7 +68,7 @@ type IsLengthEqualCompatible<
 		: true,
 ]>;
 
-type ComputeLengthEqual<
+type LengthEqualOutput<
 	GenericString extends string,
 	GenericLength extends number,
 > = GenericString extends unknown
@@ -77,12 +84,13 @@ export function lengthEqual<
 	length: GenericLength & RequireApplyLengthEqual<GenericString, GenericLength>,
 ): (
 	string: GenericString,
-) => string is ComputeLengthEqual<GenericString, GenericLength>;
+) => string is LengthEqualOutput<GenericString, GenericLength>;
 
 export function lengthEqual<
 	GenericString extends string,
+	const GenericLength extends number,
 >(
-	length: number,
+	length: GenericLength & RequireApplyLengthEqualBoolean<GenericString, GenericLength>,
 ): (
 	string: GenericString,
 ) => boolean;
@@ -93,13 +101,14 @@ export function lengthEqual<
 >(
 	string: GenericString,
 	length: GenericLength & RequireApplyLengthEqual<GenericString, GenericLength>,
-): string is ComputeLengthEqual<GenericString, GenericLength>;
+): string is LengthEqualOutput<GenericString, GenericLength>;
 
 export function lengthEqual<
 	GenericString extends string,
+	const GenericLength extends number,
 >(
 	string: GenericString,
-	length: number,
+	length: GenericLength & RequireApplyLengthEqualBoolean<GenericString, GenericLength>,
 ): boolean;
 
 export function lengthEqual(

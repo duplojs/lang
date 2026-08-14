@@ -61,22 +61,34 @@ type BetweenThanOutput<
 	GenericLess
 >;
 
+type RequireApplyBetweenThan<
+	GenericNumber extends number,
+> = RequireSimpleLiteral<GenericNumber>;
+
+type RequireApplyBetweenThanBoolean<
+	GenericNumber extends number,
+> = DCommon.IsEqual<GenericNumber, number> extends true
+	? unknown
+	: RequireApplyBetweenThan<GenericNumber>;
+
 export function betweenThan<
 	GenericValue extends number,
 	const GenericGreater extends number,
 	const GenericLess extends number,
 >(
-	greater: GenericGreater & RequireSimpleLiteral<GenericGreater>,
-	less: GenericLess & RequireSimpleLiteral<GenericLess>,
+	greater: GenericGreater & RequireApplyBetweenThan<GenericGreater>,
+	less: GenericLess & RequireApplyBetweenThan<GenericLess>,
 ): (
 	value: GenericValue,
 ) => value is BetweenThanOutput<GenericValue, GenericGreater, GenericLess>;
 
 export function betweenThan<
 	GenericValue extends number,
+	const GenericGreater extends number,
+	const GenericLess extends number,
 >(
-	greater: number,
-	less: number,
+	greater: GenericGreater & RequireApplyBetweenThanBoolean<GenericGreater>,
+	less: GenericLess & RequireApplyBetweenThanBoolean<GenericLess>,
 ): (
 	value: GenericValue,
 ) => boolean;
@@ -87,16 +99,18 @@ export function betweenThan<
 	const GenericLess extends number,
 >(
 	value: GenericValue,
-	greater: GenericGreater & RequireSimpleLiteral<GenericGreater>,
-	less: GenericLess & RequireSimpleLiteral<GenericLess>,
+	greater: GenericGreater & RequireApplyBetweenThan<GenericGreater>,
+	less: GenericLess & RequireApplyBetweenThan<GenericLess>,
 ): value is BetweenThanOutput<GenericValue, GenericGreater, GenericLess>;
 
 export function betweenThan<
 	GenericValue extends number,
+	const GenericGreater extends number,
+	const GenericLess extends number,
 >(
 	value: GenericValue,
-	greater: number,
-	less: number,
+	greater: GenericGreater & RequireApplyBetweenThanBoolean<GenericGreater>,
+	less: GenericLess & RequireApplyBetweenThanBoolean<GenericLess>,
 ): boolean;
 
 export function betweenThan(

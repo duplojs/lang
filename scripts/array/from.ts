@@ -1,7 +1,7 @@
 
 type Enumerable = | ArrayLike<unknown> | Iterable<unknown> | AsyncIterable<unknown>;
 
-type ComputeOutput<
+type FromOutput<
 	GenericEnumerable extends Enumerable,
 > = GenericEnumerable extends AsyncIterable<infer InferredValue>
 	? Promise<InferredValue[]>
@@ -15,7 +15,7 @@ export function from<
 	const GenericEnumerable extends Enumerable,
 >(
 	input: GenericEnumerable,
-): ComputeOutput<GenericEnumerable>;
+): FromOutput<GenericEnumerable>;
 
 export function from(
 	input: Enumerable,

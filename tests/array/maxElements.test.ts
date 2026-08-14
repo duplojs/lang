@@ -78,10 +78,7 @@ describe("maxElements", () => {
 		const sourceLength = ["a", "b", "c", "d"] as string[] & DArray.LengthEqual<4>;
 		const max = 3 as number;
 
-		if (false) {
-			// @ts-expect-error max must be a literal number.
-			DArray.maxElements(["a", "b", "c"], max);
-		}
+		expect(DArray.maxElements(["a", "b", "c"], max)).toBe(true);
 
 		// @ts-expect-error Cannot apply MaxElements<3> on MinElements<4>.
 		expect(DArray.maxElements(sourceMin, 3)).toBe(false);

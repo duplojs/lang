@@ -2,8 +2,10 @@ import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("lengthEqual", () => {
 	it("should validate a string with the expected length", () => {
+		const value = "code" as string;
+
 		expect(DString.lengthEqual("code", 4)).toBe(true);
-		expect(DString.lengthEqual("code", 5)).toBe(false);
+		expect(DString.lengthEqual(value, 5)).toBe(false);
 	});
 
 	it("should narrow the string inside a pipe when callback", () => {
@@ -81,10 +83,7 @@ describe("lengthEqual", () => {
 		const sourceMax = "hi" as string & DString.MaxCharacters<2>;
 		const length = 3 as number;
 
-		if (false) {
-			// @ts-expect-error length must be a literal number.
-			DString.lengthEqual("abc", length);
-		}
+		expect(DString.lengthEqual("abc", length)).toBe(true);
 
 		// @ts-expect-error Cannot apply LengthEqual<3> on LengthEqual<5>.
 		expect(DString.lengthEqual(sourceLength, 3)).toBe(false);

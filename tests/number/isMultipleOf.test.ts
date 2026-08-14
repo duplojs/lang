@@ -45,12 +45,9 @@ describe("isMultipleOf", () => {
 		expect(result).toBe(2);
 	});
 
-	it("should reject a non literal multiple for the direct signature", () => {
+	it("should accept a primitive number multiple for the boolean signature", () => {
 		const multiple = 3 as number;
 
-		if (false) {
-			// @ts-expect-error direct signature expects a literal multiple.
-			DNumber.isMultipleOf(6, multiple);
-		}
+		expect(DNumber.isMultipleOf(6, multiple)).toBe(true);
 	});
 });

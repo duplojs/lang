@@ -81,10 +81,7 @@ describe("lengthEqual", () => {
 		const sourceMax = ["a", "b"] as string[] & DArray.MaxElements<2>;
 		const length = 3 as number;
 
-		if (false) {
-			// @ts-expect-error length must be a literal number.
-			DArray.lengthEqual(["a", "b", "c"], length);
-		}
+		expect(DArray.lengthEqual(["a", "b", "c"], length)).toBe(true);
 
 		// @ts-expect-error Cannot apply LengthEqual<3> on LengthEqual<4>.
 		expect(DArray.lengthEqual(sourceLength, 3)).toBe(false);

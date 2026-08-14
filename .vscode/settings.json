@@ -39,4 +39,6 @@
       		"language": "fr"
     	}
   	],
+	
+	"chss.stylesheetLocation": ".vscode/style-syntax.chss",
 }

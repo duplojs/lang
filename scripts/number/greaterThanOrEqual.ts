@@ -1,3 +1,4 @@
+import type * as DCommon from "@scripts/common";
 import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual } from "./constraints";
 import type { IsGreater, IsGreaterOrEqual, RequireSimpleLiteral } from "./types";
 
@@ -24,19 +25,30 @@ type GreaterThanOrEqualOutput<
 					: GenericValue & GreaterThanOrEqual<GenericThreshold>
 	: never;
 
+type RequireApplyGreaterThanOrEqual<
+	GenericThreshold extends number,
+> = RequireSimpleLiteral<GenericThreshold>;
+
+type RequireApplyGreaterThanOrEqualBoolean<
+	GenericThreshold extends number,
+> = DCommon.IsEqual<GenericThreshold, number> extends true
+	? unknown
+	: RequireApplyGreaterThanOrEqual<GenericThreshold>;
+
 export function greaterThanOrEqual<
 	GenericValue extends number,
 	const GenericThreshold extends number,
 >(
-	threshold: GenericThreshold & RequireSimpleLiteral<GenericThreshold>,
+	threshold: GenericThreshold & RequireApplyGreaterThanOrEqual<GenericThreshold>,
 ): (
 	value: GenericValue,
 ) => value is GreaterThanOrEqualOutput<GenericValue, GenericThreshold>;
 
 export function greaterThanOrEqual<
 	GenericValue extends number,
+	const GenericThreshold extends number,
 >(
-	threshold: number,
+	threshold: GenericThreshold & RequireApplyGreaterThanOrEqualBoolean<GenericThreshold>,
 ): (
 	value: GenericValue,
 ) => boolean;
@@ -46,14 +58,15 @@ export function greaterThanOrEqual<
 	const GenericThreshold extends number,
 >(
 	value: GenericValue,
-	threshold: GenericThreshold & RequireSimpleLiteral<GenericThreshold>,
+	threshold: GenericThreshold & RequireApplyGreaterThanOrEqual<GenericThreshold>,
 ): value is GreaterThanOrEqualOutput<GenericValue, GenericThreshold>;
 
 export function greaterThanOrEqual<
 	GenericValue extends number,
+	const GenericThreshold extends number,
 >(
 	value: GenericValue,
-	threshold: number,
+	threshold: GenericThreshold & RequireApplyGreaterThanOrEqualBoolean<GenericThreshold>,
 ): boolean;
 
 export function greaterThanOrEqual(

@@ -1,4 +1,4 @@
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import * as DNumber from "@scripts/number";
 import { createKind } from "../../kind";
@@ -36,7 +36,7 @@ export const LessThanOrEqualConstraint = createConstraint(
 		{
 			executeCheck: (self, data, errorHandler) => DNumber.lessThanOrEqual(
 				data,
-				self.definition.threshold,
+				DCommon.forward<number>(self.definition.threshold),
 			)
 				? SuccessSymbol
 				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,

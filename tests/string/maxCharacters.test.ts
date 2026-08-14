@@ -2,8 +2,10 @@ import { DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("maxCharacters", () => {
 	it("should validate a string shorter than the maximum", () => {
+		const long = "hello!" as string;
+
 		expect(DString.maxCharacters("hello", 5)).toBe(true);
-		expect(DString.maxCharacters("hello!", 5)).toBe(false);
+		expect(DString.maxCharacters(long, 5)).toBe(false);
 	});
 
 	it("should narrow the string inside a pipe when callback", () => {
@@ -78,10 +80,7 @@ describe("maxCharacters", () => {
 		const sourceLength = "hello" as string & DString.LengthEqual<5>;
 		const max = 3 as number;
 
-		if (false) {
-			// @ts-expect-error max must be a literal number.
-			DString.maxCharacters("hello", max);
-		}
+		expect(DString.maxCharacters("hel", max)).toBe(true);
 
 		// @ts-expect-error Cannot apply MaxCharacters<3> on MinCharacters<5>.
 		expect(DString.maxCharacters(sourceMin, 3)).toBe(false);

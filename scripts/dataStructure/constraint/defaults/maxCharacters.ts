@@ -1,4 +1,4 @@
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import * as DString from "@scripts/string";
 import { createKind } from "../../kind";
@@ -36,7 +36,7 @@ export const MaxCharactersConstraint = createConstraint(
 		{
 			executeCheck: (self, data, errorHandler) => DString.maxCharacters(
 				data,
-				self.definition.max,
+				DCommon.forward<number>(self.definition.max),
 			)
 				? SuccessSymbol
 				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,

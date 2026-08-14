@@ -78,10 +78,7 @@ describe("minElements", () => {
 		const sourceLength = ["a", "b"] as string[] & DArray.LengthEqual<2>;
 		const min = 3 as number;
 
-		if (false) {
-			// @ts-expect-error min must be a literal number.
-			DArray.minElements(["a", "b", "c"], min);
-		}
+		expect(DArray.minElements(["a", "b", "c"], min)).toBe(true);
 
 		// @ts-expect-error Cannot apply MinElements<3> on MaxElements<2>.
 		expect(DArray.minElements(sourceMax, 3)).toBe(false);

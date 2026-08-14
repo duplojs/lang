@@ -1,4 +1,4 @@
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import * as DNumber from "@scripts/number";
 import { createKind } from "../../kind";
@@ -36,7 +36,7 @@ export const MultipleOfConstraint = createConstraint(
 		{
 			executeCheck: (self, data, errorHandler) => DNumber.isMultipleOf(
 				data,
-				self.definition.multiple,
+				DCommon.forward<number>(self.definition.multiple),
 			)
 				? SuccessSymbol
 				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,

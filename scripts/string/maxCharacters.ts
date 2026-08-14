@@ -34,7 +34,14 @@ type RequireApplyMaxCharacters<
 	& RequireMinCharactersConstraint<GenericString, GenericMax>
 );
 
-type ComputeMaxCharacters<
+type RequireApplyMaxCharactersBoolean<
+	GenericString extends string,
+	GenericMax extends number,
+> = DCommon.IsEqual<GenericMax, number> extends true
+	? unknown
+	: RequireApplyMaxCharacters<GenericString, GenericMax>;
+
+type MaxCharactersOutput<
 	GenericString extends string,
 	GenericMax extends number,
 > = GenericString extends unknown
@@ -60,12 +67,13 @@ export function maxCharacters<
 	max: GenericMax & RequireApplyMaxCharacters<GenericString, GenericMax>,
 ): (
 	string: GenericString,
-) => string is ComputeMaxCharacters<GenericString, GenericMax>;
+) => string is MaxCharactersOutput<GenericString, GenericMax>;
 
 export function maxCharacters<
 	GenericString extends string,
+	const GenericMax extends number,
 >(
-	max: number,
+	max: GenericMax & RequireApplyMaxCharactersBoolean<GenericString, GenericMax>,
 ): (
 	string: GenericString,
 ) => boolean;
@@ -76,13 +84,14 @@ export function maxCharacters<
 >(
 	string: GenericString,
 	max: GenericMax & RequireApplyMaxCharacters<GenericString, GenericMax>,
-): string is ComputeMaxCharacters<GenericString, GenericMax>;
+): string is MaxCharactersOutput<GenericString, GenericMax>;
 
 export function maxCharacters<
 	GenericString extends string,
+	const GenericMax extends number,
 >(
 	string: GenericString,
-	max: number,
+	max: GenericMax & RequireApplyMaxCharactersBoolean<GenericString, GenericMax>,
 ): boolean;
 
 export function maxCharacters(

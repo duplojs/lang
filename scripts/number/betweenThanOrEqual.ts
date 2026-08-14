@@ -61,22 +61,34 @@ type BetweenThanOrEqualOutput<
 	GenericLess
 >;
 
+type RequireApplyBetweenThanOrEqual<
+	GenericNumber extends number,
+> = RequireSimpleLiteral<GenericNumber>;
+
+type RequireApplyBetweenThanOrEqualBoolean<
+	GenericNumber extends number,
+> = DCommon.IsEqual<GenericNumber, number> extends true
+	? unknown
+	: RequireApplyBetweenThanOrEqual<GenericNumber>;
+
 export function betweenThanOrEqual<
 	GenericValue extends number,
 	const GenericGreater extends number,
 	const GenericLess extends number,
 >(
-	greater: GenericGreater & RequireSimpleLiteral<GenericGreater>,
-	less: GenericLess & RequireSimpleLiteral<GenericLess>,
+	greater: GenericGreater & RequireApplyBetweenThanOrEqual<GenericGreater>,
+	less: GenericLess & RequireApplyBetweenThanOrEqual<GenericLess>,
 ): (
 	value: GenericValue,
 ) => value is BetweenThanOrEqualOutput<GenericValue, GenericGreater, GenericLess>;
 
 export function betweenThanOrEqual<
 	GenericValue extends number,
+	const GenericGreater extends number,
+	const GenericLess extends number,
 >(
-	greater: number,
-	less: number,
+	greater: GenericGreater & RequireApplyBetweenThanOrEqualBoolean<GenericGreater>,
+	less: GenericLess & RequireApplyBetweenThanOrEqualBoolean<GenericLess>,
 ): (
 	value: GenericValue,
 ) => boolean;
@@ -87,16 +99,18 @@ export function betweenThanOrEqual<
 	const GenericLess extends number,
 >(
 	value: GenericValue,
-	greater: GenericGreater & RequireSimpleLiteral<GenericGreater>,
-	less: GenericLess & RequireSimpleLiteral<GenericLess>,
+	greater: GenericGreater & RequireApplyBetweenThanOrEqual<GenericGreater>,
+	less: GenericLess & RequireApplyBetweenThanOrEqual<GenericLess>,
 ): value is BetweenThanOrEqualOutput<GenericValue, GenericGreater, GenericLess>;
 
 export function betweenThanOrEqual<
 	GenericValue extends number,
+	const GenericGreater extends number,
+	const GenericLess extends number,
 >(
 	value: GenericValue,
-	greater: number,
-	less: number,
+	greater: GenericGreater & RequireApplyBetweenThanOrEqualBoolean<GenericGreater>,
+	less: GenericLess & RequireApplyBetweenThanOrEqualBoolean<GenericLess>,
 ): boolean;
 
 export function betweenThanOrEqual(

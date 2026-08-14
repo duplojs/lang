@@ -1,8 +1,8 @@
 import type * as DCommon from "@scripts/common";
-import type { IsPositive } from "./isPositive";
+import type { IsNegative } from "./isNegative";
 
 export type ForbiddenNegative<
 	GenericNumber extends number,
-> = IsPositive<GenericNumber> extends true
-	? GenericNumber
-	: DCommon.ComputedTypeError<"Only positive number is allowed.">;
+> = IsNegative<GenericNumber> extends true
+	? DCommon.ComputedTypeError<"Only positive number is allowed.">
+	: GenericNumber;

@@ -34,7 +34,14 @@ type RequireApplyMinCharacters<
 	& RequireMaxCharactersConstraint<GenericString, GenericMin>
 );
 
-type ComputeMinCharacters<
+type RequireApplyMinCharactersBoolean<
+	GenericString extends string,
+	GenericMin extends number,
+> = DCommon.IsEqual<GenericMin, number> extends true
+	? unknown
+	: RequireApplyMinCharacters<GenericString, GenericMin>;
+
+type MinCharactersOutput<
 	GenericString extends string,
 	GenericMin extends number,
 > = GenericString extends unknown
@@ -60,12 +67,13 @@ export function minCharacters<
 	min: GenericMin & RequireApplyMinCharacters<GenericString, GenericMin>,
 ): (
 	string: GenericString,
-) => string is ComputeMinCharacters<GenericString, GenericMin>;
+) => string is MinCharactersOutput<GenericString, GenericMin>;
 
 export function minCharacters<
 	GenericString extends string,
+	const GenericMin extends number,
 >(
-	min: number,
+	min: GenericMin & RequireApplyMinCharactersBoolean<GenericString, GenericMin>,
 ): (
 	string: GenericString,
 ) => boolean;
@@ -76,13 +84,14 @@ export function minCharacters<
 >(
 	string: GenericString,
 	min: GenericMin & RequireApplyMinCharacters<GenericString, GenericMin>,
-): string is ComputeMinCharacters<GenericString, GenericMin>;
+): string is MinCharactersOutput<GenericString, GenericMin>;
 
 export function minCharacters<
 	GenericString extends string,
+	const GenericMin extends number,
 >(
 	string: GenericString,
-	min: number,
+	min: GenericMin & RequireApplyMinCharactersBoolean<GenericString, GenericMin>,
 ): boolean;
 
 export function minCharacters(

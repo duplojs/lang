@@ -34,7 +34,14 @@ type RequireApplyMinElements<
 	& RequireMaxElementsConstraint<GenericArray, GenericMin>
 );
 
-type ComputeMinElements<
+type RequireApplyMinElementsBoolean<
+	GenericArray extends readonly unknown[],
+	GenericMin extends number,
+> = DCommon.IsEqual<GenericMin, number> extends true
+	? unknown
+	: RequireApplyMinElements<GenericArray, GenericMin>;
+
+type MinElementsOutput<
 	GenericArray extends readonly unknown[],
 	GenericMin extends number,
 > = GenericArray extends unknown
@@ -60,12 +67,13 @@ export function minElements<
 	min: GenericMin & RequireApplyMinElements<GenericArray, GenericMin>,
 ): (
 	array: GenericArray,
-) => array is ComputeMinElements<GenericArray, GenericMin>;
+) => array is MinElementsOutput<GenericArray, GenericMin>;
 
 export function minElements<
 	GenericArray extends readonly unknown[],
+	const GenericMin extends number,
 >(
-	min: number,
+	min: GenericMin & RequireApplyMinElementsBoolean<GenericArray, GenericMin>,
 ): (
 	array: GenericArray,
 ) => boolean;
@@ -76,13 +84,14 @@ export function minElements<
 >(
 	array: GenericArray,
 	min: GenericMin & RequireApplyMinElements<GenericArray, GenericMin>,
-): array is ComputeMinElements<GenericArray, GenericMin>;
+): array is MinElementsOutput<GenericArray, GenericMin>;
 
 export function minElements<
 	GenericArray extends readonly unknown[],
+	const GenericMin extends number,
 >(
 	array: GenericArray,
-	min: number,
+	min: GenericMin & RequireApplyMinElementsBoolean<GenericArray, GenericMin>,
 ): boolean;
 
 export function minElements(
