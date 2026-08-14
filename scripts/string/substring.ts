@@ -1,10 +1,10 @@
-import type { ReapplyAllowedCharacters, ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyAllowedCharacters, ReapplyCompatiblesConstraints } from "./constraints";
 
 type SubstringOutput<
 	GenericString extends string,
 > = ReapplyAllowedCharacters<
 	GenericString,
-	ReapplyAllSizeConstraints<GenericString, string, "lengthEqual" | "minCharacters">
+	ReapplyCompatiblesConstraints<GenericString, string, "maxCharacters">
 >;
 
 export function substring<

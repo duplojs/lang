@@ -1,17 +1,17 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type ConcatOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
 	GenericElementsRest extends readonly unknown[][] = [],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	(
+	readonly (
 		| GenericArray[number]
 		| GenericElements[number]
 		| GenericElementsRest[number][number]
 	)[],
-	"lengthEqual" | "maxElements"
+	"minElements"
 >;
 
 export function concat<
@@ -37,7 +37,7 @@ export function concat(
 	...args:
 		| [elements: readonly unknown[]]
 		| [array: readonly unknown[], elements: readonly unknown[], ...elementsRest: readonly unknown[]]
-) {
+): any {
 	if (args.length === 1) {
 		const [elements] = args;
 

@@ -1,9 +1,9 @@
-import type { ReapplyAllSizeConstraints } from "../constraints";
+import type { ReapplyCompatiblesConstraints } from "../constraints";
 
 type FillAllOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends unknown,
-> = ReapplyAllSizeConstraints<GenericArray, GenericElement[]>;
+> = ReapplyCompatiblesConstraints<GenericArray, readonly GenericElement[]>;
 
 export function fillAll<
 	GenericElement extends unknown,
@@ -25,7 +25,7 @@ export function fillAll(
 	...args:
 		| [array: readonly unknown[], element: unknown]
 		| [element: unknown]
-) {
+): any {
 	if (args.length === 1) {
 		const [value] = args;
 

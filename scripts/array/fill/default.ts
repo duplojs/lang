@@ -1,11 +1,11 @@
-import type { ReapplyAllSizeConstraints } from "../constraints";
+import type { ReapplyCompatiblesConstraints } from "../constraints";
 
 type FillOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	(
+	readonly (
 		| GenericArray[number]
 		| GenericValue
 	)[]
@@ -36,7 +36,7 @@ export function fill(
 	...args:
 		| [array: readonly unknown[], value: unknown, start: number, end: number]
 		| [value: unknown, start: number, end: number]
-) {
+): any {
 	if (args.length === 3) {
 		const [value, start, end] = args;
 

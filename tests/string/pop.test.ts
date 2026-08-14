@@ -8,7 +8,7 @@ describe("pop", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string,
+			string & DString.MaxCharacters<5>,
 			"strict"
 		>;
 	});
@@ -41,7 +41,7 @@ describe("pop", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			string,
+			string & DString.MaxCharacters<5>,
 			"strict"
 		>;
 	});

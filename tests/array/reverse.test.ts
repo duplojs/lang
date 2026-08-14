@@ -14,7 +14,7 @@ describe("reverse", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			number[] & DArray.LengthEqual<3> & DArray.MinElements<3> & DArray.MaxElements<3>,
+			readonly number[] & DArray.LengthEqual<3> & DArray.MinElements<3> & DArray.MaxElements<3>,
 			"strict"
 		>;
 	});

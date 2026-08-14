@@ -3,7 +3,10 @@ import type * as DCommon from "@scripts/common";
 
 type SortOutput<
 	GenericArray extends readonly number[],
-> = DArray.ReapplyAllSizeConstraints<GenericArray, GenericArray[number][]>;
+> = DArray.ReapplyCompatiblesConstraints<
+	GenericArray,
+	readonly GenericArray[number][]
+>;
 
 export function sort<
 	GenericArray extends readonly number[],
@@ -24,7 +27,7 @@ export function sort(
 	...args:
 		| [type: DCommon.SortType]
 		| [array: readonly number[], type: DCommon.SortType]
-) {
+): any {
 	if (args.length === 1) {
 		const [type] = args;
 

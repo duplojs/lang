@@ -8,7 +8,7 @@ describe("prepend", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			"hello world",
+			"hello world" & DString.MinCharacters<5>,
 			"strict"
 		>;
 	});
@@ -23,7 +23,7 @@ describe("prepend", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			"hello world",
+			"hello world" & DString.MinCharacters<5>,
 			"strict"
 		>;
 	});
@@ -53,7 +53,7 @@ describe("prepend", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			`hello ${string}`,
+			`hello ${string}` & DString.MinCharacters<5>,
 			"strict"
 		>;
 	});

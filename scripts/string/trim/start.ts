@@ -1,11 +1,11 @@
-import type { ReapplyAllSizeConstraints } from "../constraints";
+import type { ReapplyCompatiblesConstraints } from "../constraints";
 
 type TrimStartOutput<
 	GenericString extends string,
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericString,
 	string,
-	"lengthEqual" | "minCharacters"
+	"maxCharacters"
 >;
 
 export function trimStart<

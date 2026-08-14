@@ -17,7 +17,7 @@ describe("findAndSpliceDelete", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			(string[] & DArray.MaxElements<3>) | undefined,
+			(readonly string[] & DArray.MaxElements<3>) | undefined,
 			"strict"
 		>;
 	});
@@ -43,7 +43,7 @@ describe("findAndSpliceDelete", () => {
 
 		type _CheckMinResult = ExpectType<
 			typeof resultMin,
-			string[] | undefined,
+			readonly string[] | undefined,
 			"strict"
 		>;
 
@@ -52,7 +52,7 @@ describe("findAndSpliceDelete", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			string[] | undefined,
+			(readonly string[] & DArray.MaxElements<3>) | undefined,
 			"strict"
 		>;
 	});

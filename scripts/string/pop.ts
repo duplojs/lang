@@ -1,8 +1,8 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type PopOutput<
 	GenericString extends string,
-> = ReapplyAllSizeConstraints<GenericString, string, "lengthEqual" | "minCharacters">;
+> = ReapplyCompatiblesConstraints<GenericString, string, "maxCharacters">;
 
 export function pop<
 	GenericString extends string,

@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 export interface FindAndReplacePredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -12,7 +12,7 @@ type FindAndReplaceOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends DCommon.AnyValue,
 > = (
-	| ReapplyAllSizeConstraints<GenericArray, (GenericArray[number] | GenericValue)[]>
+	| ReapplyCompatiblesConstraints<GenericArray, readonly (GenericArray[number] | GenericValue)[]>
 	| undefined
 );
 
@@ -45,7 +45,7 @@ export function findAndReplace(
 	...args:
 		| [predicate: DCommon.AnyFunction, value: DCommon.AnyValue]
 		| [array: readonly unknown[], predicate: DCommon.AnyFunction, value: DCommon.AnyValue]
-) {
+): any {
 	if (args.length === 2) {
 		const [predicate, value] = args;
 

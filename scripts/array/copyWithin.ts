@@ -1,8 +1,8 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type CopyWithinOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyAllSizeConstraints<GenericArray, GenericArray[number][]>;
+> = ReapplyCompatiblesConstraints<GenericArray, readonly GenericArray[number][]>;
 
 export function copyWithin<
 	GenericArray extends readonly unknown[],
@@ -27,7 +27,7 @@ export function copyWithin(
 	...args:
 		| [target: number, start: number, end?: number]
 		| [array: readonly unknown[], target: number, start: number, end?: number]
-) {
+): any {
 	if (!Array.isArray(args[0])) {
 		const [target, start, end] = args as [number, number, number?];
 

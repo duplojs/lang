@@ -10,7 +10,7 @@ describe("spliceInsert", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			number[] & DArray.MinElements<2>,
+			readonly number[] & DArray.MinElements<2>,
 			"strict"
 		>;
 	});
@@ -30,7 +30,7 @@ describe("spliceInsert", () => {
 
 		type _CheckMaxResult = ExpectType<
 			typeof resultMax,
-			number[],
+			readonly number[],
 			"strict"
 		>;
 
@@ -39,7 +39,7 @@ describe("spliceInsert", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			number[],
+			readonly number[] & DArray.MinElements<2>,
 			"strict"
 		>;
 	});

@@ -1,8 +1,8 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type ReverseOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyAllSizeConstraints<GenericArray, GenericArray[number][]>;
+> = ReapplyCompatiblesConstraints<GenericArray, readonly GenericArray[number][]>;
 
 export function reverse<
 	GenericArray extends readonly unknown[],
@@ -14,6 +14,6 @@ export function reverse<
 	GenericArray extends readonly unknown[],
 >(
 	array: GenericArray,
-) {
+): any {
 	return array.slice().reverse();
 }

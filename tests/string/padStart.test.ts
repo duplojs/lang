@@ -8,7 +8,7 @@ describe("padStart", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string,
+			string & DString.MinCharacters<2>,
 			"strict"
 		>;
 	});
@@ -57,7 +57,7 @@ describe("padStart", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			string,
+			string & DString.MinCharacters<5>,
 			"strict"
 		>;
 	});

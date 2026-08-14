@@ -1,15 +1,15 @@
-import type { ReapplyAllSizeConstraints } from "../constraints";
+import type { ReapplyCompatiblesConstraints } from "../constraints";
 
 type SpliceInsertOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	(
+	readonly (
 		| GenericArray[number]
 		| GenericElements[number]
 	)[],
-	"lengthEqual" | "maxElements"
+	"minElements"
 >;
 
 export function spliceInsert<
@@ -34,7 +34,7 @@ export function spliceInsert(
 	...args:
 		| [indexFrom: number, elements: readonly unknown[]]
 		| [array: readonly unknown[], indexFrom: number, elements: readonly unknown[]]
-) {
+): any {
 	if (args.length === 2) {
 		const [indexFrom, elements] = args;
 

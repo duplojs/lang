@@ -1,15 +1,15 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type InsertOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	(
+	readonly (
 		| GenericArray[number]
 		| GenericValue
 	)[],
-	"lengthEqual" | "maxElements"
+	"minElements"
 >;
 
 export function insert<
@@ -33,7 +33,7 @@ export function insert(
 	...args:
 		| [array: readonly unknown[]]
 		| [value: unknown, array: readonly unknown[]]
-) {
+): any {
 	if (args.length === 1) {
 		const [array] = args;
 

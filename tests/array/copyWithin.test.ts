@@ -14,7 +14,7 @@ describe("copyWithin", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			number[] & DArray.LengthEqual<4> & DArray.MinElements<4> & DArray.MaxElements<4>,
+			readonly number[] & DArray.LengthEqual<4> & DArray.MinElements<4> & DArray.MaxElements<4>,
 			"strict"
 		>;
 	});

@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 export interface FilterPredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -11,10 +11,10 @@ export interface FilterPredicateFunctionParams<
 type FilterOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends GenericArray[number] = GenericArray[number],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	GenericElement[],
-	"lengthEqual" | "minElements"
+	readonly GenericElement[],
+	"maxElements"
 >;
 
 export function filter<
@@ -65,7 +65,7 @@ export function filter(
 	...args:
 		| [predicate: DCommon.AnyFunction]
 		| [array: readonly unknown[], predicate: DCommon.AnyFunction]
-) {
+): any {
 	if (args.length === 1) {
 		const [predicate] = args;
 

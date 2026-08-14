@@ -8,7 +8,7 @@ describe("concat", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			"hello world",
+			"hello world" & DString.MinCharacters<5>,
 			"strict"
 		>;
 	});
@@ -23,7 +23,7 @@ describe("concat", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			"hello world",
+			"hello world" & DString.MinCharacters<5>,
 			"strict"
 		>;
 	});
@@ -53,7 +53,7 @@ describe("concat", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			`${string}!`,
+			`${string}!` & DString.MinCharacters<5>,
 			"strict"
 		>;
 	});

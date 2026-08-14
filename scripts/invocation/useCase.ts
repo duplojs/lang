@@ -95,7 +95,7 @@ export function createUseCase<
 		dependencies,
 		getUseCase: (injectedDependencies: Record<string, object>) => getUseCase(
 			DCommon.pipe(
-				dependencies,
+				DCommon.forward<UseCaseDependencies>(dependencies),
 				DObject.entries,
 				DArray.map(
 					([key, value]) => {

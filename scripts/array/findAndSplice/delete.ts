@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllSizeConstraints } from "../constraints";
+import type { ReapplyCompatiblesConstraints } from "../constraints";
 
 export interface FindAndSpliceDeletePredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -10,13 +10,15 @@ export interface FindAndSpliceDeletePredicateFunctionParams<
 
 type FindAndSpliceDeleteOutput<
 	GenericArray extends readonly unknown[],
-> =
-	| ReapplyAllSizeConstraints<
+> = Extract<
+	| ReapplyCompatiblesConstraints<
 		GenericArray,
-		GenericArray[number][],
-		"lengthEqual" | "minElements"
+		readonly GenericArray[number][],
+		"maxElements"
 	>
-	| undefined;
+	| undefined,
+	any
+>;
 
 export function findAndSpliceDelete<
 	GenericArray extends readonly unknown[],
@@ -28,7 +30,7 @@ export function findAndSpliceDelete<
 	deleteCount: number,
 ): (
 	array: GenericArray,
-) => FindAndSpliceDeleteOutput<GenericArray>;
+) => Extract<FindAndSpliceDeleteOutput<GenericArray>, any>;
 
 export function findAndSpliceDelete<
 	GenericArray extends readonly unknown[],
@@ -39,13 +41,13 @@ export function findAndSpliceDelete<
 		params: FindAndSpliceDeletePredicateFunctionParams<GenericArray>,
 	) => boolean,
 	deleteCount: number,
-): FindAndSpliceDeleteOutput<GenericArray>;
+): Extract<FindAndSpliceDeleteOutput<GenericArray>, any>;
 
 export function findAndSpliceDelete(
 	...args:
 		| [predicate: DCommon.AnyFunction, deleteCount: number]
 		| [array: readonly unknown[], predicate: DCommon.AnyFunction, deleteCount: number]
-) {
+): any {
 	if (args.length === 2) {
 		const [predicate, deleteCount] = args;
 

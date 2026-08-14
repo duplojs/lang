@@ -10,7 +10,7 @@ describe("pop", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			number[] & DArray.MaxElements<3>,
+			readonly number[] & DArray.MaxElements<3>,
 			"strict"
 		>;
 	});
@@ -25,7 +25,7 @@ describe("pop", () => {
 
 		type _CheckMinResult = ExpectType<
 			typeof resultMin,
-			number[],
+			readonly number[],
 			"strict"
 		>;
 
@@ -34,7 +34,7 @@ describe("pop", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			number[],
+			readonly number[] & DArray.MaxElements<3>,
 			"strict"
 		>;
 	});

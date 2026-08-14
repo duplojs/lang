@@ -1,9 +1,9 @@
 import type * as DNumber from "@scripts/number";
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type PadEndOutput<
 	GenericString extends string,
-> = ReapplyAllSizeConstraints<GenericString, string, "lengthEqual" | "maxCharacters">;
+> = ReapplyCompatiblesConstraints<GenericString, string, "minCharacters">;
 
 export function padEnd<
 	GenericString extends string,

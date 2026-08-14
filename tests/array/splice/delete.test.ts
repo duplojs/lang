@@ -10,7 +10,7 @@ describe("spliceDelete", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			number[] & DArray.MaxElements<4>,
+			readonly number[] & DArray.MaxElements<4>,
 			"strict"
 		>;
 	});
@@ -30,7 +30,7 @@ describe("spliceDelete", () => {
 
 		type _CheckMinResult = ExpectType<
 			typeof resultMin,
-			number[],
+			readonly number[],
 			"strict"
 		>;
 
@@ -39,7 +39,7 @@ describe("spliceDelete", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			number[],
+			readonly number[] & DArray.MaxElements<3>,
 			"strict"
 		>;
 	});

@@ -17,7 +17,7 @@ describe("findAndSpliceInsert", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			(string[] & DArray.MinElements<2>) | undefined,
+			(readonly string[] & DArray.MinElements<2>) | undefined,
 			"strict"
 		>;
 	});
@@ -43,7 +43,7 @@ describe("findAndSpliceInsert", () => {
 
 		type _CheckMaxResult = ExpectType<
 			typeof resultMax,
-			string[] | undefined,
+			readonly string[] | undefined,
 			"strict"
 		>;
 
@@ -56,7 +56,7 @@ describe("findAndSpliceInsert", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			string[] | undefined,
+			(readonly string[] & DArray.MinElements<2>) | undefined,
 			"strict"
 		>;
 	});

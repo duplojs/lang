@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 import type { Join } from "./types";
 
 type RemoveStringConstraints<
@@ -20,10 +20,10 @@ type PrependOutput<
 	GenericString extends string,
 	GenericElement extends string,
 	GenericElementsRest extends readonly string[] = [],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericString,
 	`${Extract<DCommon.RemoveConstraint<GenericElement>, string>}${Join<RemoveStringConstraints<GenericElementsRest>>}${Extract<DCommon.RemoveConstraint<GenericString>, string>}`,
-	"lengthEqual" | "maxCharacters"
+	"minCharacters"
 >;
 
 export function prepend<

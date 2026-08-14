@@ -8,7 +8,7 @@ describe("findDuplicates", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			DCommon.AnyTuple<"a" | "b"> | undefined,
+			readonly ("a" | "b")[] & DArray.MinElements<1> | undefined,
 			"strict"
 		>;
 	});

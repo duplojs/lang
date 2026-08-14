@@ -3,7 +3,7 @@ import type * as DArray from "@scripts/array";
 
 type SortOutput<
 	GenericArray extends readonly string[],
-> = DArray.ReapplyAllSizeConstraints<GenericArray, GenericArray[number][]>;
+> = DArray.ReapplyCompatiblesConstraints<GenericArray, GenericArray[number][]>;
 
 export function sort<
 	GenericArray extends readonly string[],

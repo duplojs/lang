@@ -15,7 +15,7 @@ describe("map", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			`${number}:${number}`[],
+			readonly `${number}:${number}`[],
 			"strict"
 		>;
 	});
@@ -35,7 +35,7 @@ describe("map", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string[] & DArray.LengthEqual<3> & DArray.MinElements<3> & DArray.MaxElements<3>,
+			readonly string[] & DArray.LengthEqual<3> & DArray.MinElements<3> & DArray.MaxElements<3>,
 			"strict"
 		>;
 	});

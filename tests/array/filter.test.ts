@@ -15,7 +15,7 @@ describe("filter", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string[] & DArray.MaxElements<3>,
+			readonly string[] & DArray.MaxElements<3>,
 			"strict"
 		>;
 	});
@@ -39,7 +39,7 @@ describe("filter", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			("a" | "b")[] & DArray.MaxElements<4>,
+			readonly ("a" | "b")[] & DArray.MaxElements<4>,
 			"strict"
 		>;
 	});
@@ -50,7 +50,7 @@ describe("filter", () => {
 
 		type _CheckMinResult = ExpectType<
 			typeof resultMin,
-			string[],
+			readonly string[],
 			"strict"
 		>;
 
@@ -59,7 +59,7 @@ describe("filter", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			string[],
+			readonly string[] & DArray.MaxElements<3>,
 			"strict"
 		>;
 	});

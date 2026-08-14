@@ -1,17 +1,17 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type UnshiftOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
 	GenericValuesRest extends readonly unknown[] = [],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	(
+	readonly (
 		| GenericValue
 		| GenericValuesRest[number]
 		| GenericArray[number]
 	)[],
-	"lengthEqual" | "maxElements"
+	"minElements"
 >;
 
 export function unshift<
@@ -37,7 +37,7 @@ export function unshift(
 	...args:
 		| [value: unknown]
 		| [array: readonly unknown[], value: unknown, ...valuesRest: readonly unknown[]]
-) {
+): any {
 	if (args.length === 1) {
 		const [value] = args as [unknown];
 

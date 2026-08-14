@@ -1,17 +1,17 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type PushOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
 	GenericValuesRest extends readonly unknown[] = [],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	(
+	readonly (
 		| GenericArray[number]
 		| GenericValue
 		| GenericValuesRest[number]
 	)[],
-	"lengthEqual" | "maxElements"
+	"minElements"
 >;
 
 export function push<
@@ -37,7 +37,7 @@ export function push(
 	...args:
 		| [value: unknown]
 		| [array: readonly unknown[], value: unknown, ...valuesRest: readonly unknown[]]
-) {
+): any {
 	if (args.length === 1) {
 		const [value] = args;
 

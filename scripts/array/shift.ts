@@ -1,11 +1,11 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type ShiftOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	GenericArray[number][],
-	"lengthEqual" | "minElements"
+	readonly GenericArray[number][],
+	"maxElements"
 >;
 
 export function shift<
@@ -16,6 +16,6 @@ export function shift<
 
 export function shift(
 	array: readonly unknown[],
-) {
+): any {
 	return array.slice(1);
 }

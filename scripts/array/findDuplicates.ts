@@ -17,7 +17,7 @@ export function findDuplicates<
 	GenericArray extends readonly EligibleDuplicateElement[],
 >(
 	array: GenericArray,
-): undefined | (GenericArray[number][] & MinElements<1>);
+): undefined | (readonly GenericArray[number][] & MinElements<1>);
 
 export function findDuplicates(
 	array: EligibleDuplicateElement[],

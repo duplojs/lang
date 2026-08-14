@@ -22,7 +22,7 @@ describe("findAndReplace", () => {
 		type _CheckResult = ExpectType<
 			typeof result,
 			(
-				& (string | 0)[]
+				& readonly (string | 0)[]
 				& DArray.LengthEqual<3>
 				& DArray.MinElements<3>
 				& DArray.MaxElements<3>

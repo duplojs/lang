@@ -10,7 +10,7 @@ describe("unshift", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			(number | string | boolean)[] & DArray.MinElements<2>,
+			readonly (number | string | boolean)[] & DArray.MinElements<2>,
 			"strict"
 		>;
 	});
@@ -30,7 +30,7 @@ describe("unshift", () => {
 
 		type _CheckMaxResult = ExpectType<
 			typeof resultMax,
-			(number | string)[],
+			readonly (number | string)[],
 			"strict"
 		>;
 
@@ -39,7 +39,7 @@ describe("unshift", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			(number | string)[],
+			readonly (number | string)[] & DArray.MinElements<2>,
 			"strict"
 		>;
 	});

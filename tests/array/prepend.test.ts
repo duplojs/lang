@@ -10,7 +10,7 @@ describe("prepend", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			(number | "a" | true)[] & DArray.MinElements<2>,
+			readonly (number | "a" | true)[] & DArray.MinElements<2>,
 			"strict"
 		>;
 	});
@@ -30,7 +30,7 @@ describe("prepend", () => {
 
 		type _CheckMaxResult = ExpectType<
 			typeof resultMax,
-			(number | "a")[],
+			readonly (number | "a")[],
 			"strict"
 		>;
 
@@ -39,7 +39,7 @@ describe("prepend", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			(number | "a")[],
+			readonly (number | "a")[] & DArray.MinElements<2>,
 			"strict"
 		>;
 	});

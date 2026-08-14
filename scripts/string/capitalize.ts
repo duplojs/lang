@@ -1,12 +1,12 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type CapitalizeOutput<
 	GenericString extends string,
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericString,
 	Capitalize<Extract<DCommon.RemoveConstraint<GenericString>, string>>,
-	"lengthEqual" | "maxCharacters"
+	"minCharacters"
 >;
 
 export function capitalize<

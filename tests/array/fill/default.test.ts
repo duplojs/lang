@@ -14,7 +14,7 @@ describe("fill", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			(number | string)[] & DArray.LengthEqual<4> & DArray.MinElements<4> & DArray.MaxElements<4>,
+			readonly (number | string)[] & DArray.LengthEqual<4> & DArray.MinElements<4> & DArray.MaxElements<4>,
 			"strict"
 		>;
 	});

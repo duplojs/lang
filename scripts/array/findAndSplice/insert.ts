@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllSizeConstraints } from "../constraints";
+import type { ReapplyCompatiblesConstraints } from "../constraints";
 
 export interface FindAndSpliceInsertPredicateFunctionParams<
 	GenericArray extends readonly unknown[] = readonly unknown[],
@@ -12,13 +12,13 @@ type FindAndSpliceInsertOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
 > =
-	| ReapplyAllSizeConstraints<
+	| ReapplyCompatiblesConstraints<
 		GenericArray,
-		(
+		readonly (
 			| GenericArray[number]
 			| GenericElements[number]
 		)[],
-		"lengthEqual" | "maxElements"
+		"minElements"
 	>
 	| undefined;
 
@@ -50,7 +50,7 @@ export function findAndSpliceInsert(
 	...args:
 		| [predicate: DCommon.AnyFunction, elements: readonly unknown[]]
 		| [array: readonly unknown[], predicate: DCommon.AnyFunction, elements: readonly unknown[]]
-) {
+): any {
 	if (args.length === 2) {
 		const [predicate, elements] = args;
 

@@ -8,7 +8,7 @@ describe("substring", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string,
+			string & DString.MaxCharacters<11>,
 			"strict"
 		>;
 	});
@@ -55,7 +55,7 @@ describe("substring", () => {
 
 		type _CheckLengthResult = ExpectType<
 			typeof resultLength,
-			string,
+			string & DString.MaxCharacters<5>,
 			"strict"
 		>;
 

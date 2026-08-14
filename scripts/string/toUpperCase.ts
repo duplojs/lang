@@ -1,12 +1,12 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type ToUpperCaseOutput<
 	GenericString extends string,
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericString,
 	Uppercase<Extract<DCommon.RemoveConstraint<GenericString>, string>>,
-	"lengthEqual" | "maxCharacters"
+	"minCharacters"
 >;
 
 export function toUpperCase<

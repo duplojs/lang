@@ -1,11 +1,11 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type PopOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	GenericArray[number][],
-	"lengthEqual" | "minElements"
+	readonly GenericArray[number][],
+	"maxElements"
 >;
 
 export function pop<
@@ -14,6 +14,6 @@ export function pop<
 	array: GenericArray,
 ): PopOutput<GenericArray>;
 
-export function pop(array: readonly unknown[]) {
+export function pop(array: readonly unknown[]): any {
 	return array.slice(0, -1);
 }

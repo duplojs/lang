@@ -1,4 +1,4 @@
-export type * from "./reapplyAllSizeConstraints";
+export type * from "./reapplyCompatiblesConstraints";
 export type * from "./isIndexCovered";
 export type * from "./isIndexOutOfRange";
 export type * from "./hasAtLeastElements";

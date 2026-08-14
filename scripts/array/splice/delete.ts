@@ -1,11 +1,11 @@
-import type { ReapplyAllSizeConstraints } from "../constraints";
+import type { ReapplyCompatiblesConstraints } from "../constraints";
 
 type SpliceDeleteOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	GenericArray[number][],
-	"lengthEqual" | "minElements"
+	readonly GenericArray[number][],
+	"maxElements"
 >;
 
 export function spliceDelete(
@@ -27,7 +27,7 @@ export function spliceDelete(
 	...args:
 		| [indexTo: number, deleteCount: number]
 		| [array: readonly unknown[], indexTo: number, deleteCount: number]
-) {
+): any {
 	if (args.length === 2) {
 		const [indexTo, deleteCount] = args;
 

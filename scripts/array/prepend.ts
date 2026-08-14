@@ -1,17 +1,17 @@
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type PrependOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
 	GenericElementsRest extends readonly unknown[][] = [],
-> = ReapplyAllSizeConstraints<
+> = ReapplyCompatiblesConstraints<
 	GenericArray,
-	(
+	readonly (
 		| GenericElements[number]
 		| GenericElementsRest[number][number]
 		| GenericArray[number]
 	)[],
-	"lengthEqual" | "maxElements"
+	"minElements"
 >;
 
 export function prepend<
@@ -37,7 +37,7 @@ export function prepend(
 	...args:
 		| [elements: readonly unknown[]]
 		| [array: readonly unknown[], elements: readonly unknown[], ...elementsRest: readonly unknown[][]]
-) {
+): any {
 	if (args.length === 1) {
 		const [elements] = args;
 

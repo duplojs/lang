@@ -1,10 +1,10 @@
 import type * as DCommon from "@scripts/common";
-import type { ReapplyAllSizeConstraints } from "./constraints";
+import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type SortOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends GenericArray[number],
-> = ReapplyAllSizeConstraints<GenericArray, GenericElement[]>;
+> = ReapplyCompatiblesConstraints<GenericArray, readonly GenericElement[]>;
 
 export function sort<
 	GenericArray extends readonly unknown[],
@@ -33,7 +33,7 @@ export function sort(
 	...args:
 		| [compareFunction: DCommon.AnyFunction]
 		| [array: readonly unknown[], compareFunction: DCommon.AnyFunction]
-) {
+): any {
 	if (args.length === 1) {
 		const [compareFunction] = args;
 
