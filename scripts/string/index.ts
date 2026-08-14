@@ -39,6 +39,7 @@ export * from "./sort";
 export * from "./sortCompare";
 export * from "./split";
 export * from "./startsWith";
+export * from "./stringify";
 export * from "./substring";
 export * from "./test";
 export * from "./to";

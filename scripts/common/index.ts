@@ -18,6 +18,7 @@ export * from "./externalPromise";
 export * from "./falsy";
 export * from "./formData";
 export * from "./forward";
+export * from "./forwardAsserts";
 export * from "./forwardLog";
 export * from "./globalStore";
 export * from "./innerPipe";

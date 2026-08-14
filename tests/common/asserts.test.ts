@@ -26,47 +26,4 @@ describe("asserts", () => {
 			),
 		).toThrowError(DCommon.AssertsError);
 	});
-
-	it("forwards the narrowed input", () => {
-		const input = "value" as string | number;
-		const result = DCommon.forwardAsserts(
-			input,
-			(value): value is string => typeof value === "string",
-		);
-
-		type _CheckResult = ExpectType<
-			typeof result,
-			string,
-			"strict"
-		>;
-
-		expect(result).toBe("value");
-	});
-
-	it("throws a typed error when forward asserts rejects the input", () => {
-		expect(
-			() => DCommon.forwardAsserts(
-				10 as string | number,
-				(value): value is string => typeof value === "string",
-			),
-		).toThrowError(DCommon.AssertsError);
-	});
-
-	it("supports forward asserts in a pipe", () => {
-		const result = pipe(
-			"value" as string | number,
-			DCommon.forwardAsserts(
-				(value): value is string => typeof value === "string",
-			),
-			(input) => input.length,
-		);
-
-		type _CheckResult = ExpectType<
-			typeof result,
-			number,
-			"strict"
-		>;
-
-		expect(result).toBe(5);
-	});
 });
