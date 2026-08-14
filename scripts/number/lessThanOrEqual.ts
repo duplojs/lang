@@ -1,28 +1,23 @@
 import type * as DCommon from "@scripts/common";
-import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual } from "./constraints";
-import type { IsGreater, IsGreaterOrEqual, RequireSimpleLiteral } from "./types";
+import type { CompatibilityConstraintResult } from "@scripts/common";
+import type { ComputeLessThanOrEqualCompatibility, IsImpossibleToApplyLessThanOrEqual, LessThanOrEqual } from "./constraints";
+import type { RequireSimpleLiteral } from "./types";
 
 type LessThanOrEqualOutput<
 	GenericValue extends number,
 	GenericThreshold extends number,
 > = GenericValue extends unknown
-	? ExtractLessThanOrEqual<GenericValue, unknown> extends LessThanOrEqual<infer InferredMax>
-		? IsGreaterOrEqual<GenericThreshold, InferredMax> extends true
-			? GenericValue
-			: GenericValue & LessThanOrEqual<GenericThreshold>
-		: ExtractLessThan<GenericValue, unknown> extends LessThan<infer InferredMax>
-			? IsGreaterOrEqual<GenericThreshold, InferredMax> extends true
+	? IsImpossibleToApplyLessThanOrEqual<GenericValue, LessThanOrEqual<GenericThreshold>> extends true
+		? never
+		: ComputeLessThanOrEqualCompatibility<
+			GenericValue,
+			LessThanOrEqual<GenericThreshold>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
 				? GenericValue
 				: GenericValue & LessThanOrEqual<GenericThreshold>
-			: ExtractGreaterThan<GenericValue, unknown> extends GreaterThan<infer InferredMin>
-				? IsGreater<GenericThreshold, InferredMin> extends true
-					? GenericValue & LessThanOrEqual<GenericThreshold>
-					: never
-				: ExtractGreaterThanOrEqual<GenericValue, unknown> extends GreaterThanOrEqual<infer InferredMin>
-					? IsGreaterOrEqual<GenericThreshold, InferredMin> extends true
-						? GenericValue & LessThanOrEqual<GenericThreshold>
-						: never
-					: GenericValue & LessThanOrEqual<GenericThreshold>
+			: never
 	: never;
 
 type RequireApplyLessThanOrEqual<

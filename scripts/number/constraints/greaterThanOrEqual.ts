@@ -1,6 +1,8 @@
 import type * as DCommon from "@scripts/common";
-import { type IsLessOrEqual, type IsLiteral } from "../types";
+import { type IsGreater, type IsGreaterOrEqual, type IsLessOrEqual, type IsLiteral } from "../types";
 import { type ExtractGreaterThan, type GreaterThan } from "./greaterThan";
+import { type ExtractLessThan, type LessThan } from "./lessThan";
+import { type ExtractLessThanOrEqual, type LessThanOrEqual } from "./lessThanOrEqual";
 
 export type GreaterThanOrEqualConstraintName = "number-greater-than-or-equal";
 
@@ -72,3 +74,40 @@ export type ComputeGreaterThanOrEqualCompatibility<
 	),
 	GenericDefault
 >;
+
+export type IsImpossibleToApplyGreaterThanOrEqual<
+	GenericValue extends unknown,
+	GenericExpect extends unknown,
+> = DCommon.NeverCoalescing<
+	(
+		GenericValue extends number
+			? ExtractGreaterThanOrEqual<GenericExpect, unknown> extends GreaterThanOrEqual<infer InferredTo>
+				? InferredTo extends number
+					? (
+						| (
+							ExtractLessThanOrEqual<GenericValue, unknown> extends LessThanOrEqual<infer InferredMax>
+								? InferredMax extends number
+									? IsGreaterOrEqual<InferredMax, InferredTo> extends true
+										? false
+										: true
+									: never
+								: never
+						)
+						| (
+							ExtractLessThan<GenericValue, unknown> extends LessThan<infer InferredMax>
+								? InferredMax extends number
+									? IsGreater<InferredMax, InferredTo> extends true
+										? false
+										: true
+									: never
+								: never
+						)
+					)
+					: never
+				: true
+			: false
+	),
+	false
+> extends true
+	? true
+	: false;

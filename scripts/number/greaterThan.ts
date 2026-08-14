@@ -1,28 +1,23 @@
 import type * as DCommon from "@scripts/common";
-import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual } from "./constraints";
-import type { IsGreater, IsGreaterOrEqual, RequireSimpleLiteral } from "./types";
+import type { CompatibilityConstraintResult } from "@scripts/common";
+import type { ComputeGreaterThanCompatibility, GreaterThan, IsImpossibleToApplyGreaterThan } from "./constraints";
+import type { RequireSimpleLiteral } from "./types";
 
 type GreaterThanOutput<
 	GenericValue extends number,
 	GenericThreshold extends number,
 > = GenericValue extends unknown
-	? ExtractLessThanOrEqual<GenericValue, unknown> extends LessThanOrEqual<infer InferredMax>
-		? IsGreater<InferredMax, GenericThreshold> extends true
-			? GenericValue & GreaterThan<GenericThreshold>
+	? IsImpossibleToApplyGreaterThan<GenericValue, GreaterThan<GenericThreshold>> extends true
+		? never
+		: ComputeGreaterThanCompatibility<
+			GenericValue,
+			GreaterThan<GenericThreshold>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
+				? GenericValue
+				: GenericValue & GreaterThan<GenericThreshold>
 			: never
-		: ExtractLessThan<GenericValue, unknown> extends LessThan<infer InferredMax>
-			? IsGreater<InferredMax, GenericThreshold> extends true
-				? GenericValue & GreaterThan<GenericThreshold>
-				: never
-			: ExtractGreaterThan<GenericValue, unknown> extends GreaterThan<infer InferredMin>
-				? IsGreaterOrEqual<InferredMin, GenericThreshold> extends true
-					? GenericValue
-					: GenericValue & GreaterThan<GenericThreshold>
-				: ExtractGreaterThanOrEqual<GenericValue, unknown> extends GreaterThanOrEqual<infer InferredMin>
-					? IsGreater<InferredMin, GenericThreshold> extends true
-						? GenericValue
-						: GenericValue & GreaterThan<GenericThreshold>
-					: GenericValue & GreaterThan<GenericThreshold>
 	: never;
 
 type RequireApplyGreaterThan<

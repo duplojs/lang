@@ -1,55 +1,40 @@
 import type * as DCommon from "@scripts/common";
-import type { ExtractGreaterThan, ExtractGreaterThanOrEqual, ExtractLessThan, ExtractLessThanOrEqual, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual } from "./constraints";
-import type { IsGreater, IsGreaterOrEqual, RequireSimpleLiteral } from "./types";
+import type { CompatibilityConstraintResult } from "@scripts/common";
+import type { ComputeGreaterThanCompatibility, ComputeLessThanCompatibility, GreaterThan, IsImpossibleToApplyGreaterThan, IsImpossibleToApplyLessThan, LessThan } from "./constraints";
+import type { RequireSimpleLiteral } from "./types";
 
 type ApplyGreaterThan<
 	GenericValue extends number,
 	GenericThreshold extends number,
 > = GenericValue extends unknown
-	? DCommon.And<[
-		ExtractLessThanOrEqual<GenericValue, unknown> extends LessThanOrEqual<infer InferredMax>
-			? IsGreater<InferredMax, GenericThreshold>
-			: true,
-		ExtractLessThan<GenericValue, unknown> extends LessThan<infer InferredMax>
-			? IsGreater<InferredMax, GenericThreshold>
-			: true,
-	]> extends true
-		? DCommon.Or<[
-			ExtractGreaterThan<GenericValue, unknown> extends GreaterThan<infer InferredMin>
-				? IsGreaterOrEqual<InferredMin, GenericThreshold>
-				: false,
-			ExtractGreaterThanOrEqual<GenericValue, unknown> extends GreaterThanOrEqual<infer InferredMin>
-				? IsGreater<InferredMin, GenericThreshold>
-				: false,
-		]> extends true
-			? GenericValue
-			: GenericValue & GreaterThan<GenericThreshold>
-		: never
+	? IsImpossibleToApplyGreaterThan<GenericValue, GreaterThan<GenericThreshold>> extends true
+		? never
+		: ComputeGreaterThanCompatibility<
+			GenericValue,
+			GreaterThan<GenericThreshold>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
+				? GenericValue
+				: GenericValue & GreaterThan<GenericThreshold>
+			: never
 	: never;
 
 type ApplyLessThan<
 	GenericValue extends number,
 	GenericThreshold extends number,
 > = GenericValue extends unknown
-	? DCommon.And<[
-		ExtractGreaterThan<GenericValue, unknown> extends GreaterThan<infer InferredMin>
-			? IsGreater<GenericThreshold, InferredMin>
-			: true,
-		ExtractGreaterThanOrEqual<GenericValue, unknown> extends GreaterThanOrEqual<infer InferredMin>
-			? IsGreater<GenericThreshold, InferredMin>
-			: true,
-	]> extends true
-		? DCommon.Or<[
-			ExtractLessThan<GenericValue, unknown> extends LessThan<infer InferredMax>
-				? IsGreaterOrEqual<GenericThreshold, InferredMax>
-				: false,
-			ExtractLessThanOrEqual<GenericValue, unknown> extends LessThanOrEqual<infer InferredMax>
-				? IsGreater<GenericThreshold, InferredMax>
-				: false,
-		]> extends true
-			? GenericValue
-			: GenericValue & LessThan<GenericThreshold>
-		: never
+	? IsImpossibleToApplyLessThan<GenericValue, LessThan<GenericThreshold>> extends true
+		? never
+		: ComputeLessThanCompatibility<
+			GenericValue,
+			LessThan<GenericThreshold>,
+			CompatibilityConstraintResult<false, number, number>
+		> extends infer InferredResult
+			? InferredResult extends CompatibilityConstraintResult<true>
+				? GenericValue
+				: GenericValue & LessThan<GenericThreshold>
+			: never
 	: never;
 
 type BetweenThanOutput<
