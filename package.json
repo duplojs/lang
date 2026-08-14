@@ -15,9 +15,9 @@
   },
   "scripts": {
     "build": "./.commands/build.sh",
-    "test:tu": "./.commands/test-tu.sh",
-    "test:tu:watch": "./.commands/test-tu.sh --watch",
-    "test:tu:update": "./.commands/test-tu.sh --update",
+    "test:ut": "./.commands/test-ut.sh",
+    "test:ut:watch": "./.commands/test-ut.sh --watch",
+    "test:ut:update": "./.commands/test-ut.sh --update",
     "test:types": "./.commands/test-types.sh",
     "test:types:target": "./.commands/test-types-target.sh",
     "test:lint": "./.commands/test-lint.sh",

@@ -89,7 +89,7 @@ npm run test:types
 npm run test:types:target [-- <fichier...>]
 npm run test:lint [-- <chemin...>]
 npm run test:lint:fix [-- <chemin...>]
-npm run test:tu [-- <fichier-ou-filtre...>]
+npm run test:ut [-- <fichier-ou-filtre...>]
 npm run build
 ```
 
@@ -105,7 +105,7 @@ Utiliser librement `test:types:target` pendant le développement, de préférenc
 Utiliser `test:types` seulement lorsqu'une validation globale est nécessaire.
 Utiliser `test:lint:fix` sur les fichiers modifiés pour corriger et vérifier les conventions mécaniques.
 Utiliser `test:lint` sans fix seulement lorsqu'un contrôle final ou un diagnostic sans modification est utile.
-Lancer `test:tu` uniquement sur les tests concernés.
+Lancer `test:ut` uniquement sur les tests concernés.
 Utiliser `build` seulement lorsque la tâche affecte le build, les fichiers générés ou les tests d’intégration.
 
 En `@brain` et `@step`, ne pas lancer une validation globale uniquement pour rechercher des impacts hors périmètre.

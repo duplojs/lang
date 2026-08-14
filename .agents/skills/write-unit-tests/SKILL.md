@@ -218,7 +218,7 @@ Ne pas modifier l'implémentation ou affaiblir les assertions uniquement pour at
 3. Lancer le test Vitest ciblé :
 
 ```bash
-npm run test:tu -- tests/<namespace>/<function>.test.ts
+npm run test:ut -- tests/<namespace>/<function>.test.ts
 ```
 
 4. Lire la couverture du fichier concerné dans le report console.

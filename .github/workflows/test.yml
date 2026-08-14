@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: '24.18.0'
       - run: npm ci
-      - run: npm run test:tu
+      - run: npm run test:ut
       - if: always()
         uses: davelosert/vitest-coverage-report-action@v2
   
