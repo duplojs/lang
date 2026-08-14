@@ -1,5 +1,5 @@
 import type * as DString from "@scripts/string";
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 
 export type GetEntry<
@@ -37,7 +37,7 @@ export function entries(object: object) {
 	const result: [key: unknown, value: unknown][] = [];
 
 	for (const key in object) {
-		if (!DCommon.isRuntimeWrappedValueKey(key) && !DKind.isRuntimeKey(key)) {
+		if (!DKind.isRuntimeKey(key)) {
 			result.push([key, object[key as never]]);
 		}
 	}
@@ -48,8 +48,4 @@ export function entries(object: object) {
 /**
  * @deprecated Not ignore kind key.
  */
-entries.unsafe = function<
-	GenericObject extends object,
->(object: GenericObject): [string, DCommon.AnyValue][] {
-	return Object.entries(object);
-};
+entries.unsafe = Object.entries;

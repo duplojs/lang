@@ -1,4 +1,3 @@
-import * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 
 export function keys<
@@ -9,7 +8,7 @@ export function keys(object: object): string[] {
 	const result = [];
 
 	for (const key in object) {
-		if (!DCommon.isRuntimeWrappedValueKey(key) && !DKind.isRuntimeKey(key)) {
+		if (!DKind.isRuntimeKey(key)) {
 			result.push(key);
 		}
 	}

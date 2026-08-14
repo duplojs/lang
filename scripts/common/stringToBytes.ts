@@ -1,9 +1,10 @@
 /* eslint-disable id-length */
 import * as DKind from "@scripts/kind";
 import * as DString from "@scripts/string";
+import { createKind } from "./kind";
 
 export class InvalidBytesInStringError extends DKind.parentClass(
-	"invalid-bytes-in-string-error",
+	createKind("invalid-bytes-in-string-error"),
 	Error,
 ) {
 	public constructor(

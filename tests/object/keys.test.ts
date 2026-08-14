@@ -7,7 +7,6 @@ describe("keys", () => {
 			{
 				name: "Duplo",
 				version: 1,
-				...DCommon.wrapValue("secret"),
 			},
 			true,
 		);

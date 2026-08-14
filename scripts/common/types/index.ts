@@ -32,7 +32,6 @@ export type * from "./maybeArray";
 export type * from "./maybeAsyncGenerator";
 export type * from "./maybeGetter";
 export type * from "./maybePromise";
-export type * from "./maybeWrapped";
 export type * from "./mergePromise";
 export type * from "./neverCoalescing";
 export type * from "./not";

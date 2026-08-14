@@ -7,7 +7,6 @@ describe("values", () => {
 			name: "Duplo",
 			version: 1,
 			[kind.runTimeKey]: true,
-			...DCommon.wrapValue("secret"),
 		};
 
 		const result = DObject.values(source);

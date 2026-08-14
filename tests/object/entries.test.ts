@@ -7,7 +7,6 @@ describe("entries", () => {
 			{
 				name: "Duplo",
 				version: 1,
-				...DCommon.wrapValue("secret"),
 			},
 			true,
 		);
@@ -45,11 +44,5 @@ describe("entries", () => {
 			[DString.Number, "a" | "b"][],
 			"strict"
 		>;
-	});
-
-	it("should list all object entries with unsafe helper", () => {
-		const source = DCommon.wrapValue("secret");
-
-		expect(DObject.entries.unsafe(source)).toEqual([["@duplojs/lang/value", "secret"]]);
 	});
 });

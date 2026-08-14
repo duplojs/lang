@@ -1,9 +1,8 @@
-import { sleep } from "./sleep";
+import { timeout } from "./timeout";
 
 interface CreateAsyncRetryOptions {
 	maxRetry: number;
 	timeToSleep?: number;
-	log?: boolean;
 }
 
 export function useAsyncRetry<
@@ -17,12 +16,12 @@ export function useAsyncRetry<
 export async function useAsyncRetry<
 	GenericOutput extends unknown,
 >(
-	retryFunction: () => Promise<GenericOutput>,
+	retryFunction: (count: number) => Promise<GenericOutput>,
 	shouldRetry: (result: GenericOutput) => boolean,
 	options: CreateAsyncRetryOptions,
 ): Promise<GenericOutput> {
 	for (let currentTry = 1; true; currentTry++) {
-		const result = await retryFunction();
+		const result = await retryFunction(currentTry);
 
 		if (
 			currentTry >= options.maxRetry
@@ -31,12 +30,8 @@ export async function useAsyncRetry<
 			return result;
 		}
 
-		if (options.log) {
-			console.log(`useAsyncRetry: attempt ${currentTry} failed, starting new attempt.`);
-		}
-
 		if (options.timeToSleep) {
-			await sleep(options.timeToSleep);
+			await timeout(options.timeToSleep);
 		}
 	}
 }

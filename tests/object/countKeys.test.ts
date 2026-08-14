@@ -1,4 +1,4 @@
-import { DCommon, DKind, DObject, type ExpectType } from "@scripts";
+import { DKind, DObject, type ExpectType } from "@scripts";
 
 describe("countKeys", () => {
 	it("should count public object keys", () => {
@@ -7,7 +7,6 @@ describe("countKeys", () => {
 			{
 				name: "Duplo",
 				version: 1,
-				...DCommon.wrapValue("secret"),
 			},
 			true,
 		);

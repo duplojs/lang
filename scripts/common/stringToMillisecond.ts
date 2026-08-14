@@ -1,9 +1,10 @@
 /* eslint-disable id-length */
 import * as DKind from "@scripts/kind";
 import * as DString from "@scripts/string";
+import { createKind } from "./kind";
 
 export class InvalidMillisecondInStringError extends DKind.parentClass(
-	"invalid-millisecond-in-string-error",
+	createKind("invalid-millisecond-in-string-error"),
 	Error,
 ) {
 	public constructor(

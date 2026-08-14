@@ -1,4 +1,4 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 
 export function values<
@@ -12,7 +12,7 @@ export function values(
 ): DCommon.AnyValue[] {
 	return Object.entries(object)
 		.filter(
-			([key]) => !DCommon.isRuntimeWrappedValueKey(key) && !DKind.isRuntimeKey(key),
+			([key]) => !DKind.isRuntimeKey(key),
 		)
 		.map(([, value]) => value);
 }

@@ -1,4 +1,3 @@
-import * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 
 export function countKeys<
@@ -13,8 +12,7 @@ export function countKeys(
 	return Object
 		.keys(object)
 		.filter(
-			(key) => !DCommon.isRuntimeWrappedValueKey(key)
-				&& !DKind.isRuntimeKey(key),
+			(key) => !DKind.isRuntimeKey(key),
 		)
 		.length;
 }

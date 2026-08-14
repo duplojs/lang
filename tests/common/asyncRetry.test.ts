@@ -53,32 +53,4 @@ describe("asyncRetry", () => {
 
 		await expect(result).resolves.toBe("value-suffix-2");
 	});
-
-	it("logs and waits between retries when configured", async() => {
-		vi.useFakeTimers();
-		const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
-		let attempt = 0;
-
-		try {
-			const result = DCommon.useAsyncRetry(
-				() => Promise.resolve(++attempt),
-				(output) => output < 2,
-				{
-					log: true,
-					maxRetry: 3,
-					timeToSleep: 100,
-				},
-			);
-
-			await vi.advanceTimersByTimeAsync(100);
-
-			await expect(result).resolves.toBe(2);
-			expect(log).toHaveBeenCalledWith(
-				"useAsyncRetry: attempt 1 failed, starting new attempt.",
-			);
-		} finally {
-			log.mockRestore();
-			vi.useRealTimers();
-		}
-	});
 });
