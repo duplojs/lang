@@ -83,4 +83,107 @@ describe("object", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		interface User {
+			readonly name: string;
+			readonly age: number;
+		}
+		interface Jane {
+			readonly name: "Jane";
+			readonly age: number;
+		}
+
+		const directStructure = DDataStructure.object(
+			{
+				name: DDataStructure.string(),
+				age: DDataStructure.number(),
+			},
+			[
+				DDataStructure.refine(
+					(data): data is Jane => {
+						type check = ExpectType<
+							typeof data,
+							User,
+							"strict"
+						>;
+
+						return data.name === "Jane";
+					},
+				),
+			],
+		);
+		const addedStructure = DDataStructure.object({
+			name: DDataStructure.string(),
+			age: DDataStructure.number(),
+		}).addConstraint(
+			DDataStructure.refine(
+				(data): data is Jane => {
+					type check = ExpectType<
+						typeof data,
+						User,
+						"strict"
+					>;
+
+					return data.name === "Jane";
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.ObjectStructure<
+				{
+					readonly name: string;
+					readonly age: number;
+				},
+				readonly [
+					DDataStructure.RefineConstraint<
+						{
+							readonly name: string;
+							readonly age: number;
+						},
+						Jane
+					>,
+				]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			User & Jane,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				{
+					readonly name: string;
+					readonly age: number;
+				},
+				DDataStructure.StructureDefinition<
+					readonly [
+						DDataStructure.RefineConstraint<
+							{
+								readonly name: string;
+								readonly age: number;
+							},
+							Jane
+						>,
+					]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			User & Jane,
+			"strict"
+		>;
+
+		// @ts-expect-error object structures cannot receive number constraints.
+		DDataStructure.object({ name: DDataStructure.string() }, [DDataStructure.positive()]);
+		// @ts-expect-error object structures cannot add number constraints.
+		DDataStructure.object({ name: DDataStructure.string() }).addConstraint(DDataStructure.positive());
+	});
 });

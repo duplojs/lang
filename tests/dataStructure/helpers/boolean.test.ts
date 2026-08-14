@@ -58,4 +58,67 @@ describe("boolean", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.boolean([
+			DDataStructure.refine(
+				(data): data is true => {
+					type check = ExpectType<
+						typeof data,
+						boolean,
+						"strict"
+					>;
+
+					return data;
+				},
+			),
+		]);
+		const addedStructure = DDataStructure.boolean().addConstraint(
+			DDataStructure.refine(
+				(data): data is true => {
+					type check = ExpectType<
+						typeof data,
+						boolean,
+						"strict"
+					>;
+
+					return data;
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.TypeStructure<
+				boolean,
+				readonly [DDataStructure.RefineConstraint<boolean, true>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			true,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				boolean,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<boolean, true>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			true,
+			"strict"
+		>;
+
+		// @ts-expect-error boolean structures cannot receive number constraints.
+		DDataStructure.boolean([DDataStructure.positive()]);
+		// @ts-expect-error boolean structures cannot add number constraints.
+		DDataStructure.boolean().addConstraint(DDataStructure.positive());
+	});
 });

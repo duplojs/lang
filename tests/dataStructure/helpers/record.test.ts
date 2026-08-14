@@ -130,4 +130,105 @@ describe("record", () => {
 			path: "users.[array: 0].{record value: email}",
 		});
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		interface UserRecord {
+			readonly name: string;
+			readonly role: string;
+		}
+		interface AdminRecord {
+			readonly name: string;
+			readonly role: "admin";
+		}
+
+		const directStructure = DDataStructure.record(
+			DDataStructure.literal(["name", "role"]),
+			DDataStructure.string(),
+			[
+				DDataStructure.refine(
+					(data): data is AdminRecord => {
+						type check = ExpectType<
+							typeof data,
+							UserRecord,
+							"strict"
+						>;
+
+						return data.role === "admin";
+					},
+				),
+			],
+		);
+		const addedStructure = DDataStructure.record(
+			DDataStructure.literal(["name", "role"]),
+			DDataStructure.string(),
+		).addConstraint(
+			DDataStructure.refine(
+				(data): data is AdminRecord => {
+					type check = ExpectType<
+						typeof data,
+						UserRecord,
+						"strict"
+					>;
+
+					return data.role === "admin";
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.RecordStructure<
+				{
+					readonly name: string;
+					readonly role: string;
+				},
+				readonly [
+					DDataStructure.RefineConstraint<
+						{
+							readonly name: string;
+							readonly role: string;
+						},
+						AdminRecord
+					>,
+				]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			UserRecord & AdminRecord,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				{
+					readonly name: string;
+					readonly role: string;
+				},
+				DDataStructure.StructureDefinition<
+					readonly [
+						DDataStructure.RefineConstraint<
+							{
+								readonly name: string;
+								readonly role: string;
+							},
+							AdminRecord
+						>,
+					]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			UserRecord & AdminRecord,
+			"strict"
+		>;
+
+		// @ts-expect-error record structures cannot receive string constraints.
+		DDataStructure.record(DDataStructure.string(), DDataStructure.number(), [DDataStructure.email()]);
+		// @ts-expect-error record structures cannot add string constraints.
+		DDataStructure.record(DDataStructure.string(), DDataStructure.number()).addConstraint(DDataStructure.email());
+	});
 });

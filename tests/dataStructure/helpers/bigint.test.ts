@@ -55,4 +55,67 @@ describe("bigint", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.bigint([
+			DDataStructure.refine(
+				(data): data is 1n => {
+					type check = ExpectType<
+						typeof data,
+						bigint,
+						"strict"
+					>;
+
+					return data === 1n;
+				},
+			),
+		]);
+		const addedStructure = DDataStructure.bigint().addConstraint(
+			DDataStructure.refine(
+				(data): data is 1n => {
+					type check = ExpectType<
+						typeof data,
+						bigint,
+						"strict"
+					>;
+
+					return data === 1n;
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.TypeStructure<
+				bigint,
+				readonly [DDataStructure.RefineConstraint<bigint, 1n>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			1n,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				bigint,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<bigint, 1n>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			1n,
+			"strict"
+		>;
+
+		// @ts-expect-error bigint structures cannot receive string constraints.
+		DDataStructure.bigint([DDataStructure.email()]);
+		// @ts-expect-error bigint structures cannot add string constraints.
+		DDataStructure.bigint().addConstraint(DDataStructure.email());
+	});
 });

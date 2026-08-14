@@ -34,7 +34,8 @@ export function required<
 			GenericObjectStructureValue[Prop],
 			undefined
 		>
-	}
+	},
+	readonly []
 >;
 
 export function required(

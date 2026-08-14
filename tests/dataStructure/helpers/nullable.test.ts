@@ -78,4 +78,41 @@ describe("nullable", () => {
 			DEither.right("check-success", "not-an-email"),
 		);
 	});
+
+	it("keeps added refine constraints coherent", () => {
+		const structure = DDataStructure.nullable(
+			DDataStructure.string(),
+		).addConstraint(
+			DDataStructure.refine(
+				(data): data is string => {
+					type check = ExpectType<
+						typeof data,
+						string | null,
+						"strict"
+					>;
+
+					return data !== null;
+				},
+			),
+		);
+
+		type _CheckConstraints = ExpectType<
+			typeof structure,
+			DDataStructure.Structure<
+				string | null,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<string | null, string>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			string,
+			"strict"
+		>;
+
+		// @ts-expect-error nullable string structures cannot add constraints that ignore null.
+		DDataStructure.nullable(DDataStructure.string()).addConstraint(DDataStructure.email());
+	});
 });

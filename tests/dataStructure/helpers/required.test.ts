@@ -110,4 +110,72 @@ describe("required", () => {
 			}),
 		);
 	});
+
+	it("keeps added refine constraints coherent", () => {
+		interface RequiredUser {
+			readonly name: string;
+			readonly age: number;
+		}
+		interface AdultUser {
+			readonly name: string;
+			readonly age: 18;
+		}
+
+		const structure = DDataStructure.required(
+			DDataStructure.object({
+				name: DDataStructure.optional(
+					DDataStructure.string(),
+				),
+				age: DDataStructure.optional(
+					DDataStructure.number(),
+				),
+			}),
+		).addConstraint(
+			DDataStructure.refine(
+				(data): data is AdultUser => {
+					type check = ExpectType<
+						typeof data,
+						RequiredUser,
+						"strict"
+					>;
+
+					return data.age === 18;
+				},
+			),
+		);
+
+		type _CheckConstraints = ExpectType<
+			typeof structure,
+			DDataStructure.Structure<
+				{
+					readonly name: string;
+					readonly age: number;
+				},
+				DDataStructure.StructureDefinition<
+					readonly [
+						DDataStructure.RefineConstraint<
+							{
+								readonly name: string;
+								readonly age: number;
+							},
+							AdultUser
+						>,
+					]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			RequiredUser & AdultUser,
+			"strict"
+		>;
+
+		const invalidStructure = DDataStructure.required(
+			DDataStructure.object({ name: DDataStructure.string() }),
+		);
+
+		// @ts-expect-error required object structures cannot add string constraints.
+		invalidStructure.addConstraint(DDataStructure.email());
+	});
 });

@@ -85,14 +85,15 @@ export const ObjectStructure = createStructure(
 	objectStructureKind,
 	({ init }) => <
 		GenericShape extends ShapeObjectStructure,
-		GenericValue extends ShapeObjectStructureValue<GenericShape>,
-		const GenericConstraints extends readonly Constraint<GenericValue>[],
+		const GenericConstraints extends readonly Constraint<
+			ShapeObjectStructureValue<GenericShape>
+		>[],
 	>(
 		shape: GenericShape,
 		constraints: GenericConstraints,
 	) => init<
 		ObjectStructure<
-			GenericValue,
+			ShapeObjectStructureValue<GenericShape>,
 			readonly [...GenericConstraints]
 		>
 	>(

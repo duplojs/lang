@@ -55,4 +55,67 @@ describe("number", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.number([
+			DDataStructure.refine(
+				(data): data is 1 => {
+					type check = ExpectType<
+						typeof data,
+						number,
+						"strict"
+					>;
+
+					return data === 1;
+				},
+			),
+		]);
+		const addedStructure = DDataStructure.number().addConstraint(
+			DDataStructure.refine(
+				(data): data is 1 => {
+					type check = ExpectType<
+						typeof data,
+						number,
+						"strict"
+					>;
+
+					return data === 1;
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.TypeStructure<
+				number,
+				readonly [DDataStructure.RefineConstraint<number, 1>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			1,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				number,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<number, 1>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			1,
+			"strict"
+		>;
+
+		// @ts-expect-error number structures cannot receive string constraints.
+		DDataStructure.number([DDataStructure.email()]);
+		// @ts-expect-error number structures cannot add string constraints.
+		DDataStructure.number().addConstraint(DDataStructure.email());
+	});
 });

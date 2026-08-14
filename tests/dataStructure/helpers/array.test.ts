@@ -62,4 +62,72 @@ describe("array", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.array(
+			DDataStructure.string(),
+			[
+				DDataStructure.refine(
+					(data): data is readonly [string, ...string[]] => {
+						type check = ExpectType<
+							typeof data,
+							readonly string[],
+							"strict"
+						>;
+
+						return data.length > 0;
+					},
+				),
+			],
+		);
+		const addedStructure = DDataStructure.array(
+			DDataStructure.string(),
+		).addConstraint(
+			DDataStructure.refine(
+				(data): data is readonly [string, ...string[]] => {
+					type check = ExpectType<
+						typeof data,
+						readonly string[],
+						"strict"
+					>;
+
+					return data.length > 0;
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.ArrayStructure<
+				readonly string[],
+				readonly [DDataStructure.RefineConstraint<readonly string[], readonly [string, ...string[]]>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			readonly string[] & readonly [string, ...string[]],
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				readonly string[],
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<readonly string[], readonly [string, ...string[]]>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			readonly string[] & readonly [string, ...string[]],
+			"strict"
+		>;
+
+		// @ts-expect-error array structures cannot receive string constraints.
+		DDataStructure.array(DDataStructure.string(), [DDataStructure.email()]);
+		// @ts-expect-error array structures cannot add string constraints.
+		DDataStructure.array(DDataStructure.string()).addConstraint(DDataStructure.email());
+	});
 });

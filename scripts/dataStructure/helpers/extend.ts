@@ -11,7 +11,8 @@ export function extend<
 	DObject.AssignObjects<
 		Extract<StructureInitialValue<GenericObjectStructure>, object>,
 		ShapeObjectStructureValue<GenericShape>
-	>
+	>,
+	readonly []
 >;
 
 export function extend(

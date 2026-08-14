@@ -146,4 +146,82 @@ describe("union", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.union(
+			[
+				DDataStructure.string(),
+				DDataStructure.number(),
+			],
+			[
+				DDataStructure.refine(
+					(data): data is string => {
+						type check = ExpectType<
+							typeof data,
+							string | number,
+							"strict"
+						>;
+
+						return typeof data === "string";
+					},
+				),
+			],
+		);
+		const addedStructure = DDataStructure.union([
+			DDataStructure.string(),
+			DDataStructure.number(),
+		]).addConstraint(
+			DDataStructure.refine(
+				(data): data is string => {
+					type check = ExpectType<
+						typeof data,
+						string | number,
+						"strict"
+					>;
+
+					return typeof data === "string";
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.UnionStructure<
+				string | number,
+				readonly [DDataStructure.RefineConstraint<string | number, string>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			string,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				string | number,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<string | number, string>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			string,
+			"strict"
+		>;
+
+		const values = [
+			DDataStructure.string(),
+			DDataStructure.number(),
+		] as const;
+		const unrelatedBoolean = DDataStructure.refine((data: boolean) => data);
+
+		// @ts-expect-error union structures cannot receive unrelated boolean constraints.
+		DDataStructure.union(values, [unrelatedBoolean]);
+		// @ts-expect-error union structures cannot add unrelated boolean constraints.
+		DDataStructure.union(values).addConstraint(unrelatedBoolean);
+	});
 });

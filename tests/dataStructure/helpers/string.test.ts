@@ -58,4 +58,67 @@ describe("string", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.string([
+			DDataStructure.refine(
+				(data): data is `user:${string}` => {
+					type check = ExpectType<
+						typeof data,
+						string,
+						"strict"
+					>;
+
+					return data.startsWith("user:");
+				},
+			),
+		]);
+		const addedStructure = DDataStructure.string().addConstraint(
+			DDataStructure.refine(
+				(data): data is `user:${string}` => {
+					type check = ExpectType<
+						typeof data,
+						string,
+						"strict"
+					>;
+
+					return data.startsWith("user:");
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.TypeStructure<
+				string,
+				readonly [DDataStructure.RefineConstraint<string, `user:${string}`>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			`user:${string}`,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				string,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<string, `user:${string}`>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			`user:${string}`,
+			"strict"
+		>;
+
+		// @ts-expect-error string structures cannot receive number constraints.
+		DDataStructure.string([DDataStructure.positive()]);
+		// @ts-expect-error string structures cannot add number constraints.
+		DDataStructure.string().addConstraint(DDataStructure.positive());
+	});
 });

@@ -78,4 +78,41 @@ describe("optional", () => {
 			DEither.right("check-success", "not-an-email"),
 		);
 	});
+
+	it("keeps added refine constraints coherent", () => {
+		const structure = DDataStructure.optional(
+			DDataStructure.string(),
+		).addConstraint(
+			DDataStructure.refine(
+				(data): data is string => {
+					type check = ExpectType<
+						typeof data,
+						string | undefined,
+						"strict"
+					>;
+
+					return data !== undefined;
+				},
+			),
+		);
+
+		type _CheckConstraints = ExpectType<
+			typeof structure,
+			DDataStructure.Structure<
+				string | undefined,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<string | undefined, string>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			string,
+			"strict"
+		>;
+
+		// @ts-expect-error optional string structures cannot add constraints that ignore undefined.
+		DDataStructure.optional(DDataStructure.string()).addConstraint(DDataStructure.email());
+	});
 });

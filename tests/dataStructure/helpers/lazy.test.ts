@@ -118,4 +118,72 @@ describe("lazy", () => {
 			path: "children.[array: 0].value",
 		});
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.lazy(
+			() => DDataStructure.string(),
+			[
+				DDataStructure.refine(
+					(data): data is `user:${string}` => {
+						type check = ExpectType<
+							typeof data,
+							string,
+							"strict"
+						>;
+
+						return data.startsWith("user:");
+					},
+				),
+			],
+		);
+		const addedStructure = DDataStructure.lazy(
+			() => DDataStructure.string(),
+		).addConstraint(
+			DDataStructure.refine(
+				(data): data is `user:${string}` => {
+					type check = ExpectType<
+						typeof data,
+						string,
+						"strict"
+					>;
+
+					return data.startsWith("user:");
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.LazyStructure<
+				string,
+				readonly [DDataStructure.RefineConstraint<string, `user:${string}`>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			`user:${string}`,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				string,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<string, `user:${string}`>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			`user:${string}`,
+			"strict"
+		>;
+
+		// @ts-expect-error lazy string structures cannot receive number constraints.
+		DDataStructure.lazy(() => DDataStructure.string(), [DDataStructure.positive()]);
+		// @ts-expect-error lazy string structures cannot add number constraints.
+		DDataStructure.lazy(() => DDataStructure.string()).addConstraint(DDataStructure.positive());
+	});
 });

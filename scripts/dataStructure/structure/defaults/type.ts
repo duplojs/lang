@@ -42,7 +42,9 @@ export const TypeStructure = createStructure(
 	typeStructureKind,
 	({ init }) => <
 		GenericType extends Type,
-		const GenericConstraints extends readonly Constraint<TypeValue<GenericType>>[] = readonly [],
+		const GenericConstraints extends readonly Constraint<
+			TypeValue<GenericType>
+		>[],
 	>(
 		type: GenericType,
 		constraints: GenericConstraints,

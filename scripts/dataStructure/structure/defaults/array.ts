@@ -55,14 +55,15 @@ export const ArrayStructure = createStructure(
 	arrayStructureKind,
 	({ init }) => <
 		GenericElement extends Structure,
-		GenericValue extends readonly StructureValue<GenericElement>[],
-		const GenericConstraints extends readonly Constraint<GenericValue>[] = readonly [],
+		const GenericConstraints extends readonly Constraint<
+			readonly StructureValue<GenericElement>[]
+		>[],
 	>(
 		element: GenericElement,
 		constraints: GenericConstraints,
 	) => init<
 		ArrayStructure<
-			GenericValue,
+			readonly StructureValue<GenericElement>[],
 			readonly [...GenericConstraints]
 		>
 	>(

@@ -62,18 +62,22 @@ export const RecordStructure = createStructure(
 			| TypeStructure<string>
 		),
 		GenericValueStructure extends Structure,
-		GenericValue extends RecordStructureValue<
-			GenericKey,
-			GenericValueStructure
-		>,
-		const GenericConstraints extends readonly Constraint<GenericValue>[] = readonly [],
+		const GenericConstraints extends readonly Constraint<
+			RecordStructureValue<
+				GenericKey,
+				GenericValueStructure
+			>
+		>[],
 	>(
 		key: GenericKey,
 		value: GenericValueStructure,
 		constraints: GenericConstraints,
 	) => init<
 		RecordStructure<
-			GenericValue,
+			RecordStructureValue<
+				GenericKey,
+				GenericValueStructure
+			>,
 			readonly [...GenericConstraints]
 		>
 	>(

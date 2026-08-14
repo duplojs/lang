@@ -1,5 +1,4 @@
 import { DDataStructure, DEither, type DCommon, type DKind, type ExpectType } from "@scripts";
-import { Values } from "@scripts/object";
 
 describe("UnionStructure", () => {
 	it("checks values against the first matching structure and narrows with is", async() => {
@@ -386,7 +385,19 @@ describe("UnionStructure", () => {
 				DDataStructure.TypeStructure(DDataStructure.StringType(), []),
 				DDataStructure.TypeStructure(DDataStructure.NumberType(), []),
 			],
-			[],
+			[
+				DDataStructure.refine(
+					(data): data is string => {
+						type check = ExpectType<
+							typeof data,
+							string | number,
+							"strict"
+						>;
+
+						return typeof data === "string";
+					},
+				),
+			],
 		);
 
 		const struct = structure.addConstraint(
@@ -399,16 +410,6 @@ describe("UnionStructure", () => {
 					>;
 					return true;
 				},
-				DDataStructure.RefineConstraint(
-					(value) => {
-						type check = ExpectType<
-						typeof value,
-						string | number,
-						"strict"
-						>;
-						return true;
-					},
-				),
 			),
 		);
 
@@ -423,12 +424,6 @@ describe("UnionStructure", () => {
 			// @ts-expect-error wrong refine type
 			DDataStructure.RefineConstraint(
 				(value: string) => true,
-			),
-		);
-
-		const result = structure.addConstraint(
-			DDataStructure.RefineConstraint(
-				(value: string | number | bigint): value is bigint => false,
 			),
 		);
 	});

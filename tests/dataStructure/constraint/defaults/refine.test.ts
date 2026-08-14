@@ -1,4 +1,4 @@
-import { DDataStructure, DEither } from "@scripts";
+import { DDataStructure, DEither, DNumber, type ExpectType } from "@scripts";
 
 describe("RefineConstraint", () => {
 	it("creates a synchronous refine constraint", () => {
@@ -51,7 +51,29 @@ describe("RefineConstraint", () => {
 			DDataStructure.RefineConstraint(
 				(data) => data >= 18,
 			),
-		]);
+		]).addConstraint(
+			DDataStructure.RefineConstraint(
+				(data) => data >= 18,
+			),
+			DDataStructure.RefineConstraint(
+				DNumber.lessThan(200),
+			),
+		);
+
+		type check = ExpectType<
+			typeof structure,
+			DDataStructure.Structure<
+				number,
+				DDataStructure.StructureDefinition<
+					readonly [
+						DDataStructure.RefineConstraint<number, any>,
+						DDataStructure.RefineConstraint<number, any>,
+						DDataStructure.RefineConstraint<number, number & DNumber.LessThan<200>>,
+					]
+				>
+			>,
+			"strict"
+		>;
 		const success = structure.check(21);
 		const failure = structure.check(17);
 

@@ -7,6 +7,7 @@ export type ConstraintValue<
 	? DCommon.Or<[
 		DCommon.IsEqual<InferredInput, InferredOutput>,
 		DCommon.IsEqual<InferredOutput, any>,
+		DCommon.IsEqual<InferredOutput, unknown>,
 	]> extends true
 		? InferredInput
 		: InferredOutput extends (

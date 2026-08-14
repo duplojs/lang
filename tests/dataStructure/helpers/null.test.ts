@@ -58,4 +58,67 @@ describe("null", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.null([
+			DDataStructure.refine(
+				(data): data is null => {
+					type check = ExpectType<
+						typeof data,
+						null,
+						"strict"
+					>;
+
+					return data === null;
+				},
+			),
+		]);
+		const addedStructure = DDataStructure.null().addConstraint(
+			DDataStructure.refine(
+				(data): data is null => {
+					type check = ExpectType<
+						typeof data,
+						null,
+						"strict"
+					>;
+
+					return data === null;
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.TypeStructure<
+				null,
+				readonly [DDataStructure.RefineConstraint<null, null>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			null,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				null,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<null, null>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			null,
+			"strict"
+		>;
+
+		// @ts-expect-error null structures cannot receive string constraints.
+		DDataStructure.null([DDataStructure.email()]);
+		// @ts-expect-error null structures cannot add string constraints.
+		DDataStructure.null().addConstraint(DDataStructure.email());
+	});
 });

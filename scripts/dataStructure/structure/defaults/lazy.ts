@@ -38,14 +38,15 @@ export const LazyStructure = createStructure(
 	lazyStructureKind,
 	({ init }) => <
 		GenericStructure extends Structure,
-		GenericValue extends StructureValue<GenericStructure>,
-		const GenericConstraints extends readonly Constraint<GenericValue>[] = readonly [],
+		const GenericConstraints extends readonly Constraint<
+			StructureValue<GenericStructure>
+		>[],
 	>(
 		getStructure: () => GenericStructure,
 		constraints: GenericConstraints,
 	) => init<
 		LazyStructure<
-			GenericValue,
+			StructureValue<GenericStructure>,
 			readonly [...GenericConstraints]
 		>
 	>(

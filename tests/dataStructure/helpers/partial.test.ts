@@ -97,4 +97,68 @@ describe("partial", () => {
 			DEither.right("check-success", {}),
 		);
 	});
+
+	it("keeps added refine constraints coherent", () => {
+		interface PartialUser {
+			readonly name?: string;
+			readonly age?: number;
+		}
+		interface PartialUserWithName {
+			readonly name: string;
+			readonly age?: number;
+		}
+
+		const structure = DDataStructure.partial(
+			DDataStructure.object({
+				name: DDataStructure.string(),
+				age: DDataStructure.number(),
+			}),
+		).addConstraint(
+			DDataStructure.refine(
+				(data): data is PartialUserWithName => {
+					type check = ExpectType<
+						typeof data,
+						PartialUser,
+						"strict"
+					>;
+
+					return data.name !== undefined;
+				},
+			),
+		);
+
+		type _CheckConstraints = ExpectType<
+			typeof structure,
+			DDataStructure.Structure<
+				{
+					readonly name?: string;
+					readonly age?: number;
+				},
+				DDataStructure.StructureDefinition<
+					readonly [
+						DDataStructure.RefineConstraint<
+							{
+								readonly name?: string;
+								readonly age?: number;
+							},
+							PartialUserWithName
+						>,
+					]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			PartialUser & PartialUserWithName,
+			"strict"
+		>;
+
+		const invalidStructure = DDataStructure.partial(
+			DDataStructure.object({ name: DDataStructure.string() }),
+		);
+
+		// @ts-expect-error partial object structures cannot add string constraints.
+		invalidStructure.addConstraint(DDataStructure.email());
+	});
 });

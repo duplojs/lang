@@ -37,7 +37,8 @@ export function partial<
 			| GenericObjectStructureValue[Prop]
 			| undefined
 		)
-	}
+	},
+	readonly []
 >;
 
 export function partial(

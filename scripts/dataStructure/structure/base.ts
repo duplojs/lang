@@ -55,7 +55,10 @@ export interface Structure<
 	addConstraint<
 		const GenericNewConstraints extends DCommon.AnyTuple<Constraint<GenericValue>>,
 	>(
-		...args: GenericNewConstraints
+		...args: DCommon.FixDeepFunctionInfer<
+			DCommon.AnyTuple<Constraint<GenericValue>>,
+			GenericNewConstraints
+		>
 	): Structure<
 		GenericValue,
 		StructureDefinition<

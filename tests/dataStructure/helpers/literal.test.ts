@@ -164,4 +164,74 @@ describe("literal", () => {
 			},
 		]);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		const directStructure = DDataStructure.literal(
+			["admin", "member"],
+			[
+				DDataStructure.refine(
+					(data): data is "admin" => {
+						type check = ExpectType<
+							typeof data,
+							"admin" | "member",
+							"strict"
+						>;
+
+						return data === "admin";
+					},
+				),
+			],
+		);
+		const addedStructure = DDataStructure.literal(
+			["admin", "member"],
+		).addConstraint(
+			DDataStructure.refine(
+				(data): data is "admin" => {
+					type check = ExpectType<
+						typeof data,
+						"admin" | "member",
+						"strict"
+					>;
+
+					return data === "admin";
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.UnionStructure<
+				"admin" | "member",
+				readonly [DDataStructure.RefineConstraint<"admin" | "member", "admin">]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			"admin",
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				"admin" | "member",
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<"admin" | "member", "admin">]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			"admin",
+			"strict"
+		>;
+
+		// @ts-expect-error string literal structures cannot receive number constraints.
+		DDataStructure.literal("admin", [DDataStructure.positive()]);
+		// @ts-expect-error literal unions cannot receive constraints unrelated to every branch.
+		DDataStructure.literal(["admin", 1], [DDataStructure.email()]);
+		// @ts-expect-error string literal structures cannot add number constraints.
+		DDataStructure.literal("admin").addConstraint(DDataStructure.positive());
+	});
 });

@@ -62,4 +62,71 @@ describe("date", () => {
 		);
 		expect(structure.is(input)).toBe(true);
 	});
+
+	it("keeps direct and added refine constraints coherent", () => {
+		type EpochDate = DChrono.TheDate & {
+			readonly __epochDate: true;
+		};
+
+		const directStructure = DDataStructure.date([
+			DDataStructure.refine(
+				(data): data is EpochDate => {
+					type check = ExpectType<
+						typeof data,
+						DChrono.TheDate,
+						"strict"
+					>;
+
+					return data.toString().length > 0;
+				},
+			),
+		]);
+		const addedStructure = DDataStructure.date().addConstraint(
+			DDataStructure.refine(
+				(data): data is EpochDate => {
+					type check = ExpectType<
+						typeof data,
+						DChrono.TheDate,
+						"strict"
+					>;
+
+					return data.toString().length > 0;
+				},
+			),
+		);
+
+		type _CheckDirectConstraints = ExpectType<
+			typeof directStructure,
+			DDataStructure.TypeStructure<
+				DChrono.TheDate,
+				readonly [DDataStructure.RefineConstraint<DChrono.TheDate, EpochDate>]
+			>,
+			"strict"
+		>;
+		type _CheckDirectValue = ExpectType<
+			DDataStructure.StructureValue<typeof directStructure>,
+			EpochDate,
+			"strict"
+		>;
+		type _CheckAddedConstraints = ExpectType<
+			typeof addedStructure,
+			DDataStructure.Structure<
+				DChrono.TheDate,
+				DDataStructure.StructureDefinition<
+					readonly [DDataStructure.RefineConstraint<DChrono.TheDate, EpochDate>]
+				>
+			>,
+			"strict"
+		>;
+		type _CheckAddedValue = ExpectType<
+			DDataStructure.StructureValue<typeof addedStructure>,
+			EpochDate,
+			"strict"
+		>;
+
+		// @ts-expect-error date structures cannot receive string constraints.
+		DDataStructure.date([DDataStructure.email()]);
+		// @ts-expect-error date structures cannot add string constraints.
+		DDataStructure.date().addConstraint(DDataStructure.email());
+	});
 });
