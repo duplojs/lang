@@ -13,7 +13,7 @@ type ApplyGreaterThan<
 			GreaterThan<GenericThreshold>,
 			DCommon.CompatibilityConstraintResult<false, number, number>
 		> extends infer InferredResult
-			? InferredResult extends DCommon.CompatibilityConstraintResult<true>
+			? DCommon.ContainExtends<InferredResult, DCommon.CompatibilityConstraintResult<true>> extends true
 				? GenericValue
 				: GenericValue & GreaterThan<GenericThreshold>
 			: never
@@ -30,7 +30,7 @@ type ApplyLessThan<
 			LessThan<GenericThreshold>,
 			DCommon.CompatibilityConstraintResult<false, number, number>
 		> extends infer InferredResult
-			? InferredResult extends DCommon.CompatibilityConstraintResult<true>
+			? DCommon.ContainExtends<InferredResult, DCommon.CompatibilityConstraintResult<true>> extends true
 				? GenericValue
 				: GenericValue & LessThan<GenericThreshold>
 			: never

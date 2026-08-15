@@ -13,7 +13,7 @@ type GreaterThanOrEqualOutput<
 			GreaterThanOrEqual<GenericThreshold>,
 			DCommon.CompatibilityConstraintResult<false, number, number>
 		> extends infer InferredResult
-			? InferredResult extends DCommon.CompatibilityConstraintResult<true>
+			? DCommon.ContainExtends<InferredResult, DCommon.CompatibilityConstraintResult<true>> extends true
 				? GenericValue
 				: GenericValue & GreaterThanOrEqual<GenericThreshold>
 			: never
