@@ -42,7 +42,7 @@ describe("NewTypeStructure", () => {
 		const constraint = {
 			...DDataStructure.minCharacters(3),
 			executeCheck: constraintExecuteCheck,
-		} as DDataStructure.MinCharactersConstraint<3>;
+		};
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
@@ -50,10 +50,7 @@ describe("NewTypeStructure", () => {
 		);
 
 		expect(structure.executeCheck("Jane")).toBe(DDataStructure.SuccessSymbol);
-		expect(constraintExecuteCheck).toHaveBeenCalledWith(
-			"Jane",
-			undefined,
-		);
+		expect(constraintExecuteCheck).toHaveBeenCalledWith("Jane");
 
 		constraintExecuteCheck.mockClear();
 		expect(structure.executeCheck(123)).toBe(DDataStructure.ErrorSymbol);
@@ -65,23 +62,28 @@ describe("NewTypeStructure", () => {
 	});
 
 	it("returns check errors from the new type constraint", () => {
+		const constraint = DDataStructure.minCharacters(3);
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.minCharacters(3)],
+			[constraint],
+		);
+		const failure = DEither.unwrapByInformationOrThrow(
+			structure.check("Jo"),
+			"check-error",
 		);
 
 		expect(structure.check("Jane")).toStrictEqual(
 			DEither.right("check-success", "Jane"),
 		);
-		expect(
-			DEither.unwrapByInformationOrThrow(
-				structure.check("Jo"),
-				"check-error",
-			).issues[0],
-		).toMatchObject({
+		expect(failure.issues[0]).toMatchObject({
 			data: "Jo",
 		});
+		expect(failure.issues[0]?.getSource()).toBe(structure);
+		expect(
+			(failure.issues[0] as DDataStructure.Issue | undefined)
+				?.getSubSource?.(),
+		).toBe(constraint);
 	});
 
 	it("stops checking when a previous new type constraint fails", () => {
@@ -155,14 +157,8 @@ describe("NewTypeStructure", () => {
 		expect(structure.encode(codecs, data)).toStrictEqual(
 			DEither.right("encode-success", 4),
 		);
-		expect(newTypeConstraintExecuteCheck).toHaveBeenCalledWith(
-			"Jane",
-			expect.any(Function),
-		);
-		expect(structureConstraintExecuteCheck).toHaveBeenCalledWith(
-			"Jane",
-			expect.any(Function),
-		);
+		expect(newTypeConstraintExecuteCheck).toHaveBeenCalledWith("Jane");
+		expect(structureConstraintExecuteCheck).toHaveBeenCalledWith("Jane");
 		expect(newTypeConstraintExecuteCheck.mock.invocationCallOrder[0]).toBeLessThan(
 			structureConstraintExecuteCheck.mock.invocationCallOrder[0]!,
 		);
@@ -170,6 +166,7 @@ describe("NewTypeStructure", () => {
 
 	it("stops encoding when a new type constraint fails", () => {
 		type UserName = string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+		const newTypeConstraint = DDataStructure.minCharacters(3);
 		const structureConstraintExecuteCheck = vi.fn(
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
@@ -180,7 +177,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.minCharacters(3)],
+			[newTypeConstraint],
 		).addConstraint(structureConstraint);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -190,15 +187,19 @@ describe("NewTypeStructure", () => {
 		);
 		const codecs = DDataStructure.createCodecs({ string: codec });
 
-		expect(
-			DEither.unwrapByInformationOrThrow(
-				structure.unsafeEncode(codecs, "Jo"),
-				"encode-error",
-			).issues[0],
-		).toMatchObject({
-			context: "default",
+		const failure = DEither.unwrapByInformationOrThrow(
+			structure.unsafeEncode(codecs, "Jo"),
+			"encode-error",
+		);
+
+		expect(failure.issues[0]).toMatchObject({
 			data: "Jo",
 		});
+		expect(failure.issues[0]?.getSource()).toBe(structure);
+		expect(
+			(failure.issues[0] as DDataStructure.Issue | undefined)
+				?.getSubSource?.(),
+		).toBe(newTypeConstraint);
 		expect(structureConstraintExecuteCheck).not.toHaveBeenCalled();
 	});
 
@@ -319,14 +320,8 @@ describe("NewTypeStructure", () => {
 		expect(structure.decode(codecs, 4)).toStrictEqual(
 			DEither.right("decode-success", "decoded-4"),
 		);
-		expect(newTypeConstraintExecuteCheck).toHaveBeenCalledWith(
-			"decoded-4",
-			expect.any(Function),
-		);
-		expect(structureConstraintExecuteCheck).toHaveBeenCalledWith(
-			"decoded-4",
-			expect.any(Function),
-		);
+		expect(newTypeConstraintExecuteCheck).toHaveBeenCalledWith("decoded-4");
+		expect(structureConstraintExecuteCheck).toHaveBeenCalledWith("decoded-4");
 		expect(newTypeConstraintExecuteCheck.mock.invocationCallOrder[0]).toBeLessThan(
 			structureConstraintExecuteCheck.mock.invocationCallOrder[0]!,
 		);
@@ -334,6 +329,7 @@ describe("NewTypeStructure", () => {
 
 	it("stops decoding when a new type constraint fails", () => {
 		type UserName = string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+		const newTypeConstraint = DDataStructure.minCharacters(3);
 		const structureConstraintExecuteCheck = vi.fn(
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
@@ -344,7 +340,7 @@ describe("NewTypeStructure", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),
-			[DDataStructure.minCharacters(3)],
+			[newTypeConstraint],
 		).addConstraint(structureConstraint);
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
@@ -354,15 +350,19 @@ describe("NewTypeStructure", () => {
 		);
 		const codecs = DDataStructure.createCodecs({ string: codec });
 
-		expect(
-			DEither.unwrapByInformationOrThrow(
-				structure.unsafeDecode(codecs, 2),
-				"decode-error",
-			).issues[0],
-		).toMatchObject({
-			context: "default",
+		const failure = DEither.unwrapByInformationOrThrow(
+			structure.unsafeDecode(codecs, 2),
+			"decode-error",
+		);
+
+		expect(failure.issues[0]).toMatchObject({
 			data: "Jo",
 		});
+		expect(failure.issues[0]?.getSource()).toBe(structure);
+		expect(
+			(failure.issues[0] as DDataStructure.Issue | undefined)
+				?.getSubSource?.(),
+		).toBe(newTypeConstraint);
 		expect(structureConstraintExecuteCheck).not.toHaveBeenCalled();
 	});
 

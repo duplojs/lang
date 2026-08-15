@@ -28,19 +28,11 @@ describe("StringLiteralType", () => {
 
 	it("rejects non-string values through its fundamental type", () => {
 		const type = DDataStructure.StringLiteralType("value");
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck(12, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheString);
+		expect(type.executeCheck(12)).toBe(DDataStructure.ErrorSymbol);
 	});
 
 	it("rejects another string value through its literal type", () => {
 		const type = DDataStructure.StringLiteralType("value");
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck("other", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(type);
+		expect(type.executeCheck("other")).toBe(DDataStructure.ErrorSymbol);
 	});
 });

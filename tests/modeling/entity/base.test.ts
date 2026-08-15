@@ -117,10 +117,10 @@ describe("EntityStructure", () => {
 			),
 		});
 
+		nameConstraintExecuteCheck.mockClear();
 		expect(structure.executeCheck(entity)).toBe(DDataStructure.SuccessSymbol);
 		expect(nameConstraintExecuteCheck).toHaveBeenCalledWith(
 			"Jane",
-			undefined,
 		);
 
 		nameConstraintExecuteCheck.mockClear();

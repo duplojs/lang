@@ -4,7 +4,7 @@ import { type Constraint } from "../../constraint";
 import { type TypeValue, type Type } from "../../type";
 import { createStructure, type StructureDefinition, type Structure } from "../base";
 import { createKind } from "../../kind";
-import { ErrorSymbol } from "../../common";
+import { ErrorSymbol, SuccessSymbol } from "../../common";
 
 export const typeStructureKind = createKind("type-structure");
 
@@ -59,7 +59,12 @@ export const TypeStructure = createStructure(
 			constraints: constraints,
 		},
 		{
-			executeCheck: (self, data, errorHandler) => self.definition.type.executeCheck(data, errorHandler),
+			executeCheck: (self, data, errorHandler) => DCommon.callThen(
+				self.definition.type.executeCheck(data),
+				(result) => result === ErrorSymbol
+					? errorHandler?.().addIssue(self, data, self.definition.type) ?? ErrorSymbol
+					: SuccessSymbol,
+			),
 			executeEncode: (self, codecContext, data, errorHandler) => DCommon.callThen(
 				self.executeCheck(data, errorHandler),
 				(result) => {

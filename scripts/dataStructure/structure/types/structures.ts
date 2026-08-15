@@ -1,5 +1,5 @@
 import { type Structure } from "../base";
-import { type ObjectStructure, type ArrayStructure, type LazyStructure, type RecordStructure, type UnionStructure, type TypeStructure } from "../defaults";
+import { type ObjectStructure, type ArrayStructure, type LazyStructure, type RecordStructure, type UnionStructure, type TypeStructure, type NonEncodableStringStructure } from "../defaults";
 
 export interface StructuresStore {
 	base: Structure;
@@ -9,6 +9,7 @@ export interface StructuresStore {
 	record: RecordStructure;
 	union: UnionStructure;
 	type: TypeStructure;
+	nonEncodableString: NonEncodableStringStructure;
 }
 
 export type Structures = Extract<

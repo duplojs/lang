@@ -32,9 +32,9 @@ export const BigintLiteralType = createType(
 	>(value: GenericBigint) => init<BigintLiteralType<GenericBigint>>(
 		{ value },
 		{
-			executeCheck: (self, data, errorHandler) => data === self.definition.value
+			executeCheck: (self, data) => data === self.definition.value
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

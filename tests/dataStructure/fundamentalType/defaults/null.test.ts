@@ -16,18 +16,10 @@ describe("TheNull", () => {
 		>;
 
 		expect(result).toBe(DDataStructure.SuccessSymbol);
-		expect(typeof DDataStructure.TheNull.symbol).toBe("symbol");
+		expect(DDataStructure.nullFundamentalTypeKind.has(DDataStructure.TheNull)).toBe(true);
 	});
 
 	it("rejects non-null values without an error handler", () => {
 		expect(DDataStructure.TheNull.executeCheck(undefined)).toBe(DDataStructure.ErrorSymbol);
-	});
-
-	it("adds itself to the error handler when a non-null value is rejected", () => {
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(DDataStructure.TheNull.executeCheck("null", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheNull);
 	});
 });

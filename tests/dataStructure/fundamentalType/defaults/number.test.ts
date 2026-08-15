@@ -16,7 +16,7 @@ describe("TheNumber", () => {
 		>;
 
 		expect(result).toBe(DDataStructure.SuccessSymbol);
-		expect(typeof DDataStructure.TheNumber.symbol).toBe("symbol");
+		expect(DDataStructure.numberFundamentalTypeKind.has(DDataStructure.TheNumber)).toBe(true);
 	});
 
 	it("rejects non-number values without an error handler", () => {
@@ -40,13 +40,5 @@ describe("TheNumber", () => {
 		expect(DDataStructure.TheNumber.executeCheck(Number.NaN)).toBe(DDataStructure.ErrorSymbol);
 		expect(isFiniteSpy).toHaveBeenCalledWith(Number.NaN);
 		isFiniteSpy.mockRestore();
-	});
-
-	it("adds itself to the error handler when a non-number value is rejected", () => {
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(DDataStructure.TheNumber.executeCheck(12n, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheNumber);
 	});
 });

@@ -41,13 +41,13 @@ export const BetweenThanOrEqualConstraint = createConstraint(
 			less,
 		},
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.betweenThanOrEqual(
+			executeCheck: (self, data) => DNumber.betweenThanOrEqual(
 				data,
 				DCommon.forward<number>(self.definition.greater),
 				DCommon.forward<number>(self.definition.less),
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

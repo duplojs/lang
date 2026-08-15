@@ -28,10 +28,6 @@ describe("BigintType", () => {
 
 	it("rejects non-bigint values through its fundamental type", () => {
 		const type = DDataStructure.BigintType();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck(12, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheBigint);
+		expect(type.executeCheck(12)).toBe(DDataStructure.ErrorSymbol);
 	});
 });

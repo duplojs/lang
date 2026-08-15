@@ -21,10 +21,9 @@ describe("createConstraint", () => {
 			(
 				self: TestConstraint,
 				data: string,
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => data.length >= self.definition.min
 				? DDataStructure.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
+				: DDataStructure.ErrorSymbol,
 		);
 		const isAsynchronous = vi.fn(() => false);
 
@@ -60,20 +59,17 @@ describe("createConstraint", () => {
 			1,
 			constraint,
 			"abc",
-			undefined,
 		);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			2,
 			constraint,
 			"ab",
-			undefined,
 		);
 		expect(isAsynchronous).toHaveBeenCalledWith(constraint);
 	});
 
-	it("forwards the error handler and preserves asynchronous checks", async() => {
+	it("preserves asynchronous checks", async() => {
 		const testConstraintKind = DDataStructure.createKind("test-async-constraint");
-		const errorHandler = DDataStructure.createGetErrorHandler();
 
 		interface TestConstraintDefinition extends DDataStructure.ConstraintDefinition {
 			readonly min: number;
@@ -92,11 +88,10 @@ describe("createConstraint", () => {
 			(
 				self: TestConstraint,
 				data: string,
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => Promise.resolve(
 				data.length >= self.definition.min
 					? DDataStructure.SuccessSymbol
-					: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
+					: DDataStructure.ErrorSymbol,
 			),
 		);
 		const isAsynchronous = vi.fn(() => true);
@@ -116,15 +111,13 @@ describe("createConstraint", () => {
 
 		expect(constraint.definition).toEqual({ min: 4 });
 		await expect(
-			constraint.executeCheck("abc", errorHandler),
+			constraint.executeCheck("abc"),
 		).resolves.toBe(DDataStructure.ErrorSymbol);
 		expect(constraint.isAsynchronous()).toBe(true);
 		expect(executeCheck).toHaveBeenCalledWith(
 			constraint,
 			"abc",
-			errorHandler,
 		);
 		expect(isAsynchronous).toHaveBeenCalledWith(constraint);
-		expect(errorHandler().createError().issues).toHaveLength(1);
 	});
 });

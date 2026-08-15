@@ -32,15 +32,4 @@ describe("EmailConstraint", () => {
 		expect(constraint.executeCheck(".user@example.com")).toBe(DDataStructure.ErrorSymbol);
 		expect(constraint.executeCheck("user@example")).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when an invalid email is rejected", () => {
-		const constraint = DDataStructure.EmailConstraint();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck("user..name@example.com", errorHandler)).toBe(
-			DDataStructure.ErrorSymbol,
-		);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

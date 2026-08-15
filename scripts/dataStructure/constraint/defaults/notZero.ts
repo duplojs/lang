@@ -25,9 +25,9 @@ export const NotZeroConstraint = createConstraint(
 	({ init }) => () => init<NotZeroConstraint>(
 		{},
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.isNotZero(data)
+			executeCheck: (_self, data) => DNumber.isNotZero(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

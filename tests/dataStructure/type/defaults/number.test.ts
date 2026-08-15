@@ -28,10 +28,6 @@ describe("NumberType", () => {
 
 	it("rejects non-number values through its fundamental type", () => {
 		const type = DDataStructure.NumberType();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck("12", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheNumber);
+		expect(type.executeCheck("12")).toBe(DDataStructure.ErrorSymbol);
 	});
 });

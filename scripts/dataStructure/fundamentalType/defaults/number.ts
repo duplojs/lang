@@ -1,19 +1,21 @@
+import type * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
 import { ErrorSymbol, SuccessSymbol } from "../../common";
 import { createFundamentalType, type FundamentalType } from "../base";
+import { createKind } from "../../kind";
 
-const FundamentalTypeTheNumberSymbol = Symbol("FundamentalTypeTheNumberSymbol");
-export type FundamentalTypeTheNumberSymbol = typeof FundamentalTypeTheNumberSymbol;
+export const numberFundamentalTypeKind = createKind("number-fundamental-type");
 
-export interface TheNumber extends FundamentalType<
-	FundamentalTypeTheNumberSymbol,
-	number
+export interface TheNumber extends DCommon.UnionToIntersection<
+	& FundamentalType<number>
+	& DKind.Kind<typeof numberFundamentalTypeKind>
 > {}
 
 export const TheNumber = createFundamentalType<
 	TheNumber
 >(
-	FundamentalTypeTheNumberSymbol,
-	(self, data, errorHandler) => typeof data === "number" && isFinite(data) && !isNaN(data)
+	numberFundamentalTypeKind,
+	(self, data) => typeof data === "number" && isFinite(data) && !isNaN(data)
 		? SuccessSymbol
-		: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+		: ErrorSymbol,
 );

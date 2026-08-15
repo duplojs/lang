@@ -32,15 +32,4 @@ describe("SafeConstraint", () => {
 			DDataStructure.ErrorSymbol,
 		);
 	});
-
-	it("adds itself to the error handler when an unsafe number is rejected", () => {
-		const constraint = DDataStructure.SafeConstraint();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck(Number.MAX_SAFE_INTEGER, errorHandler)).toBe(
-			DDataStructure.ErrorSymbol,
-		);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

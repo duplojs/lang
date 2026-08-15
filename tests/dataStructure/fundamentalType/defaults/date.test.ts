@@ -17,19 +17,10 @@ describe("TheDate", () => {
 		>;
 
 		expect(result).toBe(DDataStructure.SuccessSymbol);
-		expect(typeof DDataStructure.TheDate.symbol).toBe("symbol");
+		expect(DDataStructure.dateFundamentalTypeKind.has(DDataStructure.TheDate)).toBe(true);
 	});
 
 	it("rejects non-chrono date values without an error handler", () => {
 		expect(DDataStructure.TheDate.executeCheck(new Date(0))).toBe(DDataStructure.ErrorSymbol);
-	});
-
-	it("adds itself to the error handler when a non-chrono date value is rejected", () => {
-		const errorHandler = DDataStructure.createGetErrorHandler();
-		const value = new Date(0);
-
-		expect(DDataStructure.TheDate.executeCheck(value, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheDate);
 	});
 });

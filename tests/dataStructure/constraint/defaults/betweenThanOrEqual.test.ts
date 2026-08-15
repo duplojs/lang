@@ -35,13 +35,4 @@ describe("BetweenThanOrEqualConstraint", () => {
 		expect(constraint.executeCheck(0)).toBe(DDataStructure.ErrorSymbol);
 		expect(constraint.executeCheck(4)).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when an outside value is rejected", () => {
-		const constraint = DDataStructure.BetweenThanOrEqualConstraint(1, 3);
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck(0, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

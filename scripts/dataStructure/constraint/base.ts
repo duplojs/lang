@@ -1,7 +1,7 @@
 import type * as DKind from "@scripts/kind";
 import type * as DCommon from "@scripts/common";
 import { createKind } from "../kind";
-import { type SuccessSymbol, type ErrorSymbol, type GetErrorHandler } from "../common";
+import { type SuccessSymbol, type ErrorSymbol } from "../common";
 
 export const constraintKind = createKind("constraint");
 
@@ -25,7 +25,6 @@ export interface Constraint<
 		: unknown;
 	executeCheck(
 		data: GenericInput,
-		errorHandler?: GetErrorHandler,
 	): DCommon.MaybePromise<
 		| SuccessSymbol
 		| ErrorSymbol
@@ -39,7 +38,6 @@ export interface CreateConstraintInitParams<
 	executeCheck(
 		self: GenericConstraint,
 		data: Parameters<GenericConstraint["executeCheck"]>[0],
-		errorHandler?: GetErrorHandler
 	): DCommon.MaybePromise<
 		| SuccessSymbol
 		| ErrorSymbol
@@ -87,10 +85,9 @@ export function createConstraint<
 		) => {
 			const self: DKind.Remove<Constraint> = {
 				definition,
-				executeCheck: (data: unknown, errorHandler) => executeCheck(
+				executeCheck: (data: unknown) => executeCheck(
 					self as never,
 					data,
-					errorHandler,
 				),
 				isAsynchronous: () => isAsynchronous(self as never),
 				[constraintKind.runTimeKey]: null,

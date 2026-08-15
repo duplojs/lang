@@ -28,10 +28,6 @@ describe("TimeType", () => {
 
 	it("rejects non-chrono time values through its fundamental type", () => {
 		const type = DDataStructure.TimeType();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck(0, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheTime);
+		expect(type.executeCheck(0)).toBe(DDataStructure.ErrorSymbol);
 	});
 });

@@ -308,10 +308,9 @@ describe("ObjectStructure", () => {
 			(
 				self: SourceConstraint,
 				data: { readonly name: string },
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => typeof data.name === "string"
 				? DDataStructure.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
+				: DDataStructure.ErrorSymbol,
 		);
 
 		interface SourceConstraint extends DCommon.UnionToIntersection<
@@ -358,7 +357,6 @@ describe("ObjectStructure", () => {
 		expect(executeCheck).toHaveBeenCalledWith(
 			sourceConstraint,
 			{ name: "Jane" },
-			expect.any(Function),
 		);
 	});
 
@@ -452,9 +450,7 @@ describe("ObjectStructure", () => {
 			({ init }) => () => init<FailingConstraint>(
 				{},
 				{
-					executeCheck: (self, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
-					),
+					executeCheck: () => DDataStructure.ErrorSymbol,
 					isAsynchronous: () => false,
 				},
 			),
@@ -478,13 +474,26 @@ describe("ObjectStructure", () => {
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "encode-error").issues[0]
 				?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				failure,
+				"encode-error",
+			).issues[0] as DDataStructure.Issue | undefined)
+				?.getSubSource?.(),
 		).toBe(failingConstraint);
-		expect(encode).toHaveBeenCalledWith("Jane", expect.any(Function));
+		expect(encode).toHaveBeenCalledWith("Jane", codec, expect.any(Function));
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				asyncFailure,
 				"encode-error",
 			).issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				asyncFailure,
+				"encode-error",
+			).issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(failingConstraint);
 		expect(encode).toHaveBeenCalledTimes(2);
 	});
@@ -673,9 +682,7 @@ describe("ObjectStructure", () => {
 			({ init }) => () => init<FailingConstraint>(
 				{},
 				{
-					executeCheck: (self, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
-					),
+					executeCheck: () => DDataStructure.ErrorSymbol,
 					isAsynchronous: () => false,
 				},
 			),
@@ -693,12 +700,25 @@ describe("ObjectStructure", () => {
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "decode-error").issues[0]
 				?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				failure,
+				"decode-error",
+			).issues[0] as DDataStructure.Issue | undefined)
+				?.getSubSource?.(),
 		).toBe(failingConstraint);
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				asyncFailure,
 				"decode-error",
 			).issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				asyncFailure,
+				"decode-error",
+			).issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(failingConstraint);
 	});
 

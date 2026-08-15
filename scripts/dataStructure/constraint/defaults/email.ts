@@ -24,9 +24,9 @@ export const EmailConstraint = createConstraint(
 	({ init }) => () => init<EmailConstraint>(
 		{ },
 		{
-			executeCheck: (self, data, errorHandler) => DString.isEmail(data)
+			executeCheck: (_self, data) => DString.isEmail(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

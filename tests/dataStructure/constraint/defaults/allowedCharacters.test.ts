@@ -31,13 +31,4 @@ describe("AllowedCharactersConstraint", () => {
 
 		expect(constraint.executeCheck("ABC")).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when forbidden characters are rejected", () => {
-		const constraint = DDataStructure.AllowedCharactersConstraint("a-z");
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck("ABC", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

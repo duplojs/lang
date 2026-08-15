@@ -42,12 +42,12 @@ export const AllowedCharactersConstraint = createConstraint(
 	>(
 		{ charactersRange },
 		{
-			executeCheck: (self, data, errorHandler) => DString.isComposedOf(
+			executeCheck: (self, data) => DString.isComposedOf(
 				data,
 				self.definition.charactersRange,
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

@@ -52,6 +52,10 @@ describe("UnionStructure", () => {
 				data: true,
 				path: "(union: 1)",
 			},
+			{
+				data: true,
+				path: "",
+			},
 		]);
 	});
 
@@ -165,6 +169,10 @@ describe("UnionStructure", () => {
 				data: true,
 				path: "(union: 1)",
 			},
+			{
+				data: true,
+				path: "",
+			},
 		]);
 		expect(
 			DEither.unwrapByInformationOrThrow(
@@ -179,6 +187,10 @@ describe("UnionStructure", () => {
 			{
 				data: "value",
 				path: "(union: 1).[array: 0]",
+			},
+			{
+				data: ["value"],
+				path: "",
 			},
 		]);
 	});
@@ -202,6 +214,10 @@ describe("UnionStructure", () => {
 			{
 				data: "invalid",
 				path: "value.(union: 1).[array: 0]",
+			},
+			{
+				data: ["invalid"],
+				path: "value",
 			},
 		]);
 	});
@@ -235,9 +251,8 @@ describe("UnionStructure", () => {
 			(
 				self: UnionConstraint,
 				data: any,
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => typeof data === "string" && data.length === 0
-				? errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
+				? DDataStructure.ErrorSymbol
 				: DDataStructure.SuccessSymbol,
 		);
 
@@ -290,32 +305,40 @@ describe("UnionStructure", () => {
 				encodeFailure,
 				"encode-error",
 			).issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				encodeFailure,
+				"encode-error",
+			).issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(unionConstraint);
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				decodeFailure,
 				"decode-error",
 			).issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				decodeFailure,
+				"decode-error",
+			).issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(unionConstraint);
 		expect(executeCheck).toHaveBeenCalledWith(
 			unionConstraint,
 			"Jane",
-			expect.any(Function),
 		);
 		expect(executeCheck).toHaveBeenCalledWith(
 			unionConstraint,
 			"4",
-			expect.any(Function),
 		);
 		expect(executeCheck).toHaveBeenCalledWith(
 			unionConstraint,
 			"",
-			expect.any(Function),
 		);
 		expect(executeCheck).toHaveBeenCalledWith(
 			unionConstraint,
 			"",
-			expect.any(Function),
 		);
 	});
 

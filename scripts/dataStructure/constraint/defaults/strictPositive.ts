@@ -25,9 +25,9 @@ export const StrictPositiveConstraint = createConstraint(
 	({ init }) => () => init<StrictPositiveConstraint>(
 		{},
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.isStrictPositive(data)
+			executeCheck: (_self, data) => DNumber.isStrictPositive(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

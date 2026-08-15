@@ -28,19 +28,11 @@ describe("BigintLiteralType", () => {
 
 	it("rejects non-bigint values through its fundamental type", () => {
 		const type = DDataStructure.BigintLiteralType(12n);
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck(12, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheBigint);
+		expect(type.executeCheck(12)).toBe(DDataStructure.ErrorSymbol);
 	});
 
 	it("rejects another bigint value through its literal type", () => {
 		const type = DDataStructure.BigintLiteralType(12n);
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck(24n, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(type);
+		expect(type.executeCheck(24n)).toBe(DDataStructure.ErrorSymbol);
 	});
 });

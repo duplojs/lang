@@ -32,15 +32,4 @@ describe("UuidConstraint", () => {
 
 		expect(constraint.executeCheck("not-a-uuid")).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when an invalid uuid is rejected", () => {
-		const constraint = DDataStructure.UuidConstraint();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck("not-a-uuid", errorHandler)).toBe(
-			DDataStructure.ErrorSymbol,
-		);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

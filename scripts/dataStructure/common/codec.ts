@@ -15,7 +15,6 @@ export interface Codec<
 	readonly fundamentalType: GenericFundamentalType;
 	predicateEncode(
 		input: unknown,
-		errorHandler?: GetErrorHandler
 	): input is GenericEncodedValue;
 	encode(
 		data: FundamentalTypeValue<GenericFundamentalType>,
@@ -50,11 +49,11 @@ export function createCodec<
 >(
 	fundamentalType: GenericFundamentalType,
 	predicateEncode: (
-		input: unknown,
-		errorHandler?: GetErrorHandler,
-	) => input is GenericEncodedValue,
+		data: unknown,
+	) => data is GenericEncodedValue,
 	encode: (
 		data: FundamentalTypeValue<GenericFundamentalType>,
+		self: Codec<GenericFundamentalType, GenericEncodedValue>,
 		errorHandler?: GetErrorHandler,
 	) => DCommon.MaybePromise<
 		| GenericEncodedValue
@@ -62,6 +61,7 @@ export function createCodec<
 	>,
 	decode: (
 		data: GenericEncodedValue,
+		self: Codec<GenericFundamentalType, GenericEncodedValue>,
 		errorHandler?: GetErrorHandler,
 	) => DCommon.MaybePromise<
 		| FundamentalTypeValue<GenericFundamentalType>
@@ -73,35 +73,31 @@ export function createCodec<
 > {
 	const self: DKind.Remove<Codec> = {
 		fundamentalType,
-		predicateEncode,
+		predicateEncode: (
+			data,
+		) => predicateEncode(data),
 		encode: (
 			data,
 			errorHandler,
-		) => errorHandler?.().setCurrentContext("encode") ?? DCommon.callThen(
-			encode(data as never, errorHandler),
+		) => DCommon.callThen(
+			encode(data as never, self as never, errorHandler),
 			(encodedData) => encodedData === ErrorSymbol
 				? ErrorSymbol
 				: DCommon.callThen(
-					predicateEncode(encodedData, errorHandler),
-					(result) => errorHandler?.().setCurrentContext("default") ?? (
-						result === false
-							? ErrorSymbol
-							: encodedData
-					),
+					predicateEncode(encodedData),
+					(result) => result === false
+						? errorHandler?.().addEncodeIssue(self as never, encodedData) ?? ErrorSymbol
+						: encodedData,
 				),
-
 		),
 		decode: (
 			data,
 			errorHandler,
-		) => errorHandler?.().setCurrentContext("decode") ?? DCommon.callThen(
-			predicateEncode(data, errorHandler),
+		) => DCommon.callThen(
+			predicateEncode(data),
 			(result) => result === false
-				? ErrorSymbol
-				: DCommon.callThen(
-					decode(data as never, errorHandler),
-					(result) => errorHandler?.().setCurrentContext("default") ?? result,
-				),
+				? errorHandler?.().addDecodeIssue(self as never, data) ?? ErrorSymbol
+				: decode(data as never, self as never, errorHandler),
 		),
 		[codecKind.runTimeKey]: null,
 	};

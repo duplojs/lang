@@ -76,10 +76,9 @@ export const UnionStructure = createStructure(
 
 							const subErrorHandler = errorHandler === undefined
 								? undefined
-								: createGetErrorHandler();
+								: createGetErrorHandler(errorHandler().currentPath);
 
-							if (errorHandler && errorHandlers && subErrorHandler) {
-								subErrorHandler().usePath(errorHandler().currentPath);
+							if (errorHandlers && subErrorHandler) {
 								subErrorHandler().createPathStage().setCurrentPath(`(union: ${index})`);
 								errorHandlers.push(subErrorHandler);
 							}
@@ -97,6 +96,7 @@ export const UnionStructure = createStructure(
 							if (errorHandlers) {
 								errorHandler?.().importIssues(errorHandlers);
 							}
+							errorHandler?.().addIssue(self, data);
 
 							return ErrorSymbol;
 						}
@@ -118,10 +118,9 @@ export const UnionStructure = createStructure(
 
 							const subErrorHandler = errorHandler === undefined
 								? undefined
-								: createGetErrorHandler();
+								: createGetErrorHandler(errorHandler().currentPath);
 
-							if (errorHandler && errorHandlers && subErrorHandler) {
-								subErrorHandler().usePath(errorHandler().currentPath);
+							if (errorHandlers && subErrorHandler) {
 								subErrorHandler().createPathStage().setCurrentPath(`(union: ${index})`);
 								errorHandlers.push(subErrorHandler);
 							}
@@ -139,6 +138,7 @@ export const UnionStructure = createStructure(
 							if (errorHandlers) {
 								errorHandler?.().importIssues(errorHandlers);
 							}
+							errorHandler?.().addIssue(self, data);
 
 							return ErrorSymbol;
 						}
@@ -165,10 +165,9 @@ export const UnionStructure = createStructure(
 
 							const subErrorHandler = errorHandler === undefined
 								? undefined
-								: createGetErrorHandler();
+								: createGetErrorHandler(errorHandler().currentPath);
 
-							if (errorHandler && errorHandlers && subErrorHandler) {
-								subErrorHandler().usePath(errorHandler().currentPath);
+							if (errorHandlers && subErrorHandler) {
 								subErrorHandler().createPathStage().setCurrentPath(`(union: ${index})`);
 								errorHandlers.push(subErrorHandler);
 							}
@@ -186,6 +185,7 @@ export const UnionStructure = createStructure(
 							if (errorHandlers) {
 								errorHandler?.().importIssues(errorHandlers);
 							}
+							errorHandler?.().addIssue(self, data);
 
 							return ErrorSymbol;
 						}

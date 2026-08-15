@@ -34,12 +34,12 @@ export const MaxCharactersConstraint = createConstraint(
 	>(
 		{ max },
 		{
-			executeCheck: (self, data, errorHandler) => DString.maxCharacters(
+			executeCheck: (self, data) => DString.maxCharacters(
 				data,
 				DCommon.forward<number>(self.definition.max),
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

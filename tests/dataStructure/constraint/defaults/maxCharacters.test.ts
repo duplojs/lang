@@ -31,13 +31,4 @@ describe("MaxCharactersConstraint", () => {
 
 		expect(constraint.executeCheck("abcd")).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when a longer string is rejected", () => {
-		const constraint = DDataStructure.MaxCharactersConstraint(3);
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck("abcd", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

@@ -28,10 +28,6 @@ describe("NullType", () => {
 
 	it("rejects non-null values through its fundamental type", () => {
 		const type = DDataStructure.NullType();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck(undefined, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheNull);
+		expect(type.executeCheck(undefined)).toBe(DDataStructure.ErrorSymbol);
 	});
 });

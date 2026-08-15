@@ -25,9 +25,9 @@ export const EvenConstraint = createConstraint(
 	({ init }) => () => init<EvenConstraint>(
 		{},
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.isEven(data)
+			executeCheck: (_self, data) => DNumber.isEven(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

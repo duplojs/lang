@@ -34,12 +34,12 @@ export const StringLengthEqualConstraint = createConstraint(
 	>(
 		{ length },
 		{
-			executeCheck: (self, data, errorHandler) => DString.lengthEqual(
+			executeCheck: (self, data) => DString.lengthEqual(
 				data,
 				DCommon.forward<number>(self.definition.length),
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

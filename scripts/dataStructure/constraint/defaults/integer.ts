@@ -25,9 +25,9 @@ export const IntegerConstraint = createConstraint(
 	({ init }) => () => init<IntegerConstraint>(
 		{},
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.isInteger(data)
+			executeCheck: (_self, data) => DNumber.isInteger(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

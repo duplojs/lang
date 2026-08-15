@@ -1,19 +1,21 @@
+import type * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
 import { ErrorSymbol, SuccessSymbol } from "../../common";
 import { createFundamentalType, type FundamentalType } from "../base";
+import { createKind } from "../../kind";
 
-const FundamentalTypeTheBooleanSymbol = Symbol("FundamentalTypeTheBooleanSymbol");
-export type FundamentalTypeTheBooleanSymbol = typeof FundamentalTypeTheBooleanSymbol;
+export const booleanFundamentalTypeKind = createKind("boolean-fundamental-type");
 
-export interface TheBoolean extends FundamentalType<
-	FundamentalTypeTheBooleanSymbol,
-	boolean
+export interface TheBoolean extends DCommon.UnionToIntersection<
+	& FundamentalType<boolean>
+	& DKind.Kind<typeof booleanFundamentalTypeKind>
 > {}
 
 export const TheBoolean = createFundamentalType<
 	TheBoolean
 >(
-	FundamentalTypeTheBooleanSymbol,
-	(self, data, errorHandler) => typeof data === "boolean"
+	booleanFundamentalTypeKind,
+	(self, data) => typeof data === "boolean"
 		? SuccessSymbol
-		: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+		: ErrorSymbol,
 );

@@ -34,12 +34,12 @@ export const GreaterThanConstraint = createConstraint(
 	>(
 		{ threshold },
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.greaterThan(
+			executeCheck: (self, data) => DNumber.greaterThan(
 				data,
 				DCommon.forward<number>(self.definition.threshold),
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

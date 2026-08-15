@@ -17,18 +17,10 @@ describe("TheTime", () => {
 		>;
 
 		expect(result).toBe(DDataStructure.SuccessSymbol);
-		expect(typeof DDataStructure.TheTime.symbol).toBe("symbol");
+		expect(DDataStructure.timeFundamentalTypeKind.has(DDataStructure.TheTime)).toBe(true);
 	});
 
 	it("rejects non-chrono time values without an error handler", () => {
 		expect(DDataStructure.TheTime.executeCheck(0)).toBe(DDataStructure.ErrorSymbol);
-	});
-
-	it("adds itself to the error handler when a non-chrono time value is rejected", () => {
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(DDataStructure.TheTime.executeCheck("0", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheTime);
 	});
 });

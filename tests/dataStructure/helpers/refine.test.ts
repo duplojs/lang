@@ -26,6 +26,9 @@ describe("refine", () => {
 		expect(structure.is("admin:123")).toBe(false);
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "check-error").issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(failure, "check-error").issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(constraint);
 	});
 });

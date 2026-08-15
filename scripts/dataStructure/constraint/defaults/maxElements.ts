@@ -34,12 +34,12 @@ export const MaxElementsConstraint = createConstraint(
 	>(
 		{ max },
 		{
-			executeCheck: (self, data, errorHandler) => DArray.maxElements(
+			executeCheck: (self, data) => DArray.maxElements(
 				data,
 				DCommon.forward<number>(self.definition.max),
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

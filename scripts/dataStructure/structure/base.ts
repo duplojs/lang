@@ -34,6 +34,7 @@ export const structureKind = createKind("structure");
 export interface StructureDefinition<
 	GenericConstraints extends readonly Constraint<any>[] = readonly Constraint<any>[],
 > {
+	readonly message?: string;
 	readonly constraints: readonly [...GenericConstraints];
 }
 
@@ -95,7 +96,6 @@ export interface Structure<
 	>;
 	is(
 		data: unknown,
-		errorHandler?: GetErrorHandler
 	): data is StructureValue<this>;
 	encode<
 		GenericCodecs extends Codecs,
@@ -202,6 +202,8 @@ export interface Structure<
 			: [] & DCommon.ComputedTypeError<"Contract error.">
 	): Structure<GenericValue>;
 	clone(): this;
+	setMessage(massage: string): this;
+	addMessage(massage: string): this;
 }
 
 export interface CreateStructureInitParams<
@@ -316,7 +318,12 @@ export function createStructure<
 					accumulator,
 					(result) => result === ErrorSymbol
 						? ErrorSymbol
-						: constraint.executeCheck(data, errorHandler),
+						: DCommon.callThen(
+							constraint.executeCheck(data),
+							(constraintResult) => constraintResult === ErrorSymbol
+								? errorHandler?.().addIssue(self, data, constraint) ?? ErrorSymbol
+								: SuccessSymbol,
+						),
 				),
 				SuccessSymbol,
 			),
@@ -381,8 +388,8 @@ export function createStructure<
 
 				return DEither.right("check-success", data);
 			},
-			is: (data, errorHandler): data is never => {
-				const result = self.executeCheck(data, errorHandler);
+			is: (data): data is never => {
+				const result = self.executeCheck(data);
 				if (result instanceof Promise || result === ErrorSymbol) {
 					return false;
 				}
@@ -459,7 +466,7 @@ export function createStructure<
 			},
 			contract: () => self as never,
 			clone: () => init(
-				definition,
+				DCommon.simpleClone(definition),
 				{
 					executeCheck,
 					executeEncode,
@@ -468,6 +475,14 @@ export function createStructure<
 				},
 				...rest,
 			),
+			setMessage: (message) => {
+				(self.definition.message as any) = message as any;
+				return self;
+			},
+			addMessage: (message) => {
+				const cloneSelf = self.clone();
+				return cloneSelf.setMessage(message);
+			},
 			[kindHandler.runTimeKey]: null,
 			[structureKind.runTimeKey]: null,
 		});

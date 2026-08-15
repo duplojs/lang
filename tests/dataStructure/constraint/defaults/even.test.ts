@@ -30,13 +30,4 @@ describe("EvenConstraint", () => {
 
 		expect(constraint.executeCheck(3)).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when an odd number is rejected", () => {
-		const constraint = DDataStructure.EvenConstraint();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck(3, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

@@ -1,20 +1,22 @@
 import * as DChrono from "@scripts/chrono";
+import type * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
 import { ErrorSymbol, SuccessSymbol } from "../../common";
 import { createFundamentalType, type FundamentalType } from "../base";
+import { createKind } from "../../kind";
 
-const FundamentalTypeTheDateSymbol = Symbol("FundamentalTypeTheDateSymbol");
-export type FundamentalTypeTheDateSymbol = typeof FundamentalTypeTheDateSymbol;
+export const dateFundamentalTypeKind = createKind("date-fundamental-type");
 
-export interface TheDate extends FundamentalType<
-	FundamentalTypeTheDateSymbol,
-	DChrono.TheDate
+export interface TheDate extends DCommon.UnionToIntersection<
+	& FundamentalType<DChrono.TheDate>
+	& DKind.Kind<typeof dateFundamentalTypeKind>
 > {}
 
 export const TheDate = createFundamentalType<
 	TheDate
 >(
-	FundamentalTypeTheDateSymbol,
-	(self, data, errorHandler) => data instanceof DChrono.TheDate
+	dateFundamentalTypeKind,
+	(self, data) => data instanceof DChrono.TheDate
 		? SuccessSymbol
-		: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+		: ErrorSymbol,
 );

@@ -31,13 +31,4 @@ describe("LessThanConstraint", () => {
 		expect(constraint.executeCheck(3)).toBe(DDataStructure.ErrorSymbol);
 		expect(constraint.executeCheck(4)).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when a high number is rejected", () => {
-		const constraint = DDataStructure.LessThanConstraint(3);
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck(3, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

@@ -32,9 +32,9 @@ export const NumberLiteralType = createType(
 	>(value: GenericNumber) => init<NumberLiteralType<GenericNumber>>(
 		{ value },
 		{
-			executeCheck: (self, data, errorHandler) => data === self.definition.value
+			executeCheck: (self, data) => data === self.definition.value
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

@@ -25,9 +25,9 @@ export const OddConstraint = createConstraint(
 	({ init }) => () => init<OddConstraint>(
 		{},
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.isOdd(data)
+			executeCheck: (_self, data) => DNumber.isOdd(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

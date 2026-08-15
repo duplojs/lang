@@ -34,15 +34,4 @@ describe("UrlConstraint", () => {
 		expect(constraint.executeCheck("not-a-url")).toBe(DDataStructure.ErrorSymbol);
 		expect(constraint.executeCheck("ftp://example.com")).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when an invalid url is rejected", () => {
-		const constraint = DDataStructure.UrlConstraint();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck("not-a-url", errorHandler)).toBe(
-			DDataStructure.ErrorSymbol,
-		);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

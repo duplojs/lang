@@ -162,6 +162,10 @@ describe("literal", () => {
 				data: "archived",
 				path: "statuses.[array: 1].(union: 1)",
 			},
+			{
+				data: "archived",
+				path: "statuses.[array: 1]",
+			},
 		]);
 	});
 

@@ -25,12 +25,12 @@ export const UrlConstraint = createConstraint(
 	({ init }) => (params?: DString.IsUrlParams) => init<UrlConstraint>(
 		{ params },
 		{
-			executeCheck: (self, data, errorHandler) => DString.isUrl(
+			executeCheck: (self, data) => DString.isUrl(
 				data,
 				self.definition.params,
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

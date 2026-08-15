@@ -132,9 +132,10 @@ describe("TypeStructure", () => {
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
 			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
-			(_data, errorHandler) => (
-				errorHandler?.().addIssue(DDataStructure.TheString, "encoded-error") ?? DDataStructure.ErrorSymbol
-			),
+			(data, self, errorHandler) => {
+				errorHandler?.().addEncodeIssue(self, data, "encoded-error");
+				return DDataStructure.ErrorSymbol;
+			},
 			(data) => `value-${data}`,
 		);
 		const failure = structure.encode(DDataStructure.createCodecs({ codec }), "abcd");
@@ -143,18 +144,24 @@ describe("TypeStructure", () => {
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "encode-error").issues[0],
 		).toMatchObject({
-			context: "encode",
-			data: "encoded-error",
+			data: "abcd",
+			message: "encoded-error",
 		});
+		expect(
+			DEither.unwrapByInformationOrThrow(failure, "encode-error").issues[0]?.getSource(),
+		).toBe(codec);
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				asyncFailure,
 				"encode-error",
 			).issues[0],
 		).toMatchObject({
-			context: "encode",
-			data: "encoded-error",
+			data: "abcd",
+			message: "encoded-error",
 		});
+		expect(
+			DEither.unwrapByInformationOrThrow(asyncFailure, "encode-error").issues[0]?.getSource(),
+		).toBe(codec);
 	});
 
 	it("decodes values with the matching codec", async() => {
@@ -222,9 +229,10 @@ describe("TypeStructure", () => {
 			DDataStructure.TheString,
 			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
-			(_data, errorHandler) => (
-				errorHandler?.().addIssue(DDataStructure.TheString, "decoded-error") ?? DDataStructure.ErrorSymbol
-			),
+			(data, self, errorHandler) => {
+				errorHandler?.().addDecodeIssue(self, data, "decoded-error");
+				return DDataStructure.ErrorSymbol;
+			},
 		);
 		const failure = structure.decode(DDataStructure.createCodecs({ codec }), 4);
 		const asyncFailure = await structure.asyncDecode(DDataStructure.createCodecs({ codec }), 4);
@@ -232,17 +240,23 @@ describe("TypeStructure", () => {
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "decode-error").issues[0],
 		).toMatchObject({
-			context: "decode",
-			data: "decoded-error",
+			data: 4,
+			message: "decoded-error",
 		});
+		expect(
+			DEither.unwrapByInformationOrThrow(failure, "decode-error").issues[0]?.getSource(),
+		).toBe(codec);
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				asyncFailure,
 				"decode-error",
 			).issues[0],
 		).toMatchObject({
-			context: "decode",
-			data: "decoded-error",
+			data: 4,
+			message: "decoded-error",
 		});
+		expect(
+			DEither.unwrapByInformationOrThrow(asyncFailure, "decode-error").issues[0]?.getSource(),
+		).toBe(codec);
 	});
 });

@@ -5,7 +5,6 @@ import * as DEither from "@scripts/either";
 import * as DObject from "@scripts/object";
 import { createKind } from "../kind";
 import { type NewType, type NewTypeMap } from "../newType";
-import { EntityNameStructure } from "./entityName";
 
 declare module "@scripts/dataStructure" {
 	interface StructuresStore {
@@ -211,7 +210,7 @@ export const EntityStructure = DDataStructure.createStructure(
 				() => DDataStructure.ObjectStructure(
 					{
 						...shape(),
-						[entityKind.runTimeKey]: EntityNameStructure(name),
+						[entityKind.runTimeKey]: DDataStructure.NonEncodableStringStructure(name),
 					},
 					[],
 				),

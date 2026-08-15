@@ -91,6 +91,10 @@ describe("LazyStructure", () => {
 				data: "unknown",
 				path: "id.(union: 1)",
 			},
+			{
+				data: "unknown",
+				path: "id",
+			},
 		]);
 		expect(
 			DEither.unwrapByInformationOrThrow(

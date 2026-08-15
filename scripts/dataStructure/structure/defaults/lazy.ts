@@ -4,6 +4,7 @@ import { type Constraint } from "../../constraint";
 import { createStructure, type StructureDefinition, type Structure } from "../base";
 import { createKind } from "../../kind";
 import { type StructureValue } from "../types";
+import { ErrorSymbol } from "../../common";
 
 export const lazyStructureKind = createKind("lazy-structure");
 
@@ -59,15 +60,35 @@ export const LazyStructure = createStructure(
 				data,
 				errorHandler,
 			),
-			executeEncode: (self, codecContext, data, errorHandler) => self.definition.getter.value.executeEncode(
-				codecContext,
-				data,
-				errorHandler,
+			executeEncode: (self, codecContext, data, errorHandler) => DCommon.callThen(
+				self.definition.getter.value.executeEncode(
+					codecContext,
+					data,
+					errorHandler,
+				),
+				(encodedData) => encodedData === ErrorSymbol
+					? ErrorSymbol
+					: DCommon.callThen(
+						self.executeConstraints(data, errorHandler),
+						(result) => result === ErrorSymbol
+							? ErrorSymbol
+							: encodedData,
+					),
 			),
-			executeDecode: (self, codecContext, data, errorHandler) => self.definition.getter.value.executeDecode(
-				codecContext,
-				data,
-				errorHandler,
+			executeDecode: (self, codecContext, data, errorHandler) => DCommon.callThen(
+				self.definition.getter.value.executeDecode(
+					codecContext,
+					data,
+					errorHandler,
+				),
+				(decodedData) => decodedData === ErrorSymbol
+					? ErrorSymbol
+					: DCommon.callThen(
+						self.executeConstraints(decodedData, errorHandler),
+						(result) => result === ErrorSymbol
+							? ErrorSymbol
+							: decodedData,
+					),
 			),
 			isAsynchronous: (self) => self.definition.getter.value.isAsynchronous(),
 		},

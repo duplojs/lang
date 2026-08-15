@@ -25,9 +25,9 @@ export const SafeConstraint = createConstraint(
 	({ init }) => () => init<SafeConstraint>(
 		{},
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.isSafe(data)
+			executeCheck: (_self, data) => DNumber.isSafe(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

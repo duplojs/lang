@@ -75,7 +75,6 @@ describe("createStructure", () => {
 		expect(constraintExecuteCheck).toHaveBeenCalledWith(
 			passingConstraint,
 			"value",
-			undefined,
 		);
 		expect(structureExecuteCheck.mock.invocationCallOrder[0]).toBeLessThan(
 			constraintExecuteCheck.mock.invocationCallOrder[0]!,
@@ -161,18 +160,15 @@ describe("createStructure", () => {
 			1,
 			passingConstraint,
 			"value",
-			undefined,
 		);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			2,
 			failingConstraint,
 			"value",
-			undefined,
 		);
 		expect(executeCheck).not.toHaveBeenCalledWith(
 			skippedConstraint,
 			"value",
-			undefined,
 		);
 	});
 
@@ -316,18 +312,15 @@ describe("createStructure", () => {
 			1,
 			passingConstraint,
 			"value",
-			undefined,
 		);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			2,
 			failingConstraint,
 			"value",
-			undefined,
 		);
 		expect(executeCheck).not.toHaveBeenCalledWith(
 			skippedConstraint,
 			"value",
-			undefined,
 		);
 	});
 
@@ -452,12 +445,51 @@ describe("createStructure", () => {
 		);
 	});
 
+	it("sets messages directly and on cloned structures", () => {
+		const testStructureKind = DDataStructure.createKind("test-message-structure");
+
+		const TestStructure = DDataStructure.createStructure(
+			testStructureKind,
+			({ init }) => () => init(
+				{ constraints: [] },
+				{
+					executeCheck: () => DDataStructure.SuccessSymbol,
+					executeEncode: (_self, _codecContext, data) => data,
+					executeDecode: (_self, _codecContext, data) => data,
+					isAsynchronous: () => false,
+				},
+			),
+		);
+
+		const structure = TestStructure();
+		const sameStructure = structure.setMessage("Direct message");
+
+		expect(sameStructure).toBe(structure);
+		expect(structure.definition.message).toBe("Direct message");
+
+		const clonedStructure = structure.addMessage("Cloned message");
+
+		expect(structure.definition.message).toBe("Direct message");
+		expect(clonedStructure).not.toBe(structure);
+		expect(clonedStructure.definition.message).toBe("Cloned message");
+		expect(clonedStructure.check("value")).toStrictEqual(
+			DEither.right("check-success", "value"),
+		);
+	});
+
 	it("wraps synchronous and asynchronous encode results", async() => {
 		const testStructureKind = DDataStructure.createKind("test-encode-structure");
+		const testFundamentalTypeKind = DDataStructure.createKind("test-encode-string-fundamental-type");
+
+		interface TestFundamentalType extends DCommon.UnionToIntersection<
+			& DDataStructure.FundamentalType<string>
+			& DKind.Kind<typeof testFundamentalTypeKind>
+		> {}
+
 		const fundamentalType = DDataStructure.createFundamentalType<
-			DDataStructure.FundamentalType<symbol, string>
+			TestFundamentalType
 		>(
-			Symbol("encode-string"),
+			testFundamentalTypeKind,
 			() => DDataStructure.SuccessSymbol,
 		);
 		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
@@ -556,10 +588,17 @@ describe("createStructure", () => {
 
 	it("wraps synchronous and asynchronous decode results", async() => {
 		const testStructureKind = DDataStructure.createKind("test-decode-structure");
+		const testFundamentalTypeKind = DDataStructure.createKind("test-decode-string-fundamental-type");
+
+		interface TestFundamentalType extends DCommon.UnionToIntersection<
+			& DDataStructure.FundamentalType<string>
+			& DKind.Kind<typeof testFundamentalTypeKind>
+		> {}
+
 		const fundamentalType = DDataStructure.createFundamentalType<
-			DDataStructure.FundamentalType<symbol, string>
+			TestFundamentalType
 		>(
-			Symbol("decode-string"),
+			testFundamentalTypeKind,
 			() => DDataStructure.SuccessSymbol,
 		);
 		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);

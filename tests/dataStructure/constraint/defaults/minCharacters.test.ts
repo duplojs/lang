@@ -31,13 +31,4 @@ describe("StringMinConstraint", () => {
 
 		expect(constraint.executeCheck("ab")).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when a shorter string is rejected", () => {
-		const constraint = DDataStructure.MinCharactersConstraint(3);
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck("", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

@@ -39,6 +39,10 @@ describe("union", () => {
 				data: null,
 				path: "(union: 2)",
 			},
+			{
+				data: null,
+				path: "",
+			},
 		]);
 	});
 

@@ -34,12 +34,12 @@ export const MinCharactersConstraint = createConstraint(
 	>(
 		{ min },
 		{
-			executeCheck: (self, data, errorHandler) => DString.minCharacters(
+			executeCheck: (self, data) => DString.minCharacters(
 				data,
 				DCommon.forward<number>(self.definition.min),
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

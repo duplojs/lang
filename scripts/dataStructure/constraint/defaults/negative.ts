@@ -25,9 +25,9 @@ export const NegativeConstraint = createConstraint(
 	({ init }) => () => init<NegativeConstraint>(
 		{},
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.isNegative(data)
+			executeCheck: (_self, data) => DNumber.isNegative(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

@@ -27,9 +27,9 @@ export const UuidConstraint = createConstraint(
 	({ init }) => () => init<UuidConstraint>(
 		{ regex: uuidRegex },
 		{
-			executeCheck: (self, data, errorHandler) => DString.isUuid(data)
+			executeCheck: (_self, data) => DString.isUuid(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

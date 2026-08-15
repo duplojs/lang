@@ -1,23 +1,43 @@
+import type * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
 import { type Constraint } from "../constraint";
-import { type FundamentalType } from "../fundamentalType";
 import { type Structure } from "../structure";
 import { type Type } from "../type";
+import { type Codec } from "./codec";
+import { createKind } from "../kind";
 
-export interface Issue {
-	readonly context: (
-		| "default"
-		| "encode"
-		| "decode"
-	);
+export const issueKind = createKind("issue");
+export interface Issue extends DKind.Kind<typeof issueKind> {
 	readonly path: string;
 	readonly data: unknown;
-	getSource(): (
+	getSource(): Structure;
+	getSubSource?(): (
 		| Type
-		| Structure
-		| FundamentalType
 		| Constraint
 	);
 }
+
+export const encodeIssueKind = createKind("encode-issue");
+export interface EncodeIssue extends DKind.Kind<typeof encodeIssueKind> {
+	readonly path: string;
+	readonly data: unknown;
+	readonly message?: string;
+	getSource(): Codec;
+}
+
+export const decodeIssueKind = createKind("decode-issue");
+export interface DecodeIssue extends DKind.Kind<typeof decodeIssueKind> {
+	readonly path: string;
+	readonly data: unknown;
+	readonly message?: string;
+	getSource(): Codec;
+}
+
+export type Issues = (
+	| Issue
+	| EncodeIssue
+	| DecodeIssue
+);
 
 export interface PathStageErrorHandler {
 	setCurrentPath(path: string): void;
@@ -25,28 +45,40 @@ export interface PathStageErrorHandler {
 }
 
 export interface Error {
-	readonly issues: readonly Issue[];
+	readonly issues: readonly Issues[];
 }
 
 export interface ErrorHandler {
-	readonly issues: readonly Issue[];
+	readonly issues: readonly Issues[];
 	readonly currentPath: string[];
-	setCurrentContext(context: Issue["context"]): void;
-	addIssue(source: ReturnType<Issue["getSource"]>, data: unknown): void;
+	addIssue(
+		source: ReturnType<Issue["getSource"]>,
+		data: unknown,
+		subSource?: ReturnType<Extract<Issue["getSubSource"], DCommon.AnyFunction>>
+	): void;
+	addEncodeIssue(
+		source: ReturnType<EncodeIssue["getSource"]>,
+		data: unknown,
+		message?: string
+	): void;
+	addDecodeIssue(
+		source: ReturnType<DecodeIssue["getSource"]>,
+		data: unknown,
+		message?: string
+	): void;
 	importIssues(errorHandler: (GetErrorHandler | ErrorHandler)[]): void;
 	createPathStage(): PathStageErrorHandler;
 	createError(): Error;
-	usePath(path: string[]): void;
 }
 
-export function createErrorHandler(): ErrorHandler {
-	let currentStagePath = -1;
-
-	const issues: Issue[] = [];
-	let currentPath: string[] = [];
+export function createErrorHandler(defaultPath?: string[]): ErrorHandler {
+	const issues: Issues[] = [];
+	const currentPath: string[] = defaultPath
+		? [...defaultPath]
+		: [];
+	let currentStagePath = currentPath.length - 1;
 
 	let currentStage: PathStageErrorHandler | undefined = undefined;
-	let context: Issue["context"] = "default";
 
 	return {
 		currentPath,
@@ -74,16 +106,34 @@ export function createErrorHandler(): ErrorHandler {
 
 			return currentStage;
 		},
-		setCurrentContext: (newContext) => {
-			context = newContext;
-		},
-		addIssue: (source, data) => {
+		addIssue: (source, data, subSource) => {
 			issues.push({
-				context,
 				data,
 				path: currentPath.join("."),
 				getSource: () => source,
-			});
+				getSubSource: subSource
+					? () => subSource
+					: undefined,
+				[issueKind.runTimeKey]: null,
+			} satisfies DKind.Remove<Issue> as never);
+		},
+		addEncodeIssue: (source, data, message) => {
+			issues.push({
+				data,
+				path: currentPath.join("."),
+				message,
+				getSource: () => source,
+				[encodeIssueKind.runTimeKey]: null,
+			} satisfies DKind.Remove<EncodeIssue> as never);
+		},
+		addDecodeIssue: (source, data, message) => {
+			issues.push({
+				data,
+				path: currentPath.join("."),
+				message,
+				getSource: () => source,
+				[decodeIssueKind.runTimeKey]: null,
+			} satisfies DKind.Remove<DecodeIssue> as never);
 		},
 		createError: () => ({ issues }),
 		importIssues: (errorHandler) => void errorHandler.forEach(
@@ -95,21 +145,17 @@ export function createErrorHandler(): ErrorHandler {
 				),
 			),
 		),
-		usePath: (path) => {
-			currentPath = [...path];
-			currentStagePath = currentPath.length - 1;
-		},
 	};
 }
 
 export type GetErrorHandler = () => ErrorHandler;
 
-export function createGetErrorHandler(): GetErrorHandler {
+export function createGetErrorHandler(defaultPath?: string[]): GetErrorHandler {
 	let errorHandler: undefined | ErrorHandler = undefined;
 
 	return () => {
 		if (errorHandler === undefined) {
-			errorHandler = createErrorHandler();
+			errorHandler = createErrorHandler(defaultPath);
 		}
 
 		return errorHandler;

@@ -34,12 +34,12 @@ export const MultipleOfConstraint = createConstraint(
 	>(
 		{ multiple },
 		{
-			executeCheck: (self, data, errorHandler) => DNumber.isMultipleOf(
+			executeCheck: (self, data) => DNumber.isMultipleOf(
 				data,
 				DCommon.forward<number>(self.definition.multiple),
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

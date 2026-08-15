@@ -27,6 +27,9 @@ describe("safe", () => {
 		expect(structure.is(Number.MAX_SAFE_INTEGER)).toBe(false);
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "check-error").issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(failure, "check-error").issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(constraint);
 	});
 });

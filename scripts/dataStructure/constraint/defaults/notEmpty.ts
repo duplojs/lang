@@ -25,9 +25,9 @@ export const NotEmptyConstraint = createConstraint(
 	({ init }) => () => init<NotEmptyConstraint>(
 		{},
 		{
-			executeCheck: (self, data, errorHandler) => DString.isNotEmpty(data)
+			executeCheck: (_self, data) => DString.isNotEmpty(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

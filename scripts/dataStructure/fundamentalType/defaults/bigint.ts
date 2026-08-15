@@ -1,19 +1,21 @@
+import type * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
 import { ErrorSymbol, SuccessSymbol } from "../../common";
 import { createFundamentalType, type FundamentalType } from "../base";
+import { createKind } from "../../kind";
 
-const FundamentalTypeTheBigintSymbol = Symbol("FundamentalTypeTheBigintSymbol");
-export type FundamentalTypeTheBigintSymbol = typeof FundamentalTypeTheBigintSymbol;
+export const bigintFundamentalTypeKind = createKind("bigint-fundamental-type");
 
-export interface TheBigint extends FundamentalType<
-	FundamentalTypeTheBigintSymbol,
-	bigint
+export interface TheBigint extends DCommon.UnionToIntersection<
+	& FundamentalType<bigint>
+	& DKind.Kind<typeof bigintFundamentalTypeKind>
 > {}
 
 export const TheBigint = createFundamentalType<
 	TheBigint
 >(
-	FundamentalTypeTheBigintSymbol,
-	(self, data, errorHandler) => typeof data === "bigint"
+	bigintFundamentalTypeKind,
+	(self, data) => typeof data === "bigint"
 		? SuccessSymbol
-		: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+		: ErrorSymbol,
 );

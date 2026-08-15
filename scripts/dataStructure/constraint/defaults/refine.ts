@@ -44,9 +44,9 @@ export const RefineConstraint = createConstraint(
 	>(
 		{ refine },
 		{
-			executeCheck: (self, data, errorHandler) => self.definition.refine(data)
+			executeCheck: (self, data) => self.definition.refine(data)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

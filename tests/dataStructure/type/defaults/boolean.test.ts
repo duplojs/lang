@@ -29,10 +29,6 @@ describe("BooleanType", () => {
 
 	it("rejects non-boolean values through its fundamental type", () => {
 		const type = DDataStructure.BooleanType();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(type.executeCheck("true", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(DDataStructure.TheBoolean);
+		expect(type.executeCheck("true")).toBe(DDataStructure.ErrorSymbol);
 	});
 });

@@ -30,13 +30,4 @@ describe("NotZeroConstraint", () => {
 
 		expect(constraint.executeCheck(0)).toBe(DDataStructure.ErrorSymbol);
 	});
-
-	it("adds itself to the error handler when zero is rejected", () => {
-		const constraint = DDataStructure.NotZeroConstraint();
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck(0, errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
 });

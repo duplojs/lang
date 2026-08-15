@@ -34,12 +34,12 @@ export const MinElementsConstraint = createConstraint(
 	>(
 		{ min },
 		{
-			executeCheck: (self, data, errorHandler) => DArray.minElements(
+			executeCheck: (self, data) => DArray.minElements(
 				data,
 				DCommon.forward<number>(self.definition.min),
 			)
 				? SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+				: ErrorSymbol,
 			isAsynchronous: () => false,
 		},
 	),

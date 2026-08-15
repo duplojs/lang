@@ -25,17 +25,6 @@ describe("RefineConstraint", () => {
 		expect(constraint.executeCheck("admin:123")).toBe(DDataStructure.ErrorSymbol);
 	});
 
-	it("adds itself to the error handler when a value is rejected", () => {
-		const constraint = DDataStructure.RefineConstraint(
-			(data: string) => data.length >= 3,
-		);
-		const errorHandler = DDataStructure.createGetErrorHandler();
-
-		expect(constraint.executeCheck("", errorHandler)).toBe(DDataStructure.ErrorSymbol);
-		expect(errorHandler().createError().issues).toHaveLength(1);
-		expect(errorHandler().createError().issues[0]?.getSource()).toBe(constraint);
-	});
-
 	it("delegates the checked value to the refinement function", () => {
 		const refine = vi.fn((data: string) => data.includes("@"));
 		const constraint = DDataStructure.RefineConstraint(refine);
@@ -88,6 +77,9 @@ describe("RefineConstraint", () => {
 		});
 		expect(
 			DEither.unwrapByInformationOrThrow(failure, "check-error").issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(failure, "check-error").issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(structure.definition.constraints[0]);
 	});
 });

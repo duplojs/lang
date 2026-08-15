@@ -191,6 +191,32 @@ export interface NewTypeStructure<
 	>;
 }
 
+function executeNewTypeConstraints(
+	structure: NewTypeStructure,
+	data: unknown,
+	errorHandler?: DDataStructure.GetErrorHandler,
+): DCommon.MaybePromise<
+	| DDataStructure.SuccessSymbol
+	| DDataStructure.ErrorSymbol
+> {
+	return structure.definition.newTypeConstraints.reduce<
+		DCommon.MaybePromise<DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol>
+	>(
+		(accumulator, constraint) => DCommon.callThen(
+			accumulator,
+			(result) => result === DDataStructure.ErrorSymbol
+				? DDataStructure.ErrorSymbol
+				: DCommon.callThen(
+					constraint.executeCheck(data),
+					(constraintResult) => constraintResult === DDataStructure.ErrorSymbol
+						? errorHandler?.().addIssue(structure, data, constraint) ?? DDataStructure.ErrorSymbol
+						: DDataStructure.SuccessSymbol,
+				),
+		),
+		DDataStructure.SuccessSymbol,
+	);
+}
+
 export const NewTypeStructure = DDataStructure.createStructure(
 	newTypeStructureKind,
 	({ init }) => <
@@ -221,17 +247,7 @@ export const NewTypeStructure = DDataStructure.createStructure(
 				),
 				(result) => result === DDataStructure.ErrorSymbol
 					? DDataStructure.ErrorSymbol
-					: self.definition.newTypeConstraints.reduce<
-						DCommon.MaybePromise<DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol>
-					>(
-						(accumulator, constraint) => DCommon.callThen(
-							accumulator,
-							(result) => result === DDataStructure.ErrorSymbol
-								? DDataStructure.ErrorSymbol
-								: constraint.executeCheck(data, errorHandler),
-						),
-						DDataStructure.SuccessSymbol,
-					),
+					: executeNewTypeConstraints(self, data, errorHandler),
 			),
 			executeEncode: (self, codec, data, errorHandler) => DCommon.callThen(
 				self.definition.inner.executeEncode(
@@ -242,17 +258,7 @@ export const NewTypeStructure = DDataStructure.createStructure(
 				(awaitedInnerResult) => awaitedInnerResult === DDataStructure.ErrorSymbol
 					? DDataStructure.ErrorSymbol
 					: DCommon.callThen(
-						self.definition.newTypeConstraints.reduce<
-							DCommon.MaybePromise<DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol>
-						>(
-							(accumulator, constraint) => DCommon.callThen(
-								accumulator,
-								(result) => result === DDataStructure.ErrorSymbol
-									? DDataStructure.ErrorSymbol
-									: constraint.executeCheck(data, errorHandler),
-							),
-							DDataStructure.SuccessSymbol,
-						),
+						executeNewTypeConstraints(self, data, errorHandler),
 						(result) => result === DDataStructure.ErrorSymbol
 							? DDataStructure.ErrorSymbol
 							: DCommon.callThen(
@@ -272,17 +278,7 @@ export const NewTypeStructure = DDataStructure.createStructure(
 				(awaitedInnerResult) => awaitedInnerResult === DDataStructure.ErrorSymbol
 					? DDataStructure.ErrorSymbol
 					: DCommon.callThen(
-						self.definition.newTypeConstraints.reduce<
-							DCommon.MaybePromise<DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol>
-						>(
-							(accumulator, constraint) => DCommon.callThen(
-								accumulator,
-								(result) => result === DDataStructure.ErrorSymbol
-									? DDataStructure.ErrorSymbol
-									: constraint.executeCheck(awaitedInnerResult, errorHandler),
-							),
-							DDataStructure.SuccessSymbol,
-						),
+						executeNewTypeConstraints(self, awaitedInnerResult, errorHandler),
 						(result) => result === DDataStructure.ErrorSymbol
 							? DDataStructure.ErrorSymbol
 							: DCommon.callThen(

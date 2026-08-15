@@ -222,10 +222,9 @@ describe("ArrayStructure", () => {
 			(
 				self: ArrayConstraint,
 				data: readonly string[],
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => data.length > 0
 				? DDataStructure.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
+				: DDataStructure.ErrorSymbol,
 		);
 
 		interface ArrayConstraint extends DCommon.UnionToIntersection<
@@ -262,12 +261,10 @@ describe("ArrayStructure", () => {
 		expect(executeCheck).toHaveBeenCalledWith(
 			arrayConstraint,
 			["Jane"],
-			expect.any(Function),
 		);
 		expect(executeCheck).toHaveBeenCalledWith(
 			arrayConstraint,
 			["4"],
-			expect.any(Function),
 		);
 	});
 
@@ -284,9 +281,7 @@ describe("ArrayStructure", () => {
 			({ init }) => () => init<FailingConstraint>(
 				{},
 				{
-					executeCheck: (self, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
-					),
+					executeCheck: () => DDataStructure.ErrorSymbol,
 					isAsynchronous: () => false,
 				},
 			),
@@ -304,12 +299,24 @@ describe("ArrayStructure", () => {
 				encodeFailure,
 				"encode-error",
 			).issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				encodeFailure,
+				"encode-error",
+			).issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(failingConstraint);
 		expect(
 			DEither.unwrapByInformationOrThrow(
 				decodeFailure,
 				"decode-error",
 			).issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				decodeFailure,
+				"decode-error",
+			).issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(failingConstraint);
 	});
 
@@ -327,9 +334,7 @@ describe("ArrayStructure", () => {
 			({ init }) => () => init<FailingConstraint>(
 				{},
 				{
-					executeCheck: (self, data, errorHandler) => (
-						errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol
-					),
+					executeCheck: () => DDataStructure.ErrorSymbol,
 					isAsynchronous: () => false,
 				},
 			),
@@ -352,8 +357,14 @@ describe("ArrayStructure", () => {
 				failure,
 				"encode-error",
 			).issues[0]?.getSource(),
+		).toBe(structure);
+		expect(
+			(DEither.unwrapByInformationOrThrow(
+				failure,
+				"encode-error",
+			).issues[0] as DDataStructure.Issue | undefined)?.getSubSource?.(),
 		).toBe(failingConstraint);
-		expect(encode).toHaveBeenCalledWith("Jane", expect.any(Function));
+		expect(encode).toHaveBeenCalledWith("Jane", codec, expect.any(Function));
 	});
 
 	it("returns async errors for asynchronous homogeneous element codecs in synchronous APIs", async() => {

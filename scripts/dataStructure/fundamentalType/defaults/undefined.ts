@@ -1,19 +1,21 @@
+import type * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
 import { ErrorSymbol, SuccessSymbol } from "../../common";
 import { createFundamentalType, type FundamentalType } from "../base";
+import { createKind } from "../../kind";
 
-const FundamentalTypeTheUndefinedSymbol = Symbol("FundamentalTypeTheUndefinedSymbol");
-export type FundamentalTypeTheUndefinedSymbol = typeof FundamentalTypeTheUndefinedSymbol;
+export const undefinedFundamentalTypeKind = createKind("undefined-fundamental-type");
 
-export interface TheUndefined extends FundamentalType<
-	FundamentalTypeTheUndefinedSymbol,
-	undefined
+export interface TheUndefined extends DCommon.UnionToIntersection<
+	& FundamentalType<undefined>
+	& DKind.Kind<typeof undefinedFundamentalTypeKind>
 > {}
 
 export const TheUndefined = createFundamentalType<
 	TheUndefined
 >(
-	FundamentalTypeTheUndefinedSymbol,
-	(self, data, errorHandler) => data === undefined
+	undefinedFundamentalTypeKind,
+	(self, data) => data === undefined
 		? SuccessSymbol
-		: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+		: ErrorSymbol,
 );

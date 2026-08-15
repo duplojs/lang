@@ -1,11 +1,15 @@
 import { DDataStructure, type ExpectType } from "@scripts";
 
 describe("codec", () => {
-	it("creates a codec kind with its fundamental type and encoded structure", () => {
+	it("creates a codec kind and delegates its encoded value predicate without error context", () => {
 		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.NumberType(), []);
+		const predicateEncode = vi.fn();
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
-			encodedStructure.is,
+			(data): data is number => {
+				predicateEncode(data);
+				return encodedStructure.is(data);
+			},
 			(data) => data.length,
 			(data) => `value-${data}`,
 		);
@@ -21,7 +25,10 @@ describe("codec", () => {
 
 		expect(DDataStructure.codecKind.has(codec)).toBe(true);
 		expect(codec.fundamentalType).toBe(DDataStructure.TheString);
-		expect(codec.predicateEncode).toBe(encodedStructure.is);
+		expect(codec.predicateEncode(12)).toBe(true);
+		expect(codec.predicateEncode("12")).toBe(false);
+		expect(predicateEncode).toHaveBeenNthCalledWith(1, 12);
+		expect(predicateEncode).toHaveBeenNthCalledWith(2, "12");
 	});
 
 	it("creates codecs with their definition and memoized context", () => {
@@ -77,8 +84,8 @@ describe("codec", () => {
 		const codec = DDataStructure.createCodec(
 			DDataStructure.TheString,
 			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
-			(_data, errorHandler) => {
-				errorHandler?.().addIssue(DDataStructure.TheString, "encode-error");
+			(data, self, errorHandler) => {
+				errorHandler?.().addEncodeIssue(self, data, "encode-error");
 				return DDataStructure.ErrorSymbol;
 			},
 			(data) => `value-${data}`,
@@ -86,9 +93,11 @@ describe("codec", () => {
 
 		expect(codec.encode("abcd", getErrorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(getErrorHandler().issues[0]).toMatchObject({
-			context: "encode",
-			data: "encode-error",
+			data: "abcd",
+			message: "encode-error",
 		});
+		expect(DDataStructure.encodeIssueKind.has(getErrorHandler().issues[0])).toBe(true);
+		expect(getErrorHandler().issues[0]?.getSource()).toBe(codec);
 	});
 
 	it("returns encode errors when encoded data does not match the encoded structure", () => {
@@ -102,9 +111,11 @@ describe("codec", () => {
 
 		expect(codec.encode("abcd", getErrorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(getErrorHandler().issues[0]).toMatchObject({
-			context: "encode",
 			data: "invalid",
+			path: "",
 		});
+		expect(DDataStructure.encodeIssueKind.has(getErrorHandler().issues[0])).toBe(true);
+		expect(getErrorHandler().issues[0]?.getSource()).toBe(codec);
 	});
 
 	it("decodes checked encoded data", () => {
@@ -129,9 +140,11 @@ describe("codec", () => {
 
 		expect(codec.decode("invalid" as never, getErrorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(getErrorHandler().issues[0]).toMatchObject({
-			context: "decode",
 			data: "invalid",
+			path: "",
 		});
+		expect(DDataStructure.decodeIssueKind.has(getErrorHandler().issues[0])).toBe(true);
+		expect(getErrorHandler().issues[0]?.getSource()).toBe(codec);
 	});
 
 	it("returns decode errors from the decoder", () => {
@@ -140,17 +153,19 @@ describe("codec", () => {
 			DDataStructure.TheString,
 			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
-			(_data, errorHandler) => {
-				errorHandler?.().addIssue(DDataStructure.TheString, "decode-error");
+			(data, self, errorHandler) => {
+				errorHandler?.().addDecodeIssue(self, data, "decode-error");
 				return DDataStructure.ErrorSymbol;
 			},
 		);
 
 		expect(codec.decode(4, getErrorHandler)).toBe(DDataStructure.ErrorSymbol);
 		expect(getErrorHandler().issues[0]).toMatchObject({
-			context: "decode",
-			data: "decode-error",
+			data: 4,
+			message: "decode-error",
 		});
+		expect(DDataStructure.decodeIssueKind.has(getErrorHandler().issues[0])).toBe(true);
+		expect(getErrorHandler().issues[0]?.getSource()).toBe(codec);
 	});
 
 	it("supports asynchronous encoders and decoders", async() => {

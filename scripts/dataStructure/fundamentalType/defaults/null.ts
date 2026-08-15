@@ -1,19 +1,21 @@
+import type * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
 import { ErrorSymbol, SuccessSymbol } from "../../common";
 import { createFundamentalType, type FundamentalType } from "../base";
+import { createKind } from "../../kind";
 
-const FundamentalTypeTheNullSymbol = Symbol("FundamentalTypeTheNullSymbol");
-export type FundamentalTypeTheNullSymbol = typeof FundamentalTypeTheNullSymbol;
+export const nullFundamentalTypeKind = createKind("null-fundamental-type");
 
-export interface TheNull extends FundamentalType<
-	FundamentalTypeTheNullSymbol,
-	null
+export interface TheNull extends DCommon.UnionToIntersection<
+	& FundamentalType<null>
+	& DKind.Kind<typeof nullFundamentalTypeKind>
 > {}
 
 export const TheNull = createFundamentalType<
 	TheNull
 >(
-	FundamentalTypeTheNullSymbol,
-	(self, data, errorHandler) => data === null
+	nullFundamentalTypeKind,
+	(self, data) => data === null
 		? SuccessSymbol
-		: errorHandler?.().addIssue(self, data) ?? ErrorSymbol,
+		: ErrorSymbol,
 );

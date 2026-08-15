@@ -2,25 +2,24 @@ import { DDataStructure, type DCommon, type DKind, type ExpectType } from "@scri
 
 describe("createType", () => {
 	it("checks the fundamental type before delegating to the type implementation", () => {
-		const fundamentalSymbol = Symbol("test-string");
+		const testFundamentalTypeKind = DDataStructure.createKind("test-string-fundamental-type");
 		const testTypeKind = DDataStructure.createKind("test-type");
 
-		interface TestFundamentalType extends DDataStructure.FundamentalType<
-			typeof fundamentalSymbol,
-			string
+		interface TestFundamentalType extends DCommon.UnionToIntersection<
+			& DDataStructure.FundamentalType<string>
+			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}
 
 		const fundamentalTypeExecuteCheck = vi.fn(
 			(
 				self: TestFundamentalType,
 				data: unknown,
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => typeof data === "string"
 				? DDataStructure.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
+				: DDataStructure.ErrorSymbol,
 		);
 		const fundamentalType = DDataStructure.createFundamentalType<TestFundamentalType>(
-			fundamentalSymbol,
+			testFundamentalTypeKind,
 			fundamentalTypeExecuteCheck,
 		);
 
@@ -41,10 +40,9 @@ describe("createType", () => {
 			(
 				self: TestType,
 				data: string,
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => data === self.definition.literal
 				? DDataStructure.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol,
+				: DDataStructure.ErrorSymbol,
 		);
 		const isAsynchronous = vi.fn(() => false);
 
@@ -83,19 +81,16 @@ describe("createType", () => {
 			1,
 			fundamentalType,
 			"valid",
-			undefined,
 		);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			1,
 			type,
 			"valid",
-			undefined,
 		);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			2,
 			type,
 			"invalid",
-			undefined,
 		);
 		expect(executeCheck).not.toHaveBeenCalledWith(
 			type,
@@ -104,21 +99,20 @@ describe("createType", () => {
 		expect(isAsynchronous).toHaveBeenCalledWith(type);
 	});
 
-	it("forwards the error handler to the fundamental type and the type implementation", () => {
-		const fundamentalSymbol = Symbol("test-string-error-handler");
+	it("delegates to the fundamental type and the type implementation without collecting issues", () => {
+		const testFundamentalTypeKind = DDataStructure.createKind("test-string-error-handler-fundamental-type");
 		const testTypeKind = DDataStructure.createKind("test-type-error-handler");
-		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		interface TestFundamentalType extends DDataStructure.FundamentalType<
-			typeof fundamentalSymbol,
-			string
+		interface TestFundamentalType extends DCommon.UnionToIntersection<
+			& DDataStructure.FundamentalType<string>
+			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}
 
 		const fundamentalTypeExecuteCheck = vi.fn(
 			(): DDataStructure.SuccessSymbol => DDataStructure.SuccessSymbol,
 		);
 		const fundamentalType = DDataStructure.createFundamentalType<TestFundamentalType>(
-			fundamentalSymbol,
+			testFundamentalTypeKind,
 			fundamentalTypeExecuteCheck,
 		);
 
@@ -144,40 +138,36 @@ describe("createType", () => {
 
 		const type = TestType();
 
-		expect(type.executeCheck("valid", errorHandler)).toBe(DDataStructure.SuccessSymbol);
+		expect(type.executeCheck("valid")).toBe(DDataStructure.SuccessSymbol);
 		expect(fundamentalTypeExecuteCheck).toHaveBeenCalledWith(
 			fundamentalType,
 			"valid",
-			errorHandler,
 		);
 		expect(executeCheck).toHaveBeenCalledWith(
 			type,
 			"valid",
-			errorHandler,
 		);
 	});
 
 	it("preserves asynchronous checks through the fundamental type and implementation", async() => {
-		const fundamentalSymbol = Symbol("test-async-string");
+		const testFundamentalTypeKind = DDataStructure.createKind("test-async-string-fundamental-type");
 		const testTypeKind = DDataStructure.createKind("test-async-type");
-		const errorHandler = DDataStructure.createGetErrorHandler();
 
-		interface TestFundamentalType extends DDataStructure.FundamentalType<
-			typeof fundamentalSymbol,
-			string
+		interface TestFundamentalType extends DCommon.UnionToIntersection<
+			& DDataStructure.FundamentalType<string>
+			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}
 
 		const fundamentalTypeExecuteCheck = vi.fn(
 			(
 				self: TestFundamentalType,
 				data: unknown,
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => Promise.resolve(typeof data === "string"
 				? DDataStructure.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol),
+				: DDataStructure.ErrorSymbol),
 		);
 		const fundamentalType = DDataStructure.createFundamentalType<TestFundamentalType>(
-			fundamentalSymbol,
+			testFundamentalTypeKind,
 			fundamentalTypeExecuteCheck,
 		);
 
@@ -190,10 +180,9 @@ describe("createType", () => {
 			(
 				self: TestType,
 				data: string,
-				errorHandler?: DDataStructure.GetErrorHandler,
 			) => Promise.resolve(data === "valid"
 				? DDataStructure.SuccessSymbol
-				: errorHandler?.().addIssue(self, data) ?? DDataStructure.ErrorSymbol),
+				: DDataStructure.ErrorSymbol),
 		);
 		const TestType = DDataStructure.createType(
 			fundamentalType,
@@ -209,38 +198,33 @@ describe("createType", () => {
 
 		const type = TestType();
 
-		await expect(type.executeCheck("valid", errorHandler)).resolves.toBe(
+		await expect(type.executeCheck("valid")).resolves.toBe(
 			DDataStructure.SuccessSymbol,
 		);
-		await expect(type.executeCheck("invalid", errorHandler)).resolves.toBe(
+		await expect(type.executeCheck("invalid")).resolves.toBe(
 			DDataStructure.ErrorSymbol,
 		);
-		await expect(type.executeCheck(123, errorHandler)).resolves.toBe(
+		await expect(type.executeCheck(123)).resolves.toBe(
 			DDataStructure.ErrorSymbol,
 		);
 		expect(fundamentalTypeExecuteCheck).toHaveBeenNthCalledWith(
 			1,
 			fundamentalType,
 			"valid",
-			errorHandler,
 		);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			1,
 			type,
 			"valid",
-			errorHandler,
 		);
 		expect(executeCheck).toHaveBeenNthCalledWith(
 			2,
 			type,
 			"invalid",
-			errorHandler,
 		);
 		expect(executeCheck).not.toHaveBeenCalledWith(
 			type,
 			123,
-			errorHandler,
 		);
-		expect(errorHandler().createError().issues).toHaveLength(2);
 	});
 });

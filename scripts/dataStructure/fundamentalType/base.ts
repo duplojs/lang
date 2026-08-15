@@ -1,21 +1,18 @@
 import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
 import { createKind } from "../kind";
-import { type SuccessSymbol, type ErrorSymbol, type GetErrorHandler } from "../common";
+import { type SuccessSymbol, type ErrorSymbol } from "../common";
 
 export const fundamentalTypeKind = createKind("fundamental-type");
 
 export interface FundamentalType<
-	GenericSymbol extends symbol = symbol,
 	IncludedType extends unknown = unknown,
 > extends DKind.Kind<
 	typeof fundamentalTypeKind,
 	IncludedType
 	> {
-	symbol: GenericSymbol;
 	executeCheck(
 		data: unknown,
-		errorHandler?: GetErrorHandler
 	): DCommon.MaybePromise<
 		| SuccessSymbol
 		| ErrorSymbol
@@ -25,19 +22,21 @@ export interface FundamentalType<
 export function createFundamentalType<
 	GenericFundamentalType extends FundamentalType,
 >(
-	symbol: GenericFundamentalType["symbol"],
+	kindHandler: Exclude<
+		DKind.GetHandler<GenericFundamentalType>,
+		typeof fundamentalTypeKind
+	>,
 	executeCheck: (
 		self: GenericFundamentalType,
 		data: unknown,
-		errorHandler?: GetErrorHandler,
 	) => DCommon.MaybePromise<
 		| SuccessSymbol
 		| ErrorSymbol
 	>,
 ): GenericFundamentalType {
 	const self: DKind.Remove<FundamentalType> = {
-		symbol,
-		executeCheck: (data, errorHandler) => executeCheck(self as never, data, errorHandler),
+		executeCheck: (data) => executeCheck(self as never, data),
+		[kindHandler.runTimeKey]: null,
 		[fundamentalTypeKind.runTimeKey]: null,
 	};
 
