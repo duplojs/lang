@@ -6,7 +6,9 @@ import { ErrorSymbol, type SuccessSymbol } from "../common";
 
 export const typeKind = createKind("type");
 
-export interface TypeDefinition {}
+export interface TypeDefinition {
+	readonly message?: string;
+}
 
 export interface Type<
 	GenericFundamentalType extends FundamentalType = FundamentalType,
@@ -24,6 +26,9 @@ export interface Type<
 		| ErrorSymbol
 	>;
 	isAsynchronous(): boolean;
+	clone(): this;
+	setMessage(massage: string): this;
+	addMessage(massage: string): this;
 }
 
 export interface CreateTypeInitParams<
@@ -76,31 +81,48 @@ export function createType<
 		>,
 	) => GenericConstructor,
 ): GenericConstructor {
-	return createConstructor({
-		init: (
-			definition,
-			{
-				executeCheck,
-				isAsynchronous,
-			},
-		) => {
-			const self: DKind.Remove<Type> = {
-				definition,
-				executeCheck: (
-					data: unknown,
-				) => DCommon.callThen(
-					self.fundamentalType.executeCheck(data),
-					(result) => result === ErrorSymbol
-						? ErrorSymbol
-						: executeCheck(self as never, data),
-				),
-				isAsynchronous: () => isAsynchronous(self as never),
-				fundamentalType,
-				[typeKind.runTimeKey]: null,
-				[kindHandler.runTimeKey]: null,
-			};
-
-			return self as never;
+	const init: CreateTypeConstructorParams["init"] = (
+		definition,
+		{
+			executeCheck,
+			isAsynchronous,
 		},
+	) => {
+		const self: Type = {
+			fundamentalType,
+			definition,
+			executeCheck: (
+				data: unknown,
+			) => DCommon.callThen(
+				self.fundamentalType.executeCheck(data),
+				(result) => result === ErrorSymbol
+					? ErrorSymbol
+					: executeCheck(self as never, data),
+			),
+			isAsynchronous: () => isAsynchronous(self as never),
+			clone: () => init(
+				DCommon.simpleClone(definition),
+				{
+					executeCheck,
+					isAsynchronous,
+				},
+			),
+			setMessage: (message) => {
+				(self.definition.message as any) = message as any;
+				return self;
+			},
+			addMessage: (message) => {
+				const cloneSelf = self.clone();
+				return cloneSelf.setMessage(message);
+			},
+			[typeKind.runTimeKey]: null,
+			[kindHandler.runTimeKey]: null,
+		} satisfies DKind.Remove<Type> as never;
+
+		return self as never;
+	};
+
+	return createConstructor({
+		init,
 	});
 }

@@ -169,6 +169,112 @@ describe("LazyStructure", () => {
 		);
 	});
 
+	it("returns encode errors from the deferred structure", () => {
+		const structure = DDataStructure.LazyStructure(
+			() => DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			[],
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
+			() => "invalid" as never,
+			(data) => `value-${data}`,
+		);
+		const encoded = structure.encode(
+			DDataStructure.createCodecs({ codec }),
+			"value",
+		);
+
+		expect(
+			DEither.unwrapByInformationOrThrow(encoded, "encode-error").issues[0],
+		).toMatchObject({
+			data: "invalid",
+			path: "",
+		});
+	});
+
+	it("returns encode errors from lazy constraints after deferred encoding", () => {
+		const constraint = DDataStructure.refine(
+			(data: string): data is `user:${string}` => data.startsWith("user:"),
+		);
+		const structure = DDataStructure.LazyStructure(
+			() => DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			[constraint],
+		);
+		const encoded = structure.encode(
+			DDataStructure.createCodecs({}),
+			"guest:1" as never,
+		);
+
+		expect(
+			DEither.unwrapByInformationOrThrow(encoded, "encode-error").issues[0],
+		).toMatchObject({
+			data: "guest:1",
+			path: "",
+		});
+		expect(
+			(
+				DEither.unwrapByInformationOrThrow(
+					encoded,
+					"encode-error",
+				).issues[0] as DDataStructure.Issue | undefined
+			)?.getSubSource?.(),
+		).toBe(constraint);
+	});
+
+	it("returns decode errors from the deferred structure", () => {
+		const structure = DDataStructure.LazyStructure(
+			() => DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			[],
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
+			(data) => data.length,
+			() => 123 as never,
+		);
+		const decoded = structure.decode(
+			DDataStructure.createCodecs({ codec }),
+			4,
+		);
+
+		expect(
+			DEither.unwrapByInformationOrThrow(decoded, "decode-error").issues[0],
+		).toMatchObject({
+			data: 123,
+			path: "",
+		});
+	});
+
+	it("returns decode errors from lazy constraints after deferred decoding", () => {
+		const constraint = DDataStructure.refine(
+			(data: string): data is `user:${string}` => data.startsWith("user:"),
+		);
+		const structure = DDataStructure.LazyStructure(
+			() => DDataStructure.TypeStructure(DDataStructure.StringType(), []),
+			[constraint],
+		);
+		const decoded = structure.decode(
+			DDataStructure.createCodecs({}),
+			"guest:1" as never,
+		);
+
+		expect(
+			DEither.unwrapByInformationOrThrow(decoded, "decode-error").issues[0],
+		).toMatchObject({
+			data: "guest:1",
+			path: "",
+		});
+		expect(
+			(
+				DEither.unwrapByInformationOrThrow(
+					decoded,
+					"decode-error",
+				).issues[0] as DDataStructure.Issue | undefined
+			)?.getSubSource?.(),
+		).toBe(constraint);
+	});
+
 	it("supports recursive structures", () => {
 		interface Tree {
 			readonly value: string;

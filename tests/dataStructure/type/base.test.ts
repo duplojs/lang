@@ -149,6 +149,110 @@ describe("createType", () => {
 		);
 	});
 
+	it("clones a type with the same behavior", () => {
+		const testTypeKind = DDataStructure.createKind("test-clone-type");
+
+		interface TestTypeDefinition extends DDataStructure.TypeDefinition {
+			readonly literal: "valid";
+		}
+
+		interface TestType extends DCommon.UnionToIntersection<
+			& DDataStructure.Type<
+				typeof DDataStructure.TheString,
+				"valid",
+				TestTypeDefinition
+			>
+			& DKind.Kind<typeof testTypeKind>
+		> {}
+
+		const executeCheck = vi.fn(
+			(
+				self: TestType,
+				data: string,
+			) => data === self.definition.literal
+				? DDataStructure.SuccessSymbol
+				: DDataStructure.ErrorSymbol,
+		);
+		const TestType = DDataStructure.createType(
+			DDataStructure.TheString,
+			testTypeKind,
+			({ init }) => () => init<TestType>(
+				{ literal: "valid" },
+				{
+					executeCheck,
+					isAsynchronous: () => false,
+				},
+			),
+		);
+
+		const type = TestType();
+		const clonedType = type.clone();
+
+		type _CheckClonedType = ExpectType<
+			typeof clonedType,
+			TestType,
+			"strict"
+		>;
+
+		expect(clonedType).not.toBe(type);
+		expect(clonedType.definition).toStrictEqual(type.definition);
+		expect(clonedType.definition).not.toBe(type.definition);
+		expect(DDataStructure.typeKind.has(clonedType)).toBe(true);
+		expect(testTypeKind.has(clonedType)).toBe(true);
+		expect(clonedType.executeCheck("valid")).toBe(DDataStructure.SuccessSymbol);
+		expect(executeCheck).toHaveBeenCalledWith(
+			clonedType,
+			"valid",
+		);
+	});
+
+	it("sets messages directly and on cloned types", () => {
+		const testTypeKind = DDataStructure.createKind("test-message-type");
+
+		interface TestType extends DCommon.UnionToIntersection<
+			& DDataStructure.Type<typeof DDataStructure.TheString>
+			& DKind.Kind<typeof testTypeKind>
+		> {}
+
+		const TestType = DDataStructure.createType(
+			DDataStructure.TheString,
+			testTypeKind,
+			({ init }) => () => init<TestType>(
+				{},
+				{
+					executeCheck: () => DDataStructure.SuccessSymbol,
+					isAsynchronous: () => false,
+				},
+			),
+		);
+
+		const type = TestType();
+		const sameType = type.setMessage("Direct message");
+
+		type _CheckSameType = ExpectType<
+			typeof sameType,
+			TestType,
+			"strict"
+		>;
+
+		expect(sameType).toBe(type);
+		expect(type.definition.message).toBe("Direct message");
+
+		const clonedType = type.addMessage("Cloned message");
+
+		type _CheckClonedType = ExpectType<
+			typeof clonedType,
+			TestType,
+			"strict"
+		>;
+
+		expect(type.definition.message).toBe("Direct message");
+		expect(clonedType).not.toBe(type);
+		expect(clonedType.definition).not.toBe(type.definition);
+		expect(clonedType.definition.message).toBe("Cloned message");
+		expect(clonedType.executeCheck("value")).toBe(DDataStructure.SuccessSymbol);
+	});
+
 	it("preserves asynchronous checks through the fundamental type and implementation", async() => {
 		const testFundamentalTypeKind = DDataStructure.createKind("test-async-string-fundamental-type");
 		const testTypeKind = DDataStructure.createKind("test-async-type");

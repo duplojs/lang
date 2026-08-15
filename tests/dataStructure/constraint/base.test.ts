@@ -68,6 +68,112 @@ describe("createConstraint", () => {
 		expect(isAsynchronous).toHaveBeenCalledWith(constraint);
 	});
 
+	it("clones a constraint with the same behavior", () => {
+		const testConstraintKind = DDataStructure.createKind("test-clone-constraint");
+
+		interface TestConstraintDefinition extends DDataStructure.ConstraintDefinition {
+			readonly min: 3;
+		}
+
+		interface TestConstraint extends DCommon.UnionToIntersection<
+			& DDataStructure.Constraint<
+				string,
+				string & { readonly minLength: 3 },
+				TestConstraintDefinition
+			>
+			& DKind.Kind<typeof testConstraintKind>
+		> {}
+
+		const executeCheck = vi.fn(
+			(
+				self: TestConstraint,
+				data: string,
+			) => data.length >= self.definition.min
+				? DDataStructure.SuccessSymbol
+				: DDataStructure.ErrorSymbol,
+		);
+		const TestConstraint = DDataStructure.createConstraint(
+			testConstraintKind,
+			({ init }) => () => init<TestConstraint>(
+				{ min: 3 },
+				{
+					executeCheck,
+					isAsynchronous: () => false,
+				},
+			),
+		);
+
+		const constraint = TestConstraint();
+		const clonedConstraint = constraint.clone();
+
+		type _CheckClonedConstraint = ExpectType<
+			typeof clonedConstraint,
+			TestConstraint,
+			"strict"
+		>;
+
+		expect(clonedConstraint).not.toBe(constraint);
+		expect(clonedConstraint.definition).toStrictEqual(constraint.definition);
+		expect(clonedConstraint.definition).not.toBe(constraint.definition);
+		expect(DDataStructure.constraintKind.has(clonedConstraint)).toBe(true);
+		expect(testConstraintKind.has(clonedConstraint)).toBe(true);
+		expect(clonedConstraint.executeCheck("abc")).toBe(
+			DDataStructure.SuccessSymbol,
+		);
+		expect(executeCheck).toHaveBeenCalledWith(
+			clonedConstraint,
+			"abc",
+		);
+	});
+
+	it("sets messages directly and on cloned constraints", () => {
+		const testConstraintKind = DDataStructure.createKind("test-message-constraint");
+
+		interface TestConstraint extends DCommon.UnionToIntersection<
+			& DDataStructure.Constraint<string>
+			& DKind.Kind<typeof testConstraintKind>
+		> {}
+
+		const TestConstraint = DDataStructure.createConstraint(
+			testConstraintKind,
+			({ init }) => () => init<TestConstraint>(
+				{},
+				{
+					executeCheck: () => DDataStructure.SuccessSymbol,
+					isAsynchronous: () => false,
+				},
+			),
+		);
+
+		const constraint = TestConstraint();
+		const sameConstraint = constraint.setMessage("Direct message");
+
+		type _CheckSameConstraint = ExpectType<
+			typeof sameConstraint,
+			TestConstraint,
+			"strict"
+		>;
+
+		expect(sameConstraint).toBe(constraint);
+		expect(constraint.definition.message).toBe("Direct message");
+
+		const clonedConstraint = constraint.addMessage("Cloned message");
+
+		type _CheckClonedConstraint = ExpectType<
+			typeof clonedConstraint,
+			TestConstraint,
+			"strict"
+		>;
+
+		expect(constraint.definition.message).toBe("Direct message");
+		expect(clonedConstraint).not.toBe(constraint);
+		expect(clonedConstraint.definition).not.toBe(constraint.definition);
+		expect(clonedConstraint.definition.message).toBe("Cloned message");
+		expect(clonedConstraint.executeCheck("value")).toBe(
+			DDataStructure.SuccessSymbol,
+		);
+	});
+
 	it("preserves asynchronous checks", async() => {
 		const testConstraintKind = DDataStructure.createKind("test-async-constraint");
 

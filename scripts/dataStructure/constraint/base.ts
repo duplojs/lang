@@ -1,11 +1,13 @@
 import type * as DKind from "@scripts/kind";
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
 import { createKind } from "../kind";
 import { type SuccessSymbol, type ErrorSymbol } from "../common";
 
 export const constraintKind = createKind("constraint");
 
-export interface ConstraintDefinition {}
+export interface ConstraintDefinition {
+	readonly message?: string;
+}
 
 declare const BivariousSymbol: unique symbol;
 
@@ -30,6 +32,9 @@ export interface Constraint<
 		| ErrorSymbol
 	>;
 	isAsynchronous(): boolean;
+	clone(): this;
+	setMessage(massage: string): this;
+	addMessage(massage: string): this;
 }
 
 export interface CreateConstraintInitParams<
@@ -75,26 +80,43 @@ export function createConstraint<
 		>,
 	) => GenericConstructor,
 ): GenericConstructor {
-	return createConstructor({
-		init: (
-			definition,
-			{
-				executeCheck,
-				isAsynchronous,
-			},
-		) => {
-			const self: DKind.Remove<Constraint> = {
-				definition,
-				executeCheck: (data: unknown) => executeCheck(
-					self as never,
-					data,
-				),
-				isAsynchronous: () => isAsynchronous(self as never),
-				[constraintKind.runTimeKey]: null,
-				[kindHandler.runTimeKey]: null,
-			};
-
-			return self as never;
+	const init: CreateConstraintConstructorParams["init"] = (
+		definition,
+		{
+			executeCheck,
+			isAsynchronous,
 		},
+	) => {
+		const self: Constraint = {
+			definition,
+			executeCheck: (data: unknown) => executeCheck(
+				self as never,
+				data,
+			),
+			isAsynchronous: () => isAsynchronous(self as never),
+			clone: () => init(
+				DCommon.simpleClone(definition),
+				{
+					executeCheck,
+					isAsynchronous,
+				},
+			),
+			setMessage: (message) => {
+				(self.definition.message as any) = message as any;
+				return self;
+			},
+			addMessage: (message) => {
+				const cloneSelf = self.clone();
+				return cloneSelf.setMessage(message);
+			},
+			[constraintKind.runTimeKey]: null,
+			[kindHandler.runTimeKey]: null,
+		} satisfies DKind.Remove<Constraint> as never;
+
+		return self as never;
+	};
+
+	return createConstructor({
+		init,
 	});
 }
