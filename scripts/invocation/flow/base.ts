@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/max-params */
 import * as DCommon from "@scripts/common";
-import { type FlowControllerExit, type FlowController, type FlowControllerResult, flowControllerExitKind, type FlowControllerPreviousFunctionResult, flowControllerKind } from "./controller";
+import { type FlowControllerExit, type FlowController, type FlowControllerResult, flowControllerExitKind, type FlowControllerPreviousFunctionResult, flowControllerKind, type UnwrapFlowControllerResult } from "./controller";
 import { type DKind } from "@scripts";
 
 type ComputeLastUsableValue<
@@ -32,33 +32,54 @@ type Pipe<
 	input: Awaited<ComputeLastUsableValue<GenericAccumulator>>,
 ) => GenericOutput;
 
+type IsMaybePromise<
+	GenericAccumulator extends DCommon.AnyTuple,
+> = {
+	[Index in keyof GenericAccumulator]: UnwrapFlowControllerResult<
+		GenericAccumulator[Index]
+	> extends infer InferredResult
+		? DCommon.IsExtends<
+			InferredResult,
+			Promise<unknown>
+		> extends true
+			? false
+			: DCommon.ContainExtends<InferredResult, Promise<any>>
+		: never
+}[number] extends false
+	? false
+	: true;
+
 type ComputeTypeOutput<
 	GenericAccumulator extends DCommon.AnyTuple,
 > = Extract<
 	(
 		| ComputeLastUsableValue<GenericAccumulator>
 		| (
-			GenericAccumulator[number] extends infer InferredPipeResult
-				? InferredPipeResult extends FlowControllerResult<infer InferredResult>
-					? InferredResult extends FlowControllerExit
-						? DKind.GetValue<
+			UnwrapFlowControllerResult<GenericAccumulator[number]> extends infer InferredResult
+				? InferredResult extends FlowControllerExit
+					? DKind.GetValue<
 							typeof flowControllerExitKind,
 							InferredResult
-						>
-						: InferredResult extends Promise<infer InferredExit extends FlowControllerExit>
-							? Promise<
-								DKind.GetValue<
+					>
+					: InferredResult extends Promise<infer InferredExit extends FlowControllerExit>
+						? Promise<
+							DKind.GetValue<
 									typeof flowControllerExitKind,
 									InferredExit
-								>
 							>
+						>
+						: InferredResult extends Promise<unknown>
+							? Promise<never>
 							: never
-					: never
 				: never
 		)
 	) extends infer InferredResult
-		? DCommon.ContainExtends<InferredResult, Promise<any>> extends true
-			? Promise<Awaited<InferredResult>>
+		? DCommon.Or<[
+			DCommon.ContainExtends<InferredResult, Promise<any>>,
+		]> extends true
+			? IsMaybePromise<GenericAccumulator> extends true
+				? DCommon.MaybePromise<Awaited<InferredResult>>
+				: Promise<Awaited<InferredResult>>
 			: InferredResult
 		: never,
 	any

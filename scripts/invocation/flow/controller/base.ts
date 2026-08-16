@@ -34,6 +34,12 @@ export interface FlowControllerResult<
 	readonly [FlowControllerResultSymbol]: GenericResult;
 }
 
+export type UnwrapFlowControllerResult<
+	GenericValue extends unknown,
+> = GenericValue extends FlowControllerResult<infer InferredResult>
+	? InferredResult
+	: GenericValue;
+
 export interface FlowController<
 	GenericInput extends unknown = unknown,
 	GenericOutput extends unknown = unknown,

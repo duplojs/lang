@@ -12,11 +12,23 @@ export interface FlowControllerFilter<
 > extends DCommon.UnionToIntersection<
 	& FlowController<
 		GenericInput,
-		GenericOutput extends DEither.Left
-			? FlowControllerExit<GenericOutput>
-			: GenericOutput extends DEither.Right
-				? DEither.GetValue<GenericOutput>
-				: GenericOutput
+		DCommon.SplitPromise<GenericOutput> extends infer InferredOutput
+			? InferredOutput extends unknown
+				? Awaited<InferredOutput> extends infer InferredAwaited
+					? (
+						InferredAwaited extends DEither.Left
+							? FlowControllerExit<InferredAwaited>
+							: InferredAwaited extends DEither.Right
+								? DEither.GetValue<InferredAwaited>
+								: InferredAwaited
+					) extends infer InferredResult
+						? InferredOutput extends Promise<unknown>
+							? Promise<InferredResult>
+							: InferredResult
+						: never
+					: never
+				: never
+			: never
 	>
 	& DKind.Kind<typeof flowControllerFilterKind>
 	> {
@@ -45,13 +57,18 @@ export const filter = createFlowController(
 					return result;
 				}
 
-				const filterResult = DEither.unwrapRight(filterFunction(result as never));
+				return DCommon.callThen(
+					filterFunction(result as never),
+					(filterResult) => {
+						const result = DEither.unwrapRight(filterResult);
 
-				if (DEither.isLeft(filterResult)) {
-					return exitFlow(filterResult);
-				}
+						if (DEither.isLeft(result)) {
+							return exitFlow(result);
+						}
 
-				return filterResult;
+						return result;
+					},
+				);
 			},
 		),
 	) as never,

@@ -1,4 +1,4 @@
-import { DEither, DInvocation, type ExpectType } from "@scripts";
+import { DEither, DInvocation, type DCommon, type ExpectType } from "@scripts";
 
 describe("filter", () => {
 	it("should continue the flow with a raw filtered value", () => {
@@ -22,6 +22,42 @@ describe("filter", () => {
 		type _CheckResult = ExpectType<
 			typeof result,
 			`value-${number}`,
+			"strict"
+		>;
+	});
+
+	it("should type the flow as async when a filter returns an async raw value", async() => {
+		const useFlow = DInvocation.flow(
+			(input: string) => input.length,
+			DInvocation.filter((input) => Promise.resolve(input + 1)),
+			(input) => `value-${input}`,
+		);
+		const result = useFlow("test");
+
+		await expect(result).resolves.toBe("value-5");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<`value-${number}`>,
+			"strict"
+		>;
+	});
+
+	it("should type the flow as maybe async when a filter returns a sync or async raw value", () => {
+		const useFlow = DInvocation.flow(
+			(input: string) => input.length,
+			DInvocation.filter((input) => input % 2 === 0
+				? input + 1
+				: Promise.resolve(input + 1)),
+			(input) => `value-${input}`,
+		);
+		const result = useFlow("test");
+
+		expect(result).toBe("value-5");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			DCommon.MaybePromise<`value-${number}`>,
 			"strict"
 		>;
 	});
@@ -67,6 +103,52 @@ describe("filter", () => {
 			typeof result,
 			| `value-${number}`
 			| DEither.Left<"too-short", number>,
+			"strict"
+		>;
+	});
+
+	it("should type the flow as async when a filter returns an async either value", async() => {
+		const useFlow = DInvocation.flow(
+			(input: string) => input.length,
+			DInvocation.filter((input) => Promise.resolve(
+				input > 4
+					? DEither.result("accepted", input)
+					: DEither.left("too-short", input),
+			)),
+			(input) => `value-${input}`,
+		);
+		const result = useFlow("test");
+
+		await expect(result).resolves.toStrictEqual(DEither.left("too-short", 4));
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<
+				| `value-${number}`
+				| DEither.Left<"too-short", number>
+			>,
+			"strict"
+		>;
+	});
+
+	it("should type the flow as maybe async when a filter returns a sync or async either value", async() => {
+		const useFlow = DInvocation.flow(
+			(input: string) => input.length,
+			DInvocation.filter((input) => input > 4
+				? DEither.result("accepted", input)
+				: Promise.resolve(DEither.left("too-short", input))),
+			(input) => `value-${input}`,
+		);
+		const result = useFlow("test");
+
+		await expect(result).resolves.toStrictEqual(DEither.left("too-short", 4));
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			DCommon.MaybePromise<
+				| `value-${number}`
+				| DEither.Left<"too-short", number>
+			>,
 			"strict"
 		>;
 	});

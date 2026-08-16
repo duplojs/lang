@@ -48,6 +48,7 @@ export type * from "./simplifyTopLevel";
 export type * from "./simplifyType";
 export type * from "./simplifyTypeForce";
 export type * from "./sortType";
+export type * from "./splitPromise";
 export type * from "./toLargeEnsemble";
 export type * from "./unionContain";
 export type * from "./unionToIntersection";
