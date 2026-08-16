@@ -1,6 +1,6 @@
 import type * as DCommon from "@scripts/common";
 import type * as DObject from "@scripts/object";
-import type * as DString from "@scripts/string/types";
+import type * as DString from "@scripts/string";
 
 type ComputeMatcher<GenericInput extends string> = {
 	[Prop in GenericInput]?: (value: Prop) => unknown
@@ -18,15 +18,6 @@ type HandledKeys<GenericMatcher extends object> = Extract<
 	DObject.GetPropsWithValueExtends<GenericMatcher, DCommon.AnyFunction>,
 	string
 >;
-
-function execute(
-	input: string,
-	matcher: Record<string, DCommon.AnyFunction | undefined>,
-	otherwise: DCommon.AnyFunction,
-) {
-	const callback = matcher[input];
-	return callback === undefined ? otherwise(input) : callback(input);
-}
 
 export function matchWithStringOtherwise<
 	GenericInput extends string,
@@ -72,9 +63,15 @@ export function matchWithStringOtherwise(
 ): unknown {
 	if (args.length === 2) {
 		const [matcher, otherwise] = args;
-		return (input: string) => execute(input, matcher, otherwise);
+		return (input: string) => matchWithStringOtherwise(
+			input as never,
+			matcher as never,
+			otherwise,
+		);
 	}
 
 	const [input, matcher, otherwise] = args;
-	return execute(input, matcher, otherwise);
+	return matcher[input] === undefined
+		? otherwise(input)
+		: matcher[input](input);
 }

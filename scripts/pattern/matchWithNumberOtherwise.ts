@@ -20,15 +20,6 @@ type HandledKeys<GenericMatcher extends object> = Extract<
 	number
 >;
 
-function execute(
-	input: number,
-	matcher: Record<number, DCommon.AnyFunction | undefined>,
-	otherwise: DCommon.AnyFunction,
-) {
-	const callback = matcher[input];
-	return callback === undefined ? otherwise(input) : callback(input);
-}
-
 export function matchWithNumberOtherwise<
 	GenericInput extends number,
 	GenericMatcher extends ComputeMatcher<GenericInput>,
@@ -73,9 +64,15 @@ export function matchWithNumberOtherwise(
 ): unknown {
 	if (args.length === 2) {
 		const [matcher, otherwise] = args;
-		return (input: number) => execute(input, matcher, otherwise);
+		return (input: number) => matchWithNumberOtherwise(
+			input as never,
+			matcher as never,
+			otherwise as never,
+		);
 	}
 
 	const [input, matcher, otherwise] = args;
-	return execute(input, matcher, otherwise);
+	return matcher[input] === undefined
+		? otherwise(input)
+		: matcher[input](input);
 }
