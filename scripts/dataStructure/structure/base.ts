@@ -23,9 +23,19 @@ export class StructureClass {
 		GenericProp extends keyof Structure,
 	>(
 		prop: GenericProp,
-		value: Structure[GenericProp],
+		value: Structure[GenericProp] extends infer InferredValue
+			? InferredValue extends DCommon.AnyFunction
+				? (self: Structure, ...rest: Parameters<InferredValue>) => ReturnType<InferredValue>
+				: Structure[GenericProp]
+			: never,
 	) {
-		StructureClass.prototype[prop as never] = value as never;
+		StructureClass.prototype[prop as never] = (
+			typeof value === "function"
+				? function(this: never, ...args: never[]) {
+					return (value as DCommon.AnyFunction)(this as never, ...args);
+				}
+				: value
+		) as never;
 	}
 }
 

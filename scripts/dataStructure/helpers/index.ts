@@ -43,6 +43,7 @@ export * from "./strictNegative";
 export * from "./strictPositive";
 export * from "./stringLengthEqual";
 export * from "./time";
+export * from "./trimmed";
 export * from "./undefined";
 export * from "./union";
 export * from "./url";

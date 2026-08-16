@@ -1,5 +1,11 @@
 import { DDataStructure, type DCommon, type DKind, DEither, type ExpectType } from "@scripts";
 
+declare module "@scripts/dataStructure" {
+	interface Structure {
+		getPrototypeOverrideLabel(prefix: string): `${string}:${number}`;
+	}
+}
+
 describe("createStructure", () => {
 	it("creates a structure that checks its implementation before its constraints", () => {
 		const testStructureKind = DDataStructure.createKind("test-structure");
@@ -336,6 +342,31 @@ describe("createStructure", () => {
 			expect(prototype.contract()).toBe("prototype-contract");
 		} finally {
 			delete (prototype as Partial<DDataStructure.Structure>).contract;
+		}
+	});
+
+	it("adds module-augmented methods to the structure prototype", () => {
+		const prototype = DDataStructure.StructureClass.prototype as DDataStructure.Structure;
+
+		try {
+			DDataStructure.StructureClass.addToPrototype(
+				"getPrototypeOverrideLabel",
+				(self, prefix) => `${prefix}:${self.definition.constraints.length}`,
+			);
+
+			const structure = DDataStructure.string([DDataStructure.notEmpty()]);
+			const getPrototypeOverrideLabel = structure.getPrototypeOverrideLabel;
+			const result = getPrototypeOverrideLabel("constraints");
+
+			expect(result).toBe("constraints:1");
+
+			type _CheckResult = ExpectType<
+				typeof result,
+				`${string}:${number}`,
+				"strict"
+			>;
+		} finally {
+			delete (prototype as Partial<DDataStructure.Structure>).getPrototypeOverrideLabel;
 		}
 	});
 

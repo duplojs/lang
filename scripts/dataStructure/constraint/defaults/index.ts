@@ -24,5 +24,6 @@ export * from "./safe";
 export * from "./strictNegative";
 export * from "./strictPositive";
 export * from "./stringLengthEqual";
+export * from "./trimmed";
 export * from "./url";
 export * from "./uuid";

@@ -2,11 +2,13 @@ import type { ReapplyCompatiblesConstraints, Trimmed } from "../constraints";
 
 type TrimOutput<
 	GenericString extends string,
-> = ReapplyCompatiblesConstraints<
-	GenericString,
-	string & Trimmed,
-	"maxCharacters"
->;
+> = GenericString extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericString,
+		string & Trimmed,
+		"maxCharacters"
+	>
+	: never;
 
 export function trim<
 	GenericString extends string,
