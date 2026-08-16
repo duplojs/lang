@@ -14,3 +14,5 @@ export * from "./matchWithStringOtherwise";
 export * from "./matchWithNumberOtherwise";
 export * from "./matchWithTaggedObject";
 export * from "./matchWithTaggedObjectOtherwise";
+export * from "./matchWithEntity";
+export * from "./matchWithEntityOtherwise";

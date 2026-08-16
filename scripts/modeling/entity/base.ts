@@ -48,6 +48,13 @@ export type GetEntityName<
 	? InferredName
 	: never;
 
+export type ExtractByEntityName<
+	GenericValue extends unknown,
+	GenericEntityName extends string,
+> = GenericValue extends Entity<GenericEntityName>
+	? GenericValue
+	: never;
+
 export const entityStructureKind = createKind("entity-structure");
 
 export interface EntityStructureDefinition extends DDataStructure.StructureDefinition<readonly []> {
