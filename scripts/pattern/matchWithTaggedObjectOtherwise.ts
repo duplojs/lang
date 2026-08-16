@@ -1,22 +1,23 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
+import * as DModeling from "@scripts/modeling";
 import type * as DObject from "@scripts/object";
 import type * as DString from "@scripts/string";
 
 type ComputeMatcher<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 > = {
-	[TaggedObject in GenericTaggedObject as DCommon.GetTagValue<TaggedObject>]?: (value: TaggedObject) => unknown
+	[TaggedObject in GenericTaggedObject as DModeling.GetTagValue<TaggedObject>]?: (value: TaggedObject) => unknown
 };
 
 type ForbiddenMoreKey<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 	GenericMatcher extends ComputeMatcher<GenericTaggedObject>,
 > = DObject.ForbiddenKey<
 	GenericMatcher,
 	Extract<
 		Exclude<
 			keyof GenericMatcher,
-			DCommon.GetTagValue<GenericTaggedObject>
+			DModeling.GetTagValue<GenericTaggedObject>
 		>,
 		string
 	>
@@ -30,21 +31,21 @@ type HandledKeys<
 >;
 
 type UnhandledTaggedObject<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 	GenericMatcher extends object,
 > = Exclude<
 	GenericTaggedObject,
-	DCommon.ObjectTag<HandledKeys<GenericMatcher>>
+	DModeling.ObjectTag<HandledKeys<GenericMatcher>>
 >;
 
 type RequireLiteralTag<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 > = DString.RequireSimpleLiteral<
-	DCommon.GetTagValue<GenericTaggedObject>
+	DModeling.GetTagValue<GenericTaggedObject>
 >;
 
 export function matchWithTaggedObjectOtherwise<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 	GenericMatcher extends ComputeMatcher<GenericTaggedObject>,
 	GenericOutput,
 >(
@@ -69,7 +70,7 @@ export function matchWithTaggedObjectOtherwise<
 );
 
 export function matchWithTaggedObjectOtherwise<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 	GenericMatcher extends ComputeMatcher<GenericTaggedObject>,
 	GenericOutput,
 >(
@@ -99,14 +100,14 @@ export function matchWithTaggedObjectOtherwise(
 			otherwise: DCommon.AnyFunction,
 		]
 		| [
-			input: DCommon.ObjectTag,
+			input: DModeling.ObjectTag,
 			matcher: Record<string, DCommon.AnyFunction | undefined>,
 			otherwise: DCommon.AnyFunction,
 		]
 ): unknown {
 	if (args.length === 2) {
 		const [matcher, otherwise] = args;
-		return (input: DCommon.ObjectTag) => matchWithTaggedObjectOtherwise(
+		return (input: DModeling.ObjectTag) => matchWithTaggedObjectOtherwise(
 			input as never,
 			matcher as never,
 			otherwise,
@@ -114,7 +115,7 @@ export function matchWithTaggedObjectOtherwise(
 	}
 
 	const [input, matcher, otherwise] = args;
-	const tagValue = DCommon.getTagValue(input);
+	const tagValue = DModeling.getTagValue(input);
 
 	return matcher[tagValue] === undefined
 		? otherwise(input)

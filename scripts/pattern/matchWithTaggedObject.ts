@@ -1,35 +1,36 @@
-import * as DCommon from "@scripts/common";
+import type * as DCommon from "@scripts/common";
+import * as DModeling from "@scripts/modeling";
 import type * as DObject from "@scripts/object";
 import type * as DString from "@scripts/string";
 
 type ComputeMatcher<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 > = {
-	[TaggedObject in GenericTaggedObject as DCommon.GetTagValue<TaggedObject>]: (value: TaggedObject) => unknown
+	[TaggedObject in GenericTaggedObject as DModeling.GetTagValue<TaggedObject>]: (value: TaggedObject) => unknown
 };
 
 type ForbiddenMoreKey<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 	GenericMatcher extends ComputeMatcher<GenericTaggedObject>,
 > = DObject.ForbiddenKey<
 	GenericMatcher,
 	Extract<
 		Exclude<
 			keyof GenericMatcher,
-			DCommon.GetTagValue<GenericTaggedObject>
+			DModeling.GetTagValue<GenericTaggedObject>
 		>,
 		string
 	>
 >;
 
-type RequireLiteralTag<
-	GenericTaggedObject extends DCommon.ObjectTag,
+type RequireSimpleTag<
+	GenericTaggedObject extends DModeling.ObjectTag,
 > = DString.RequireSimpleLiteral<
-	DCommon.GetTagValue<GenericTaggedObject>
+	DModeling.GetTagValue<GenericTaggedObject>
 >;
 
 export function matchWithTaggedObject<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 	GenericMatcher extends ComputeMatcher<GenericTaggedObject>,
 >(
 	matcher: (
@@ -40,7 +41,7 @@ export function matchWithTaggedObject<
 		& ForbiddenMoreKey<NoInfer<GenericTaggedObject>, GenericMatcher>
 	),
 ): (
-	input: GenericTaggedObject & RequireLiteralTag<GenericTaggedObject>,
+	input: GenericTaggedObject & RequireSimpleTag<GenericTaggedObject>,
 ) => ReturnType<
 	Extract<
 		NoInfer<GenericMatcher>[keyof GenericMatcher],
@@ -49,10 +50,10 @@ export function matchWithTaggedObject<
 >;
 
 export function matchWithTaggedObject<
-	GenericTaggedObject extends DCommon.ObjectTag,
+	GenericTaggedObject extends DModeling.ObjectTag,
 	GenericMatcher extends ComputeMatcher<GenericTaggedObject>,
 >(
-	input: GenericTaggedObject & RequireLiteralTag<GenericTaggedObject>,
+	input: GenericTaggedObject & RequireSimpleTag<GenericTaggedObject>,
 	matcher: (
 		& DCommon.FixDeepFunctionInfer<
 			ComputeMatcher<GenericTaggedObject>,
@@ -70,15 +71,15 @@ export function matchWithTaggedObject<
 export function matchWithTaggedObject(
 	...args:
 		| [matcher: Record<string, DCommon.AnyFunction>]
-		| [input: DCommon.ObjectTag, matcher: Record<string, DCommon.AnyFunction>]
+		| [input: DModeling.ObjectTag, matcher: Record<string, DCommon.AnyFunction>]
 ): unknown {
 	if (args.length === 1) {
 		const [matcher] = args;
 
-		return (input: DCommon.ObjectTag) => matcher[DCommon.getTagValue(input)]!(input);
+		return (input: DModeling.ObjectTag) => matcher[DModeling.getTagValue(input)]!(input);
 	}
 
 	const [input, matcher] = args;
 
-	return matcher[DCommon.getTagValue(input)]!(input);
+	return matcher[DModeling.getTagValue(input)]!(input);
 }

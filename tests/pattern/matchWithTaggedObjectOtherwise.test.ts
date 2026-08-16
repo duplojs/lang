@@ -1,18 +1,18 @@
-import { createTaggedObject, DPattern, pipe, type ExpectType, type ObjectTag } from "@scripts";
+import { DModeling, DPattern, pipe, type ExpectType } from "@scripts";
 
 describe("matchWithTaggedObjectOtherwise", () => {
-	interface Success extends ObjectTag<"success"> {
+	interface Success extends DModeling.ObjectTag<"success"> {
 		value: number;
 	}
 
-	interface Failure extends ObjectTag<"failure"> {
+	interface Failure extends DModeling.ObjectTag<"failure"> {
 		error: string;
 	}
 
 	type Input = Success | Failure;
 
 	it("should match a handled tagged object and narrow both callbacks", () => {
-		const input = createTaggedObject("success", {
+		const input = DModeling.taggedObject("success", {
 			value: 42,
 		}) as Input;
 
@@ -46,7 +46,7 @@ describe("matchWithTaggedObjectOtherwise", () => {
 	});
 
 	it("should delegate an unhandled tagged object in pipe", () => {
-		const input = createTaggedObject("failure", {
+		const input = DModeling.taggedObject("failure", {
 			error: "failed",
 		}) as Input;
 
@@ -83,7 +83,7 @@ describe("matchWithTaggedObjectOtherwise", () => {
 	});
 
 	it("should reject matcher keys outside the input tags", () => {
-		const input = createTaggedObject("success", {
+		const input = DModeling.taggedObject("success", {
 			value: 42,
 		}) as Input;
 

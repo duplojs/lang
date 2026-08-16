@@ -2,7 +2,6 @@ import * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
 import * as DArray from "@scripts/array";
 import * as DObject from "@scripts/object";
-import * as DPattern from "@scripts/pattern";
 import { type Structure, type Structures } from "../structure";
 import { type createKind } from "../kind";
 import { type Type, type Types } from "../type";
@@ -94,45 +93,40 @@ export function createErrorInterpreter(
 
 	return (error) => DArray.map(
 		error.issues,
-		(issue) => DPattern.match(issue)
-			.when(
-				issueKind.has,
-				(issue): InterpretedIssue => {
-					const source = issue.getSource();
-					const subSource = issue.getSubSource?.();
+		(issue) => {
+			if (issueKind.has(issue)) {
+				const source = issue.getSource();
+				const subSource = issue.getSubSource?.();
 
-					return ({
-						...issue,
-						interpretedMessage: {
-							source: source.definition.message,
-							subSource: subSource?.definition.message,
-							interpretedSource: getInterpretedMessageStructure(source),
-							interpretedSubSource: subSource && getInterpretedMessageStructure(subSource),
-						},
-					});
+				return ({
+					...issue,
+					interpretedMessage: {
+						source: source.definition.message,
+						subSource: subSource?.definition.message,
+						interpretedSource: getInterpretedMessageStructure(source),
+						interpretedSubSource: subSource && getInterpretedMessageStructure(subSource),
+					},
+				}) satisfies InterpretedIssue;
+			}
+
+			if (encodeIssueKind.has(issue)) {
+				return ({
+					...issue,
+					interpretedMessage: {
+						source: issue.message,
+						interpretedSource: getInterpretedMessageCodec(issue.getSource()),
+					},
+				}) satisfies InterpretedEncodedIssue;
+			}
+
+			return ({
+				...issue,
+				interpretedMessage: {
+					source: issue.message,
+					interpretedSource: getInterpretedMessageCodec(issue.getSource()),
 				},
-			)
-			.when(
-				encodeIssueKind.has,
-				(issue): InterpretedEncodedIssue => ({
-					...issue,
-					interpretedMessage: {
-						source: issue.message,
-						interpretedSource: getInterpretedMessageCodec(issue.getSource()),
-					},
-				}),
-			)
-			.when(
-				decodeIssueKind.has,
-				(issue): InterpretedDecodedIssue => ({
-					...issue,
-					interpretedMessage: {
-						source: issue.message,
-						interpretedSource: getInterpretedMessageCodec(issue.getSource()),
-					},
-				}),
-			)
-			.exhaustive(),
+			}) satisfies InterpretedDecodedIssue;
+		},
 	);
 }
 

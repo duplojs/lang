@@ -1,18 +1,18 @@
-import { createTaggedObject, DPattern, pipe, type ExpectType, type ObjectTag } from "@scripts";
+import { DModeling, DPattern, pipe, type ExpectType } from "@scripts";
 
 describe("matchWithTaggedObject", () => {
-	interface Success extends ObjectTag<"success"> {
+	interface Success extends DModeling.ObjectTag<"success"> {
 		value: number;
 	}
 
-	interface Failure extends ObjectTag<"failure"> {
+	interface Failure extends DModeling.ObjectTag<"failure"> {
 		error: string;
 	}
 
 	type Input = Success | Failure;
 
 	it("should call the matching handler with the narrowed tagged object in classic form", () => {
-		const input = createTaggedObject(
+		const input = DModeling.taggedObject(
 			"failure",
 			{ error: "failed" },
 		) as Input;
@@ -48,7 +48,7 @@ describe("matchWithTaggedObject", () => {
 	});
 
 	it("should work in pipe with the curried form", () => {
-		const input = createTaggedObject("success", {
+		const input = DModeling.taggedObject("success", {
 			value: 42,
 		}) as Input;
 
@@ -86,9 +86,9 @@ describe("matchWithTaggedObject", () => {
 	});
 
 	it("should reject non-specific tagged objects in classic and curried forms", () => {
-		const input = createTaggedObject("success", {
+		const input = DModeling.taggedObject("success", {
 			value: 42,
-		}) as ObjectTag;
+		}) as DModeling.ObjectTag;
 
 		// @ts-expect-error input must be a tagged object literal union
 		DPattern.matchWithTaggedObject(input, {
@@ -107,7 +107,7 @@ describe("matchWithTaggedObject", () => {
 	});
 
 	it("should reject matchers with missing or additional keys", () => {
-		const input = createTaggedObject("success", {
+		const input = DModeling.taggedObject("success", {
 			value: 42,
 		}) as Input;
 

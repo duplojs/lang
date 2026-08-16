@@ -1,6 +1,7 @@
 import type * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
 import * as DDataStructure from "@scripts/dataStructure";
+import { type Codecs, type EncodedValue } from "@scripts/dataStructure/common";
 import * as DEither from "@scripts/either";
 import * as DObject from "@scripts/object";
 import { createKind } from "../kind";
@@ -10,16 +11,18 @@ declare module "@scripts/dataStructure" {
 	interface StructuresStore {
 		entity: EntityStructure;
 	}
+}
 
+declare module "@scripts/dataStructure/common" {
 	interface EncodeStructure<
 		GenericValue extends unknown,
-		GenericCodecs extends DDataStructure.Codecs,
+		GenericCodecs extends Codecs,
 	> {
 		entity: GenericValue extends Entity<infer InferredName>
 			? (
 				& Entity<InferredName>
 				& {
-					[Prop in Exclude<keyof GenericValue, DKind.KeySymbol>]: DDataStructure.EncodedValue<
+					[Prop in Exclude<keyof GenericValue, DKind.KeySymbol>]: EncodedValue<
 						GenericValue[Prop],
 						GenericCodecs
 					>
@@ -56,19 +59,19 @@ export type EntityMap<
 	GenericRawValue = DCommon.RemoveConstraint<GenericValue>,
 > = GenericRawValue extends NewType
 	? NewTypeMap<GenericRawValue>
-	: GenericRawValue extends object
-		? DCommon.Or<[
-			DCommon.IsExtends<GenericRawValue, readonly any[]>,
-			DCommon.And<[
-				DCommon.IsExtends<keyof GenericRawValue, string>,
-				DCommon.Not<DCommon.IsExtends<DCommon.AnyFunction, GenericRawValue[keyof GenericRawValue]>>,
-			]>,
-		]> extends true
-			? { [Prop in keyof GenericRawValue]: NewTypeMap<GenericRawValue[Prop]> }
-			: GenericRawValue extends Entity
-				? EntityMap<DKind.Remove<GenericRawValue>>
+	: GenericRawValue extends Entity
+		? GenericRawValue
+		: GenericRawValue extends object
+			? DCommon.Or<[
+				DCommon.IsExtends<GenericRawValue, readonly any[]>,
+				DCommon.And<[
+					DCommon.IsExtends<keyof GenericRawValue, string>,
+					DCommon.Not<DCommon.IsExtends<DCommon.AnyFunction, GenericRawValue[keyof GenericRawValue]>>,
+				]>,
+			]> extends true
+				? { [Prop in keyof GenericRawValue]: NewTypeMap<GenericRawValue[Prop]> }
 				: GenericRawValue
-		: GenericRawValue;
+			: GenericRawValue;
 
 export interface EntityStructure<
 	GenericName extends string = string,
@@ -99,7 +102,9 @@ export interface EntityStructure<
 	): (
 		data: DDataStructure.EncodedValue<
 			EntityMap<
-				DDataStructure.StructureValue<this>
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
 			>,
 			GenericCodecs
 		>,
@@ -117,7 +122,9 @@ export interface EntityStructure<
 		codecs: GenericCodecs,
 		data: DDataStructure.EncodedValue<
 			EntityMap<
-				DDataStructure.StructureValue<this>
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
 			>,
 			GenericCodecs
 		>,
@@ -131,7 +138,9 @@ export interface EntityStructure<
 	);
 	map(
 		data: EntityMap<
-			DDataStructure.StructureValue<this>
+			DKind.Remove<
+				DDataStructure.StructureValue<this>
+			>
 		>
 	): (
 		| DEither.Right<
@@ -149,7 +158,9 @@ export interface EntityStructure<
 	): (
 		data: DDataStructure.EncodedValue<
 			EntityMap<
-				DDataStructure.StructureValue<this>
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
 			>,
 			GenericCodecs
 		>,
@@ -166,7 +177,9 @@ export interface EntityStructure<
 		codecs: GenericCodecs,
 		data: DDataStructure.EncodedValue<
 			EntityMap<
-				DDataStructure.StructureValue<this>
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
 			>,
 			GenericCodecs
 		>,
@@ -179,7 +192,9 @@ export interface EntityStructure<
 	>;
 	asyncMap(
 		data: EntityMap<
-			DDataStructure.StructureValue<this>
+			DKind.Remove<
+				DDataStructure.StructureValue<this>
+			>
 		>
 	): Promise<
 		| DEither.Right<

@@ -1,0 +1,434 @@
+import { DDataStructure, DEither, DModeling, DString, type ExpectType } from "@scripts";
+
+describe("TaggedObjectStructure", () => {
+	it("creates a named tagged object structure from an existing interface", () => {
+		interface UserCreated extends DModeling.ObjectTag<"user-created"> {
+			readonly name: string & DString.MinCharacters<3>;
+			readonly score: number;
+		}
+
+		const nameConstraint = DDataStructure.minCharacters(3);
+		const name = DDataStructure.string([nameConstraint]);
+		const score = DDataStructure.number();
+		const structure = DModeling.TaggedObjectStructure<UserCreated>(
+			"user-created",
+			{
+				name,
+				score,
+			},
+		);
+
+		type _CheckStructure = ExpectType<
+			typeof structure,
+			DModeling.TaggedObjectStructure<UserCreated>,
+			"strict"
+		>;
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			UserCreated,
+			"strict"
+		>;
+
+		expect(DModeling.taggedObjectStructureKind.has(structure)).toBe(true);
+		expect(structure.name).toBe("user-created");
+		expect(structure.isAsynchronous()).toBe(false);
+		expect(structure.definition.inner.definition.shape.value).toEqual([
+			{
+				key: "name",
+				value: name,
+			},
+			{
+				key: "score",
+				value: score,
+			},
+			{
+				key: DModeling.objectTagKind.runTimeKey,
+				value: expect.any(Object),
+			},
+		]);
+	});
+
+	it("requires the declared property constraints in an existing interface", () => {
+		interface UserCreated extends DModeling.ObjectTag<"user-created"> {
+			readonly name: string & DString.MinCharacters<3>;
+		}
+
+		DModeling.TaggedObjectStructure<UserCreated>(
+			"user-created",
+			{
+				name: DDataStructure.string([DDataStructure.minCharacters(3)]),
+			},
+		);
+
+		DModeling.TaggedObjectStructure<UserCreated>(
+			"user-created",
+			{
+				// @ts-expect-error The structure does not provide the declared constraint.
+				name: DDataStructure.string(),
+			},
+		);
+
+		DModeling.TaggedObjectStructure<UserCreated>(
+			"user-created",
+			{
+				// @ts-expect-error The structure provides a different constraint.
+				name: DDataStructure.string([DDataStructure.minCharacters(2)]),
+			},
+		);
+	});
+
+	it("infers a tagged object type without a prior interface declaration", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"metric",
+			{
+				label: DDataStructure.string(),
+				count: DDataStructure.number(),
+			},
+		);
+		const value = DModeling.taggedObject<
+			DDataStructure.StructureValue<typeof structure>
+		>(
+			"metric",
+			{
+				label: "jobs",
+				count: 4,
+			},
+		);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			& DModeling.ObjectTag<"metric">
+			& {
+				readonly label: string;
+				readonly count: number;
+			},
+			"strict"
+		>;
+		type _CheckValue = ExpectType<
+			typeof value,
+			& DModeling.ObjectTag<"metric">
+			& {
+				readonly label: string;
+				readonly count: number;
+			},
+			"strict"
+		>;
+
+		expect(structure.check(value)).toStrictEqual(
+			DEither.right("check-success", value),
+		);
+	});
+
+	it("checks properties and the tag runtime key through its inner object structure", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DDataStructure.string([DDataStructure.minCharacters(3)]),
+				score: DDataStructure.number(),
+			},
+		);
+		const value = DModeling.taggedObject<
+			DDataStructure.StructureValue<typeof structure>
+		>(
+			"user-created",
+			{
+				name: DString.infer("Jane"),
+				score: 12,
+			},
+		);
+
+		expect(structure.executeCheck(value)).toBe(DDataStructure.SuccessSymbol);
+		expect(
+			structure.executeCheck({
+				name: "Jane",
+				score: 12,
+			}),
+		).toBe(DDataStructure.ErrorSymbol);
+		expect(
+			structure.executeCheck({
+				name: "Jane",
+				score: 12,
+				[DModeling.objectTagKind.runTimeKey]: "user-deleted",
+			}),
+		).toBe(DDataStructure.ErrorSymbol);
+		expect(
+			structure.executeCheck(
+				DModeling.taggedObject(
+					"user-created",
+					{
+						name: "Jo",
+						score: 12,
+					},
+				),
+			),
+		).toBe(DDataStructure.ErrorSymbol);
+	});
+
+	it("returns check errors from properties and the tag runtime key", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DDataStructure.string([DDataStructure.minCharacters(3)]),
+				score: DDataStructure.number(),
+			},
+		);
+
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.check(
+					DModeling.taggedObject(
+						"user-created",
+						{
+							name: "Jo",
+							score: 12,
+						},
+					),
+				),
+				"check-error",
+			).issues[0],
+		).toMatchObject({
+			data: "Jo",
+			path: "name",
+		});
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.check({
+					name: "Jane",
+					score: 12,
+				}),
+				"check-error",
+			).issues[0],
+		).toMatchObject({
+			data: undefined,
+			path: DModeling.objectTagKind.runTimeKey,
+		});
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.check(
+					DModeling.taggedObject(
+						"user-deleted",
+						{
+							name: "Jane",
+							score: 12,
+						},
+					),
+				),
+				"check-error",
+			).issues[0],
+		).toMatchObject({
+			data: "user-deleted",
+			path: DModeling.objectTagKind.runTimeKey,
+		});
+	});
+
+	it("narrows checked values to the tagged object type", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"metric",
+			{
+				label: DDataStructure.string(),
+				count: DDataStructure.number(),
+			},
+		);
+		const input: unknown = DModeling.taggedObject(
+			"metric",
+			{
+				label: "jobs",
+				count: 4,
+			},
+		);
+
+		if (structure.is(input)) {
+			type _CheckNarrowedInput = ExpectType<
+				typeof input,
+				& DModeling.ObjectTag<"metric">
+				& {
+					readonly label: string;
+					readonly count: number;
+				},
+				"strict"
+			>;
+		}
+	});
+
+	it("encodes and decodes properties while preserving the tag runtime key", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"profile",
+			{
+				name: DDataStructure.string(),
+				age: DDataStructure.number(),
+			},
+		);
+		const stringCodec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `Jane-${data}`,
+		);
+		const numberCodec = DDataStructure.createCodec(
+			DDataStructure.TheNumber,
+			DDataStructure.string().is,
+			(data) => `age-${data}`,
+			(data) => Number(data.slice(4)),
+		);
+		const codecs = DDataStructure.createCodecs({
+			stringCodec,
+			numberCodec,
+		});
+		const value = DModeling.taggedObject<
+			DDataStructure.StructureValue<typeof structure>
+		>(
+			"profile",
+			{
+				name: "Jane",
+				age: 30,
+			},
+		);
+		const encoded = structure.encode(codecs, value);
+		const decoded = structure.decode(codecs, {
+			name: 4,
+			age: "age-30",
+			[DModeling.objectTagKind.runTimeKey]: "profile",
+		} as never);
+
+		type _CheckEncoded = ExpectType<
+			typeof encoded,
+			| DEither.Right<
+				"encode-success",
+				DDataStructure.EncodedValue<
+					DDataStructure.StructureValue<typeof structure>,
+					typeof codecs
+				>
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"encode-error", DDataStructure.Error>,
+			"strict"
+		>;
+		type _CheckDecoded = ExpectType<
+			typeof decoded,
+			| DEither.Right<
+				"decode-success",
+				& DModeling.ObjectTag<"profile">
+				& {
+					readonly name: string;
+					readonly age: number;
+				}
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"decode-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		expect(encoded).toStrictEqual(
+			DEither.right("encode-success", {
+				name: 4,
+				age: "age-30",
+				[DModeling.objectTagKind.runTimeKey]: "profile",
+			}),
+		);
+		expect(decoded).toStrictEqual(
+			DEither.right("decode-success", {
+				name: "Jane-4",
+				age: 30,
+				[DModeling.objectTagKind.runTimeKey]: "profile",
+			}),
+		);
+	});
+
+	it("supports recursive tagged object structures", () => {
+		interface File extends DModeling.ObjectTag<"file"> {
+			readonly [key: string]: unknown;
+			readonly name: string;
+			readonly size: number;
+		}
+
+		interface Folder extends DModeling.ObjectTag<"folder"> {
+			readonly [key: string]: unknown;
+			readonly name: string;
+			readonly children: readonly Node[];
+		}
+
+		type Node = File | Folder;
+
+		const FileStructure = DModeling.TaggedObjectStructure<File>(
+			"file",
+			{
+				name: DDataStructure.string(),
+				size: DDataStructure.number(),
+			},
+		);
+		const FolderStructure: DModeling.TaggedObjectStructure<Folder> = DModeling.TaggedObjectStructure<Folder>(
+			"folder",
+			{
+				name: DDataStructure.string(),
+				children: DDataStructure.array(
+					DDataStructure.lazy(() => NodeStructure),
+				),
+			},
+		);
+		const NodeStructure: DDataStructure.Structure<Node> = DDataStructure.union([
+			FolderStructure,
+			FileStructure,
+		]).contract();
+		const input = DModeling.taggedObject<Folder>(
+			"folder",
+			{
+				name: "root",
+				children: [
+					DModeling.taggedObject<File>(
+						"file",
+						{
+							name: "readme",
+							size: 42,
+						},
+					),
+					DModeling.taggedObject<Folder>(
+						"folder",
+						{
+							name: "docs",
+							children: [],
+						},
+					),
+				],
+			},
+		);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof NodeStructure>,
+			Node,
+			"strict"
+		>;
+
+		expect(NodeStructure.check(input)).toStrictEqual(
+			DEither.right("check-success", input),
+		);
+		expect(NodeStructure.is(input)).toBe(true);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				NodeStructure.check(
+					DModeling.taggedObject<Folder>(
+						"folder",
+						{
+							name: "root",
+							children: [
+								DModeling.taggedObject(
+									"file",
+									{
+										name: "readme",
+										size: "big" as never,
+									},
+								),
+							],
+						},
+					),
+				),
+				"check-error",
+			).issues,
+		).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					data: "big",
+				}),
+			]),
+		);
+	});
+});

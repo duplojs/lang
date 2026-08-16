@@ -135,11 +135,11 @@ describe("NewTypeStructure", () => {
 		const newTypeConstraint = {
 			...DDataStructure.minCharacters(3),
 			executeCheck: newTypeConstraintExecuteCheck,
-		} as DDataStructure.MinCharactersConstraint<3>;
+		};
 		const structureConstraint = {
 			...DDataStructure.minCharacters(2),
 			executeCheck: structureConstraintExecuteCheck,
-		} as unknown as DDataStructure.Constraint<UserName>;
+		};
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
 			DDataStructure.string(),

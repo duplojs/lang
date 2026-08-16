@@ -71,7 +71,7 @@ export interface Structure<
 			GenericNewConstraints
 		>
 	): Structure<
-		GenericValue,
+		StructureValue<this>,
 		StructureDefinition<
 			readonly [...this["definition"]["constraints"], ...GenericNewConstraints]
 		>
@@ -264,7 +264,7 @@ export interface CreateStructureConstructorParams<
 		...args: DCommon.IsNever<Exclude<keyof GenericStructure, keyof Structure>> extends true
 			? []
 			: [rest: CreateStructureInitRest<GenericStructure>]
-	): GenericStructure;
+	): NoInfer<GenericStructure>;
 }
 
 export function createStructure<

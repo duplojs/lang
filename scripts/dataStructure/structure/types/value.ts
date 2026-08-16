@@ -8,10 +8,11 @@ export type StructureValue<
 
 export type StructureInitialValue<
 	GenericStructure extends Structure,
-> = GenericStructure extends Structure<infer InferredValue>
-	? InferredValue extends (infer InferredInitialValue) & StructureConstraintsValue<
+	GenericStructureValue = StructureValue<GenericStructure>,
+> = GenericStructureValue extends unknown
+	? GenericStructureValue extends (infer InferredInitialValue) & StructureConstraintsValue<
 		GenericStructure["definition"]["constraints"][number]
 	>
 		? InferredInitialValue
-		: InferredValue
+		: GenericStructureValue
 	: never;
