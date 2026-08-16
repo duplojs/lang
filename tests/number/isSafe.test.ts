@@ -23,6 +23,18 @@ describe("isSafe", () => {
 		}
 	});
 
+	it("should preserve number unions when applying a safe constraint", () => {
+		const source = 1 as 1 | 9007199254740992;
+
+		if (DNumber.isSafe(source)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				(1 | 9007199254740992) & DNumber.Safe,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow a number inside a pipe when callback", () => {
 		const result = pipe(
 			1 as number,

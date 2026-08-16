@@ -31,6 +31,22 @@ describe("substring", () => {
 		expect(DString.substring("hello", -2, 2)).toBe("he");
 	});
 
+	it("should distribute constrained string unions before extracting a substring", () => {
+		const source = "hello" as
+			| (string & DString.LengthEqual<0>)
+			| (string & DString.LengthEqual<5>);
+		const result = DString.substring(source, 0, 2);
+
+		expect(result).toBe("he");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (string & DString.MaxCharacters<0>)
+			| (string & DString.MaxCharacters<5>),
+			"strict"
+		>;
+	});
+
 	it("should preserve only compatible constraints", () => {
 		const sourceMax = "hello" as string & DString.MaxCharacters<10>;
 		const resultMax = DString.substring(sourceMax, 1, 3);

@@ -1,17 +1,41 @@
-export function asyncChunk<
-	const GenericItem extends unknown,
->(
-	size: number,
-): (
-	iterator: AsyncIterable<GenericItem>,
-) => AsyncGenerator<GenericItem[], unknown, unknown>;
+import type * as DArray from "@scripts/array";
 
 export function asyncChunk<
 	const GenericItem extends unknown,
+	GenericSize extends number,
+>(
+	size: GenericSize,
+): (
+	iterator: AsyncIterable<GenericItem>,
+) => AsyncGenerator<
+	& readonly GenericItem[]
+	& DArray.MinElements<1>
+	& (
+		number extends GenericSize
+			? unknown
+			: DArray.MaxElements<GenericSize>
+	),
+	unknown,
+	unknown
+>;
+
+export function asyncChunk<
+	const GenericItem extends unknown,
+	GenericSize extends number,
 >(
 	iterator: AsyncIterable<GenericItem>,
-	size: number,
-): AsyncGenerator<GenericItem[], unknown, unknown>;
+	size: GenericSize,
+): AsyncGenerator<
+	& readonly GenericItem[]
+	& DArray.MinElements<1>
+	& (
+		number extends GenericSize
+			? unknown
+			: DArray.MaxElements<GenericSize>
+	),
+	unknown,
+	unknown
+>;
 
 export function asyncChunk(
 	...args:

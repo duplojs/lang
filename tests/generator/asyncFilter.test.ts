@@ -35,4 +35,28 @@ describe("asyncFilter", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions when filtering async iterable input with a boolean predicate", async() => {
+		const input = (async function *() {
+			yield await Promise.resolve(1 as 1 | "a");
+			yield await Promise.resolve("a" as 1 | "a");
+		})();
+		const result = DGenerator.asyncFilter(input, (item) => {
+			type _CheckItem = ExpectType<
+				typeof item,
+				1 | "a",
+				"strict"
+			>;
+
+			return true;
+		});
+
+		await expect(DArray.from(result)).resolves.toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			AsyncGenerator<1 | "a", unknown, unknown>,
+			"strict"
+		>;
+	});
 });

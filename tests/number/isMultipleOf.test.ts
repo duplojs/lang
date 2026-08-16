@@ -25,6 +25,18 @@ describe("isMultipleOf", () => {
 		}
 	});
 
+	it("should preserve number unions when applying a multiple constraint", () => {
+		const source = 6 as 6 | 7;
+
+		if (DNumber.isMultipleOf(source, 3)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				(6 | 7) & DNumber.MultipleOf<3>,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow a number inside a pipe when callback", () => {
 		const result = pipe(
 			6 as number,

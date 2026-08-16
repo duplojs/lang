@@ -11,10 +11,12 @@ export interface FindAndReplacePredicateFunctionParams<
 type FindAndReplaceOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends DCommon.AnyValue,
-> = (
-	| ReapplyCompatiblesConstraints<GenericArray, readonly (GenericArray[number] | GenericValue)[]>
-	| undefined
-);
+> = GenericArray extends unknown
+	? (
+		| ReapplyCompatiblesConstraints<GenericArray, readonly (GenericArray[number] | GenericValue)[]>
+		| undefined
+	)
+	: never;
 
 export function findAndReplace<
 	GenericArray extends readonly unknown[],

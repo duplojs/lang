@@ -13,6 +13,19 @@ describe("at", () => {
 		>;
 	});
 
+	it("should distribute array unions before returning the value at an index", () => {
+		const source = ["a", "b"] as readonly ["a", "b"] | readonly [];
+		const result = DArray.at(source, 0);
+
+		expect(result).toBe("a");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			"a" | "b" | undefined,
+			"strict"
+		>;
+	});
+
 	it("should return the value at the index in pipe", () => {
 		const result = pipe(
 			["a", "b", "c"] as const,

@@ -4,19 +4,21 @@ type PushOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
 	GenericValuesRest extends readonly unknown[] = [],
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly (
-		| GenericArray[number]
-		| GenericValue
-		| GenericValuesRest[number]
-	)[],
-	"minElements"
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly (
+			| GenericArray[number]
+			| GenericValue
+			| GenericValuesRest[number]
+		)[],
+		"minElements"
+	>
+	: never;
 
 export function push<
 	GenericArray extends readonly unknown[],
-	GenericValue extends unknown,
+	const GenericValue extends unknown,
 >(
 	value: GenericValue,
 ): (
@@ -25,7 +27,7 @@ export function push<
 
 export function push<
 	GenericArray extends readonly unknown[],
-	GenericValue extends unknown,
+	const GenericValue extends unknown,
 	GenericValuesRest extends readonly unknown[],
 >(
 	array: GenericArray,

@@ -12,7 +12,7 @@ describe("matchWithTaggedObjectOtherwise", () => {
 	type Input = Success | Failure;
 
 	it("should match a handled tagged object and narrow both callbacks", () => {
-		const input = createTaggedObject<Success>("success", {
+		const input = createTaggedObject("success", {
 			value: 42,
 		}) as Input;
 
@@ -46,7 +46,7 @@ describe("matchWithTaggedObjectOtherwise", () => {
 	});
 
 	it("should delegate an unhandled tagged object in pipe", () => {
-		const input = createTaggedObject<Failure>("failure", {
+		const input = createTaggedObject("failure", {
 			error: "failed",
 		}) as Input;
 
@@ -83,7 +83,7 @@ describe("matchWithTaggedObjectOtherwise", () => {
 	});
 
 	it("should reject matcher keys outside the input tags", () => {
-		const input = createTaggedObject<Success>("success", {
+		const input = createTaggedObject("success", {
 			value: 42,
 		}) as Input;
 

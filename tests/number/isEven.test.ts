@@ -18,6 +18,18 @@ describe("isEven", () => {
 		}
 	});
 
+	it("should preserve number unions when applying an even constraint", () => {
+		const source = 2 as 2 | 3;
+
+		if (DNumber.isEven(source)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				(2 | 3) & DNumber.Even,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow a number inside a pipe when callback", () => {
 		const result = pipe(
 			2 as number,

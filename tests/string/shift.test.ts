@@ -17,6 +17,22 @@ describe("shift", () => {
 		expect(DString.shift("")).toBe("");
 	});
 
+	it("should distribute constrained string unions before removing the first character", () => {
+		const source = "hello" as
+			| (string & DString.LengthEqual<0>)
+			| (string & DString.LengthEqual<5>);
+		const result = DString.shift(source);
+
+		expect(result).toBe("ello");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (string & DString.MaxCharacters<0>)
+			| (string & DString.MaxCharacters<5>),
+			"strict"
+		>;
+	});
+
 	it("should preserve only compatible size constraints", () => {
 		const sourceMax = "hello" as string & DString.MaxCharacters<10>;
 		const resultMax = DString.shift(sourceMax);

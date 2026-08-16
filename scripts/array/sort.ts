@@ -4,7 +4,12 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 type SortOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends GenericArray[number],
-> = ReapplyCompatiblesConstraints<GenericArray, readonly GenericElement[]>;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly GenericElement[]
+	>
+	: never;
 
 export function sort<
 	GenericArray extends readonly unknown[],

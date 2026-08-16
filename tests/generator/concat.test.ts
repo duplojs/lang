@@ -28,4 +28,18 @@ describe("concat", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions across concatenated iterables", () => {
+		const head = [1] as (1 | "a")[];
+		const tail = ["a"] as (1 | "a")[];
+		const result = DGenerator.concat(head, tail);
+
+		expect(DArray.from(result)).toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Generator<1 | "a", unknown, unknown>,
+			"strict"
+		>;
+	});
 });

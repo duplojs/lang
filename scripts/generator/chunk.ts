@@ -1,17 +1,41 @@
-export function chunk<
-	const GenericItem extends unknown,
->(
-	size: number,
-): (
-	iterator: Iterable<GenericItem>,
-) => Generator<GenericItem[], unknown, unknown>;
+import type * as DArray from "@scripts/array";
 
 export function chunk<
 	const GenericItem extends unknown,
+	GenericSize extends number,
+>(
+	size: GenericSize,
+): (
+	iterator: Iterable<GenericItem>,
+) => Generator<
+	& readonly GenericItem[]
+	& DArray.MinElements<1>
+	& (
+		number extends GenericSize
+			? unknown
+			: DArray.MaxElements<GenericSize>
+	),
+	unknown,
+	unknown
+>;
+
+export function chunk<
+	const GenericItem extends unknown,
+	GenericSize extends number,
 >(
 	iterator: Iterable<GenericItem>,
-	size: number,
-): Generator<GenericItem[], unknown, unknown>;
+	size: GenericSize,
+): Generator<
+	& readonly GenericItem[]
+	& DArray.MinElements<1>
+	& (
+		number extends GenericSize
+			? unknown
+			: DArray.MaxElements<GenericSize>
+	),
+	unknown,
+	unknown
+>;
 
 export function chunk(
 	...args:

@@ -2,11 +2,13 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type ShiftOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly GenericArray[number][],
-	"maxElements"
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly GenericArray[number][],
+		"maxElements"
+	>
+	: never;
 
 export function shift<
 	GenericArray extends readonly unknown[],

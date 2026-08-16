@@ -19,6 +19,18 @@ describe("isNegative", () => {
 		}
 	});
 
+	it("should preserve number unions when applying a negative constraint", () => {
+		const source = -1 as -1 | 1;
+
+		if (DNumber.isNegative(source)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				(-1 | 1) & DNumber.Negative,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow a number inside a pipe when callback", () => {
 		const result = pipe(
 			-1 as number,

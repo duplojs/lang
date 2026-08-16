@@ -121,4 +121,32 @@ describe("group", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions when grouping iterable input", () => {
+		const input = [1, "a"] as (1 | "a")[];
+		const result = DGenerator.group(
+			input,
+			(item, params) => {
+				type _CheckItem = ExpectType<
+					typeof item,
+					1 | "a",
+					"strict"
+				>;
+
+				return params.output("value", item);
+			},
+		);
+
+		expect(result).toStrictEqual({
+			value: [1, "a"],
+		});
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			{
+				readonly value?: readonly [1 | "a", ...(1 | "a")[]] | undefined;
+			},
+			"strict"
+		>;
+	});
 });

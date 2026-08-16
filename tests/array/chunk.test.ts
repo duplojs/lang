@@ -8,7 +8,24 @@ describe("chunk", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			(1 | 2 | 3 | 4 | 5)[][],
+			readonly (
+				& readonly (1 | 2 | 3 | 4 | 5)[]
+				& DArray.MinElements<1>
+				& DArray.MaxElements<2>
+			)[],
+			"strict"
+		>;
+	});
+
+	it("should split an array with non literal value", () => {
+		const result = DArray.chunk([1, 2, 3, 4, 5] as const, 2 as number);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			readonly (
+				& readonly (1 | 2 | 3 | 4 | 5)[]
+				& DArray.MinElements<1>
+			)[],
 			"strict"
 		>;
 	});

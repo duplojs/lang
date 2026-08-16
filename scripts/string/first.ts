@@ -4,7 +4,9 @@ export function first<
 	GenericString extends string,
 >(
 	string: GenericString,
-): First<GenericString>;
+): GenericString extends unknown
+	? First<GenericString>
+	: never;
 
 export function first(
 	string: string,

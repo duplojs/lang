@@ -34,4 +34,25 @@ describe("map", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions from iterable input", () => {
+		const input = [1, "a"] as (1 | "a")[];
+		const result = DGenerator.map(input, (item) => {
+			type _CheckItem = ExpectType<
+				typeof item,
+				1 | "a",
+				"strict"
+			>;
+
+			return item;
+		});
+
+		expect(DArray.from(result)).toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Generator<1 | "a", unknown, unknown>,
+			"strict"
+		>;
+	});
 });

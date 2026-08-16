@@ -18,4 +18,20 @@ describe("reverse", () => {
 			"strict"
 		>;
 	});
+
+	it("should distribute constrained array unions before reversing", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.reverse(source);
+
+		expect(result).toEqual([3, 2, 1]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly number[] & DArray.LengthEqual<0>)
+			| (readonly number[] & DArray.LengthEqual<3>),
+			"strict"
+		>;
+	});
 });

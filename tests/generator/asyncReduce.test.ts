@@ -73,4 +73,32 @@ describe("asyncReduce", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions inside the async reducer callback", async() => {
+		const input = (async function *() {
+			yield await Promise.resolve(1 as 1 | "a");
+			yield await Promise.resolve("a" as 1 | "a");
+		})();
+		const result = DGenerator.asyncReduce(
+			input,
+			DGenerator.reduceFrom([] as (1 | "a")[]),
+			(params) => {
+				type _CheckItem = ExpectType<
+					typeof params.item,
+					1 | "a",
+					"strict"
+				>;
+
+				return params.nextPush(params.lastValue, params.item);
+			},
+		);
+
+		await expect(result).resolves.toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<(1 | "a")[]>,
+			"strict"
+		>;
+	});
 });

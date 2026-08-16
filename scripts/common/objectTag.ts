@@ -27,7 +27,11 @@ export type ExtractByTagValue<
 	? GenericValue
 	: never;
 
-export const getTagValue = objectTagKind.getValue;
+export function getTagValue<
+	GenericObjectTag extends ObjectTag,
+>(objectTag: GenericObjectTag): GetTagValue<GenericObjectTag> {
+	return objectTagKind.getValue(objectTag);
+}
 
 export function createTaggedObject<
 	GenericTaggedObject extends ObjectTag,

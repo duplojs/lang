@@ -3,7 +3,9 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type PadStartOutput<
 	GenericString extends string,
-> = ReapplyCompatiblesConstraints<GenericString, string, "minCharacters">;
+> = GenericString extends unknown
+	? ReapplyCompatiblesConstraints<GenericString, string, "minCharacters">
+	: never;
 
 export function padStart<
 	GenericString extends string,

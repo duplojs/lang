@@ -48,4 +48,17 @@ describe("flat", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves unions from nested and plain iterable values", () => {
+		const input = [[1] as const, "a"] as (readonly [1] | "a")[];
+		const result = DGenerator.flat(input);
+
+		expect(DArray.from(result)).toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Generator<1 | "a", void, unknown>,
+			"strict"
+		>;
+	});
 });

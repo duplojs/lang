@@ -3,17 +3,19 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 type InsertOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly (
-		| GenericArray[number]
-		| GenericValue
-	)[],
-	"minElements"
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly (
+			| GenericArray[number]
+			| GenericValue
+		)[],
+		"minElements"
+	>
+	: never;
 
 export function insert<
-	GenericValue extends unknown,
+	const GenericValue extends unknown,
 	GenericArray extends readonly unknown[],
 >(
 	array: GenericArray,
@@ -22,7 +24,7 @@ export function insert<
 ) => InsertOutput<GenericArray, GenericValue>;
 
 export function insert<
-	GenericValue extends unknown,
+	const GenericValue extends unknown,
 	GenericArray extends readonly unknown[],
 >(
 	value: GenericValue,

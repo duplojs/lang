@@ -3,17 +3,19 @@ import type { ReapplyCompatiblesConstraints } from "../constraints";
 type FillOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly (
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly (
 		| GenericArray[number]
 		| GenericValue
-	)[]
->;
+		)[]
+	>
+	: never;
 
 export function fill<
 	GenericArray extends readonly unknown[],
-	GenericValue extends unknown,
+	const GenericValue extends unknown,
 >(
 	value: GenericValue,
 	start: number,
@@ -24,7 +26,7 @@ export function fill<
 
 export function fill<
 	GenericArray extends readonly unknown[],
-	GenericValue extends unknown,
+	const GenericValue extends unknown,
 >(
 	array: GenericArray,
 	value: GenericValue,

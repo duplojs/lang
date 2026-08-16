@@ -10,15 +10,17 @@ export interface FindAndSpliceDeletePredicateFunctionParams<
 
 type FindAndSpliceDeleteOutput<
 	GenericArray extends readonly unknown[],
-> = Extract<
-	| ReapplyCompatiblesConstraints<
-		GenericArray,
-		readonly GenericArray[number][],
-		"maxElements"
+> = GenericArray extends unknown
+	? Extract<
+		| ReapplyCompatiblesConstraints<
+			GenericArray,
+			readonly GenericArray[number][],
+			"maxElements"
+		>
+		| undefined,
+		any
 	>
-	| undefined,
-	any
->;
+	: never;
 
 export function findAndSpliceDelete<
 	GenericArray extends readonly unknown[],

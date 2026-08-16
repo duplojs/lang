@@ -24,6 +24,22 @@ describe("prepend", () => {
 		expect(result).toEqual(["a", 1, 2]);
 	});
 
+	it("should distribute constrained array unions before prepending", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.prepend(source, ["x"] as const);
+
+		expect(result).toEqual(["x", 1, 2, 3]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly (number | "x")[] & DArray.MinElements<0>)
+			| (readonly (number | "x")[] & DArray.MinElements<3>),
+			"strict"
+		>;
+	});
+
 	it("should discard incompatible size constraints", () => {
 		const sourceMax = [1, 2] as number[] & DArray.MaxElements<2>;
 		const resultMax = DArray.prepend(sourceMax, ["a"] as const);

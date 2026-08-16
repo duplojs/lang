@@ -13,6 +13,19 @@ describe("last", () => {
 		>;
 	});
 
+	it("should distribute string unions before returning the last character", () => {
+		const source = "hello" as "hello" | "";
+		const result = DString.last(source);
+
+		expect(result).toBe("o");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			"o" | undefined,
+			"strict"
+		>;
+	});
+
 	it("should ignore constraints on literal strings", () => {
 		const source = "abc" as "abc" & DString.LengthEqual<999>;
 		const result = DString.last(source);

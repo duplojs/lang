@@ -2,7 +2,9 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type ShiftOutput<
 	GenericString extends string,
-> = ReapplyCompatiblesConstraints<GenericString, string, "maxCharacters">;
+> = GenericString extends unknown
+	? ReapplyCompatiblesConstraints<GenericString, string, "maxCharacters">
+	: never;
 
 export function shift<
 	GenericString extends string,

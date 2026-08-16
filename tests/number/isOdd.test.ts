@@ -18,6 +18,18 @@ describe("isOdd", () => {
 		}
 	});
 
+	it("should preserve number unions when applying an odd constraint", () => {
+		const source = 3 as 2 | 3;
+
+		if (DNumber.isOdd(source)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				(2 | 3) & DNumber.Odd,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow a number inside a pipe when callback", () => {
 		const result = pipe(
 			3 as number,

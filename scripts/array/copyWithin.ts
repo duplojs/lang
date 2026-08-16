@@ -2,7 +2,9 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type CopyWithinOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyCompatiblesConstraints<GenericArray, readonly GenericArray[number][]>;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<GenericArray, readonly GenericArray[number][]>
+	: never;
 
 export function copyWithin<
 	GenericArray extends readonly unknown[],

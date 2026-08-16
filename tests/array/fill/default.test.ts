@@ -14,7 +14,7 @@ describe("fill", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			readonly (number | string)[] & DArray.LengthEqual<4> & DArray.MinElements<4> & DArray.MaxElements<4>,
+			readonly (number | "x")[] & DArray.LengthEqual<4> & DArray.MinElements<4> & DArray.MaxElements<4>,
 			"strict"
 		>;
 	});
@@ -26,5 +26,21 @@ describe("fill", () => {
 		);
 
 		expect(result).toEqual([1, "x", 3]);
+	});
+
+	it("should distribute constrained array unions before filling a range", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.fill(source, "x", 1, 2);
+
+		expect(result).toEqual([1, "x", 3]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly (number | "x")[] & DArray.LengthEqual<0>)
+			| (readonly (number | "x")[] & DArray.LengthEqual<3>),
+			"strict"
+		>;
 	});
 });

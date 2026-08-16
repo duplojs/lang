@@ -34,4 +34,25 @@ describe("filter", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions when filtering iterable input with a boolean predicate", () => {
+		const input = [1, "a"] as (1 | "a")[];
+		const result = DGenerator.filter(input, (item) => {
+			type _CheckItem = ExpectType<
+				typeof item,
+				1 | "a",
+				"strict"
+			>;
+
+			return true;
+		});
+
+		expect(DArray.from(result)).toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Generator<1 | "a", unknown, unknown>,
+			"strict"
+		>;
+	});
 });

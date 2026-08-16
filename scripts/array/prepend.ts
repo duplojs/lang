@@ -4,15 +4,17 @@ type PrependOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
 	GenericElementsRest extends readonly unknown[][] = [],
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly (
-		| GenericElements[number]
-		| GenericElementsRest[number][number]
-		| GenericArray[number]
-	)[],
-	"minElements"
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly (
+			| GenericElements[number]
+			| GenericElementsRest[number][number]
+			| GenericArray[number]
+		)[],
+		"minElements"
+	>
+	: never;
 
 export function prepend<
 	GenericArray extends readonly unknown[],

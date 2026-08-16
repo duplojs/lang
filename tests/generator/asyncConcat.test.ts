@@ -39,4 +39,20 @@ describe("asyncConcat", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions across concatenated async iterables", async() => {
+		const head = (async function *() {
+			yield await Promise.resolve(1 as 1 | "a");
+		})();
+		const tail = ["a"] as (1 | "a")[];
+		const result = DGenerator.asyncConcat(head, tail);
+
+		await expect(DArray.from(result)).resolves.toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			AsyncGenerator<1 | "a", unknown, unknown>,
+			"strict"
+		>;
+	});
 });

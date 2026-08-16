@@ -11,16 +11,19 @@ export interface FindAndSpliceInsertPredicateFunctionParams<
 type FindAndSpliceInsertOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
-> =
-	| ReapplyCompatiblesConstraints<
-		GenericArray,
-		readonly (
+> = GenericArray extends unknown
+	? (
+		| ReapplyCompatiblesConstraints<
+			GenericArray,
+			readonly (
 			| GenericArray[number]
 			| GenericElements[number]
-		)[],
-		"minElements"
-	>
-	| undefined;
+			)[],
+			"minElements"
+		>
+		| undefined
+	)
+	: never;
 
 export function findAndSpliceInsert<
 	GenericElements extends readonly unknown[],

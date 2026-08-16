@@ -44,6 +44,22 @@ describe("filter", () => {
 		>;
 	});
 
+	it("should distribute constrained array unions before filtering", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.filter(source, () => true);
+
+		expect(result).toEqual([1, 2, 3]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly number[] & DArray.MaxElements<0>)
+			| (readonly number[] & DArray.MaxElements<3>),
+			"strict"
+		>;
+	});
+
 	it("should discard incompatible size constraints", () => {
 		const sourceMin = ["a", "bb", "ccc"] as string[] & DArray.MinElements<3>;
 		const resultMin = DArray.filter(sourceMin, () => true);

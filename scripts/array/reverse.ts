@@ -2,7 +2,12 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type ReverseOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyCompatiblesConstraints<GenericArray, readonly GenericArray[number][]>;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly GenericArray[number][]
+	>
+	: never;
 
 export function reverse<
 	GenericArray extends readonly unknown[],

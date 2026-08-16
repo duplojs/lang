@@ -4,19 +4,21 @@ type UnshiftOutput<
 	GenericArray extends readonly unknown[],
 	GenericValue extends unknown,
 	GenericValuesRest extends readonly unknown[] = [],
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly (
-		| GenericValue
-		| GenericValuesRest[number]
-		| GenericArray[number]
-	)[],
-	"minElements"
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly (
+			| GenericValue
+			| GenericValuesRest[number]
+			| GenericArray[number]
+		)[],
+		"minElements"
+	>
+	: never;
 
 export function unshift<
 	GenericArray extends readonly unknown[],
-	GenericValue extends unknown,
+	const GenericValue extends unknown,
 >(
 	value: GenericValue,
 ): (
@@ -25,7 +27,7 @@ export function unshift<
 
 export function unshift<
 	GenericArray extends readonly unknown[],
-	GenericValue extends unknown,
+	const GenericValue extends unknown,
 	GenericValuesRest extends readonly unknown[],
 >(
 	array: GenericArray,

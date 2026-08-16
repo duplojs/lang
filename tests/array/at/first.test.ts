@@ -13,6 +13,19 @@ describe("first", () => {
 		>;
 	});
 
+	it("should distribute array unions before returning the first value", () => {
+		const source = ["a", "b"] as readonly ["a", "b"] | readonly [];
+		const result = DArray.first(source);
+
+		expect(result).toBe("a");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			"a" | "b" | undefined,
+			"strict"
+		>;
+	});
+
 	it("should return undefined for an empty array", () => {
 		const source = [] as unknown[];
 

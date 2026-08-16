@@ -37,6 +37,27 @@ describe("findAndSpliceInsert", () => {
 		).toBeUndefined();
 	});
 
+	it("should distribute constrained array unions before inserting values at the first match", () => {
+		const source = [1, 4] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<2>);
+		const result = DArray.findAndSpliceInsert(
+			source,
+			(value) => value === 4,
+			[2, 3] as const,
+		);
+
+		expect(result).toEqual([1, 2, 3, 4]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly number[] & DArray.MinElements<0>)
+			| (readonly number[] & DArray.MinElements<2>)
+			| undefined,
+			"strict"
+		>;
+	});
+
 	it("should discard incompatible size constraints", () => {
 		const sourceMax = ["a", "ccc"] as string[] & DArray.MaxElements<2>;
 		const resultMax = DArray.findAndSpliceInsert(sourceMax, () => true, ["bb"]);

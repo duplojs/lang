@@ -14,6 +14,18 @@ describe("greaterThan", () => {
 		expect(predicate(3)).toBe(false);
 	});
 
+	it("should distribute number unions before narrowing values greater than the threshold", () => {
+		const source = 4 as 2 | 4;
+
+		if (DNumber.greaterThan(source, 3)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				4,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow compatible constraints", () => {
 		const source = 4 as
 			| (number & DNumber.LessThan<3>)

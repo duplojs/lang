@@ -24,6 +24,22 @@ describe("spliceInsert", () => {
 		expect(result).toEqual([1, 2, 3, 4]);
 	});
 
+	it("should distribute constrained array unions before inserting values", () => {
+		const source = [1, 4] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<2>);
+		const result = DArray.spliceInsert(source, 1, [2, 3] as const);
+
+		expect(result).toEqual([1, 2, 3, 4]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly number[] & DArray.MinElements<0>)
+			| (readonly number[] & DArray.MinElements<2>),
+			"strict"
+		>;
+	});
+
 	it("should discard incompatible size constraints", () => {
 		const sourceMax = [1, 4] as number[] & DArray.MaxElements<2>;
 		const resultMax = DArray.spliceInsert(sourceMax, 1, [2, 3] as const);

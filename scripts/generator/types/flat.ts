@@ -8,9 +8,11 @@ export type FlatIterator<
 	? GenericValue
 	: DCommon.IsEqual<GenericAcc["length"], 250> extends true
 		? GenericValue
-		: GenericValue extends Iterable<infer InferredValue>
-			? FlatIterator<InferredValue, GenericDepth, [...GenericAcc, never]>
-			: GenericValue;
+		: GenericValue extends string
+			? GenericValue
+			: GenericValue extends Iterable<infer InferredValue>
+				? FlatIterator<InferredValue, GenericDepth, [...GenericAcc, never]>
+				: GenericValue;
 
 export type FlatAsyncIterator<
 	GenericValue extends unknown,
@@ -20,8 +22,10 @@ export type FlatAsyncIterator<
 	? GenericValue
 	: DCommon.IsEqual<GenericAcc["length"], 250> extends true
 		? GenericValue
-		: GenericValue extends Iterable<infer InferredValue>
-			? FlatIterator<InferredValue, GenericDepth, [...GenericAcc, never]>
-			: GenericValue extends AsyncIterable<infer InferredValue>
+		: GenericValue extends string
+			? GenericValue
+			: GenericValue extends Iterable<infer InferredValue>
 				? FlatIterator<InferredValue, GenericDepth, [...GenericAcc, never]>
-				: GenericValue;
+				: GenericValue extends AsyncIterable<infer InferredValue>
+					? FlatIterator<InferredValue, GenericDepth, [...GenericAcc, never]>
+					: GenericValue;

@@ -2,7 +2,8 @@ import { DDataStructure, type DCommon, type DKind, DEither, type ExpectType } fr
 
 declare module "@scripts/dataStructure" {
 	interface Structure {
-		getPrototypeOverrideLabel(prefix: string): `${string}:${number}`;
+		getPrototypeOverrideLabel?(prefix: string): `${string}:${number}`;
+		testedValue?: string;
 	}
 }
 
@@ -353,12 +354,17 @@ describe("createStructure", () => {
 				"getPrototypeOverrideLabel",
 				(self, prefix) => `${prefix}:${self.definition.constraints.length}`,
 			);
+			DDataStructure.StructureClass.addToPrototype(
+				"testedValue",
+				"test",
+			);
 
 			const structure = DDataStructure.string([DDataStructure.notEmpty()]);
-			const getPrototypeOverrideLabel = structure.getPrototypeOverrideLabel;
+			const getPrototypeOverrideLabel = structure.getPrototypeOverrideLabel!;
 			const result = getPrototypeOverrideLabel("constraints");
 
 			expect(result).toBe("constraints:1");
+			expect(structure.testedValue).toBe("test");
 
 			type _CheckResult = ExpectType<
 				typeof result,

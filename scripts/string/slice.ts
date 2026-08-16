@@ -2,10 +2,12 @@ import type { ReapplyAllowedCharacters, ReapplyCompatiblesConstraints } from "./
 
 type SliceOutput<
 	GenericString extends string,
-> = ReapplyAllowedCharacters<
-	GenericString,
-	ReapplyCompatiblesConstraints<GenericString, string, "maxCharacters">
->;
+> = GenericString extends unknown
+	? ReapplyAllowedCharacters<
+		GenericString,
+		ReapplyCompatiblesConstraints<GenericString, string, "maxCharacters">
+	>
+	: never;
 
 export function slice<
 	GenericString extends string,

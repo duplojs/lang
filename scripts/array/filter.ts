@@ -11,11 +11,13 @@ export interface FilterPredicateFunctionParams<
 type FilterOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends GenericArray[number] = GenericArray[number],
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly GenericElement[],
-	"maxElements"
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly GenericElement[],
+		"maxElements"
+	>
+	: never;
 
 export function filter<
 	GenericArray extends readonly unknown[],

@@ -4,7 +4,9 @@ export function last<
 	GenericString extends string,
 >(
 	string: GenericString,
-): Last<GenericString>;
+): GenericString extends unknown
+	? Last<GenericString>
+	: never;
 
 export function last(
 	string: string,

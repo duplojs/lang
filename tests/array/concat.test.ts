@@ -24,6 +24,22 @@ describe("concat", () => {
 		expect(result).toEqual([1, 2, "a"]);
 	});
 
+	it("should distribute constrained array unions before concatenating", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.concat(source, ["x"] as const);
+
+		expect(result).toEqual([1, 2, 3, "x"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly (number | "x")[] & DArray.MinElements<0>)
+			| (readonly (number | "x")[] & DArray.MinElements<3>),
+			"strict"
+		>;
+	});
+
 	it("should discard incompatible size constraints", () => {
 		const sourceMax = [1, 2] as number[] & DArray.MaxElements<2>;
 		const resultMax = DArray.concat(sourceMax, ["a"] as const);

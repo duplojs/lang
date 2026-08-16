@@ -2,10 +2,12 @@ import type { ReapplyAllowedCharacters, ReapplyCompatiblesConstraints } from "./
 
 type SubstringOutput<
 	GenericString extends string,
-> = ReapplyAllowedCharacters<
-	GenericString,
-	ReapplyCompatiblesConstraints<GenericString, string, "maxCharacters">
->;
+> = GenericString extends unknown
+	? ReapplyAllowedCharacters<
+		GenericString,
+		ReapplyCompatiblesConstraints<GenericString, string, "maxCharacters">
+	>
+	: never;
 
 export function substring<
 	GenericString extends string,

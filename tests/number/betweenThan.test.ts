@@ -15,6 +15,18 @@ describe("betweenThan", () => {
 		expect(predicate(2)).toBe(false);
 	});
 
+	it("should distribute number unions before narrowing values between bounds", () => {
+		const source = 4 as 2 | 4 | 6;
+
+		if (DNumber.betweenThan(source, 3, 5)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				4,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow compatible constraints", () => {
 		const source = 3 as
 			| (number & DNumber.LessThan<2>)

@@ -27,4 +27,20 @@ describe("copyWithin", () => {
 
 		expect(result).toEqual([3, 2, 3, 4]);
 	});
+
+	it("should distribute constrained array unions before copying within", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.copyWithin(source, 1, 2);
+
+		expect(result).toEqual([1, 3, 3]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly number[] & DArray.LengthEqual<0>)
+			| (readonly number[] & DArray.LengthEqual<3>),
+			"strict"
+		>;
+	});
 });

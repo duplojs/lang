@@ -40,6 +40,23 @@ describe("findAndReplace", () => {
 		expect(result).toEqual(["a", "replaced"]);
 	});
 
+	it("should distribute constrained array unions before replacing the first matching value", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.findAndReplace(source, (value) => value === 2, "x");
+
+		expect(result).toEqual([1, "x", 3]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly (number | "x")[] & DArray.LengthEqual<0>)
+			| (readonly (number | "x")[] & DArray.LengthEqual<3>)
+			| undefined,
+			"strict"
+		>;
+	});
+
 	it("should return undefined when no value matches", () => {
 		expect(
 			DArray.findAndReplace(["a", "bb"], (value) => value === "ccc", "replaced"),

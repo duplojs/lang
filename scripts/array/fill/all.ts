@@ -3,7 +3,9 @@ import type { ReapplyCompatiblesConstraints } from "../constraints";
 type FillAllOutput<
 	GenericArray extends readonly unknown[],
 	GenericElement extends unknown,
-> = ReapplyCompatiblesConstraints<GenericArray, readonly GenericElement[]>;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<GenericArray, readonly GenericElement[]>
+	: never;
 
 export function fillAll<
 	GenericElement extends unknown,

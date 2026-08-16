@@ -3,14 +3,16 @@ import type { ReapplyCompatiblesConstraints } from "../constraints";
 type SpliceInsertOutput<
 	GenericArray extends readonly unknown[],
 	GenericElements extends readonly unknown[],
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly (
-		| GenericArray[number]
-		| GenericElements[number]
-	)[],
-	"minElements"
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly (
+			| GenericArray[number]
+			| GenericElements[number]
+		)[],
+		"minElements"
+	>
+	: never;
 
 export function spliceInsert<
 	GenericElements extends readonly unknown[],

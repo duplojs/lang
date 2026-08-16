@@ -7,7 +7,9 @@ export function at<
 	index: GenericIndex,
 ): (
 	string: GenericString,
-) => At<GenericString, GenericIndex>;
+) => GenericString extends string
+	? At<GenericString, GenericIndex>
+	: never;
 
 export function at<
 	GenericString extends string,
@@ -15,7 +17,9 @@ export function at<
 >(
 	string: GenericString,
 	index: GenericIndex,
-): At<GenericString, GenericIndex>;
+): GenericString extends string
+	? At<GenericString, GenericIndex>
+	: never;
 
 export function at(
 	...args:

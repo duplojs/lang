@@ -37,6 +37,23 @@ describe("findAndSpliceDelete", () => {
 		).toBeUndefined();
 	});
 
+	it("should distribute constrained array unions before deleting values from the first match", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.findAndSpliceDelete(source, (value) => value === 2, 1);
+
+		expect(result).toEqual([1, 3]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly number[] & DArray.MaxElements<0>)
+			| (readonly number[] & DArray.MaxElements<3>)
+			| undefined,
+			"strict"
+		>;
+	});
+
 	it("should discard incompatible size constraints", () => {
 		const sourceMin = ["a", "bb", "ccc"] as string[] & DArray.MinElements<3>;
 		const resultMin = DArray.findAndSpliceDelete(sourceMin, () => true, 1);

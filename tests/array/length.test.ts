@@ -32,4 +32,18 @@ describe("length", () => {
 			"strict"
 		>;
 	});
+
+	it("should distribute tuple unions before returning the length", () => {
+		const source = [1] as readonly [] | readonly [1];
+		const result = DArray.length(source);
+
+		expect(result).toBe(1);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (0 & DNumber.Positive)
+			| (1 & DNumber.StrictPositive),
+			"strict"
+		>;
+	});
 });

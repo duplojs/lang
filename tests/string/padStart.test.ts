@@ -26,6 +26,22 @@ describe("padStart", () => {
 		expect(DString.padStart("hello", 3, "0")).toBe("hello");
 	});
 
+	it("should distribute constrained string unions before padding the start", () => {
+		const source = "hello" as
+			| (string & DString.LengthEqual<0>)
+			| (string & DString.LengthEqual<5>);
+		const result = DString.padStart(source, 8, "0");
+
+		expect(result).toBe("000hello");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (string & DString.MinCharacters<0>)
+			| (string & DString.MinCharacters<5>),
+			"strict"
+		>;
+	});
+
 	it("should require a positive integer target length", () => {
 		const targetLength = 1 as number & DNumber.StrictPositive;
 

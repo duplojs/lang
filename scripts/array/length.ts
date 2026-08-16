@@ -3,11 +3,13 @@ import type * as DNumber from "@scripts/number";
 
 type LengthOutput<
 	GenericArray extends readonly unknown[],
-> = DCommon.IsEqual<GenericArray["length"], number> extends true
-	? number & DNumber.Positive
-	: DNumber.IsGreater<GenericArray["length"], 0> extends true
-		? GenericArray["length"] & DNumber.StrictPositive
-		: 0 & DNumber.Positive;
+> = GenericArray extends unknown
+	? DCommon.IsEqual<GenericArray["length"], number> extends true
+		? number & DNumber.Positive
+		: DNumber.IsGreater<GenericArray["length"], 0> extends true
+			? GenericArray["length"] & DNumber.StrictPositive
+			: 0 & DNumber.Positive
+	: never;
 
 export function length<
 	GenericArray extends readonly unknown[],

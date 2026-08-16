@@ -84,4 +84,29 @@ describe("reduce", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions inside the reducer callback", () => {
+		const input = [1, "a"] as (1 | "a")[];
+		const result = DGenerator.reduce(
+			input,
+			DGenerator.reduceFrom([] as (1 | "a")[]),
+			(params) => {
+				type _CheckItem = ExpectType<
+					typeof params.item,
+					1 | "a",
+					"strict"
+				>;
+
+				return params.nextPush(params.lastValue, params.item);
+			},
+		);
+
+		expect(result).toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			(1 | "a")[],
+			"strict"
+		>;
+	});
 });

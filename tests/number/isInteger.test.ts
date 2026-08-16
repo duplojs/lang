@@ -18,6 +18,18 @@ describe("isInteger", () => {
 		}
 	});
 
+	it("should preserve number unions when applying an integer constraint", () => {
+		const source = 3 as 3 | 3.1;
+
+		if (DNumber.isInteger(source)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				(3 | 3.1) & DNumber.Integer,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow a number inside a pipe when callback", () => {
 		const result = pipe(
 			3 as number,

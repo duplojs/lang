@@ -65,4 +65,20 @@ describe("asyncFlat", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves unions from nested and plain async iterable values", async() => {
+		const input = (async function *() {
+			yield await Promise.resolve([1] as const);
+			yield await Promise.resolve("a" as const);
+		})();
+		const result = DGenerator.asyncFlat(input);
+
+		await expect(DArray.from(result)).resolves.toStrictEqual([1, "a"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			AsyncGenerator<1 | "a", void, unknown>,
+			"strict"
+		>;
+	});
 });

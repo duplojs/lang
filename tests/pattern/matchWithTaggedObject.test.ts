@@ -12,9 +12,10 @@ describe("matchWithTaggedObject", () => {
 	type Input = Success | Failure;
 
 	it("should call the matching handler with the narrowed tagged object in classic form", () => {
-		const input = createTaggedObject<Failure>("failure", {
-			error: "failed",
-		}) as Input;
+		const input = createTaggedObject(
+			"failure",
+			{ error: "failed" },
+		) as Input;
 
 		const result = DPattern.matchWithTaggedObject(input, {
 			success: (value) => {
@@ -47,7 +48,7 @@ describe("matchWithTaggedObject", () => {
 	});
 
 	it("should work in pipe with the curried form", () => {
-		const input = createTaggedObject<Success>("success", {
+		const input = createTaggedObject("success", {
 			value: 42,
 		}) as Input;
 
@@ -106,7 +107,7 @@ describe("matchWithTaggedObject", () => {
 	});
 
 	it("should reject matchers with missing or additional keys", () => {
-		const input = createTaggedObject<Success>("success", {
+		const input = createTaggedObject("success", {
 			value: 42,
 		}) as Input;
 

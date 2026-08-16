@@ -1,4 +1,4 @@
-import { createTaggedObject, objectTagKind, type DKind, type ExpectType, type ObjectTag } from "@scripts";
+import { createTaggedObject, getTagValue, objectTagKind, type DKind, type ExpectType, type ObjectTag } from "@scripts";
 
 describe("objectTag", () => {
 	it("create object tag from interface", () => {
@@ -60,7 +60,7 @@ describe("objectTag", () => {
 		expect(taggedObject).toStrictEqual({
 			prop1: "test",
 			prop2: 12,
-			[objectTagKind.runTimeKey]: "superObject1",
+			[objectTagKind.runTimeKey]: "superObject",
 		});
 	});
 
@@ -91,5 +91,17 @@ describe("objectTag", () => {
 			prop2: 12,
 			[objectTagKind.runTimeKey]: "superObject1",
 		});
+	});
+
+	it("get tag value", () => {
+		const taggedObject = createTaggedObject(
+			"superObject",
+			{
+				prop1: "test",
+				prop2: 12,
+			},
+		);
+
+		expect(getTagValue(taggedObject)).toBe("superObject");
 	});
 });

@@ -19,6 +19,18 @@ describe("isNotZero", () => {
 		}
 	});
 
+	it("should preserve number unions when applying a not-zero constraint", () => {
+		const source = 1 as 0 | 1;
+
+		if (DNumber.isNotZero(source)) {
+			type _CheckSource = ExpectType<
+				typeof source,
+				(0 | 1) & DNumber.NotZero,
+				"strict"
+			>;
+		}
+	});
+
 	it("should narrow a number inside a pipe when callback", () => {
 		const result = pipe(
 			1 as number,

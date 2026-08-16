@@ -24,6 +24,22 @@ describe("spliceDelete", () => {
 		expect(result).toEqual([1, 3]);
 	});
 
+	it("should distribute constrained array unions before deleting values", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.spliceDelete(source, 1, 1);
+
+		expect(result).toEqual([1, 3]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly number[] & DArray.MaxElements<0>)
+			| (readonly number[] & DArray.MaxElements<3>),
+			"strict"
+		>;
+	});
+
 	it("should discard incompatible size constraints", () => {
 		const sourceMin = [1, 2, 3] as number[] & DArray.MinElements<3>;
 		const resultMin = DArray.spliceDelete(sourceMin, 1, 1);

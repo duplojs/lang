@@ -15,7 +15,13 @@ describe("asyncChunk", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			AsyncGenerator<(1 | 2 | 3 | 4 | 5)[], unknown, unknown>,
+			AsyncGenerator<
+				& readonly (1 | 2 | 3 | 4 | 5)[]
+				& DArray.MinElements<1>
+				& DArray.MaxElements<2>,
+				unknown,
+				unknown
+			>,
 			"strict"
 		>;
 	});
@@ -35,7 +41,35 @@ describe("asyncChunk", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			AsyncGenerator<("a" | "b" | "c" | "d")[], unknown, unknown>,
+			AsyncGenerator<
+				& readonly ("a" | "b" | "c" | "d")[]
+				& DArray.MinElements<1>
+				& DArray.MaxElements<2>,
+				unknown,
+				unknown
+			>,
+			"strict"
+		>;
+	});
+
+	it("preserves item unions inside generated async chunks", async() => {
+		const input = (async function *() {
+			yield await Promise.resolve(1 as 1 | "a");
+			yield await Promise.resolve("a" as 1 | "a");
+		})();
+		const result = DGenerator.asyncChunk(input, 2);
+
+		await expect(DArray.from(result)).resolves.toStrictEqual([[1, "a"]]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			AsyncGenerator<
+				& readonly ("a" | 1)[]
+				& DArray.MinElements<1>
+				& DArray.MaxElements<2>,
+				unknown,
+				unknown
+			>,
 			"strict"
 		>;
 	});

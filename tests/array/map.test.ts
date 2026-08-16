@@ -39,4 +39,20 @@ describe("map", () => {
 			"strict"
 		>;
 	});
+
+	it("should distribute constrained array unions before mapping", () => {
+		const source = [1, 2, 3] as
+			| (number[] & DArray.LengthEqual<0>)
+			| (number[] & DArray.LengthEqual<3>);
+		const result = DArray.map(source, (value) => `${value}`);
+
+		expect(result).toEqual(["1", "2", "3"]);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (readonly string[] & DArray.LengthEqual<0>)
+			| (readonly string[] & DArray.LengthEqual<3>),
+			"strict"
+		>;
+	});
 });

@@ -2,11 +2,13 @@ import type { ReapplyCompatiblesConstraints } from "./constraints";
 
 type PopOutput<
 	GenericArray extends readonly unknown[],
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly GenericArray[number][],
-	"maxElements"
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly GenericArray[number][],
+		"maxElements"
+	>
+	: never;
 
 export function pop<
 	GenericArray extends readonly unknown[],

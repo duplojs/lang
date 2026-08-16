@@ -13,6 +13,19 @@ describe("first", () => {
 		>;
 	});
 
+	it("should distribute string unions before returning the first character", () => {
+		const source = "hello" as "hello" | "";
+		const result = DString.first(source);
+
+		expect(result).toBe("h");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			"h" | undefined,
+			"strict"
+		>;
+	});
+
 	it("should ignore constraints on literal strings", () => {
 		const source = "abc" as "abc" & DString.LengthEqual<999>;
 		const result = DString.first(source);

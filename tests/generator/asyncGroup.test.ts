@@ -105,4 +105,35 @@ describe("asyncGroup", () => {
 			"strict"
 		>;
 	});
+
+	it("preserves item unions when grouping async iterable input", async() => {
+		const input = (async function *() {
+			yield await Promise.resolve(1 as 1 | "a");
+			yield await Promise.resolve("a" as 1 | "a");
+		})();
+		const result = DGenerator.asyncGroup(
+			input,
+			async(item, params) => {
+				type _CheckItem = ExpectType<
+					typeof item,
+					1 | "a",
+					"strict"
+				>;
+
+				return Promise.resolve(params.output("value", item));
+			},
+		);
+
+		await expect(result).resolves.toStrictEqual({
+			value: [1, "a"],
+		});
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<{
+				readonly value?: readonly [1 | "a", ...(1 | "a")[]] | undefined;
+			}>,
+			"strict"
+		>;
+	});
 });

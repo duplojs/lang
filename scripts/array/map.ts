@@ -11,10 +11,12 @@ export interface MapTheFunctionParams<
 type MapOutput<
 	GenericArray extends readonly unknown[],
 	GenericOutput extends unknown,
-> = ReapplyCompatiblesConstraints<
-	GenericArray,
-	readonly GenericOutput[]
->;
+> = GenericArray extends unknown
+	? ReapplyCompatiblesConstraints<
+		GenericArray,
+		readonly GenericOutput[]
+	>
+	: never;
 
 export function map<
 	GenericArray extends readonly unknown[],
