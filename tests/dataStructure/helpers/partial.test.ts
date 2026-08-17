@@ -51,6 +51,40 @@ describe("partial", () => {
 		expect(structure.is({ email: "not-an-email" })).toBe(false);
 	});
 
+	it("resolves lazy property structures before adding undefined", () => {
+		const getStructure = vi.fn(
+			() => DDataStructure.string(),
+		);
+		const structure = DDataStructure.partial(
+			DDataStructure.object({
+				name: DDataStructure.lazy(getStructure),
+			}),
+		);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			{
+				readonly name?: string | undefined;
+			},
+			"strict"
+		>;
+
+		expect(getStructure).not.toHaveBeenCalled();
+		expect(
+			(
+				(structure.definition.shape.value[0]!.value as DDataStructure.LazyStructure)
+					.definition.getter.value as DDataStructure.UnionStructure
+			).definition.values.value,
+		).toHaveLength(2);
+		expect(getStructure).toHaveBeenCalledTimes(1);
+		expect(structure.check({})).toStrictEqual(
+			DEither.right("check-success", {}),
+		);
+		expect(structure.check({ name: "Jane" })).toStrictEqual(
+			DEither.right("check-success", { name: "Jane" }),
+		);
+	});
+
 	it("does not add undefined twice inside an existing union", () => {
 		const structure = DDataStructure.partial(
 			DDataStructure.object({
@@ -69,8 +103,10 @@ describe("partial", () => {
 		>;
 
 		expect(
-			(structure.definition.shape.value[0]!.value as DDataStructure.UnionStructure)
-				.definition.values,
+			(
+				(structure.definition.shape.value[0]!.value as DDataStructure.LazyStructure)
+					.definition.getter.value as DDataStructure.UnionStructure
+			).definition.values.value,
 		).toHaveLength(2);
 		expect(structure.check({})).toStrictEqual(
 			DEither.right("check-success", {}),
@@ -96,8 +132,10 @@ describe("partial", () => {
 		>;
 
 		expect(
-			(structure.definition.shape.value[0]!.value as DDataStructure.UnionStructure)
-				.definition.values,
+			(
+				(structure.definition.shape.value[0]!.value as DDataStructure.LazyStructure)
+					.definition.getter.value as DDataStructure.UnionStructure
+			).definition.values.value,
 		).toHaveLength(3);
 		expect(structure.check({})).toStrictEqual(
 			DEither.right("check-success", {}),
@@ -119,7 +157,10 @@ describe("partial", () => {
 			"strict"
 		>;
 
-		expect("values" in structure.definition.shape.value[0]!.value.definition).toBe(false);
+		expect(
+			"values" in (structure.definition.shape.value[0]!.value as DDataStructure.LazyStructure)
+				.definition.getter.value.definition,
+		).toBe(false);
 		expect(structure.check({})).toStrictEqual(
 			DEither.right("check-success", {}),
 		);

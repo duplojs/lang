@@ -29,7 +29,7 @@ describe("record", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.requiredKeys).toBeNull();
+		expect(structure.definition.requiredKeys.value).toBeNull();
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(structure.check(input)).toStrictEqual(
 			DEither.right("check-success", input),
@@ -72,7 +72,7 @@ describe("record", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.requiredKeys).toStrictEqual(["name", "role"]);
+		expect(structure.definition.requiredKeys.value).toStrictEqual(["name", "role"]);
 		expect(structure.check(input)).toStrictEqual(
 			DEither.right("check-success", input),
 		);

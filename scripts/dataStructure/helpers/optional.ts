@@ -2,6 +2,7 @@ import { type Structure, type StructureInitialValue, type StructureValue, type U
 import { union } from "./union";
 import { undefined as undefinedHelper } from "./undefined";
 import { isUndefinedStructure } from "./isUndefinedStructure";
+import { lazy } from "./lazy";
 
 export function optional<
 	GenericStructure extends Structure,
@@ -19,17 +20,23 @@ export function optional<
 export function optional(
 	structure: Structure,
 ): UnionStructure {
-	if (structureIdentifier(structure, unionStructureKind)) {
-		return structure.definition.values.some(isUndefinedStructure)
-			? union(structure.definition.values)
-			: union([
-				undefinedHelper(),
-				...structure.definition.values,
-			]);
-	}
-
 	return union([
-		undefinedHelper(),
-		structure,
+		lazy(
+			() => {
+				if (structureIdentifier(structure, unionStructureKind)) {
+					return structure.definition.values.value.some(isUndefinedStructure)
+						? structure
+						: union([
+							undefinedHelper(),
+							union(structure.definition.values.value),
+						]);
+				}
+
+				return union([
+					undefinedHelper(),
+					structure,
+				]);
+			},
+		),
 	]);
 }

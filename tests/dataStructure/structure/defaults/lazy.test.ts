@@ -42,6 +42,49 @@ describe("LazyStructure", () => {
 		expect(getStructure).toHaveBeenCalledTimes(1);
 	});
 
+	it("flattens nested lazy structures to the terminal deferred structure", () => {
+		const stringStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const getStringStructure = vi.fn(
+			() => stringStructure,
+		);
+		const innerLazyStructure = DDataStructure.LazyStructure(
+			getStringStructure,
+			[],
+		);
+		const getInnerLazyStructure = vi.fn(
+			() => innerLazyStructure,
+		);
+		const structure = DDataStructure.LazyStructure(
+			getInnerLazyStructure,
+			[],
+		);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			string,
+			"strict"
+		>;
+
+		expect(getInnerLazyStructure).not.toHaveBeenCalled();
+		expect(getStringStructure).not.toHaveBeenCalled();
+		expect(structure.definition.getter.value).toBe(stringStructure);
+		expect(structure.definition.getter.value).toBe(stringStructure);
+		expect(getInnerLazyStructure).toHaveBeenCalledTimes(1);
+		expect(getStringStructure).toHaveBeenCalledTimes(1);
+		expect(structure.check("value")).toStrictEqual(
+			DEither.right("check-success", "value"),
+		);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.check(123),
+				"check-error",
+			).issues[0],
+		).toMatchObject({
+			data: 123,
+			path: "",
+		});
+	});
+
 	it("can be nested inside object, array and union structures", () => {
 		const lazyName = DDataStructure.LazyStructure(
 			() => DDataStructure.TypeStructure(DDataStructure.StringType(), []),

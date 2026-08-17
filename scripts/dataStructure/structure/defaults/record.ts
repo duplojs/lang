@@ -30,7 +30,7 @@ export interface RecordStructureDefinition<
 > extends StructureDefinition<GenericConstraints> {
 	readonly key: UnionStructure<string> | TypeStructure<string>;
 	readonly value: Structure;
-	readonly requiredKeys: string[] | null;
+	readonly requiredKeys: DCommon.Memoized<string[] | null>;
 }
 
 export interface RecordStructure<
@@ -85,10 +85,10 @@ export const RecordStructure = createStructure(
 			key,
 			value,
 			constraints,
-			requiredKeys: DCommon.justExec(() => {
+			requiredKeys: DCommon.memo(() => {
 				if (structureIdentifier(key, unionStructureKind)) {
 					if (
-						key.definition.values
+						key.definition.values.value
 							.some(
 								(value) => structureIdentifier(value, typeStructureKind)
 								&& typeIdentifier(value.definition.type, stringTypeKind),
@@ -97,7 +97,7 @@ export const RecordStructure = createStructure(
 						return null;
 					}
 
-					return key.definition.values
+					return key.definition.values.value
 						.map(
 							(value) => structureIdentifier(value, typeStructureKind)
 								&& typeIdentifier(value.definition.type, stringLiteralTypeKind)
@@ -132,7 +132,7 @@ export const RecordStructure = createStructure(
 				}
 
 				const keyData = Object.keys(data);
-				const requiredKeys = self.definition.requiredKeys;
+				const requiredKeys = self.definition.requiredKeys.value;
 				if (
 					requiredKeys
 					&& keyData
@@ -185,7 +185,7 @@ export const RecordStructure = createStructure(
 				}
 
 				const keyData = Object.keys(data);
-				const requiredKeys = self.definition.requiredKeys;
+				const requiredKeys = self.definition.requiredKeys.value;
 				if (
 					requiredKeys
 					&& keyData
@@ -250,7 +250,7 @@ export const RecordStructure = createStructure(
 				}
 
 				const keyData = Object.keys(data);
-				const requiredKeys = self.definition.requiredKeys;
+				const requiredKeys = self.definition.requiredKeys.value;
 				if (
 					requiredKeys
 					&& keyData

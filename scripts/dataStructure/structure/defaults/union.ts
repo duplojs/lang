@@ -6,13 +6,14 @@ import { createKind } from "../../kind";
 import { createGetErrorHandler, ErrorSymbol, SuccessSymbol, type GetErrorHandler } from "../../common";
 import { type StructureValue } from "../types";
 import { structureIdentifier } from "../identifier";
+import { lazyStructureKind } from "./lazy";
 
 export const unionStructureKind = createKind("union-structure");
 
 export interface UnionStructureDefinition<
 	GenericConstraints extends readonly Constraint[] = readonly Constraint[],
 > extends StructureDefinition<GenericConstraints> {
-	readonly values: DCommon.AnyTuple<Structure>;
+	readonly values: DCommon.Memoized<DCommon.AnyTuple<Structure>>;
 }
 
 export interface UnionStructure<
@@ -53,18 +54,30 @@ export const UnionStructure = createStructure(
 		>
 	>(
 		{
-			values: values.flatMap<Structure>(
-				(value) => structureIdentifier(value, unionStructureKind)
-					? value.definition.values
-					: value,
-			) as unknown as DCommon.AnyTuple<Structure>,
+			values: DCommon.memo(
+				() => values.flatMap<Structure>(
+					(value) => (function flatUnion(structure: Structure): Structure | Structure[] {
+						if (structureIdentifier(structure, unionStructureKind)) {
+							return structure.definition.values.value.flatMap(
+								flatUnion,
+							);
+						}
+
+						if (structureIdentifier(structure, lazyStructureKind)) {
+							return flatUnion(structure.definition.getter.value);
+						}
+
+						return structure;
+					})(value),
+				),
+			) as never,
 			constraints,
 		},
 		{
 			executeCheck: (self, data, errorHandler) => {
 				const errorHandlers: GetErrorHandler[] | undefined = errorHandler ? [] : undefined;
 
-				const result = self.definition.values.reduce<
+				const result = self.definition.values.value.reduce<
 					DCommon.MaybePromise<SuccessSymbol | ErrorSymbol>
 				>(
 					(accumulator, value, index) => DCommon.callThen(
@@ -108,7 +121,7 @@ export const UnionStructure = createStructure(
 			executeEncode: (self, codec, data, errorHandler) => {
 				const errorHandlers: GetErrorHandler[] | undefined = errorHandler ? [] : undefined;
 
-				const encodedData = self.definition.values.reduce<unknown>(
+				const encodedData = self.definition.values.value.reduce<unknown>(
 					(accumulator, value, index) => DCommon.callThen(
 						accumulator,
 						(awaitedAccumulator) => {
@@ -155,7 +168,7 @@ export const UnionStructure = createStructure(
 			executeDecode: (self, codec, data, errorHandler) => {
 				const errorHandlers: GetErrorHandler[] | undefined = errorHandler ? [] : undefined;
 
-				const decodedData = self.definition.values.reduce<unknown>(
+				const decodedData = self.definition.values.value.reduce<unknown>(
 					(accumulator, value, index) => DCommon.callThen(
 						accumulator,
 						(awaitedAccumulator) => {
@@ -199,7 +212,7 @@ export const UnionStructure = createStructure(
 					},
 				);
 			},
-			isAsynchronous: (self) => self.definition.values.some(
+			isAsynchronous: (self) => self.definition.values.value.some(
 				(value) => value.isAsynchronous(),
 			),
 		},

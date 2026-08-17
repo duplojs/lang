@@ -96,7 +96,7 @@ describe("literal", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.values).toHaveLength(3);
+		expect(structure.definition.values.value).toHaveLength(3);
 		expect(structure.check("draft")).toStrictEqual(
 			DEither.right("check-success", "draft"),
 		);

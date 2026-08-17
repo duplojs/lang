@@ -68,7 +68,7 @@ describe("RecordStructure", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.requiredKeys).toStrictEqual(["name", "role"]);
+		expect(structure.definition.requiredKeys.value).toStrictEqual(["name", "role"]);
 		expect(structure.check(input)).toStrictEqual(
 			DEither.right("check-success", input),
 		);
@@ -95,7 +95,7 @@ describe("RecordStructure", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.requiredKeys).toBeNull();
+		expect(structure.definition.requiredKeys.value).toBeNull();
 		expect(structure.check(input)).toStrictEqual(
 			DEither.right("check-success", input),
 		);
@@ -111,7 +111,7 @@ describe("RecordStructure", () => {
 			[],
 		);
 
-		expect(structure.definition.requiredKeys).toStrictEqual(["name"]);
+		expect(structure.definition.requiredKeys.value).toStrictEqual(["name"]);
 		expect(structure.check({ name: "Jane" })).toStrictEqual(
 			DEither.right("check-success", { name: "Jane" }),
 		);
@@ -133,7 +133,7 @@ describe("RecordStructure", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.requiredKeys).toStrictEqual(["deletedAt"]);
+		expect(structure.definition.requiredKeys.value).toStrictEqual(["deletedAt"]);
 		expect(structure.check(input)).toStrictEqual(
 			DEither.right("check-success", input),
 		);

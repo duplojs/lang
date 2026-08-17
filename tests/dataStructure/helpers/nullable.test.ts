@@ -22,7 +22,7 @@ describe("nullable", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.values).toHaveLength(2);
+		expect(structure.definition.values.value).toHaveLength(2);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(structure.check(null)).toStrictEqual(
 			DEither.right("check-success", null),
@@ -47,7 +47,7 @@ describe("nullable", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.values).toHaveLength(2);
+		expect(structure.definition.values.value).toHaveLength(2);
 		expect(structure.check(null)).toStrictEqual(
 			DEither.right("check-success", null),
 		);
@@ -72,7 +72,7 @@ describe("nullable", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.values).toHaveLength(2);
+		expect(structure.definition.values.value).toHaveLength(2);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(structure.check("not-an-email")).toStrictEqual(
 			DEither.right("check-success", "not-an-email"),

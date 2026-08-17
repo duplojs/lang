@@ -5,6 +5,7 @@ import { createStructure, type StructureDefinition, type Structure } from "../ba
 import { createKind } from "../../kind";
 import { type StructureValue } from "../types";
 import { ErrorSymbol } from "../../common";
+import { structureIdentifier } from "../identifier";
 
 export const lazyStructureKind = createKind("lazy-structure");
 
@@ -52,7 +53,15 @@ export const LazyStructure = createStructure(
 		>
 	>(
 		{
-			getter: DCommon.memo(getStructure),
+			getter: DCommon.memo(() => {
+				const dataStructure: Structure = getStructure();
+
+				if (structureIdentifier(dataStructure, lazyStructureKind)) {
+					return dataStructure.definition.getter.value;
+				}
+
+				return dataStructure;
+			}) as never,
 			constraints,
 		},
 		{

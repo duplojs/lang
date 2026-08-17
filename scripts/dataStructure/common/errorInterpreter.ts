@@ -6,7 +6,7 @@ import { type Structure, type Structures } from "../structure";
 import { type createKind } from "../kind";
 import { type Type, type Types } from "../type";
 import { type Constraint, type Constraints } from "../constraint";
-import { type Error, type DecodeIssue, type EncodeIssue, type Issue, issueKind, encodeIssueKind, decodeIssueKind } from "./error";
+import { type Error, type DecodeIssue, type EncodeIssue, type Issue, issueKind, encodeIssueKind } from "./error";
 import { type Codec } from "./codec";
 
 const kindNamespaceName: DKind.GetNamespaceName<typeof createKind> = "DuplojsLangDataStructure";

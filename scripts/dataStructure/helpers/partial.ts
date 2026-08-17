@@ -1,29 +1,32 @@
-import { type ObjectStructure, type Structure, unionStructureKind, structureIdentifier, type StructureInitialValue } from "../structure";
+import { type ObjectStructure, type Structure, unionStructureKind, structureIdentifier, type StructureInitialValue, lazyStructureKind } from "../structure";
 import { undefined as undefinedHelper } from "./undefined";
 import { union } from "./union";
 import { object } from "./object";
 import { isUndefinedStructure } from "./isUndefinedStructure";
+import { lazy } from "./lazy";
 
 function partialStructure(structure: Structure) {
+	if (structureIdentifier(structure, lazyStructureKind)) {
+		return partialStructure(structure.definition.getter.value);
+	}
+
 	if (isUndefinedStructure(structure)) {
 		return structure;
 	}
 
 	if (structureIdentifier(structure, unionStructureKind)) {
-		return structure.definition.values.some(isUndefinedStructure)
+		return structure.definition.values.value.some(isUndefinedStructure)
 			? structure
 			: union([
 				undefinedHelper(),
-				...structure.definition.values,
+				...structure.definition.values.value,
 			]);
 	}
 
-	return union(
-		[
-			undefinedHelper(),
-			structure,
-		],
-	);
+	return union([
+		undefinedHelper(),
+		structure,
+	]);
 }
 
 export function partial<
@@ -49,7 +52,7 @@ export function partial(
 			structure.definition.shape.value.map(
 				(entry) => [
 					entry.key,
-					partialStructure(entry.value),
+					lazy(() => partialStructure(entry.value)),
 				],
 			),
 		),

@@ -72,14 +72,87 @@ describe("UnionStructure", () => {
 			nestedUnion,
 		], []);
 
-		expect(structure.definition.values).toStrictEqual([
+		const flattenedValues = structure.definition.values.value;
+
+		expect(flattenedValues).toStrictEqual([
 			stringStructure,
 			numberStructure,
 			bigintStructure,
 		]);
+		expect(structure.definition.values.value).toBe(flattenedValues);
 		expect(structure.check(1n)).toStrictEqual(
 			DEither.right("check-success", 1n),
 		);
+	});
+
+	it("flattens lazy structures and nested unions to terminal branches", () => {
+		const stringStructure = DDataStructure.TypeStructure(DDataStructure.StringType(), []);
+		const numberStructure = DDataStructure.TypeStructure(DDataStructure.NumberType(), []);
+		const booleanStructure = DDataStructure.TypeStructure(DDataStructure.BooleanType(), []);
+		const bigintStructure = DDataStructure.TypeStructure(DDataStructure.BigintType(), []);
+		const getNumberStructure = vi.fn(
+			() => numberStructure,
+		);
+		const getNestedUnion = vi.fn(
+			() => DDataStructure.UnionStructure([
+				DDataStructure.LazyStructure(getNumberStructure, []),
+				DDataStructure.UnionStructure([
+					booleanStructure,
+					bigintStructure,
+				], []),
+			], []),
+		);
+		const structure = DDataStructure.UnionStructure([
+			stringStructure,
+			DDataStructure.LazyStructure(getNestedUnion, []),
+		], []);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			string | number | boolean | bigint,
+			"strict"
+		>;
+
+		expect(getNestedUnion).not.toHaveBeenCalled();
+		expect(getNumberStructure).not.toHaveBeenCalled();
+		expect(structure.definition.values.value).toStrictEqual([
+			stringStructure,
+			numberStructure,
+			booleanStructure,
+			bigintStructure,
+		]);
+		expect(getNestedUnion).toHaveBeenCalledTimes(1);
+		expect(getNumberStructure).toHaveBeenCalledTimes(1);
+		expect(structure.check(true)).toStrictEqual(
+			DEither.right("check-success", true),
+		);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				structure.check(null),
+				"check-error",
+			).issues,
+		).toMatchObject([
+			{
+				data: null,
+				path: "(union: 0)",
+			},
+			{
+				data: null,
+				path: "(union: 1)",
+			},
+			{
+				data: null,
+				path: "(union: 2)",
+			},
+			{
+				data: null,
+				path: "(union: 3)",
+			},
+			{
+				data: null,
+				path: "",
+			},
+		]);
 	});
 
 	it("encodes and decodes values with the first matching branch", async() => {

@@ -1,14 +1,20 @@
-import { type ObjectStructure, type Structure, unionStructureKind, structureIdentifier, type StructureInitialValue } from "../structure";
+import { type ObjectStructure, type Structure, unionStructureKind, structureIdentifier, type StructureInitialValue, lazyStructureKind } from "../structure";
 import { union } from "./union";
 import { object } from "./object";
 import { isUndefinedStructure } from "./isUndefinedStructure";
+import { type IsEqual } from "@scripts/common";
+import { lazy } from "./lazy";
 
 function requiredStructure(structure: Structure) {
+	if (structureIdentifier(structure, lazyStructureKind)) {
+		return requiredStructure(structure.definition.getter.value);
+	}
+
 	if (!structureIdentifier(structure, unionStructureKind)) {
 		return structure;
 	}
 
-	const values = structure.definition.values.filter(
+	const values = structure.definition.values.value.filter(
 		(value) => !isUndefinedStructure(value),
 	);
 
@@ -16,7 +22,7 @@ function requiredStructure(structure: Structure) {
 		return values[0]!;
 	}
 
-	if (values.length === structure.definition.values.length) {
+	if (values.length === structure.definition.values.value.length) {
 		return structure;
 	}
 
@@ -30,10 +36,15 @@ export function required<
 	structure: GenericObjectStructure,
 ): ObjectStructure<
 	{
-		readonly [Prop in keyof GenericObjectStructureValue]-?: Exclude<
+		readonly [Prop in keyof GenericObjectStructureValue]-?: IsEqual<
 			GenericObjectStructureValue[Prop],
 			undefined
-		>
+		> extends true
+			? undefined
+			: Exclude<
+				GenericObjectStructureValue[Prop],
+				undefined
+			>
 	},
 	readonly []
 >;
@@ -46,7 +57,7 @@ export function required(
 			structure.definition.shape.value.map(
 				(entry) => [
 					entry.key,
-					requiredStructure(entry.value),
+					lazy(() => requiredStructure(entry.value)),
 				],
 			),
 		),

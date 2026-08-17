@@ -2,6 +2,7 @@ import { type Structure, type StructureInitialValue, type StructureValue, type U
 import { union } from "./union";
 import { null as nullHelper } from "./null";
 import { isNullStructure } from "./isNullStructure";
+import { lazy } from "./lazy";
 
 export function nullable<
 	GenericStructure extends Structure,
@@ -19,17 +20,23 @@ export function nullable<
 export function nullable(
 	structure: Structure,
 ): UnionStructure {
-	if (structureIdentifier(structure, unionStructureKind)) {
-		return structure.definition.values.some(isNullStructure)
-			? union(structure.definition.values)
-			: union([
-				nullHelper(),
-				...structure.definition.values,
-			]);
-	}
-
 	return union([
-		nullHelper(),
-		structure,
+		lazy(
+			() => {
+				if (structureIdentifier(structure, unionStructureKind)) {
+					return structure.definition.values.value.some(isNullStructure)
+						? structure
+						: union([
+							nullHelper(),
+							union(structure.definition.values.value),
+						]);
+				}
+
+				return union([
+					nullHelper(),
+					structure,
+				]);
+			},
+		),
 	]);
 }

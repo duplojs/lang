@@ -21,7 +21,7 @@ describe("union", () => {
 			"strict"
 		>;
 
-		expect(structure.definition.values).toHaveLength(3);
+		expect(structure.definition.values.value).toHaveLength(3);
 		expect(structure.definition.constraints).toStrictEqual([]);
 		expect(success).toStrictEqual(DEither.right("check-success", "value"));
 		expect(

@@ -36,6 +36,36 @@ describe("required", () => {
 		})).toBe(false);
 	});
 
+	it("resolves lazy property structures before removing undefined", () => {
+		const getStructure = vi.fn(
+			() => DDataStructure.optional(DDataStructure.string()),
+		);
+		const structure = DDataStructure.required(
+			DDataStructure.object({
+				name: DDataStructure.lazy(getStructure),
+			}),
+		);
+
+		type _CheckStructureValue = ExpectType<
+			DDataStructure.StructureValue<typeof structure>,
+			{
+				readonly name: string;
+			},
+			"strict"
+		>;
+
+		expect(getStructure).not.toHaveBeenCalled();
+		expect(
+			"values" in (structure.definition.shape.value[0]!.value as DDataStructure.LazyStructure)
+				.definition.getter.value.definition,
+		).toBe(false);
+		expect(getStructure).toHaveBeenCalledTimes(1);
+		expect(structure.check({ name: "Jane" })).toStrictEqual(
+			DEither.right("check-success", { name: "Jane" }),
+		);
+		expect(structure.is({ name: undefined })).toBe(false);
+	});
+
 	it("keeps a union only when more than one value remains", () => {
 		const structure = DDataStructure.required(
 			DDataStructure.object({
@@ -59,10 +89,15 @@ describe("required", () => {
 			"strict"
 		>;
 
-		expect("values" in structure.definition.shape.value[0]!.value.definition).toBe(false);
 		expect(
-			(structure.definition.shape.value[1]!.value as DDataStructure.UnionStructure)
-				.definition.values,
+			"values" in (structure.definition.shape.value[0]!.value as DDataStructure.LazyStructure)
+				.definition.getter.value.definition,
+		).toBe(false);
+		expect(
+			(
+				(structure.definition.shape.value[1]!.value as DDataStructure.LazyStructure)
+					.definition.getter.value as DDataStructure.UnionStructure
+			).definition.values.value,
 		).toHaveLength(2);
 		expect(structure.check({
 			alone: "Jane",
@@ -95,10 +130,15 @@ describe("required", () => {
 			"strict"
 		>;
 
-		expect("values" in structure.definition.shape.value[0]!.value.definition).toBe(false);
 		expect(
-			(structure.definition.shape.value[1]!.value as DDataStructure.UnionStructure)
-				.definition.values,
+			"values" in (structure.definition.shape.value[0]!.value as DDataStructure.LazyStructure)
+				.definition.getter.value.definition,
+		).toBe(false);
+		expect(
+			(
+				(structure.definition.shape.value[1]!.value as DDataStructure.LazyStructure)
+					.definition.getter.value as DDataStructure.UnionStructure
+			).definition.values.value,
 		).toHaveLength(2);
 		expect(structure.check({
 			name: "Jane",
