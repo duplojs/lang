@@ -1,6 +1,10 @@
 import { DCommon, DEither, DInvocation, type ExpectType } from "@scripts";
 
 describe("aborter", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
 	it("should provide an abort controller and continue the flow", async() => {
 		const abortControllers: AbortController[] = [];
 		const useFlow = DInvocation.flow(
@@ -85,6 +89,69 @@ describe("aborter", () => {
 		await expect(result).resolves.toStrictEqual(
 			DEither.left("signal-aborted", expect.any(DInvocation.AbortErrorFlowController)),
 		);
+	});
+
+	it("should exit the flow when the timeout aborts a pending execution", async() => {
+		vi.useFakeTimers();
+
+		const abortControllers: AbortController[] = [];
+		const pendingResult = DCommon.createExternalPromise<`accepted-${string}`>();
+		const useFlow = DInvocation.flow(
+			(input: string) => input,
+			DInvocation.aborter((input, abortController) => {
+				abortControllers.push(abortController);
+				abortController.signal.addEventListener("abort", () => {
+					pendingResult.reject(abortController.signal.reason);
+				});
+
+				return pendingResult.promise.then(
+					() => `accepted-${input}` as `accepted-${string}`,
+				);
+			}, { timeout: "10ms" }),
+		);
+		const result = useFlow("first");
+
+		expect(abortControllers).toHaveLength(1);
+		expect(abortControllers[0]!.signal.aborted).toBe(false);
+
+		await vi.advanceTimersByTimeAsync(9);
+		expect(abortControllers[0]!.signal.aborted).toBe(false);
+
+		await vi.advanceTimersByTimeAsync(1);
+		expect(abortControllers[0]!.signal.aborted).toBe(true);
+		expect(abortControllers[0]!.signal.reason).toBeInstanceOf(DInvocation.AbortErrorFlowController);
+
+		await expect(result).resolves.toStrictEqual(
+			DEither.left("signal-aborted", abortControllers[0]!.signal.reason),
+		);
+	});
+
+	it("should keep the result when the execution completes before the timeout", async() => {
+		vi.useFakeTimers();
+
+		const abortControllers: AbortController[] = [];
+		const useFlow = DInvocation.flow(
+			(input: string) => input,
+			DInvocation.aborter((input, abortController) => {
+				abortControllers.push(abortController);
+
+				return Promise.resolve(`accepted-${input}` as `accepted-${string}`);
+			}, { timeout: "10ms" }),
+		);
+		const result = useFlow("first");
+
+		await expect(result).resolves.toBe("accepted-first");
+		expect(abortControllers).toHaveLength(1);
+		expect(abortControllers[0]!.signal.aborted).toBe(false);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<
+				| `accepted-${string}`
+				| DEither.Left<"signal-aborted", DInvocation.AbortErrorFlowController>
+			>,
+			"strict"
+		>;
 	});
 
 	it("should keep an existing flow exit", async() => {

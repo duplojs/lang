@@ -1,4 +1,4 @@
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
 import * as DKind from "@scripts/kind";
 import * as DEither from "@scripts/either";
 import { createKind } from "../../../kind";
@@ -33,6 +33,10 @@ export class AbortErrorFlowController extends DKind.parentClass(
 	}
 }
 
+export interface FlowControllerAborterParams {
+	timeout?: DCommon.TimeInString;
+}
+
 export const aborter = createFlowController(
 	flowControllerAborterKind,
 	({ init, exitFlow }) => <
@@ -43,11 +47,15 @@ export const aborter = createFlowController(
 			input: GenericInput,
 			aborter: AbortController,
 		) => GenericOutput,
+		params?: FlowControllerAborterParams,
 	): FlowControllerAborter<
 		GenericInput,
 		GenericOutput
 	> => {
 		let aborter: AbortController | undefined = undefined;
+		const formattedTimeout = params?.timeout === undefined
+			? undefined
+			: DCommon.stringToMillisecond(params.timeout);
 
 		return init<FlowControllerAborter>(
 			async(previousFunction) => {
@@ -58,6 +66,14 @@ export const aborter = createFlowController(
 				aborter?.abort(new AbortErrorFlowController(aborter));
 				const currentAborter = new AbortController();
 				aborter = currentAborter;
+				if (formattedTimeout !== undefined) {
+					setTimeout(
+						() => void currentAborter.abort(
+							new AbortErrorFlowController(currentAborter),
+						),
+						formattedTimeout,
+					);
+				}
 
 				try {
 					const abortResult = await theFunction(result as never, currentAborter);

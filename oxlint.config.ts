@@ -35,5 +35,6 @@ export default defineConfig({
 		"dist/**",
 		".commands/**",
 		".agents/**",
+		"global.d.ts",
 	],
 });

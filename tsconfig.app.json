@@ -1,7 +1,7 @@
 {
   "extends": "@duplojs/code-config/tsconfig/base.json",
   "compilerOptions": {
-	"types": ["node"],
+	"types": ["./global.d.ts"],
     "paths": {
 	  "@scripts": ["./scripts/index.ts"],
       "@scripts/*": ["./scripts/*"],
