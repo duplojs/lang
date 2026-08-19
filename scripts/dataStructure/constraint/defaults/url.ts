@@ -11,7 +11,7 @@ export interface UrlConstraintDefinition extends ConstraintDefinition {
 	readonly params?: DString.IsUrlParams;
 }
 
-export interface UrlConstraint extends DCommon.UnionToIntersection<
+export interface UrlConstraint extends DCommon.Forward<
 	& Constraint<
 		string,
 		string & DString.Url,

@@ -37,7 +37,7 @@ export interface RecordStructure<
 	GenericValue extends Record<string, unknown> = Record<string, unknown>,
 	GenericConstraints extends readonly Constraint<GenericValue>[] =
 		readonly Constraint<GenericValue>[],
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Structure<GenericValue, RecordStructureDefinition<GenericConstraints>>
 		& DKind.Kind<typeof recordStructureKind>
 	> {

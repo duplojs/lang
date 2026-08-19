@@ -13,7 +13,7 @@ export interface NumberLiteralTypeDefinition extends TypeDefinition {
 
 export interface NumberLiteralType<
 	GenericValue extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheNumber,
 		GenericValue,

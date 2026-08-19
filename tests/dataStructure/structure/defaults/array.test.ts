@@ -227,7 +227,7 @@ describe("ArrayStructure", () => {
 				: DDataStructure.ErrorSymbol,
 		);
 
-		interface ArrayConstraint extends DCommon.UnionToIntersection<
+		interface ArrayConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<readonly string[]>
 			& DKind.Kind<typeof constraintKind>
 		> {}
@@ -271,7 +271,7 @@ describe("ArrayStructure", () => {
 	it("returns encode and decode errors when array constraints fail", async() => {
 		const constraintKind = DDataStructure.createKind("test-public-array-failing-constraint");
 
-		interface FailingConstraint extends DCommon.UnionToIntersection<
+		interface FailingConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<readonly string[]>
 			& DKind.Kind<typeof constraintKind>
 		> {}
@@ -324,7 +324,7 @@ describe("ArrayStructure", () => {
 		const constraintKind = DDataStructure.createKind("test-public-array-encode-after-constraint");
 		const encode = vi.fn((data: string) => data.length);
 
-		interface FailingConstraint extends DCommon.UnionToIntersection<
+		interface FailingConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<readonly string[]>
 			& DKind.Kind<typeof constraintKind>
 		> {}

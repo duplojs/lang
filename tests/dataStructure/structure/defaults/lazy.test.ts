@@ -368,7 +368,7 @@ describe("LazyStructure", () => {
 	it("reports async errors in synchronous APIs when the deferred structure is asynchronous", async() => {
 		const asyncTypeKind = DDataStructure.createKind("test-public-async-lazy-type");
 
-		interface AsyncType extends DCommon.UnionToIntersection<
+		interface AsyncType extends DCommon.Forward<
 			& DDataStructure.Type<DDataStructure.TheString>
 			& DKind.Kind<typeof asyncTypeKind>
 		> {}

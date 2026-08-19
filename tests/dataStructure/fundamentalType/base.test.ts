@@ -12,7 +12,7 @@ describe("createFundamentalType", () => {
 				: DDataStructure.ErrorSymbol,
 		);
 
-		interface TestFundamentalType extends DCommon.UnionToIntersection<
+		interface TestFundamentalType extends DCommon.Forward<
 			& DDataStructure.FundamentalType<string>
 			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}
@@ -61,7 +61,7 @@ describe("createFundamentalType", () => {
 			),
 		);
 
-		interface TestFundamentalType extends DCommon.UnionToIntersection<
+		interface TestFundamentalType extends DCommon.Forward<
 			& DDataStructure.FundamentalType<string>
 			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}

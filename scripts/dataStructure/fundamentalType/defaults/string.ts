@@ -6,7 +6,7 @@ import { createKind } from "../../kind";
 
 export const stringFundamentalTypeKind = createKind("string-fundamental-type");
 
-export interface TheString extends DCommon.UnionToIntersection<
+export interface TheString extends DCommon.Forward<
 	& FundamentalType<string>
 	& DKind.Kind<typeof stringFundamentalTypeKind>
 > {}

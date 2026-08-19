@@ -11,7 +11,7 @@ export interface TrimmedConstraintDefinition extends ConstraintDefinition {
 
 }
 
-export interface TrimmedConstraint extends DCommon.UnionToIntersection<
+export interface TrimmedConstraint extends DCommon.Forward<
 	& Constraint<
 		string,
 		string & DString.Trimmed,

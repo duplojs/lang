@@ -8,7 +8,7 @@ export const flowControllerRetryKind = createKind("flow-controller-retry");
 
 export interface FlowControllerRetry<
 	GenericInput extends unknown = unknown,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& FlowController<GenericInput, Promise<never>>
 	& DKind.Kind<typeof flowControllerRetryKind>
 	> {

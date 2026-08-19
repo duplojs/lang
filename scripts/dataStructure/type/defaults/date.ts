@@ -10,7 +10,7 @@ export const dateTypeKind = createKind("date-type");
 
 export interface DateTypeDefinition extends TypeDefinition {}
 
-export interface DateType extends DCommon.UnionToIntersection<
+export interface DateType extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheDate,
 		DChrono.TheDate,

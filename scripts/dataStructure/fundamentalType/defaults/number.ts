@@ -6,7 +6,7 @@ import { createKind } from "../../kind";
 
 export const numberFundamentalTypeKind = createKind("number-fundamental-type");
 
-export interface TheNumber extends DCommon.UnionToIntersection<
+export interface TheNumber extends DCommon.Forward<
 	& FundamentalType<number>
 	& DKind.Kind<typeof numberFundamentalTypeKind>
 > {}

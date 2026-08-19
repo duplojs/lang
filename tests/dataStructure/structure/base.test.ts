@@ -21,7 +21,7 @@ describe("createStructure", () => {
 				: DDataStructure.ErrorSymbol,
 		);
 
-		interface StringConstraint extends DCommon.UnionToIntersection<
+		interface StringConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<string>
 			& DKind.Kind<typeof testConstraintKind>
 		> {}
@@ -39,7 +39,7 @@ describe("createStructure", () => {
 
 		const passingConstraint = TestConstraint();
 
-		interface TestStructure extends DCommon.UnionToIntersection<
+		interface TestStructure extends DCommon.Forward<
 			& DDataStructure.Structure<
 				string,
 				DDataStructure.StructureDefinition<readonly [StringConstraint]>
@@ -105,7 +105,7 @@ describe("createStructure", () => {
 			readonly result: DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol;
 		}
 
-		interface TestConstraint extends DCommon.UnionToIntersection<
+		interface TestConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<
 				string,
 				string,
@@ -270,7 +270,7 @@ describe("createStructure", () => {
 			readonly result: DDataStructure.SuccessSymbol | DDataStructure.ErrorSymbol;
 		}
 
-		interface TestConstraint extends DCommon.UnionToIntersection<
+		interface TestConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<string, string, TestConstraintDefinition>
 			& DKind.Kind<typeof testConstraintKind>
 		> {}
@@ -518,7 +518,7 @@ describe("createStructure", () => {
 		const testStructureKind = DDataStructure.createKind("test-encode-structure");
 		const testFundamentalTypeKind = DDataStructure.createKind("test-encode-string-fundamental-type");
 
-		interface TestFundamentalType extends DCommon.UnionToIntersection<
+		interface TestFundamentalType extends DCommon.Forward<
 			& DDataStructure.FundamentalType<string>
 			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}
@@ -627,7 +627,7 @@ describe("createStructure", () => {
 		const testStructureKind = DDataStructure.createKind("test-decode-structure");
 		const testFundamentalTypeKind = DDataStructure.createKind("test-decode-string-fundamental-type");
 
-		interface TestFundamentalType extends DCommon.UnionToIntersection<
+		interface TestFundamentalType extends DCommon.Forward<
 			& DDataStructure.FundamentalType<string>
 			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}

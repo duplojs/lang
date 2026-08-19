@@ -7,7 +7,7 @@ export const flowControllerTimeoutKind = createKind("flow-controller-timeout");
 
 export interface FlowControllerTimeout<
 	GenericInput extends unknown = unknown,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& FlowController<GenericInput, Promise<never>>
 	& DKind.Kind<typeof flowControllerTimeoutKind>
 	> {

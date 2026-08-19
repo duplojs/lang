@@ -11,7 +11,7 @@ export interface UuidConstraintDefinition extends ConstraintDefinition {
 	readonly regex: RegExp;
 }
 
-export interface UuidConstraint extends DCommon.UnionToIntersection<
+export interface UuidConstraint extends DCommon.Forward<
 	& Constraint<
 		string,
 		string & DString.Uuid,

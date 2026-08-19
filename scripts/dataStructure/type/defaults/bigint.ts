@@ -9,7 +9,7 @@ export const bigintTypeKind = createKind("bigint-type");
 
 export interface BigintTypeDefinition extends TypeDefinition {}
 
-export interface BigintType extends DCommon.UnionToIntersection<
+export interface BigintType extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheBigint,
 		bigint,

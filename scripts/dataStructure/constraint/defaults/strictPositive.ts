@@ -11,7 +11,7 @@ export interface StrictPositiveConstraintDefinition extends ConstraintDefinition
 
 }
 
-export interface StrictPositiveConstraint extends DCommon.UnionToIntersection<
+export interface StrictPositiveConstraint extends DCommon.Forward<
 	& Constraint<
 		number,
 		number & DNumber.StrictPositive,

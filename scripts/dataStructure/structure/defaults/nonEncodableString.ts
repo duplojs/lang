@@ -12,7 +12,7 @@ export interface NonEncodableStringStructureDefinition extends StructureDefiniti
 	readonly value: string;
 }
 
-export interface NonEncodableStringStructure extends DCommon.UnionToIntersection<
+export interface NonEncodableStringStructure extends DCommon.Forward<
 	& Structure<
 		// oxlint-disable-next-line typescript/no-wrapper-object-types
 		String,

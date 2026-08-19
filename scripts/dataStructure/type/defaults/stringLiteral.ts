@@ -13,7 +13,7 @@ export interface StringLiteralTypeDefinition extends TypeDefinition {
 
 export interface StringLiteralType<
 	GenericValue extends string = string,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheString,
 		GenericValue,

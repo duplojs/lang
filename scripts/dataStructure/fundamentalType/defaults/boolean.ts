@@ -6,7 +6,7 @@ import { createKind } from "../../kind";
 
 export const booleanFundamentalTypeKind = createKind("boolean-fundamental-type");
 
-export interface TheBoolean extends DCommon.UnionToIntersection<
+export interface TheBoolean extends DCommon.Forward<
 	& FundamentalType<boolean>
 	& DKind.Kind<typeof booleanFundamentalTypeKind>
 > {}

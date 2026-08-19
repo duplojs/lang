@@ -329,7 +329,7 @@ describe("UnionStructure", () => {
 				: DDataStructure.SuccessSymbol,
 		);
 
-		interface UnionConstraint extends DCommon.UnionToIntersection<
+		interface UnionConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<number | string>
 			& DKind.Kind<typeof constraintKind>
 		> {}
@@ -429,7 +429,7 @@ describe("UnionStructure", () => {
 	it("returns async errors for asynchronous branches in synchronous APIs", async() => {
 		const asyncStructureKind = DDataStructure.createKind("test-public-union-async-structure");
 
-		interface AsyncStructure extends DCommon.UnionToIntersection<
+		interface AsyncStructure extends DCommon.Forward<
 			& DDataStructure.Structure<string>
 			& DKind.Kind<typeof asyncStructureKind>
 		> {}

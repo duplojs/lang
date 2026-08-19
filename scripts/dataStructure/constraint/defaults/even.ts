@@ -11,7 +11,7 @@ export interface EvenConstraintDefinition extends ConstraintDefinition {
 
 }
 
-export interface EvenConstraint extends DCommon.UnionToIntersection<
+export interface EvenConstraint extends DCommon.Forward<
 	& Constraint<
 		number,
 		number & DNumber.Even,

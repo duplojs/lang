@@ -41,7 +41,7 @@ describe("TypeStructure", () => {
 	it("returns async check errors for asynchronous types in synchronous APIs", async() => {
 		const asyncTypeKind = DDataStructure.createKind("test-public-async-type-structure-type");
 
-		interface AsyncType extends DCommon.UnionToIntersection<
+		interface AsyncType extends DCommon.Forward<
 			& DDataStructure.Type<DDataStructure.TheString>
 			& DKind.Kind<typeof asyncTypeKind>
 		> {}

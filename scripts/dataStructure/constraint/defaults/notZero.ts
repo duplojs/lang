@@ -11,7 +11,7 @@ export interface NotZeroConstraintDefinition extends ConstraintDefinition {
 
 }
 
-export interface NotZeroConstraint extends DCommon.UnionToIntersection<
+export interface NotZeroConstraint extends DCommon.Forward<
 	& Constraint<
 		number,
 		number & DNumber.NotZero,

@@ -6,7 +6,7 @@ import { createKind } from "../../kind";
 
 export const undefinedFundamentalTypeKind = createKind("undefined-fundamental-type");
 
-export interface TheUndefined extends DCommon.UnionToIntersection<
+export interface TheUndefined extends DCommon.Forward<
 	& FundamentalType<undefined>
 	& DKind.Kind<typeof undefinedFundamentalTypeKind>
 > {}

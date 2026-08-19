@@ -11,7 +11,7 @@ export interface IntegerConstraintDefinition extends ConstraintDefinition {
 
 }
 
-export interface IntegerConstraint extends DCommon.UnionToIntersection<
+export interface IntegerConstraint extends DCommon.Forward<
 	& Constraint<
 		number,
 		number & DNumber.Integer,

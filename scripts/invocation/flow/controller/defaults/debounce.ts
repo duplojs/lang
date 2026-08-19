@@ -8,7 +8,7 @@ export const flowControllerDebounceKind = createKind("flow-controller-debounce")
 
 export interface FlowControllerDebounce<
 	GenericInput extends unknown = unknown,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& FlowController<
 		GenericInput,
 		Promise<

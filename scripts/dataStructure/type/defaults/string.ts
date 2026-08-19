@@ -9,7 +9,7 @@ export const stringTypeKind = createKind("string-type");
 
 export interface StringTypeDefinition extends TypeDefinition {}
 
-export interface StringType extends DCommon.UnionToIntersection<
+export interface StringType extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheString,
 		string,

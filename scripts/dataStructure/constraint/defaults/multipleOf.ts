@@ -15,7 +15,7 @@ export interface MultipleOfConstraintDefinition<
 
 export interface MultipleOfConstraint<
 	GenericMultiple extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			number,
 			number & DNumber.MultipleOf<GenericMultiple>,

@@ -9,7 +9,7 @@ export const undefinedTypeKind = createKind("undefined-type");
 
 export interface UndefinedTypeDefinition extends TypeDefinition {}
 
-export interface UndefinedType extends DCommon.UnionToIntersection<
+export interface UndefinedType extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheUndefined,
 		undefined,

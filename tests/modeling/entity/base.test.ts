@@ -426,7 +426,7 @@ describe("EntityStructure", () => {
 
 	it("returns an async error when synchronously mapping an asynchronous entity property", () => {
 		const asyncConstraintKind = DDataStructure.createKind("sync-entity-map-async-constraint");
-		interface AsyncConstraint extends DCommon.UnionToIntersection<
+		interface AsyncConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<string>
 			& DKind.Kind<typeof asyncConstraintKind>
 		> {}
@@ -629,7 +629,7 @@ describe("EntityStructure", () => {
 	it("is asynchronous when one of its properties is asynchronous", () => {
 		const asyncConstraintKind = DDataStructure.createKind("async-entity-property-constraint");
 		const asyncConstraintIsAsynchronous = vi.fn(() => true);
-		interface AsyncConstraint extends DCommon.UnionToIntersection<
+		interface AsyncConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<string>
 			& DKind.Kind<typeof asyncConstraintKind>
 		> {}

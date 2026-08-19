@@ -22,6 +22,7 @@ export type * from "./fixDeepFunctionInfer";
 export type * from "./forbiddenPromise";
 export type * from "./forbiddenUnion";
 export type * from "./forcePredicate";
+export type * from "./forward";
 export type * from "./hasSomething";
 export type * from "./isEqual";
 export type * from "./isNever";

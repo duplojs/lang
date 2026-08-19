@@ -13,7 +13,7 @@ export interface BigintLiteralTypeDefinition extends TypeDefinition {
 
 export interface BigintLiteralType<
 	GenericValue extends bigint = bigint,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheBigint,
 		GenericValue,

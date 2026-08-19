@@ -15,7 +15,7 @@ export interface MaxElementsConstraintDefinition<
 
 export interface MaxElementsConstraint<
 	GenericMax extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			readonly unknown[],
 			readonly unknown[] & DArray.MaxElements<GenericMax>,

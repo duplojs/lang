@@ -8,7 +8,7 @@ describe("createConstraint", () => {
 			readonly min: 3;
 		}
 
-		interface TestConstraint extends DCommon.UnionToIntersection<
+		interface TestConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<
 				string,
 				string & { readonly minLength: 3 },
@@ -75,7 +75,7 @@ describe("createConstraint", () => {
 			readonly min: 3;
 		}
 
-		interface TestConstraint extends DCommon.UnionToIntersection<
+		interface TestConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<
 				string,
 				string & { readonly minLength: 3 },
@@ -129,7 +129,7 @@ describe("createConstraint", () => {
 	it("sets messages directly and on cloned constraints", () => {
 		const testConstraintKind = DDataStructure.createKind("test-message-constraint");
 
-		interface TestConstraint extends DCommon.UnionToIntersection<
+		interface TestConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<string>
 			& DKind.Kind<typeof testConstraintKind>
 		> {}
@@ -181,7 +181,7 @@ describe("createConstraint", () => {
 			readonly min: number;
 		}
 
-		interface TestConstraint extends DCommon.UnionToIntersection<
+		interface TestConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<
 				string,
 				string & { readonly minLength: number },

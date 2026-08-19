@@ -82,7 +82,7 @@ export interface NewTypeStructure<
 	GenericValue extends unknown = unknown,
 	GenericNewTypeConstraint extends readonly DDataStructure.Constraint<GenericValue>[] =
 		readonly DDataStructure.Constraint<GenericValue>[],
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& DDataStructure.Structure<
 			ComputeNewType<GenericName, GenericValue, GenericNewTypeConstraint>,
 			NewTypeStructureDefinition<GenericNewTypeConstraint>

@@ -10,7 +10,7 @@ export const timeTypeKind = createKind("time-type");
 
 export interface TimeTypeDefinition extends TypeDefinition {}
 
-export interface TimeType extends DCommon.UnionToIntersection<
+export interface TimeType extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheTime,
 		DChrono.TheTime,

@@ -15,7 +15,7 @@ export interface ArrayLengthEqualConstraintDefinition<
 
 export interface ArrayLengthEqualConstraint<
 	GenericLength extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			readonly unknown[],
 			readonly unknown[] & DArray.LengthEqual<GenericLength>,

@@ -15,7 +15,7 @@ export interface LessThanConstraintDefinition<
 
 export interface LessThanConstraint<
 	GenericThreshold extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			number,
 			number & DNumber.LessThan<GenericThreshold>,

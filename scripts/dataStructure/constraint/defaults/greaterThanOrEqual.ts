@@ -15,7 +15,7 @@ export interface GreaterThanOrEqualConstraintDefinition<
 
 export interface GreaterThanOrEqualConstraint<
 	GenericThreshold extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			number,
 			number & DNumber.GreaterThanOrEqual<GenericThreshold>,

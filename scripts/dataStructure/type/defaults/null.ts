@@ -9,7 +9,7 @@ export const nullTypeKind = createKind("null-type");
 
 export interface NullTypeDefinition extends TypeDefinition {}
 
-export interface NullType extends DCommon.UnionToIntersection<
+export interface NullType extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheNull,
 		null,

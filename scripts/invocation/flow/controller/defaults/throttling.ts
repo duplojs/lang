@@ -8,7 +8,7 @@ export const flowControllerThrottlingKind = createKind("flow-controller-throttli
 
 export interface FlowControllerThrottling<
 	GenericInput extends unknown = unknown,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& FlowController<
 		GenericInput,
 		Promise<

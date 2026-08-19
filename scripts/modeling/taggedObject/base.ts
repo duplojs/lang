@@ -68,7 +68,7 @@ export interface TaggedObjectStructureDefinition extends DDataStructure.Structur
 
 export interface TaggedObjectStructure<
 	GenericTaggedObject extends ObjectTag = ObjectTag,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& DDataStructure.Structure<
 			GenericTaggedObject,
 			TaggedObjectStructureDefinition

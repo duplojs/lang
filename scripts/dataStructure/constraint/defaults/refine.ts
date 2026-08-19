@@ -15,7 +15,7 @@ export interface RefineConstraintDefinition<
 export interface RefineConstraint<
 	GenericInput extends unknown = unknown,
 	GenericPredicate extends GenericInput = GenericInput,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			GenericInput,
 			GenericPredicate,

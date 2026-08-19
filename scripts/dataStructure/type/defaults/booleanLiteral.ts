@@ -13,7 +13,7 @@ export interface BooleanLiteralTypeDefinition extends TypeDefinition {
 
 export interface BooleanLiteralType<
 	GenericValue extends boolean = boolean,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheBoolean,
 		GenericValue,

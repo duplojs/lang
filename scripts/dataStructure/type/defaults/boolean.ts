@@ -9,7 +9,7 @@ export const booleanTypeKind = createKind("boolean-type");
 
 export interface BooleanTypeDefinition extends TypeDefinition {}
 
-export interface BooleanType extends DCommon.UnionToIntersection<
+export interface BooleanType extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheBoolean,
 		boolean,

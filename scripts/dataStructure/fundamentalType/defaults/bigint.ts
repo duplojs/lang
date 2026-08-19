@@ -6,7 +6,7 @@ import { createKind } from "../../kind";
 
 export const bigintFundamentalTypeKind = createKind("bigint-fundamental-type");
 
-export interface TheBigint extends DCommon.UnionToIntersection<
+export interface TheBigint extends DCommon.Forward<
 	& FundamentalType<bigint>
 	& DKind.Kind<typeof bigintFundamentalTypeKind>
 > {}

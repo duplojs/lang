@@ -23,7 +23,7 @@ export interface AllowedCharactersConstraintDefinition<
 
 export interface AllowedCharactersConstraint<
 	GenericCharactersRange extends DString.CharactersRange = DString.CharactersRange,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			string,
 			AllowedCharactersConstraintValue<GenericCharactersRange>,

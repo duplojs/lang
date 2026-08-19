@@ -20,7 +20,7 @@ export interface UnionStructure<
 	GenericValue extends unknown = unknown,
 	GenericConstraints extends readonly Constraint<GenericValue>[] =
 		readonly Constraint<GenericValue>[],
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Structure<GenericValue, UnionStructureDefinition<GenericConstraints>>
 		& DKind.Kind<typeof unionStructureKind>
 	> {

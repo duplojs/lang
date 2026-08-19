@@ -9,7 +9,7 @@ export const flowControllerAborterKind = createKind("flow-controller-aborter");
 export interface FlowControllerAborter<
 	GenericInput extends unknown = unknown,
 	GenericOutput extends unknown = unknown,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& FlowController<
 		GenericInput,
 		Promise<

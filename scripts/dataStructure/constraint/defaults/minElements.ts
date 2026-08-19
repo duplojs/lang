@@ -15,7 +15,7 @@ export interface MinElementsConstraintDefinition<
 
 export interface MinElementsConstraint<
 	GenericMin extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			readonly unknown[],
 			readonly unknown[] & DArray.MinElements<GenericMin>,

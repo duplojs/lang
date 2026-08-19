@@ -5,7 +5,7 @@ describe("createType", () => {
 		const testFundamentalTypeKind = DDataStructure.createKind("test-string-fundamental-type");
 		const testTypeKind = DDataStructure.createKind("test-type");
 
-		interface TestFundamentalType extends DCommon.UnionToIntersection<
+		interface TestFundamentalType extends DCommon.Forward<
 			& DDataStructure.FundamentalType<string>
 			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}
@@ -27,7 +27,7 @@ describe("createType", () => {
 			readonly literal: "valid";
 		}
 
-		interface TestType extends DCommon.UnionToIntersection<
+		interface TestType extends DCommon.Forward<
 			& DDataStructure.Type<
 				typeof fundamentalType,
 				"valid",
@@ -103,7 +103,7 @@ describe("createType", () => {
 		const testFundamentalTypeKind = DDataStructure.createKind("test-string-error-handler-fundamental-type");
 		const testTypeKind = DDataStructure.createKind("test-type-error-handler");
 
-		interface TestFundamentalType extends DCommon.UnionToIntersection<
+		interface TestFundamentalType extends DCommon.Forward<
 			& DDataStructure.FundamentalType<string>
 			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}
@@ -116,7 +116,7 @@ describe("createType", () => {
 			fundamentalTypeExecuteCheck,
 		);
 
-		interface TestType extends DCommon.UnionToIntersection<
+		interface TestType extends DCommon.Forward<
 			& DDataStructure.Type<typeof fundamentalType>
 			& DKind.Kind<typeof testTypeKind>
 		> {}
@@ -156,7 +156,7 @@ describe("createType", () => {
 			readonly literal: "valid";
 		}
 
-		interface TestType extends DCommon.UnionToIntersection<
+		interface TestType extends DCommon.Forward<
 			& DDataStructure.Type<
 				typeof DDataStructure.TheString,
 				"valid",
@@ -209,7 +209,7 @@ describe("createType", () => {
 	it("sets messages directly and on cloned types", () => {
 		const testTypeKind = DDataStructure.createKind("test-message-type");
 
-		interface TestType extends DCommon.UnionToIntersection<
+		interface TestType extends DCommon.Forward<
 			& DDataStructure.Type<typeof DDataStructure.TheString>
 			& DKind.Kind<typeof testTypeKind>
 		> {}
@@ -257,7 +257,7 @@ describe("createType", () => {
 		const testFundamentalTypeKind = DDataStructure.createKind("test-async-string-fundamental-type");
 		const testTypeKind = DDataStructure.createKind("test-async-type");
 
-		interface TestFundamentalType extends DCommon.UnionToIntersection<
+		interface TestFundamentalType extends DCommon.Forward<
 			& DDataStructure.FundamentalType<string>
 			& DKind.Kind<typeof testFundamentalTypeKind>
 		> {}
@@ -275,7 +275,7 @@ describe("createType", () => {
 			fundamentalTypeExecuteCheck,
 		);
 
-		interface TestType extends DCommon.UnionToIntersection<
+		interface TestType extends DCommon.Forward<
 			& DDataStructure.Type<typeof fundamentalType>
 			& DKind.Kind<typeof testTypeKind>
 		> {}

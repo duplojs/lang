@@ -9,7 +9,7 @@ export const flowControllerFilterKind = createKind("flow-controller-filter");
 export interface FlowControllerFilter<
 	GenericInput extends unknown = unknown,
 	GenericOutput extends unknown = unknown,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 	& FlowController<
 		GenericInput,
 		DCommon.SplitPromise<GenericOutput> extends infer InferredOutput

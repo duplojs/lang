@@ -15,7 +15,7 @@ export interface MaxCharactersConstraintDefinition<
 
 export interface MaxCharactersConstraint<
 	GenericMax extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			string,
 			string & DString.MaxCharacters<GenericMax>,

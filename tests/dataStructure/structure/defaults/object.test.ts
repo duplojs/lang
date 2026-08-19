@@ -196,7 +196,7 @@ describe("ObjectStructure", () => {
 	it("returns async check errors for asynchronous shaped structures in synchronous APIs", async() => {
 		const asyncTypeKind = DDataStructure.createKind("test-public-async-object-type");
 
-		interface AsyncType extends DCommon.UnionToIntersection<
+		interface AsyncType extends DCommon.Forward<
 			& DDataStructure.Type<DDataStructure.TheString>
 			& DKind.Kind<typeof asyncTypeKind>
 		> {}
@@ -313,7 +313,7 @@ describe("ObjectStructure", () => {
 				: DDataStructure.ErrorSymbol,
 		);
 
-		interface SourceConstraint extends DCommon.UnionToIntersection<
+		interface SourceConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<{ readonly name: string }>
 			& DKind.Kind<typeof constraintKind>
 		> {}
@@ -440,7 +440,7 @@ describe("ObjectStructure", () => {
 		const constraintKind = DDataStructure.createKind("test-public-object-encode-error");
 		const encode = vi.fn((data: string) => data.length);
 
-		interface FailingConstraint extends DCommon.UnionToIntersection<
+		interface FailingConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<{ readonly name: string }>
 			& DKind.Kind<typeof constraintKind>
 		> {}
@@ -672,7 +672,7 @@ describe("ObjectStructure", () => {
 	it("returns decode errors when decoded constraints fail", async() => {
 		const constraintKind = DDataStructure.createKind("test-public-object-decode-error");
 
-		interface FailingConstraint extends DCommon.UnionToIntersection<
+		interface FailingConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<{ readonly name: string }>
 			& DKind.Kind<typeof constraintKind>
 		> {}

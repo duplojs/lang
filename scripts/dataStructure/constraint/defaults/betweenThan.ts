@@ -18,7 +18,7 @@ export interface BetweenThanConstraintDefinition<
 export interface BetweenThanConstraint<
 	GenericGreater extends number = number,
 	GenericLess extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			number,
 			number & DNumber.GreaterThan<GenericGreater> & DNumber.LessThan<GenericLess>,

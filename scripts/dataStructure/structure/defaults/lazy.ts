@@ -19,7 +19,7 @@ export interface LazyStructure<
 	GenericValue extends unknown = unknown,
 	GenericConstraints extends readonly Constraint<GenericValue>[] =
 		readonly Constraint<GenericValue>[],
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Structure<GenericValue, LazyStructureDefinition<GenericConstraints>>
 		& DKind.Kind<typeof lazyStructureKind>
 	> {

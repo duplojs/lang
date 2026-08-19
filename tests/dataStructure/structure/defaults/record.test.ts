@@ -419,7 +419,7 @@ describe("RecordStructure", () => {
 	it("returns async errors for asynchronous key or value structures in synchronous APIs", () => {
 		const asyncTypeKind = DDataStructure.createKind("test-public-async-record-type");
 
-		interface AsyncType extends DCommon.UnionToIntersection<
+		interface AsyncType extends DCommon.Forward<
 			& DDataStructure.Type<DDataStructure.TheString>
 			& DKind.Kind<typeof asyncTypeKind>
 		> {}

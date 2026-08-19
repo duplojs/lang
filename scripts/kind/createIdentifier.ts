@@ -15,7 +15,7 @@ export function createKindIdentifier<
 	function identifier<
 		GenericKindHandler extends KindHandlers,
 		GenericInput extends unknown,
-		GenericGroupedKind extends DCommon.UnionToIntersection<
+		GenericGroupedKind extends DCommon.Forward<
 			GenericKindHandler extends Handler
 				? Kind<GenericKindHandler>
 				: never
@@ -44,7 +44,7 @@ export function createKindIdentifier<
 	function identifier<
 		GenericKindHandler extends KindHandlers,
 		GenericInput extends unknown,
-		GenericGroupedKind extends DCommon.UnionToIntersection<
+		GenericGroupedKind extends DCommon.Forward<
 			GenericKindHandler extends Handler
 				? Kind<GenericKindHandler>
 				: never

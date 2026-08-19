@@ -11,7 +11,7 @@ export interface OddConstraintDefinition extends ConstraintDefinition {
 
 }
 
-export interface OddConstraint extends DCommon.UnionToIntersection<
+export interface OddConstraint extends DCommon.Forward<
 	& Constraint<
 		number,
 		number & DNumber.Odd,

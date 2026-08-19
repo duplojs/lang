@@ -9,7 +9,7 @@ export const numberTypeKind = createKind("number-type");
 
 export interface NumberTypeDefinition extends TypeDefinition {}
 
-export interface NumberType extends DCommon.UnionToIntersection<
+export interface NumberType extends DCommon.Forward<
 	& Type<
 		FundamentalType.TheNumber,
 		number,

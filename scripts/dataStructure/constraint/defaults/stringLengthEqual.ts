@@ -15,7 +15,7 @@ export interface StringLengthEqualConstraintDefinition<
 
 export interface StringLengthEqualConstraint<
 	GenericLength extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			string,
 			string & DString.LengthEqual<GenericLength>,

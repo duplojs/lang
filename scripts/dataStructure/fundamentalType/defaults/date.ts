@@ -7,7 +7,7 @@ import { createKind } from "../../kind";
 
 export const dateFundamentalTypeKind = createKind("date-fundamental-type");
 
-export interface TheDate extends DCommon.UnionToIntersection<
+export interface TheDate extends DCommon.Forward<
 	& FundamentalType<DChrono.TheDate>
 	& DKind.Kind<typeof dateFundamentalTypeKind>
 > {}

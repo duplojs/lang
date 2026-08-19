@@ -562,7 +562,7 @@ describe("NewTypeStructure", () => {
 
 	it("returns an async error when synchronously mapping an asynchronous new type", () => {
 		const asyncConstraintKind = DDataStructure.createKind("sync-new-type-map-async-constraint");
-		interface AsyncConstraint extends DCommon.UnionToIntersection<
+		interface AsyncConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<string>
 			& DKind.Kind<typeof asyncConstraintKind>
 		> {}
@@ -719,11 +719,11 @@ describe("NewTypeStructure", () => {
 		const asyncConstraintKind = DDataStructure.createKind("async-new-type-constraint");
 		const innerAsyncConstraintKind = DDataStructure.createKind("async-inner-constraint");
 		const asyncConstraintIsAsynchronous = vi.fn(() => true);
-		interface InnerAsyncConstraint extends DCommon.UnionToIntersection<
+		interface InnerAsyncConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<string>
 			& DKind.Kind<typeof innerAsyncConstraintKind>
 		> {}
-		interface AsyncConstraint extends DCommon.UnionToIntersection<
+		interface AsyncConstraint extends DCommon.Forward<
 			& DDataStructure.Constraint<string>
 			& DKind.Kind<typeof asyncConstraintKind>
 		> {}

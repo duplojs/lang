@@ -11,7 +11,7 @@ export interface SafeConstraintDefinition extends ConstraintDefinition {
 
 }
 
-export interface SafeConstraint extends DCommon.UnionToIntersection<
+export interface SafeConstraint extends DCommon.Forward<
 	& Constraint<
 		number,
 		number & DNumber.Safe,

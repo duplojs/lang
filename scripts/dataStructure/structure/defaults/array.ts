@@ -34,7 +34,7 @@ export interface ArrayStructure<
 	GenericValue extends readonly unknown[] = readonly unknown[],
 	GenericConstraints extends readonly Constraint<GenericValue>[] =
 		readonly Constraint<GenericValue>[],
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Structure<GenericValue, ArrayStructureDefinition<GenericConstraints>>
 		& DKind.Kind<typeof arrayStructureKind>
 	> {

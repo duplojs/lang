@@ -6,7 +6,7 @@ import { createKind } from "../../kind";
 
 export const nullFundamentalTypeKind = createKind("null-fundamental-type");
 
-export interface TheNull extends DCommon.UnionToIntersection<
+export interface TheNull extends DCommon.Forward<
 	& FundamentalType<null>
 	& DKind.Kind<typeof nullFundamentalTypeKind>
 > {}

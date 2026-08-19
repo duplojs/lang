@@ -83,7 +83,7 @@ export type EntityMap<
 export interface EntityStructure<
 	GenericName extends string = string,
 	GenericProperties extends Record<string, unknown> = Record<string, unknown>,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& DDataStructure.Structure<
 			& Entity<GenericName>
 			& GenericProperties,

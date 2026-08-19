@@ -15,7 +15,7 @@ export interface StringMinConstraintDefinition<
 
 export interface MinCharactersConstraint<
 	GenericMin extends number = number,
-> extends DCommon.UnionToIntersection<
+> extends DCommon.Forward<
 		& Constraint<
 			string,
 			string & DString.MinCharacters<GenericMin>,

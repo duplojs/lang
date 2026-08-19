@@ -11,7 +11,7 @@ export interface NotEmptyConstraintDefinition extends ConstraintDefinition {
 
 }
 
-export interface NotEmptyConstraint extends DCommon.UnionToIntersection<
+export interface NotEmptyConstraint extends DCommon.Forward<
 	& Constraint<
 		string,
 		string & DString.NotEmpty,
