@@ -48,3 +48,4 @@ export * from "./undefined";
 export * from "./union";
 export * from "./url";
 export * from "./uuid";
+export * from "./regex";

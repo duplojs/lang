@@ -2,8 +2,7 @@ import { DDataStructure, type DString, type ExpectType } from "@scripts";
 
 describe("UrlConstraint", () => {
 	it("creates a synchronous url constraint", () => {
-		const params = { protocol: /^https$/ };
-		const constraint = DDataStructure.UrlConstraint(params);
+		const constraint = DDataStructure.UrlConstraint();
 
 		type _CheckConstraint = ExpectType<
 			typeof constraint,
@@ -16,7 +15,6 @@ describe("UrlConstraint", () => {
 			"strict"
 		>;
 
-		expect(constraint.definition).toEqual({ params });
 		expect(constraint.isAsynchronous()).toBe(false);
 	});
 
@@ -29,9 +27,8 @@ describe("UrlConstraint", () => {
 	});
 
 	it("rejects invalid url values without an error handler", () => {
-		const constraint = DDataStructure.UrlConstraint({ protocol: /^https$/ });
+		const constraint = DDataStructure.UrlConstraint();
 
 		expect(constraint.executeCheck("not-a-url")).toBe(DDataStructure.ErrorSymbol);
-		expect(constraint.executeCheck("ftp://example.com")).toBe(DDataStructure.ErrorSymbol);
 	});
 });

@@ -15,7 +15,6 @@ describe("UuidConstraint", () => {
 			"strict"
 		>;
 
-		expect(constraint.definition).toEqual({ regex: DDataStructure.uuidRegex });
 		expect(constraint.isAsynchronous()).toBe(false);
 	});
 

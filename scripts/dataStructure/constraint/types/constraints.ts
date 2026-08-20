@@ -3,32 +3,38 @@ import type * as DDefaults from "../defaults";
 
 export interface ConstraintsStore {
 	allowedCharacters: DDefaults.AllowedCharactersConstraint;
-	arrayLengthEqual: DDefaults.ArrayLengthEqualConstraint;
-	betweenThan: DDefaults.BetweenThanConstraint;
-	betweenThanOrEqual: DDefaults.BetweenThanOrEqualConstraint;
 	email: DDefaults.EmailConstraint;
-	even: DDefaults.EvenConstraint;
-	greaterThan: DDefaults.GreaterThanConstraint;
-	greaterThanOrEqual: DDefaults.GreaterThanOrEqualConstraint;
-	integer: DDefaults.IntegerConstraint;
-	lessThan: DDefaults.LessThanConstraint;
-	lessThanOrEqual: DDefaults.LessThanOrEqualConstraint;
+	url: DDefaults.UrlConstraint;
+	uuid: DDefaults.UuidConstraint;
+	trimmed: DDefaults.TrimmedConstraint;
+	notEmpty: DDefaults.NotEmptyConstraint;
+	regex: DDefaults.RegexConstraint;
+	minCharacters: DDefaults.MinCharactersConstraint;
 	maxCharacters: DDefaults.MaxCharactersConstraint;
-	maxElements: DDefaults.MaxElementsConstraint;
+	stringLengthEqual: DDefaults.StringLengthEqualConstraint;
+
 	minElements: DDefaults.MinElementsConstraint;
+	maxElements: DDefaults.MaxElementsConstraint;
+	arrayLengthEqual: DDefaults.ArrayLengthEqualConstraint;
+
+	integer: DDefaults.IntegerConstraint;
+	even: DDefaults.EvenConstraint;
 	multipleOf: DDefaults.MultipleOfConstraint;
 	negative: DDefaults.NegativeConstraint;
-	notEmpty: DDefaults.NotEmptyConstraint;
 	notZero: DDefaults.NotZeroConstraint;
 	odd: DDefaults.OddConstraint;
 	positive: DDefaults.PositiveConstraint;
 	safe: DDefaults.SafeConstraint;
 	strictNegative: DDefaults.StrictNegativeConstraint;
 	strictPositive: DDefaults.StrictPositiveConstraint;
-	stringLengthEqual: DDefaults.StringLengthEqualConstraint;
-	stringMin: DDefaults.MinCharactersConstraint;
-	url: DDefaults.UrlConstraint;
-	uuid: DDefaults.UuidConstraint;
+	betweenThan: DDefaults.BetweenThanConstraint;
+	betweenThanOrEqual: DDefaults.BetweenThanOrEqualConstraint;
+	greaterThan: DDefaults.GreaterThanConstraint;
+	greaterThanOrEqual: DDefaults.GreaterThanOrEqualConstraint;
+	lessThan: DDefaults.LessThanConstraint;
+	lessThanOrEqual: DDefaults.LessThanOrEqualConstraint;
+
+	refine: DDefaults.RefineConstraint;
 }
 
 export type Constraints = Extract<

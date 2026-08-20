@@ -5,7 +5,7 @@ import { createKind } from "../../kind";
 import { type ConstraintDefinition, createConstraint, type Constraint } from "../base";
 import { ErrorSymbol, SuccessSymbol } from "../../common";
 
-export const stringMinConstraintKind = createKind("string-min-constraint");
+export const minCharactersConstraintKind = createKind("min-characters-constraint");
 
 export interface StringMinConstraintDefinition<
 	GenericMin extends number = number,
@@ -21,12 +21,12 @@ export interface MinCharactersConstraint<
 			string & DString.MinCharacters<GenericMin>,
 			StringMinConstraintDefinition<GenericMin>
 		>
-		& DKind.Kind<typeof stringMinConstraintKind>
+		& DKind.Kind<typeof minCharactersConstraintKind>
 	> {
 }
 
 export const MinCharactersConstraint = createConstraint(
-	stringMinConstraintKind,
+	minCharactersConstraintKind,
 	({ init }) => <
 		GenericMin extends number,
 	>(min: GenericMin) => init<

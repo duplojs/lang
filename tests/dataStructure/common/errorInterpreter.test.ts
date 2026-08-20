@@ -43,7 +43,7 @@ describe("createErrorInterpreter", () => {
 
 					return `Global ${source.definition.message}`;
 				},
-				"string-min-constraint": (source) => {
+				"min-characters-constraint": (source) => {
 					type _CheckSource = ExpectType<
 						typeof source,
 						DDataStructure.MinCharactersConstraint,

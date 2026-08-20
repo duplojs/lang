@@ -19,7 +19,6 @@ describe("uuid", () => {
 			"strict"
 		>;
 
-		expect(constraint.definition).toEqual({ regex: DDataStructure.uuidRegex });
 		expect(constraint.executeCheck(value)).toBe(DDataStructure.SuccessSymbol);
 		expect(constraint.executeCheck("not-a-uuid")).toBe(DDataStructure.ErrorSymbol);
 		expect(success).toStrictEqual(DEither.right("check-success", value));

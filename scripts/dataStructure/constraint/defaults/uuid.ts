@@ -7,9 +7,7 @@ import { ErrorSymbol, SuccessSymbol } from "../../common";
 
 export const uuidConstraintKind = createKind("uuid-constraint");
 
-export interface UuidConstraintDefinition extends ConstraintDefinition {
-	readonly regex: RegExp;
-}
+export interface UuidConstraintDefinition extends ConstraintDefinition { }
 
 export interface UuidConstraint extends DCommon.Forward<
 	& Constraint<
@@ -20,12 +18,10 @@ export interface UuidConstraint extends DCommon.Forward<
 	& DKind.Kind<typeof uuidConstraintKind>
 > {}
 
-export const uuidRegex = DString.uuidRegex;
-
 export const UuidConstraint = createConstraint(
 	uuidConstraintKind,
 	({ init }) => () => init<UuidConstraint>(
-		{ regex: uuidRegex },
+		{ },
 		{
 			executeCheck: (_self, data) => DString.isUuid(data)
 				? SuccessSymbol

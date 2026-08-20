@@ -25,14 +25,14 @@ export function createKindIdentifier<
 	): (
 		input: GenericInput,
 	) =>
-		// @ts-expect-error force predicate
 		input is (
 			| (
-				DCommon.UnionContain<GenericInput, GenericParent> extends true
-					? Extract<
-						GenericChildren,
-						GenericGroupedKind
-					>
+				GenericInput extends GenericParent
+					? GenericChildren extends GenericInput
+						? GenericChildren extends GenericGroupedKind
+							? GenericChildren
+							: never
+						: never
 					: never
 			)
 			| Extract<
@@ -53,14 +53,14 @@ export function createKindIdentifier<
 		input: GenericInput,
 		kind: GenericKindHandler | GenericKindHandler[],
 	):
-		// @ts-expect-error force predicate
 		input is (
 			| (
-				DCommon.UnionContain<GenericInput, GenericParent> extends true
-					? Extract<
-						GenericChildren,
-						GenericGroupedKind
-					>
+				GenericInput extends GenericParent
+					? GenericChildren extends GenericInput
+						? GenericChildren extends GenericGroupedKind
+							? GenericChildren
+							: never
+						: never
 					: never
 			)
 			| Extract<

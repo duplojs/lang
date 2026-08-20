@@ -7,9 +7,7 @@ import { ErrorSymbol, SuccessSymbol } from "../../common";
 
 export const urlConstraintKind = createKind("url-constraint");
 
-export interface UrlConstraintDefinition extends ConstraintDefinition {
-	readonly params?: DString.IsUrlParams;
-}
+export interface UrlConstraintDefinition extends ConstraintDefinition { }
 
 export interface UrlConstraint extends DCommon.Forward<
 	& Constraint<
@@ -22,13 +20,10 @@ export interface UrlConstraint extends DCommon.Forward<
 
 export const UrlConstraint = createConstraint(
 	urlConstraintKind,
-	({ init }) => (params?: DString.IsUrlParams) => init<UrlConstraint>(
-		{ params },
+	({ init }) => () => init<UrlConstraint>(
+		{ },
 		{
-			executeCheck: (self, data) => DString.isUrl(
-				data,
-				self.definition.params,
-			)
+			executeCheck: (_self, data) => DString.isUrl(data)
 				? SuccessSymbol
 				: ErrorSymbol,
 			isAsynchronous: () => false,

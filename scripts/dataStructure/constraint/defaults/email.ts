@@ -7,8 +7,7 @@ import { ErrorSymbol, SuccessSymbol } from "../../common";
 
 export const emailConstraintKind = createKind("email-constraint");
 
-export interface EmailConstraintDefinition extends ConstraintDefinition {
-}
+export interface EmailConstraintDefinition extends ConstraintDefinition { }
 
 export interface EmailConstraint extends DCommon.Forward<
 	& Constraint<
