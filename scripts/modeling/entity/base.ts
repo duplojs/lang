@@ -1,7 +1,6 @@
 import type * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
 import * as DDataStructure from "@scripts/dataStructure";
-import { type Codecs, type EncodedValue } from "@scripts/dataStructure/common";
 import * as DEither from "@scripts/either";
 import * as DObject from "@scripts/object";
 import { createKind } from "../kind";
@@ -16,13 +15,13 @@ declare module "@scripts/dataStructure" {
 declare module "@scripts/dataStructure/common" {
 	interface EncodeStructure<
 		GenericValue extends unknown,
-		GenericCodecs extends Codecs,
+		GenericCodecs extends DDataStructure.Codecs,
 	> {
 		entity: GenericValue extends Entity<infer InferredName>
 			? (
 				& Entity<InferredName>
 				& {
-					[Prop in Exclude<keyof GenericValue, DKind.KeySymbol>]: EncodedValue<
+					[Prop in Exclude<keyof GenericValue, DKind.KeySymbol>]: DDataStructure.EncodedValue<
 						GenericValue[Prop],
 						GenericCodecs
 					>

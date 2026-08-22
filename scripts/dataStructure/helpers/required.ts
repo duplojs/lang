@@ -2,7 +2,7 @@ import { type ObjectStructure, type Structure, unionStructureKind, structureIden
 import { union } from "./union";
 import { object } from "./object";
 import { isUndefinedStructure } from "./isUndefinedStructure";
-import { type IsEqual } from "@scripts/common";
+import type * as DCommon from "@scripts/common";
 import { lazy } from "./lazy";
 
 function requiredStructure(structure: Structure) {
@@ -36,7 +36,7 @@ export function required<
 	structure: GenericObjectStructure,
 ): ObjectStructure<
 	{
-		readonly [Prop in keyof GenericObjectStructureValue]-?: IsEqual<
+		readonly [Prop in keyof GenericObjectStructureValue]-?: DCommon.IsEqual<
 			GenericObjectStructureValue[Prop],
 			undefined
 		> extends true

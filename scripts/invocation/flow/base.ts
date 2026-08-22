@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/max-params */
 import * as DCommon from "@scripts/common";
+import type * as DKind from "@scripts/kind";
 import { type FlowControllerExit, type FlowController, type FlowControllerResult, flowControllerExitKind, type FlowControllerPreviousFunctionResult, flowControllerKind, type UnwrapFlowControllerResult } from "./controller";
-import { type DKind } from "@scripts";
 
 type ComputeLastUsableValue<
 	GenericAccumulator extends DCommon.AnyTuple,
