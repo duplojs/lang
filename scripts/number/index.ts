@@ -3,7 +3,6 @@ export * from "./betweenThanOrEqual";
 export type * from "./constraints";
 export * from "./greaterThan";
 export * from "./greaterThanOrEqual";
-export * from "./infer";
 export * from "./isEven";
 export * from "./isInteger";
 export * from "./isMultipleOf";

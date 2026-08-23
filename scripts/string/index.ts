@@ -9,7 +9,6 @@ export * from "./extractAll";
 export * from "./first";
 export * from "./includes";
 export * from "./indexOf";
-export * from "./infer";
 export * from "./isComposedOf";
 export * from "./isEmail";
 export * from "./isIn";

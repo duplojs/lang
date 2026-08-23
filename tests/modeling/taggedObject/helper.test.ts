@@ -1,4 +1,4 @@
-import { DDataStructure, DEither, DModeling, DString, pipe, when, type ExpectType } from "@scripts";
+import { DCommon, DDataStructure, DEither, DModeling, type DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("objectTag", () => {
 	it("create object tag from interface", () => {
@@ -18,7 +18,7 @@ describe("objectTag", () => {
 		>(
 			"superObject1",
 			{
-				prop1: DString.infer("test"),
+				prop1: DCommon.infer("test"),
 				prop2: 12,
 			},
 		);
@@ -188,7 +188,7 @@ describe("objectTag", () => {
 		const value = DModeling.taggedObject<UserCreated>(
 			"user-created",
 			{
-				name: DString.infer("Jane"),
+				name: DCommon.infer("Jane"),
 				score: 12,
 			},
 		);

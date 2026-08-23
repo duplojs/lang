@@ -1,6 +1,9 @@
 const segmentTrailingRegex = /\/$/;
 const segmentRelativeRegex = /^(\.\/)/;
 
+/**
+ * @internal
+ */
 export function fix<
 	GenericPath extends string,
 >(

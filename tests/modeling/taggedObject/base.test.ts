@@ -1,4 +1,4 @@
-import { DDataStructure, DEither, DModeling, DString, type ExpectType } from "@scripts";
+import { DCommon, DDataStructure, DEither, DModeling, type DString, type ExpectType } from "@scripts";
 
 describe("TaggedObjectStructure", () => {
 	it("creates a named tagged object structure from an existing interface", () => {
@@ -132,7 +132,7 @@ describe("TaggedObjectStructure", () => {
 		>(
 			"user-created",
 			{
-				name: DString.infer("Jane"),
+				name: DCommon.infer("Jane"),
 				score: 12,
 			},
 		);
