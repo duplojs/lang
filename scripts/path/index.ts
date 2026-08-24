@@ -1,6 +1,5 @@
 export type * from "./constraints";
 export * from "./computeRelative";
-export * from "./fix";
 export * from "./getBaseName";
 export * from "./getExtensionName";
 export * from "./getParentFolderPath";

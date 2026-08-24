@@ -1,19 +1,25 @@
-import type { Absolute, Path } from "./constraints";
-
-const containBackPathRegex = /(^|\/)\.\.(?=\/|$)/;
-const nullCharacter = String.fromCharCode(0);
-const posixAbsolutePathRegex = /^\/(?:$|[^/]+(?:\/[^/]+)*(?:\/+)?$)/;
+import type * as DString from "@scripts/string";
+import type { Absolute } from "./constraints";
+import { type IsLiteralAbsolutePath } from "./types";
+import { is } from "./is";
 
 export function isAbsolute<
 	GenericPath extends string,
 >(
-	path: GenericPath,
-): path is GenericPath & Path & Absolute;
+	value: GenericPath,
+): value is (
+	GenericPath extends Absolute
+		? GenericPath
+		: IsLiteralAbsolutePath<GenericPath> extends true
+			? GenericPath
+			: DString.IsLiteral<GenericPath> extends true
+				? never
+				: GenericPath & Absolute
+);
 
 export function isAbsolute(
-	path: string,
-): any {
-	return !path.includes(nullCharacter)
-		&& posixAbsolutePathRegex.test(path)
-		&& !containBackPathRegex.test(path);
+	value: string,
+) {
+	return value.startsWith("/")
+		&& is(value);
 }

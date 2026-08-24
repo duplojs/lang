@@ -1,9 +1,8 @@
 import type { Absolute, Path } from "./constraints";
-import { fix } from "./fix";
 
 export function computeRelative<
-	GenericSourcePath extends string & Path & Absolute,
-	GenericDestinationPath extends string & Path & Absolute,
+	GenericSourcePath extends string & Absolute,
+	GenericDestinationPath extends string & Absolute,
 >(
 	source: GenericSourcePath,
 	destination: GenericDestinationPath,
@@ -13,10 +12,15 @@ export function computeRelative(
 	source: string,
 	destination: string,
 ): string {
-	const sourceSegments = fix(source).split("/");
-	const destinationSegments = fix(destination).split("/");
+	const sourceSegments = source === "/"
+		? []
+		: source.slice(1).split("/");
 
-	let commonIndex = 1;
+	const destinationSegments = destination === "/"
+		? []
+		: destination.slice(1).split("/");
+
+	let commonIndex = 0;
 
 	while (
 		commonIndex < sourceSegments.length
@@ -29,15 +33,15 @@ export function computeRelative(
 	let result = "";
 
 	for (let index = commonIndex; index < sourceSegments.length; index++) {
-		result += result === ""
-			? ".."
-			: "/..";
+		result += result
+			? "/.."
+			: "..";
 	}
 
 	for (let index = commonIndex; index < destinationSegments.length; index++) {
-		result += result === ""
-			? destinationSegments[index]
-			: `/${destinationSegments[index]}`;
+		result += result
+			? `/${destinationSegments[index]}`
+			: destinationSegments[index];
 	}
 
 	return result || ".";

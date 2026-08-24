@@ -1,29 +1,36 @@
-import type { Path } from "./constraints";
+import type { Absolute, Path } from "./constraints";
 
-const extensionNameRegex = /\.([^./]+)$/;
+const basenameRegex = /([^/]+)$/;
 
 export interface GetExtensionNameParams {
 	withDot?: boolean;
 }
 
 export function getExtensionName<
-	GenericPath extends string & Path,
+	GenericPath extends string & (Path | Absolute),
 >(
 	path: GenericPath,
 	params?: GetExtensionNameParams,
-): string;
+) {
+	const baseName = basenameRegex.exec(path)?.[1];
 
-export function getExtensionName(
-	path: string,
-	params?: GetExtensionNameParams,
-): string {
-	const match = extensionNameRegex.exec(path);
-
-	if (match) {
-		return params?.withDot
-			? `.${match[1]!}`
-			: match[1]!;
+	if (
+		!baseName
+		|| baseName === "."
+		|| baseName === ".."
+	) {
+		return null;
 	}
 
-	return "";
+	const dotIndex = baseName.lastIndexOf(".");
+
+	if (dotIndex <= 0 || dotIndex === baseName.length - 1) {
+		return null;
+	}
+
+	const extension = baseName.slice(dotIndex + 1);
+
+	return params?.withDot
+		? `.${extension}`
+		: extension;
 }

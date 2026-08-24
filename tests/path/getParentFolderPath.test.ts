@@ -1,99 +1,101 @@
-import { DPath, pipe, type ExpectType } from "@scripts";
+import { DCommon, DPath, pipe, type ExpectType } from "@scripts";
 
 describe("getParentFolderPath", () => {
 	it("returns the parent folder for relative paths", () => {
-		const firstPath = "alpha/beta/gamma" as string;
-		const secondPath = "alpha" as string;
+		const firstPath: string & DPath.Path = DCommon.infer("alpha/beta/gamma");
+		const secondPath: string & DPath.Path = DCommon.infer("alpha/beta");
 
-		expect(DPath.is(firstPath)).toBe(true);
-		expect(DPath.is(secondPath)).toBe(true);
-
-		if (DPath.is(firstPath) && DPath.is(secondPath)) {
-			expect(DPath.getParentFolderPath(firstPath)).toBe("alpha/beta");
-			expect(DPath.getParentFolderPath(secondPath)).toBe("");
-		}
+		expect(DPath.getParentFolderPath(firstPath)).toBe("alpha/beta");
+		expect(DPath.getParentFolderPath(secondPath)).toBe("alpha");
 	});
 
-	it("handles trailing separators and paths without parent folder", () => {
-		const firstPath = "/alpha/beta/" as string;
-		const secondPath = "/alpha" as string;
-
-		expect(DPath.is(firstPath)).toBe(true);
-		expect(DPath.is(secondPath)).toBe(true);
-
-		if (DPath.is(firstPath) && DPath.is(secondPath)) {
-			expect(DPath.getParentFolderPath(firstPath)).toBe("/alpha");
-			expect(DPath.getParentFolderPath(secondPath)).toBe("");
-		}
+	it.each<string & DPath.Path>([
+		DCommon.infer("alpha"),
+		DCommon.infer("."),
+		DCommon.infer(".."),
+		DCommon.infer("../.."),
+		DCommon.infer("../alpha"),
+		DCommon.infer("../../alpha"),
+	])("returns null when no safe relative parent can be extracted from %s", (path) => {
+		expect(DPath.getParentFolderPath(path)).toBeNull();
 	});
 
-	it("returns an empty string when the parent folder cannot be found", () => {
-		const path = "/" as string;
+	it("returns the parent folder for absolute paths", () => {
+		const firstPath: string & DPath.Path = DCommon.infer("/alpha/beta");
+		const secondPath: string & DPath.Path = DCommon.infer("/alpha");
 
-		expect(DPath.is(path)).toBe(true);
+		expect(DPath.getParentFolderPath(firstPath)).toBe("/alpha");
+		expect(DPath.getParentFolderPath(secondPath)).toBe("/");
+	});
 
-		if (DPath.is(path)) {
-			expect(DPath.getParentFolderPath(path)).toBe("");
-		}
+	it("returns null for the absolute root", () => {
+		const path: string & DPath.Path = DCommon.infer("/");
+
+		expect(DPath.getParentFolderPath(path)).toBeNull();
+	});
+
+	it.each([
+		["alpha\n/beta", "alpha\n"],
+		["alpha\r/beta", "alpha\r"],
+		["alpha\u2028/beta", "alpha\u2028"],
+		["alpha\u2029/beta", "alpha\u2029"],
+	] as const)("preserves a valid line terminator in the parent of %j", (value, expected) => {
+		const path: string & DPath.Path = DCommon.infer(value);
+
+		expect(DPath.getParentFolderPath(path)).toBe(expected);
 	});
 
 	it("narrows the output when the input is a path", () => {
-		const path = "alpha/beta/gamma" as string;
+		const path: string & DPath.Path = DCommon.infer("alpha/beta/gamma");
 
-		if (DPath.is(path)) {
-			const result = DPath.getParentFolderPath(path);
+		const result = DPath.getParentFolderPath(path);
 
-			expect(result).toBe("alpha/beta");
+		expect(result).toBe("alpha/beta");
 
-			type _CheckResult = ExpectType<
-				typeof result,
-				string,
-				"strict"
-			>;
-		}
+		type _CheckResult = ExpectType<
+			typeof result,
+			string | null,
+			"strict"
+		>;
 	});
 
 	it("narrows the output when the input is an absolute path", () => {
-		const path = "/alpha/beta/gamma" as string;
+		const path: string & DPath.Path & DPath.Absolute = DCommon.infer(
+			"/alpha/beta/gamma",
+		);
 
-		if (DPath.isAbsolute(path)) {
-			const result = DPath.getParentFolderPath(path);
+		const result = DPath.getParentFolderPath(path);
 
-			expect(result).toBe("/alpha/beta");
+		expect(result).toBe("/alpha/beta");
 
-			type _CheckResult = ExpectType<
-				typeof result,
-				string,
-				"strict"
-			>;
-		}
+		type _CheckResult = ExpectType<
+			typeof result,
+			string | null,
+			"strict"
+		>;
 	});
 
 	it("requires a path input", () => {
 		const path = "alpha/beta" as string;
 
 		// @ts-expect-error path must be validated before extraction.
-		expect(DPath.getParentFolderPath(path)).toBe("alpha");
+		DPath.getParentFolderPath(path);
 	});
 
 	it("can be used directly in a pipe", () => {
-		const path = "alpha/beta" as string;
+		const path: string & DPath.Path = DCommon.infer("alpha/beta");
 
-		expect(DPath.is(path)).toBe(true);
+		const result = pipe(
+			path,
+			DPath.getParentFolderPath,
+		);
 
-		if (DPath.is(path)) {
-			const result = pipe(
-				path,
-				DPath.getParentFolderPath,
-			);
+		expect(result).toBe("alpha");
 
-			expect(result).toBe("alpha");
-
-			type _CheckResult = ExpectType<
-				typeof result,
-				string,
-				"strict"
-			>;
-		}
+		type _CheckResult = ExpectType<
+			typeof result,
+			string | null,
+			"strict"
+		>;
 	});
 });

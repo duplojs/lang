@@ -1,148 +1,142 @@
-import { DArray, DPath, pipe, type ExpectType } from "@scripts";
+import { type AnyTuple, DCommon, DPath, type ExpectType } from "@scripts";
 
 describe("resolveRelative", () => {
-	it("resolves safe path segments", () => {
-		const firstSegment = "alpha" as string;
-		const secondSegment = "beta" as string;
+	it.each<[AnyTuple<string & DPath.Path>, string & DPath.Path]>([
+		[[DCommon.infer(".")], DCommon.infer(".")],
+		[[DCommon.infer("."), DCommon.infer(".")], DCommon.infer(".")],
 
-		if (DPath.is(firstSegment) && DPath.is(secondSegment)) {
-			const result = DPath.resolveRelative([firstSegment, secondSegment]);
+		[[DCommon.infer("foo")], DCommon.infer("foo")],
+		[[DCommon.infer("foo"), DCommon.infer("bar")], DCommon.infer("foo/bar")],
+		[[DCommon.infer("foo"), DCommon.infer("bar"), DCommon.infer("baz")], DCommon.infer("foo/bar/baz")],
+		[[DCommon.infer("foo/bar"), DCommon.infer("baz")], DCommon.infer("foo/bar/baz")],
+		[[DCommon.infer("foo"), DCommon.infer("bar/baz")], DCommon.infer("foo/bar/baz")],
 
-			expect(result).toBe("alpha/beta");
+		[[DCommon.infer("..")], DCommon.infer("..")],
+		[[DCommon.infer("../..")], DCommon.infer("../..")],
+		[[DCommon.infer(".."), DCommon.infer("..")], DCommon.infer("../..")],
+		[[DCommon.infer(".."), DCommon.infer("foo")], DCommon.infer("../foo")],
+		[[DCommon.infer("../.."), DCommon.infer("foo")], DCommon.infer("../../foo")],
+		[[DCommon.infer(".."), DCommon.infer("foo/bar")], DCommon.infer("../foo/bar")],
 
-			type _CheckResult = ExpectType<
-				typeof result,
-				string & DPath.Path,
-				"strict"
-			>;
-		}
+		[[DCommon.infer("foo"), DCommon.infer("..")], DCommon.infer(".")],
+		[[DCommon.infer("foo/bar"), DCommon.infer("..")], DCommon.infer("foo")],
+		[[DCommon.infer("foo/bar"), DCommon.infer("../..")], DCommon.infer(".")],
+		[[DCommon.infer("foo"), DCommon.infer("../bar")], DCommon.infer("bar")],
+		[[DCommon.infer("foo"), DCommon.infer("../../bar")], DCommon.infer("../bar")],
+		[[DCommon.infer("foo/bar"), DCommon.infer("../../baz")], DCommon.infer("baz")],
+		[[DCommon.infer("foo/bar"), DCommon.infer("../../../baz")], DCommon.infer("../baz")],
+
+		[[DCommon.infer("foo"), DCommon.infer("."), DCommon.infer("bar")], DCommon.infer("foo/bar")],
+		[[DCommon.infer("foo"), DCommon.infer(".."), DCommon.infer(".")], DCommon.infer(".")],
+		[[DCommon.infer("."), DCommon.infer("foo"), DCommon.infer(".")], DCommon.infer("foo")],
+
+		[[DCommon.infer("/")], DCommon.infer("/")],
+		[[DCommon.infer("/"), DCommon.infer(".")], DCommon.infer("/")],
+		[[DCommon.infer("/"), DCommon.infer("foo")], DCommon.infer("/foo")],
+		[[DCommon.infer("/"), DCommon.infer("foo"), DCommon.infer("bar")], DCommon.infer("/foo/bar")],
+		[[DCommon.infer("/foo")], DCommon.infer("/foo")],
+		[[DCommon.infer("/foo"), DCommon.infer("bar")], DCommon.infer("/foo/bar")],
+		[[DCommon.infer("/foo/bar"), DCommon.infer("baz")], DCommon.infer("/foo/bar/baz")],
+
+		[[DCommon.infer("/foo"), DCommon.infer("..")], DCommon.infer("/")],
+		[[DCommon.infer("/foo/bar"), DCommon.infer("..")], DCommon.infer("/foo")],
+		[[DCommon.infer("/foo/bar"), DCommon.infer("../..")], DCommon.infer("/")],
+		[[DCommon.infer("/foo"), DCommon.infer("../bar")], DCommon.infer("/bar")],
+		[[DCommon.infer("/foo"), DCommon.infer("../../bar")], DCommon.infer("/bar")],
+		[[DCommon.infer("/"), DCommon.infer("..")], DCommon.infer("/")],
+		[[DCommon.infer("/"), DCommon.infer("../..")], DCommon.infer("/")],
+
+		[[DCommon.infer("foo"), DCommon.infer("/bar")], DCommon.infer("/bar")],
+		[[DCommon.infer("foo/baz"), DCommon.infer("/bar")], DCommon.infer("/bar")],
+		[[DCommon.infer(".."), DCommon.infer("/bar")], DCommon.infer("/bar")],
+		[[DCommon.infer("/foo"), DCommon.infer("/bar")], DCommon.infer("/bar")],
+		[[DCommon.infer("/foo"), DCommon.infer("bar"), DCommon.infer("/baz/qux")], DCommon.infer("/baz/qux")],
+		[[DCommon.infer("/foo"), DCommon.infer(".."), DCommon.infer("/bar"), DCommon.infer("baz")], DCommon.infer("/bar/baz")],
+
+		[[DCommon.infer("foo bar"), DCommon.infer("baz")], DCommon.infer("foo bar/baz")],
+		[[DCommon.infer("dossier"), DCommon.infer("été"), DCommon.infer("élément")], DCommon.infer("dossier/été/élément")],
+		[[DCommon.infer(".git"), DCommon.infer("config")], DCommon.infer(".git/config")],
+		[[DCommon.infer("src"), DCommon.infer("index.ts")], DCommon.infer("src/index.ts")],
+	])(
+		"resolves %j to %s",
+		(paths, expected) => {
+			const result = DPath.resolveRelative(paths);
+
+			expect(result).toBe(expected);
+			expect(DPath.is(result)).toBe(true);
+		},
+	);
+
+	it("returns an absolute path after encountering an absolute segment", () => {
+		const result = DPath.resolveRelative([
+			DCommon.infer("foo"),
+			DCommon.infer("/bar"),
+			DCommon.infer("baz"),
+		]);
+
+		expect(result).toBe("/bar/baz");
+		expect(DPath.isAbsolute(result)).toBe(true);
 	});
 
-	it("accepts a path segment array with a min elements constraint", () => {
-		const segments = ["alpha", "beta"] as (string & DPath.Path)[];
+	it("preserves the absolute guarantee in its output type", () => {
+		const result = DPath.resolveRelative([
+			DCommon.infer("foo"),
+			DCommon.infer("/bar") satisfies string & DPath.Absolute,
+			DCommon.infer("baz"),
+		]);
 
-		if (DArray.minElements(segments, 1)) {
-			const result = DPath.resolveRelative(segments);
-
-			expect(result).toBe("alpha/beta");
-
-			type _CheckSegments = ExpectType<
-				typeof segments,
-				(string & DPath.Path)[] & DArray.MinElements<1>,
-				"strict"
-			>;
-			type _CheckResult = ExpectType<
-				typeof result,
-				string & DPath.Path,
-				"strict"
-			>;
-		}
+		type _CheckResult = ExpectType<
+			typeof result,
+			string & DPath.Path & DPath.Absolute,
+			"strict"
+		>;
 	});
 
-	it("trims trailing slashes and leading relative prefixes", () => {
-		const firstSegment = "alpha/" as string;
-		const secondSegment = "./beta" as string;
-		const thirdSegment = "gamma/" as string;
-
-		expect(DPath.is(firstSegment)).toBe(true);
-		expect(DPath.is(secondSegment)).toBe(true);
-		expect(DPath.is(thirdSegment)).toBe(true);
-
-		if (
-			DPath.is(firstSegment)
-			&& DPath.is(secondSegment)
-			&& DPath.is(thirdSegment)
-		) {
-			expect(DPath.resolveRelative([firstSegment, secondSegment, thirdSegment]))
-				.toBe("alpha/beta/gamma");
-		}
+	it("resets the accumulated path when another absolute path is encountered", () => {
+		expect(DPath.resolveRelative([
+			DCommon.infer("/alpha/beta"),
+			DCommon.infer("gamma"),
+			DCommon.infer("/delta"),
+			DCommon.infer("epsilon"),
+		])).toBe("/delta/epsilon");
 	});
 
-	it("ignores unsafe empty segments internally", () => {
-		// @ts-expect-error empty segments are rejected by the public API.
-		expect(DPath.resolveRelative(["alpha/", "", "./beta", "gamma/"]))
-			.toBe("alpha/beta/gamma");
+	it("never traverses above the absolute root", () => {
+		expect(DPath.resolveRelative([
+			DCommon.infer("/alpha"),
+			DCommon.infer("../../../../beta"),
+		])).toBe("/beta");
 	});
 
-	it("resets the path when an absolute segment is encountered", () => {
-		const firstSegment = "alpha" as string;
-		const secondSegment = "/root" as string;
-		const thirdSegment = "beta" as string;
-
-		expect(DPath.is(firstSegment)).toBe(true);
-		expect(DPath.is(secondSegment)).toBe(true);
-		expect(DPath.is(thirdSegment)).toBe(true);
-
-		if (
-			DPath.is(firstSegment)
-			&& DPath.is(secondSegment)
-			&& DPath.is(thirdSegment)
-		) {
-			expect(DPath.resolveRelative([firstSegment, secondSegment, thirdSegment]))
-				.toBe("/root/beta");
-		}
+	it("keeps unresolved parent traversal for relative paths", () => {
+		expect(DPath.resolveRelative([
+			DCommon.infer("alpha"),
+			DCommon.infer("../../../beta"),
+		])).toBe("../../beta");
 	});
 
-	it("resets to root when a root segment is encountered", () => {
-		const rootSegment = "/" as string;
-		const firstSegment = "alpha" as string;
-		const thirdSegment = "beta" as string;
+	it("returns a valid path type", () => {
+		const result = DPath.resolveRelative([
+			DCommon.infer("alpha"),
+			DCommon.infer("beta"),
+			DCommon.infer(".."),
+			DCommon.infer("gamma"),
+		]);
 
-		expect(DPath.is(firstSegment)).toBe(true);
-		expect(DPath.is(rootSegment)).toBe(true);
-		expect(DPath.is(thirdSegment)).toBe(true);
-
-		if (DPath.is(firstSegment) && DPath.is(rootSegment) && DPath.is(thirdSegment)) {
-			expect(DPath.resolveRelative([firstSegment, rootSegment, thirdSegment]))
-				.toBe("/beta");
-		}
+		type _CheckResult = ExpectType<
+			typeof result,
+			string & DPath.Path,
+			"strict"
+		>;
 	});
 
-	it("preserves leading parent traversal when resolving above root", () => {
-		const firstSegment = "alpha" as string;
-		const backSegment = ".." as string;
-		const lastSegment = "beta" as string;
+	it("requires validated paths", () => {
+		const paths = [
+			"alpha",
+			"beta",
+		] as readonly string[];
 
-		expect(DPath.is(firstSegment)).toBe(true);
-		expect(DPath.is(backSegment)).toBe(true);
-		expect(DPath.is(lastSegment)).toBe(true);
-
-		if (
-			DPath.is(firstSegment)
-			&& DPath.is(backSegment)
-			&& DPath.is(lastSegment)
-		) {
-			const result = DPath.resolveRelative([
-				firstSegment,
-				backSegment,
-				backSegment,
-				lastSegment,
-			]);
-
-			expect(result).toBe("../beta");
-		}
-	});
-
-	it("can be used directly in a pipe", () => {
-		const firstSegment = "alpha" as string;
-		const secondSegment = "beta" as string;
-
-		expect(DPath.is(firstSegment)).toBe(true);
-		expect(DPath.is(secondSegment)).toBe(true);
-
-		if (DPath.is(firstSegment) && DPath.is(secondSegment)) {
-			const result = pipe(
-				[firstSegment, secondSegment] as const,
-				DPath.resolveRelative,
-			);
-
-			expect(result).toBe("alpha/beta");
-
-			type _CheckResult = ExpectType<
-				typeof result,
-				string & DPath.Path,
-				"strict"
-			>;
-		}
+		// @ts-expect-error paths must be validated before resolution.
+		DPath.resolveRelative(paths);
 	});
 });

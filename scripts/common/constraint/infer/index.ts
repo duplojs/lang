@@ -110,6 +110,11 @@ export function infer<
 	DCommon.ContainExtends<GenericComputedOutput, DCommon.ComputedTypeError<string>>,
 ]> extends true
 	? GenericOutput
-	: DCommon.BreakGenericLink<GenericComputedOutput> {
+	: DCommon.BreakGenericLink<
+		DCommon.NeverCoalescing<
+			GenericComputedOutput,
+			GenericInput
+		>
+	> {
 	return input as never;
 }

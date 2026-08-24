@@ -1,25 +1,53 @@
+import type * as DCommon from "@scripts/common";
 import type { Absolute, Path } from "./constraints";
 import { resolveRelative } from "./resolveRelative";
 import type { RequireSegments } from "./types";
 
-const aboveRootRegex = /^(?:\.\.\/)+/;
+export interface ResolveFromParams {
+	stayInOrigin?: boolean;
+}
 
 export function resolveFrom<
-	const GenericSegments extends readonly (string & Path)[],
+	const GenericSegments extends readonly (string & (Path | Absolute))[],
+	const GenericParams extends ResolveFromParams,
 >(
-	origin: string & Path & Absolute,
+	origin: string & Absolute,
 	segments: GenericSegments & RequireSegments<GenericSegments>,
-): string & Path & Absolute;
+	params?: GenericParams,
+): (string & Absolute) | (
+	DCommon.BreakGenericLink<
+		DCommon.Or<[
+			DCommon.IsEqual<
+				GenericParams["stayInOrigin"],
+				ResolveFromParams["stayInOrigin"]
+			>,
+			DCommon.IsEqual<GenericParams["stayInOrigin"], false>,
+			DCommon.IsEqual<GenericParams["stayInOrigin"], unknown>,
+		]> extends true
+			? never
+			: null
+	>
+);
 
 export function resolveFrom(
 	origin: string,
 	segments: readonly string[],
-): string & Path & Absolute {
-	const result = resolveRelative([origin as string & Path, ...segments as never[]]);
+	params?: ResolveFromParams,
+): any {
+	const resultRelative = resolveRelative(segments as never);
 
-	if (!result.startsWith("../")) {
-		return result as string & Path & Absolute;
+	if (
+		params?.stayInOrigin
+		&& (
+			resultRelative === ".."
+			|| resultRelative.startsWith("../")
+			|| resultRelative.startsWith("/")
+		)
+	) {
+		return null;
 	}
 
-	return `/${result.replace(aboveRootRegex, "")}` as string & Path & Absolute;
+	const result = resolveRelative([origin as never, resultRelative]);
+
+	return result;
 }

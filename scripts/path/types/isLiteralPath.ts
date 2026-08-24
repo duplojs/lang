@@ -3,6 +3,8 @@ import type * as DString from "@scripts/string";
 
 type CheckSegment<
 	GenericSegment extends readonly string[],
+	GenericDotIsPass extends boolean,
+	GenericIsFirst extends boolean = true,
 > = GenericSegment extends readonly []
 	? true
 	: GenericSegment extends readonly [
@@ -10,27 +12,41 @@ type CheckSegment<
 		...infer InferredRest extends readonly string[],
 	]
 		? DCommon.Or<[
-			DCommon.IsEqual<"", InferredFirst>,
+			DCommon.IsEqual<".", InferredFirst>,
 			DString.Includes<InferredFirst, "/">,
 			DString.Includes<InferredFirst, "\0">,
+			DCommon.And<[
+				DCommon.IsEqual<GenericIsFirst, false>,
+				DCommon.IsEqual<"", InferredFirst>,
+			]>,
+			DCommon.And<[
+				DCommon.IsEqual<GenericDotIsPass, true>,
+				DCommon.IsEqual<"..", InferredFirst>,
+			]>,
 		]> extends true
 			? false
-			: CheckSegment<InferredRest>
-		: never;
+			: CheckSegment<
+				InferredRest,
+				DCommon.Not<
+					DCommon.IsEqual<InferredFirst, "..">
+				>,
+				false
+			>
+		: false;
 
 export type IsLiteralPath<
 	GenericValue extends string,
 > = DString.IsLiteral<GenericValue> extends true
-	? DString.Split<
-		(
-			GenericValue extends `/${infer InferredRest}`
-				? InferredRest
-				: GenericValue
-		),
-		"/"
-	> extends infer InferredResult extends readonly string[]
-		? CheckSegment<InferredResult>
-		: never
+	? GenericValue extends ""
+		? false
+		: GenericValue extends "/"
+			? true
+			: GenericValue extends "."
+				? true
+				: DString.Split<
+					GenericValue,
+					"/"
+				> extends infer InferredResult extends readonly string[]
+					? CheckSegment<InferredResult, false>
+					: never
 	: false;
-
-type yy = IsLiteralPath<"/tset/gg">;

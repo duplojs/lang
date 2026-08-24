@@ -1,37 +1,144 @@
 import { DPath, type ExpectType } from "@scripts";
 
 describe("is", () => {
-	it("validates posix paths", () => {
-		expect(DPath.is("relative/path")).toBe(true);
-		expect(DPath.is("/usr/local")).toBe(true);
-		expect(DPath.is("/truc/..ttot/tr.ts")).toBe(true);
-		expect(DPath.is("/foo/.../bar")).toBe(true);
-		expect(DPath.is("/")).toBe(true);
-		expect(DPath.is("..")).toBe(true);
-		expect(DPath.is("../root")).toBe(true);
-		expect(DPath.is("foo/../bar")).toBe(true);
-		expect(DPath.is("/foo/../bar")).toBe(true);
-		expect(DPath.is("foo/..")).toBe(true);
+	it.each([
+		"foo/bar",
+		"foo",
+		"../foo",
+		"../../foo/bar",
+		".",
+		"..",
+		"../..",
+		"/foo/bar",
+		"/foo",
+		"/",
+		"foo bar/baz",
+		"foo-bar_42/@scope",
+		"dossier/été/élément",
+		".git/config",
+		"src/index.ts",
+	])("validates posix path %s", (value) => {
+		expect(DPath.is(value)).toBe(true);
 	});
 
-	it("rejects empty paths and malformed posix separators", () => {
-		expect(DPath.is("")).toBe(false);
-		expect(DPath.is("///")).toBe(false);
-		expect(DPath.is("foo//bar")).toBe(false);
+	it.each([
+		"",
+		"./foo",
+		"foo/./bar",
+		"foo/.",
+		"foo/../bar",
+		"foo/..",
+		"../foo/../bar",
+		"/../foo",
+		"/../../foo",
+		"foo//bar",
+		"foo///bar",
+		"//foo/bar",
+		"foo/bar/",
+		"/foo/bar/",
+		"foo\0bar",
+		"\0foo",
+		"foo\0",
+	])("rejects invalid posix path %s", (value) => {
+		expect(DPath.is(value)).toBe(false);
 	});
 
-	it("narrows a string with a path constraint", () => {
-		const path = "relative/path" as string;
+	it("valid type", () => {
+		const literalPath = "/" as (
+			| "foo/bar"
+			| "foo"
+			| "../foo"
+			| "../../foo/bar"
+			| "."
+			| ".."
+			| "../.."
+			| "/foo/bar"
+			| "/foo"
+			| "/"
+			| "foo bar/baz"
+			| "foo-bar_42/@scope"
+			| "dossier/été/élément"
+			| ".git/config"
+			| "src/index.ts"
+			| (string & DPath.Path)
+			| (string & DPath.Absolute)
 
-		if (DPath.is(path)) {
-			type _CheckPath = ExpectType<
-				typeof path,
+			| ""
+			| "./foo"
+			| "foo/./bar"
+			| "foo/."
+			| "foo/../bar"
+			| "foo/.."
+			| "../foo/../bar"
+			| "/../foo"
+			| "/../../foo"
+			| "foo//bar"
+			| "foo///bar"
+			| "//foo/bar"
+			| "foo/bar/"
+			| "/foo/bar/"
+			| "foo\0bar"
+			| "\0foo"
+			| "foo\0"
+		);
+
+		if (DPath.is(literalPath)) {
+			type check = ExpectType<
+				typeof literalPath,
+				| "foo/bar"
+				| "foo"
+				| "../foo"
+				| "../../foo/bar"
+				| "."
+				| ".."
+				| "../.."
+				| "/foo/bar"
+				| "/foo"
+				| "/"
+				| "foo bar/baz"
+				| "foo-bar_42/@scope"
+				| "dossier/été/élément"
+				| ".git/config"
+				| "src/index.ts"
+				| (string & DPath.Path)
+				| (string & DPath.Absolute),
+				"strict"
+			>;
+		} else {
+			type check = ExpectType<
+				typeof literalPath,
+				| ""
+				| "./foo"
+				| "foo/./bar"
+				| "foo/."
+				| "foo/../bar"
+				| "foo/.."
+				| "../foo/../bar"
+				| "/../foo"
+				| "/../../foo"
+				| "foo//bar"
+				| "foo///bar"
+				| "//foo/bar"
+				| "foo/bar/"
+				| "/foo/bar/"
+				| "foo\0bar"
+				| "\0foo"
+				| "foo\0",
+				"strict"
+			>;
+		}
+
+		const value = "test" as string;
+
+		if (DPath.is(value)) {
+			type check = ExpectType<
+				typeof value,
 				string & DPath.Path,
 				"strict"
 			>;
 		} else {
-			type _CheckPath = ExpectType<
-				typeof path,
+			type check = ExpectType<
+				typeof value,
 				string,
 				"strict"
 			>;

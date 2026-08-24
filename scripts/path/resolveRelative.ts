@@ -1,59 +1,64 @@
-import type { Path } from "./constraints";
+import type * as DCommon from "@scripts/common";
+import type { Absolute, Path } from "./constraints";
 import type { RequireSegments } from "./types";
 
-const segmentTrailingRegex = /\/$/;
-const segmentRelativeRegex = /^(.\/)/;
+type HasAbsolutePath<
+	GenericSegments extends readonly (string & (Path | Absolute))[],
+> = DCommon.ContainExtends<
+	{
+		[Prop in keyof GenericSegments]: [DCommon.IsExtends<GenericSegments[Prop], Absolute>]
+	}[Extract<keyof GenericSegments, number>],
+	[true]
+>;
 
 export function resolveRelative<
-	const GenericSegments extends readonly (string & Path)[],
+	const GenericSegments extends readonly (string & (Path | Absolute))[],
 >(
 	segments: GenericSegments & RequireSegments<GenericSegments>,
-): string & Path;
+): string & Path & (
+	DCommon.BreakGenericLink<
+		HasAbsolutePath<GenericSegments> extends true
+			? Absolute
+			: unknown
+	>
+);
 
 export function resolveRelative(
-	segments: readonly string[],
-): string {
-	let clearedPath = "";
-
-	for (const segment of segments) {
-		if (segment.length === 0) {
-			continue;
-		} else if (segment === "/") {
-			clearedPath = segment;
-			continue;
-		}
-
-		const formattedSegment = segment
-			.replace(segmentTrailingRegex, "")
-			.replace(segmentRelativeRegex, "");
-
-		if (formattedSegment.startsWith("/") || clearedPath === "") {
-			clearedPath = formattedSegment;
-		} else if (clearedPath === "/") {
-			clearedPath += formattedSegment;
-		} else {
-			clearedPath += `/${formattedSegment}`;
-		}
-	}
-
-	const dotResult: ".."[] = [];
+	paths: readonly (string & Path)[],
+) {
+	let absolute = false;
 	const result: string[] = [];
 
-	for (const element of clearedPath.split("/")) {
-		if (element === "..") {
-			const deletedElement = result.pop();
+	for (const path of paths) {
+		if (path === ".") {
+			continue;
+		}
 
-			if (!deletedElement) {
-				dotResult.push(element);
+		if (path.startsWith("/")) {
+			absolute = true;
+			result.length = 0;
+		}
+
+		for (const segment of path.split("/")) {
+			if (segment === "") {
+				continue;
 			}
-		} else {
-			result.push(element);
+
+			if (segment === "..") {
+				if (result.length && result.at(-1) !== "..") {
+					result.pop();
+				} else if (!absolute) {
+					result.push("..");
+				}
+			} else {
+				result.push(segment);
+			}
 		}
 	}
 
-	if (dotResult.length === 0) {
-		return result.join("/");
+	if (absolute) {
+		return `/${result.join("/")}`;
 	}
 
-	return `${dotResult.join("/")}/${result.join("/")}`;
+	return result.join("/") || ".";
 }

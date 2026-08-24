@@ -1,110 +1,104 @@
-import { DPath, pipe, type ExpectType } from "@scripts";
+import { DCommon, DPath, type ExpectType } from "@scripts";
 
 describe("computeRelative", () => {
-	it("returns dot when source and destination are the same safe absolute path", () => {
-		const source = "/project/src" as string;
-		const destination = "/project/src" as string;
+	it.each<[string & DPath.Absolute, string & DPath.Absolute, string & DPath.Path]>([
+		[DCommon.infer("/"), DCommon.infer("/"), DCommon.infer(".")],
 
-		if (DPath.isAbsolute(source) && DPath.isAbsolute(destination)) {
-			const result = DPath.computeRelative(source, destination);
+		[DCommon.infer("/"), DCommon.infer("/alpha"), DCommon.infer("alpha")],
+		[DCommon.infer("/"), DCommon.infer("/alpha/beta"), DCommon.infer("alpha/beta")],
 
-			expect(result).toBe(".");
+		[DCommon.infer("/alpha"), DCommon.infer("/"), DCommon.infer("..")],
+		[DCommon.infer("/alpha/beta"), DCommon.infer("/"), DCommon.infer("../..")],
+		[DCommon.infer("/alpha/beta/gamma"), DCommon.infer("/"), DCommon.infer("../../..")],
 
-			type _CheckResult = ExpectType<
-				typeof result,
-				string & DPath.Path,
-				"strict"
-			>;
-		}
+		[DCommon.infer("/alpha"), DCommon.infer("/alpha"), DCommon.infer(".")],
+		[DCommon.infer("/alpha/beta"), DCommon.infer("/alpha/beta"), DCommon.infer(".")],
+
+		[DCommon.infer("/alpha"), DCommon.infer("/alpha/beta"), DCommon.infer("beta")],
+		[DCommon.infer("/alpha"), DCommon.infer("/alpha/beta/gamma"), DCommon.infer("beta/gamma")],
+		[DCommon.infer("/alpha/beta"), DCommon.infer("/alpha/beta/gamma"), DCommon.infer("gamma")],
+
+		[DCommon.infer("/alpha/beta"), DCommon.infer("/alpha"), DCommon.infer("..")],
+		[DCommon.infer("/alpha/beta/gamma"), DCommon.infer("/alpha"), DCommon.infer("../..")],
+		[DCommon.infer("/alpha/beta/gamma"), DCommon.infer("/alpha/beta"), DCommon.infer("..")],
+
+		[DCommon.infer("/alpha/beta"), DCommon.infer("/alpha/gamma"), DCommon.infer("../gamma")],
+		[DCommon.infer("/alpha/beta/gamma"), DCommon.infer("/alpha/delta"), DCommon.infer("../../delta")],
+		[DCommon.infer("/alpha/beta"), DCommon.infer("/gamma/delta"), DCommon.infer("../../gamma/delta")],
+
+		[DCommon.infer("/foo bar/baz"), DCommon.infer("/foo bar/qux"), DCommon.infer("../qux")],
+		[DCommon.infer("/dossier/été"), DCommon.infer("/dossier/hiver"), DCommon.infer("../hiver")],
+		[DCommon.infer("/.git/config"), DCommon.infer("/.git/hooks"), DCommon.infer("../hooks")],
+		[DCommon.infer("/src/index.ts"), DCommon.infer("/src/utils.ts"), DCommon.infer("../utils.ts")],
+	] as const)(
+		"computes relative path from %s to %s",
+		(source, destination, expected) => {
+			expect(
+				DPath.computeRelative(source, destination),
+			).toBe(expected);
+		},
+	);
+
+	it("returns a valid path", () => {
+		const source: string & DPath.Absolute = DCommon.infer(
+			"/alpha/beta/gamma",
+		);
+		const destination: string & DPath.Absolute = DCommon.infer(
+			"/alpha/delta/epsilon",
+		);
+
+		const result = DPath.computeRelative(source, destination);
+
+		expect(result).toBe("../../delta/epsilon");
+		expect(DPath.is(result)).toBe(true);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			string & DPath.Path,
+			"strict"
+		>;
 	});
 
-	it("computes relative paths for child, parent, and sibling destinations", () => {
-		const source = "/project/src" as string;
-		const childDestination = "/project/src/components/button" as string;
-		const componentSource = "/project/src/components" as string;
-		const siblingDestination = "/project/src/assets/icon.svg" as string;
-		const domainSource = "/project/src/domain/user" as string;
-		const externalDestination = "/project/test/domain/user" as string;
+	it("handles an absolute path typed as path and absolute", () => {
+		const source: string & DPath.Path & DPath.Absolute = DCommon.infer(
+			"/alpha/beta",
+		);
+		const destination: string & DPath.Path & DPath.Absolute = DCommon.infer(
+			"/alpha/gamma",
+		);
 
-		expect(DPath.isAbsolute(source)).toBe(true);
-		expect(DPath.isAbsolute(childDestination)).toBe(true);
-		expect(DPath.isAbsolute(componentSource)).toBe(true);
-		expect(DPath.isAbsolute(siblingDestination)).toBe(true);
-		expect(DPath.isAbsolute(domainSource)).toBe(true);
-		expect(DPath.isAbsolute(externalDestination)).toBe(true);
+		const result = DPath.computeRelative(source, destination);
 
-		if (
-			DPath.isAbsolute(source)
-			&& DPath.isAbsolute(childDestination)
-			&& DPath.isAbsolute(componentSource)
-			&& DPath.isAbsolute(siblingDestination)
-			&& DPath.isAbsolute(domainSource)
-			&& DPath.isAbsolute(externalDestination)
-		) {
-			expect(DPath.computeRelative(source, childDestination))
-				.toBe("components/button");
+		expect(result).toBe("../gamma");
 
-			expect(DPath.computeRelative(componentSource, siblingDestination))
-				.toBe("../assets/icon.svg");
-
-			expect(DPath.computeRelative(domainSource, externalDestination))
-				.toBe("../../../test/domain/user");
-		}
+		type _CheckResult = ExpectType<
+			typeof result,
+			string & DPath.Path,
+			"strict"
+		>;
 	});
 
-	it("normalizes trailing separators before computing the relative path", () => {
-		const source = "/project/src/" as string;
-		const destination = "/project/src/components/" as string;
+	it("requires an absolute source path", () => {
+		const source: string & DPath.Path = DCommon.infer("alpha/beta");
+		const destination: string & DPath.Absolute = DCommon.infer("/alpha");
 
-		expect(DPath.isAbsolute(source)).toBe(true);
-		expect(DPath.isAbsolute(destination)).toBe(true);
-
-		if (DPath.isAbsolute(source) && DPath.isAbsolute(destination)) {
-			expect(DPath.computeRelative(source, destination))
-				.toBe("components");
-		}
+		// @ts-expect-error source must be absolute.
+		DPath.computeRelative(source, destination);
 	});
 
-	it("normalizes root paths", () => {
-		const root = "/" as string;
-		const destination = "/project/src" as string;
+	it("requires an absolute destination path", () => {
+		const source: string & DPath.Absolute = DCommon.infer("/alpha");
+		const destination: string & DPath.Path = DCommon.infer("alpha/beta");
 
-		expect(DPath.isAbsolute(root)).toBe(true);
-		expect(DPath.isAbsolute(destination)).toBe(true);
-
-		if (DPath.isAbsolute(root) && DPath.isAbsolute(destination)) {
-			expect(DPath.computeRelative(root, destination))
-				.toBe("project/src");
-		}
+		// @ts-expect-error destination must be absolute.
+		DPath.computeRelative(source, destination);
 	});
 
-	it("can be used in a pipe", () => {
-		const source = "/project/src/components" as string;
-		const destination = "/project/src/assets" as string;
+	it("requires validated paths", () => {
+		const source = "/alpha" as string;
+		const destination = "/beta" as string;
 
-		expect(DPath.isAbsolute(source)).toBe(true);
-		expect(DPath.isAbsolute(destination)).toBe(true);
-
-		if (DPath.isAbsolute(source) && DPath.isAbsolute(destination)) {
-			const result = pipe(
-				source,
-				(value) => DPath.computeRelative(value, destination),
-			);
-
-			expect(result).toBe("../assets");
-
-			type _CheckResult = ExpectType<
-				typeof result,
-				string & DPath.Path,
-				"strict"
-			>;
-		}
-	});
-
-	it("requires absolute path constraints", () => {
-		// @ts-expect-error source must be validated as an absolute path.
-		DPath.computeRelative("project/src", "/project/src/components");
-		// @ts-expect-error destination must be validated as an absolute path.
-		DPath.computeRelative("/project/src", "project/src/components");
+		// @ts-expect-error source and destination must be validated absolute paths.
+		DPath.computeRelative(source, destination);
 	});
 });

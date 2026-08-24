@@ -1,30 +1,30 @@
-import type { Path } from "./constraints";
+import type { Absolute, Path } from "./constraints";
 
-const baseNameRegex = /\/?([^/]+)$/;
-const extensionNameRegex = /\.([^./]+)$/;
-const segmentTrailingRegex = /\/+$/;
+const baseNameRegex = /([^/]+)$/;
+const extensionNameRegex = /(?<!^)\.[^./]+$/;
 
 export interface GetBaseNameParams {
 	removeExtension?: boolean;
 }
 
 export function getBaseName<
-	GenericPath extends string & Path,
+	GenericPath extends string & (Path | Absolute),
 >(
 	path: GenericPath,
 	params?: GetBaseNameParams,
-): string;
+): string | null;
 
 export function getBaseName(
 	path: string,
 	params?: GetBaseNameParams,
 ) {
-	const fixedPath = path.replace(segmentTrailingRegex, "");
-	const baseName = baseNameRegex.exec(fixedPath)?.[1] ?? "";
+	const baseName = baseNameRegex.exec(path)?.[1];
 
-	if (params?.removeExtension) {
-		return baseName.replace(extensionNameRegex, "");
+	if (baseName === undefined) {
+		return null;
 	}
 
-	return baseName;
+	return params?.removeExtension
+		? baseName.replace(extensionNameRegex, "")
+		: baseName;
 }
