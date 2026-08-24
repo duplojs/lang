@@ -1,4 +1,4 @@
-import { cast, type DArray, type DNumber, type CastError, type DString, shameOnYou, type ExpectType } from "@scripts";
+import { cast, type DArray, type DNumber, type CastError, type DPath, type DString, shameOnYou, type ExpectType } from "@scripts";
 
 describe("cast", () => {
 	it("cast maxCharacters", () => {
@@ -87,6 +87,62 @@ describe("cast", () => {
 		);
 		// @ts-expect-error cause error
 		const value35: string & DString.LengthEqual<12> = cast("" as string & DString.MaxCharacters<12>);
+	});
+
+	it("cast path", () => {
+		const value1: string & DPath.Path = cast("alpha/beta");
+
+		const value2: string & DPath.Path = cast("/alpha/beta");
+
+		const value3: string & DPath.Path = cast("" as string & DPath.Path);
+
+		const value4: string & DPath.Path = cast("" as string & DPath.Absolute);
+
+		const value5: string & DPath.Path = cast(
+			"alpha//beta" as "alpha//beta" & CastError<
+				"Impossible to cast on Path because value alpha//beta is not path.",
+				"alpha//beta",
+				DPath.Path
+			>,
+		);
+		// @ts-expect-error double separators are not valid path segments.
+		const value55: string & DPath.Path = cast("alpha//beta");
+
+		const value6: string & DPath.Path = cast(
+			"" as string & CastError<
+				`Impossible to cast on Path because value ${string} is not path.`,
+				string,
+				DPath.Path
+			>,
+		);
+		// @ts-expect-error a broad string does not guarantee a valid path.
+		const value65: string & DPath.Path = cast("" as string);
+	});
+
+	it("cast absolute path", () => {
+		const value1: string & DPath.Absolute = cast("/alpha/beta");
+
+		const value2: string & DPath.Absolute = cast("" as string & DPath.Absolute);
+
+		const value3: string & DPath.Absolute = cast(
+			"alpha/beta" as "alpha/beta" & CastError<
+				"Impossible to cast on Absolute Path because value alpha/beta is not absolute path.",
+				"alpha/beta",
+				DPath.Absolute
+			>,
+		);
+		// @ts-expect-error a relative path does not guarantee an absolute path.
+		const value35: string & DPath.Absolute = cast("alpha/beta");
+
+		const value4: string & DPath.Absolute = cast(
+			"" as string & DPath.Path & CastError<
+				`Impossible to cast on Absolute Path because value ${string & DPath.Path} is not absolute path.`,
+				string & DPath.Path,
+				DPath.Absolute
+			>,
+		);
+		// @ts-expect-error Path alone does not guarantee an absolute path.
+		const value45: string & DPath.Absolute = cast("" as string & DPath.Path);
 	});
 
 	it("cast maxElements", () => {
@@ -562,6 +618,96 @@ describe("cast", () => {
 		const value11: number & DNumber.LessThanOrEqual<12> = cast(
 			1 as number & DNumber.LessThanOrEqual<15> & DNumber.LessThan<12>,
 		);
+	});
+
+	it("cast integer", () => {
+		const value1: number & DNumber.Integer = cast(3);
+
+		const value2: number & DNumber.Integer = cast(3 as number & DNumber.Integer);
+
+		const value3: number & DNumber.Integer = cast(
+			3.5 as 3.5 & CastError<
+				"Impossible to cast on Integer because value 3.5 is not an integer.",
+				3.5,
+				DNumber.Integer
+			>,
+		);
+		// @ts-expect-error a decimal literal is not an integer.
+		const value35: number & DNumber.Integer = cast(3.5);
+
+		const value4: number & DNumber.Integer = cast(
+			3 as number & CastError<
+				`Impossible to cast on Integer because value ${number} is not an integer.`,
+				number,
+				DNumber.Integer
+			>,
+		);
+		// @ts-expect-error a broad number does not guarantee an integer.
+		const value45: number & DNumber.Integer = cast(3 as number);
+	});
+
+	it("cast notZero", () => {
+		const value1: number & DNumber.NotZero = cast(-1);
+
+		const value2: number & DNumber.NotZero = cast(1 as number & DNumber.NotZero);
+
+		const value3: number & DNumber.NotZero = cast(
+			0 as 0 & CastError<
+				"Impossible to cast on NotZero because value 0 is equal to zero.",
+				0,
+				DNumber.NotZero
+			>,
+		);
+		// @ts-expect-error zero does not satisfy NotZero.
+		const value35: number & DNumber.NotZero = cast(0);
+
+		const value4: number & DNumber.NotZero = cast(
+			1 as number & CastError<
+				`Impossible to cast on NotZero because value ${number} is equal to zero.`,
+				number,
+				DNumber.NotZero
+			>,
+		);
+		// @ts-expect-error a broad number does not guarantee a non-zero value.
+		const value45: number & DNumber.NotZero = cast(1 as number);
+	});
+
+	it("cast safe", () => {
+		const value1: number & DNumber.Safe = cast(9007199254740991);
+
+		const value2: number & DNumber.Safe = cast(-9007199254740991);
+
+		const value3: number & DNumber.Safe = cast(1 as number & DNumber.Safe);
+
+		const value4: number & DNumber.Safe = cast(
+			9007199254740992 as 9007199254740992 & CastError<
+				"Impossible to cast on Safe because value 9007199254740992 is not safe.",
+				9007199254740992,
+				DNumber.Safe
+			>,
+		);
+		// @ts-expect-error the literal exceeds the maximum safe integer.
+		const value45: number & DNumber.Safe = cast(9007199254740992);
+
+		const value5: number & DNumber.Safe = cast(
+			-9007199254740992 as -9007199254740992 & CastError<
+				"Impossible to cast on Safe because value -9007199254740992 is not safe.",
+				-9007199254740992,
+				DNumber.Safe
+			>,
+		);
+		// @ts-expect-error the literal exceeds the minimum safe integer.
+		const value55: number & DNumber.Safe = cast(-9007199254740992);
+
+		const value6: number & DNumber.Safe = cast(
+			1 as number & CastError<
+				`Impossible to cast on Safe because value ${number} is not safe.`,
+				number,
+				DNumber.Safe
+			>,
+		);
+		// @ts-expect-error a broad number does not guarantee a safe value.
+		const value65: number & DNumber.Safe = cast(1 as number);
 	});
 
 	it("union value", () => {

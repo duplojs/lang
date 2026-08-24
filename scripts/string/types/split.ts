@@ -13,7 +13,9 @@ type _Split<
 		? GenericLastResult
 		: readonly [...GenericLastResult, InferredBefore] extends infer InferredResult extends readonly any[]
 			? DCommon.IsEqual<InferredAfter, ""> extends true
-				? readonly [...InferredResult, InferredAfter]
+				? DCommon.IsEqual<GenericSeparator, ""> extends true
+					? InferredResult
+					: readonly [...InferredResult, InferredAfter]
 				: DCommon.IsEqual<InferredResult["length"], 250> extends true
 					? Includes<InferredAfter, GenericSeparator> extends true
 						? readonly [...InferredResult, ...string[]]

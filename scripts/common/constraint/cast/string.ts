@@ -1,5 +1,6 @@
 import type * as DString from "@scripts/string";
 import type * as DCommon from "@scripts/common";
+import type * as DPath from "@scripts/path";
 import { type CastError } from "./error";
 import { type CompatibilityConstraintResult, type BaseConstraint } from "../types";
 
@@ -90,5 +91,29 @@ export interface ComputeCastConstraintStringRule<
 				GenericExpectedConstraint
 			>
 		>
+		: never;
+	path: DCommon.IsExtends<GenericExpectedConstraint, DPath.Path> extends true
+		? DCommon.Or<[
+			DPath.IsLiteralPath<GenericValue>,
+			DCommon.IsExtends<GenericValue, DPath.Path | DPath.Absolute>,
+		]> extends true
+			? unknown
+			: CastError<
+				`Impossible to cast on Path because value ${GenericValue} is not path.`,
+				GenericValue,
+				GenericExpectedConstraint
+			>
+		: never;
+	absolutePath: DCommon.IsExtends<GenericExpectedConstraint, DPath.Absolute> extends true
+		? DCommon.Or<[
+			DPath.IsLiteralAbsolutePath<GenericValue>,
+			DCommon.IsExtends<GenericValue, DPath.Absolute>,
+		]> extends true
+			? unknown
+			: CastError<
+				`Impossible to cast on Absolute Path because value ${GenericValue} is not absolute path.`,
+				GenericValue,
+				GenericExpectedConstraint
+			>
 		: never;
 }

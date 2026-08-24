@@ -48,7 +48,7 @@ export interface ComputeInferConstraintNumberRule<
 		: never;
 	notZero: DCommon.IsExtends<GenericOutput, DNumber.NotZero> extends true
 		? DNumber.IsZero<GenericInput> extends true
-			? DCommon.ComputedTypeError<"Impossible to cast on NotZero because value is equal to zero.">
+			? DCommon.ComputedTypeError<`Impossible to cast on NotZero because value ${GenericInput} is equal to zero.`>
 			: DNumber.NotZero
 		: never;
 	safe: DCommon.IsExtends<GenericOutput, DNumber.Safe> extends true

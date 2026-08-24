@@ -33,10 +33,16 @@ describe("getExtensionName", () => {
 		const firstPath: string & DPath.Path = DCommon.infer("file.");
 		const secondPath: string & DPath.Path = DCommon.infer("file");
 		const thirdPath: string & DPath.Path = DCommon.infer(".git");
+		const fourthPath: string & DPath.Path = DCommon.infer("/");
+		const fifthPath: string & DPath.Path = DCommon.infer(".");
+		const sixthPath: string & DPath.Path = DCommon.infer("..");
 
 		expect(DPath.getExtensionName(firstPath)).toBeNull();
 		expect(DPath.getExtensionName(secondPath)).toBeNull();
 		expect(DPath.getExtensionName(thirdPath)).toBeNull();
+		expect(DPath.getExtensionName(fourthPath)).toBeNull();
+		expect(DPath.getExtensionName(fifthPath)).toBeNull();
+		expect(DPath.getExtensionName(sixthPath)).toBeNull();
 	});
 
 	it("requires a path input", () => {

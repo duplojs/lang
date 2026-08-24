@@ -127,4 +127,43 @@ export interface ComputeCastConstraintNumberRule<
 			>
 		>
 		: never;
+	integer: GenericExpectedConstraint extends DNumber.Integer
+		? DCommon.Or<[
+			DNumber.IsInteger<GenericValue>,
+			DCommon.IsExtends<GenericValue, DNumber.Integer>,
+		]> extends true
+			? unknown
+			: CastError<
+				`Impossible to cast on Integer because value ${GenericValue} is not an integer.`,
+				GenericValue,
+				GenericExpectedConstraint
+			>
+		: never;
+	notZero: GenericExpectedConstraint extends DNumber.NotZero
+		? DCommon.Or<[
+			DCommon.And<[
+				DCommon.Not<DNumber.IsZero<GenericValue>>,
+				DNumber.IsLiteral<GenericValue>,
+			]>,
+			DCommon.IsExtends<GenericValue, DNumber.NotZero>,
+		]> extends true
+			? unknown
+			: CastError<
+				`Impossible to cast on NotZero because value ${GenericValue} is equal to zero.`,
+				GenericValue,
+				GenericExpectedConstraint
+			>
+		: never;
+	safe: GenericExpectedConstraint extends DNumber.Safe
+		? DCommon.Or<[
+			DNumber.IsSafe<GenericValue>,
+			DCommon.IsExtends<GenericValue, DNumber.Safe>,
+		]> extends true
+			? unknown
+			: CastError<
+				`Impossible to cast on Safe because value ${GenericValue} is not safe.`,
+				GenericValue,
+				GenericExpectedConstraint
+			>
+		: never;
 }
