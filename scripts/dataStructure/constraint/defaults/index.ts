@@ -1,3 +1,4 @@
+export * from "./absolutePath";
 export * from "./allowedCharacters";
 export * from "./arrayLengthEqual";
 export * from "./betweenThan";
@@ -18,6 +19,7 @@ export * from "./negative";
 export * from "./notEmpty";
 export * from "./notZero";
 export * from "./odd";
+export * from "./path";
 export * from "./positive";
 export * from "./refine";
 export * from "./safe";

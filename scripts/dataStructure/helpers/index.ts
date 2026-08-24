@@ -1,3 +1,4 @@
+export * from "./absolutePath";
 export * from "./allowedCharacters";
 export * from "./array";
 export * from "./arrayLengthEqual";
@@ -33,6 +34,7 @@ export * from "./object";
 export * from "./odd";
 export * from "./optional";
 export * from "./partial";
+export * from "./path";
 export * from "./positive";
 export * from "./record";
 export * from "./refine";

@@ -2,6 +2,7 @@ import { type Constraint } from "../base";
 import type * as DDefaults from "../defaults";
 
 export interface ConstraintsStore {
+	absolutePath: DDefaults.AbsolutePathConstraint;
 	allowedCharacters: DDefaults.AllowedCharactersConstraint;
 	email: DDefaults.EmailConstraint;
 	url: DDefaults.UrlConstraint;
@@ -34,6 +35,7 @@ export interface ConstraintsStore {
 	lessThan: DDefaults.LessThanConstraint;
 	lessThanOrEqual: DDefaults.LessThanOrEqualConstraint;
 
+	path: DDefaults.PathConstraint;
 	refine: DDefaults.RefineConstraint;
 }
 
