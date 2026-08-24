@@ -86,6 +86,12 @@ describe("infer", () => {
 			expect(result).toBe("/alpha/beta");
 		});
 
+		it("correct infer Segment constraint from literal", () => {
+			const result: string & DPath.Segment = DCommon.infer("alpha");
+
+			expect(result).toBe("alpha");
+		});
+
 		it("correct infer generic literal through function argument", () => {
 			function testInference<
 				const GenericInput extends string,
@@ -238,6 +244,13 @@ describe("infer", () => {
 		it("should reject incompatible Absolute constraints", () => {
 			const result: string & DPath.Absolute = DCommon.infer(
 			// @ts-expect-error relative paths do not induce Absolute.
+				"alpha/beta",
+			);
+		});
+
+		it("should reject incompatible Segment constraints", () => {
+			const result: string & DPath.Segment = DCommon.infer(
+			// @ts-expect-error paths with separators do not induce Segment.
 				"alpha/beta",
 			);
 		});

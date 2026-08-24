@@ -40,6 +40,7 @@ export * from "./record";
 export * from "./refine";
 export * from "./required";
 export * from "./safe";
+export * from "./segmentPath";
 export * from "./string";
 export * from "./strictNegative";
 export * from "./strictPositive";

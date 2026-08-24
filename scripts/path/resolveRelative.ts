@@ -1,9 +1,9 @@
 import type * as DCommon from "@scripts/common";
-import type { Absolute, Path } from "./constraints";
+import type { Absolute, Path, Segment } from "./constraints";
 import type { RequireSegments } from "./types";
 
 type HasAbsolutePath<
-	GenericSegments extends readonly (string & (Path | Absolute))[],
+	GenericSegments extends readonly (string & (Path | Absolute | Segment))[],
 > = DCommon.ContainExtends<
 	{
 		[Prop in keyof GenericSegments]: [DCommon.IsExtends<GenericSegments[Prop], Absolute>]
@@ -12,7 +12,7 @@ type HasAbsolutePath<
 >;
 
 export function resolveRelative<
-	const GenericSegments extends readonly (string & (Path | Absolute))[],
+	const GenericSegments extends readonly (string & (Path | Absolute | Segment))[],
 >(
 	segments: GenericSegments & RequireSegments<GenericSegments>,
 ): string & Path & (

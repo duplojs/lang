@@ -33,7 +33,7 @@ export interface ComputeInferConstraintStringRule<
 			? DString.LengthEqual<InferredResult["to"]>
 			: DCommon.ComputedTypeError<`Impossible to cast on LengthEqual<${InferredResult["to"]}> because constraint LengthEqual<${InferredResult["from"]}> from the value is not equal.`>
 		: never;
-	path: DCommon.IsExtends<GenericOutput, DPath.Path | DPath.Absolute> extends true
+	path: DCommon.IsExtends<GenericOutput, DPath.Path> extends true
 		? DPath.IsLiteralPath<GenericInput> extends true
 			? DPath.Path
 			: DCommon.ComputedTypeError<`Impossible to cast on Path because value ${GenericInput} is not path.`>
@@ -41,6 +41,11 @@ export interface ComputeInferConstraintStringRule<
 	absolutePath: DCommon.IsExtends<GenericOutput, DPath.Absolute> extends true
 		? DPath.IsLiteralAbsolutePath<GenericInput> extends true
 			? DPath.Absolute
-			: DCommon.ComputedTypeError<`Impossible to cast on Absolute Path because value ${GenericInput} is not absolute path.`>
+			: DCommon.ComputedTypeError<`Impossible to cast on AbsolutePath because value ${GenericInput} is not absolute path.`>
+		: never;
+	segment: DCommon.IsExtends<GenericOutput, DPath.Segment> extends true
+		? DPath.IsLiteralSegmentPath<GenericInput> extends true
+			? DPath.Segment
+			: DCommon.ComputedTypeError<`Impossible to cast on SegmentPath because value ${GenericInput} is not segment path.`>
 		: never;
 }

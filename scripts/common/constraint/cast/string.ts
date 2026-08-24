@@ -95,7 +95,7 @@ export interface ComputeCastConstraintStringRule<
 	path: DCommon.IsExtends<GenericExpectedConstraint, DPath.Path> extends true
 		? DCommon.Or<[
 			DPath.IsLiteralPath<GenericValue>,
-			DCommon.IsExtends<GenericValue, DPath.Path | DPath.Absolute>,
+			DCommon.IsExtends<GenericValue, DPath.Path | DPath.Absolute | DPath.Segment>,
 		]> extends true
 			? unknown
 			: CastError<
@@ -111,7 +111,19 @@ export interface ComputeCastConstraintStringRule<
 		]> extends true
 			? unknown
 			: CastError<
-				`Impossible to cast on Absolute Path because value ${GenericValue} is not absolute path.`,
+				`Impossible to cast on AbsolutePath because value ${GenericValue} is not absolute path.`,
+				GenericValue,
+				GenericExpectedConstraint
+			>
+		: never;
+	segment: DCommon.IsExtends<GenericExpectedConstraint, DPath.Segment> extends true
+		? DCommon.Or<[
+			DPath.IsLiteralSegmentPath<GenericValue>,
+			DCommon.IsExtends<GenericValue, DPath.Segment>,
+		]> extends true
+			? unknown
+			: CastError<
+				`Impossible to cast on SegmentPath because value ${GenericValue} is not segment path.`,
 				GenericValue,
 				GenericExpectedConstraint
 			>

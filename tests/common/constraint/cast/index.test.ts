@@ -98,6 +98,8 @@ describe("cast", () => {
 
 		const value4: string & DPath.Path = cast("" as string & DPath.Absolute);
 
+		const value45: string & DPath.Path = cast("" as string & DPath.Segment);
+
 		const value5: string & DPath.Path = cast(
 			"alpha//beta" as "alpha//beta" & CastError<
 				"Impossible to cast on Path because value alpha//beta is not path.",
@@ -119,6 +121,32 @@ describe("cast", () => {
 		const value65: string & DPath.Path = cast("" as string);
 	});
 
+	it("cast segment path", () => {
+		const value1: string & DPath.Segment = cast("alpha");
+
+		const value2: string & DPath.Segment = cast("" as string & DPath.Segment);
+
+		const value3: string & DPath.Segment = cast(
+			"alpha/beta" as "alpha/beta" & CastError<
+				"Impossible to cast on SegmentPath because value alpha/beta is not segment path.",
+				"alpha/beta",
+				DPath.Segment
+			>,
+		);
+		// @ts-expect-error a path with separators does not guarantee a segment.
+		const value35: string & DPath.Segment = cast("alpha/beta");
+
+		const value4: string & DPath.Segment = cast(
+			"" as string & CastError<
+				`Impossible to cast on SegmentPath because value ${string} is not segment path.`,
+				string,
+				DPath.Segment
+			>,
+		);
+		// @ts-expect-error a broad string does not guarantee a segment.
+		const value45: string & DPath.Segment = cast("" as string);
+	});
+
 	it("cast absolute path", () => {
 		const value1: string & DPath.Absolute = cast("/alpha/beta");
 
@@ -126,7 +154,7 @@ describe("cast", () => {
 
 		const value3: string & DPath.Absolute = cast(
 			"alpha/beta" as "alpha/beta" & CastError<
-				"Impossible to cast on Absolute Path because value alpha/beta is not absolute path.",
+				"Impossible to cast on AbsolutePath because value alpha/beta is not absolute path.",
 				"alpha/beta",
 				DPath.Absolute
 			>,
@@ -136,7 +164,7 @@ describe("cast", () => {
 
 		const value4: string & DPath.Absolute = cast(
 			"" as string & DPath.Path & CastError<
-				`Impossible to cast on Absolute Path because value ${string & DPath.Path} is not absolute path.`,
+				`Impossible to cast on AbsolutePath because value ${string & DPath.Path} is not absolute path.`,
 				string & DPath.Path,
 				DPath.Absolute
 			>,

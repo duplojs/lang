@@ -28,6 +28,45 @@ describe("getBaseName", () => {
 		expect(DPath.getBaseName(path)).toBeNull();
 	});
 
+	it("returns null when the base name is not a segment", () => {
+		const currentFolder: string & DPath.Path = DCommon.infer(".");
+		const parentFolder: string & DPath.Path = DCommon.infer("..");
+		const nestedParentFolder: string & DPath.Path = DCommon.infer("../..");
+
+		expect(DPath.getBaseName(currentFolder)).toBeNull();
+		expect(DPath.getBaseName(parentFolder)).toBeNull();
+		expect(DPath.getBaseName(nestedParentFolder)).toBeNull();
+	});
+
+	it("returns null when removing the extension produces an invalid segment", () => {
+		const currentFolderResult = DPath.getBaseName(
+			DCommon.infer("..config") satisfies string & DPath.Segment,
+			{ removeExtension: true },
+		);
+		const parentFolderResult = DPath.getBaseName(
+			DCommon.infer("...config") satisfies string & DPath.Segment,
+			{ removeExtension: true },
+		);
+
+		expect(currentFolderResult).toBeNull();
+		expect(parentFolderResult).toBeNull();
+	});
+
+	it("accepts a segment and preserves the segment guarantee", () => {
+		const segment: string & DPath.Segment = DCommon.infer("file.txt");
+
+		const result = DPath.getBaseName(segment);
+
+		expect(result).toBe("file.txt");
+		expect(DPath.isSegment(result as string)).toBe(true);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			(string & DPath.Segment) | null,
+			"strict"
+		>;
+	});
+
 	it("narrows the output when the input is a path", () => {
 		const path: string & DPath.Path = DCommon.infer("/alpha/beta/file.txt");
 
@@ -37,12 +76,12 @@ describe("getBaseName", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string | null,
+			(string & DPath.Segment) | null,
 			"strict"
 		>;
 	});
 
-	it("keeps a wide output when the extension is removed", () => {
+	it("preserves a hidden file segment when no extension can be removed", () => {
 		const path: string & DPath.Path = DCommon.infer("/alpha/beta/.env");
 
 		const result = DPath.getBaseName(path, { removeExtension: true });
@@ -51,7 +90,7 @@ describe("getBaseName", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string | null,
+			(string & DPath.Segment) | null,
 			"strict"
 		>;
 	});
@@ -75,7 +114,7 @@ describe("getBaseName", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string | null,
+			(string & DPath.Segment) | null,
 			"strict"
 		>;
 	});

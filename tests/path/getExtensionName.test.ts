@@ -6,15 +6,17 @@ describe("getExtensionName", () => {
 		const secondPath: string & DPath.Path = DCommon.infer("test/file.txt");
 		const thirdPath: string & DPath.Path = DCommon.infer("/test/file.txt");
 		const fourthPath: string & DPath.Path = DCommon.infer("archive.tar.gz");
+		const result = DPath.getExtensionName(fourthPath);
 
 		expect(DPath.getExtensionName(firstPath)).toBe("txt");
 		expect(DPath.getExtensionName(secondPath)).toBe("txt");
 		expect(DPath.getExtensionName(thirdPath)).toBe("txt");
-		expect(DPath.getExtensionName(fourthPath)).toBe("gz");
+		expect(result).toBe("gz");
+		expect(DPath.isSegment(result as string)).toBe(true);
 
-		type _CheckPath = ExpectType<
-			typeof thirdPath,
-			string & DPath.Path,
+		type _CheckResult = ExpectType<
+			typeof result,
+			(string & DPath.Segment) | null,
 			"strict"
 		>;
 	});
@@ -23,10 +25,18 @@ describe("getExtensionName", () => {
 		const firstPath: string & DPath.Path = DCommon.infer("file.txt");
 		const secondPath: string & DPath.Path = DCommon.infer("test/file.txt");
 		const thirdPath: string & DPath.Path = DCommon.infer("archive.tar.gz");
+		const result = DPath.getExtensionName(thirdPath, { withDot: true });
 
 		expect(DPath.getExtensionName(firstPath, { withDot: true })).toBe(".txt");
 		expect(DPath.getExtensionName(secondPath, { withDot: true })).toBe(".txt");
-		expect(DPath.getExtensionName(thirdPath, { withDot: true })).toBe(".gz");
+		expect(result).toBe(".gz");
+		expect(DPath.isSegment(result as string)).toBe(true);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			(string & DPath.Segment) | null,
+			"strict"
+		>;
 	});
 
 	it("returns null when no extension can be found", () => {
@@ -43,6 +53,27 @@ describe("getExtensionName", () => {
 		expect(DPath.getExtensionName(fourthPath)).toBeNull();
 		expect(DPath.getExtensionName(fifthPath)).toBeNull();
 		expect(DPath.getExtensionName(sixthPath)).toBeNull();
+	});
+
+	it("accepts a segment and preserves the segment guarantee", () => {
+		const segment: string & DPath.Segment = DCommon.infer("archive.tar.gz");
+
+		const result = DPath.getExtensionName(segment);
+
+		expect(result).toBe("gz");
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			(string & DPath.Segment) | null,
+			"strict"
+		>;
+	});
+
+	it("returns null when the extracted extension is not a segment", () => {
+		const invalidPath = "file.\0" as string & DPath.Path;
+
+		expect(DPath.getExtensionName(invalidPath)).toBeNull();
+		expect(DPath.getExtensionName(invalidPath, { withDot: true })).toBeNull();
 	});
 
 	it("requires a path input", () => {
@@ -64,7 +95,7 @@ describe("getExtensionName", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string | null,
+			(string & DPath.Segment) | null,
 			"strict"
 		>;
 	});

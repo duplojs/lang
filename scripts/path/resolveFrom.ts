@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import type { Absolute, Path } from "./constraints";
+import type { Absolute, Path, Segment } from "./constraints";
 import { resolveRelative } from "./resolveRelative";
 import type { RequireSegments } from "./types";
 
@@ -8,7 +8,7 @@ export interface ResolveFromParams {
 }
 
 export function resolveFrom<
-	const GenericSegments extends readonly (string & (Path | Absolute))[],
+	const GenericSegments extends readonly (string & (Path | Absolute | Segment))[],
 	const GenericParams extends ResolveFromParams,
 >(
 	origin: string & Absolute,

@@ -23,6 +23,7 @@ export * from "./path";
 export * from "./positive";
 export * from "./refine";
 export * from "./safe";
+export * from "./segmentPath";
 export * from "./strictNegative";
 export * from "./strictPositive";
 export * from "./stringLengthEqual";

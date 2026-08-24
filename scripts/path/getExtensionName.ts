@@ -1,4 +1,5 @@
-import type { Absolute, Path } from "./constraints";
+import type { Absolute, Path, Segment } from "./constraints";
+import { isSegment } from "./isSegment";
 
 const basenameRegex = /([^/]+)$/;
 
@@ -7,11 +8,16 @@ export interface GetExtensionNameParams {
 }
 
 export function getExtensionName<
-	GenericPath extends string & (Path | Absolute),
+	GenericPath extends string & (Path | Absolute | Segment),
 >(
 	path: GenericPath,
 	params?: GetExtensionNameParams,
-) {
+): (string & Segment) | null;
+
+export function getExtensionName(
+	path: string,
+	params?: GetExtensionNameParams,
+): any {
 	const baseName = basenameRegex.exec(path)?.[1];
 
 	if (
@@ -30,7 +36,11 @@ export function getExtensionName<
 
 	const extension = baseName.slice(dotIndex + 1);
 
-	return params?.withDot
+	const result = params?.withDot
 		? `.${extension}`
 		: extension;
+
+	return isSegment(result)
+		? result
+		: null;
 }
