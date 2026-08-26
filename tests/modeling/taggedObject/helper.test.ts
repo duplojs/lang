@@ -208,6 +208,50 @@ describe("objectTag", () => {
 		expect(structure.check(value)).toStrictEqual(
 			DEither.right("check-success", value),
 		);
+
+		const taggedObjectUserCreatedFromInterface = DModeling.createTaggedObject<UserCreated>(
+			"user-created",
+			{
+				name: DDataStructure.string([DDataStructure.minCharacters(3)]),
+				score: DDataStructure.number(),
+			},
+		);
+
+		expect(taggedObjectUserCreatedFromInterface.name).toBe("user-created");
+		expect(taggedObjectUserCreatedFromInterface.check(value)).toStrictEqual(
+			DEither.right("check-success", value),
+		);
+
+		type check1 = ExpectType<
+			DDataStructure.StructureValue<typeof taggedObjectUserCreatedFromInterface>,
+			UserCreated,
+			"strict"
+		>;
+
+		const taggedObjectUserCreatedFromInference = DModeling.createTaggedObject(
+			"user-created",
+			{
+				name: DDataStructure.string([DDataStructure.minCharacters(3)]),
+				score: DDataStructure.number(),
+			},
+		);
+
+		expect(taggedObjectUserCreatedFromInference.name).toBe("user-created");
+		expect(taggedObjectUserCreatedFromInference.check(value)).toStrictEqual(
+			DEither.right("check-success", value),
+		);
+
+		type check2 = ExpectType<
+			DDataStructure.StructureValue<typeof taggedObjectUserCreatedFromInference>,
+			(
+				& DModeling.ObjectTag<"user-created">
+				& {
+					readonly name: string & DString.MinCharacters<3>;
+					readonly score: number;
+				}
+			),
+			"strict"
+		>;
 	});
 
 	it("requires createTaggedObject helper shape to match the declared tagged object", () => {

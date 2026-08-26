@@ -115,19 +115,47 @@ export function createTaggedObject<
 	GenericTaggedObject extends ObjectTag,
 >(
 	name: GetTagValue<GenericTaggedObject>,
-) {
-	return <
-		GenericShape extends ShapeTaggedObjectStructure<GenericTaggedObject>,
-	>(
-		shape: (
-			& GenericShape
-			& RequireTaggedObjectSameShape<
-				GenericTaggedObject,
-				GenericShape
-			>
-		),
-	): TaggedObjectStructure<GenericTaggedObject> => TaggedObjectStructure(
-		name,
-		shape,
-	) as never;
+): <
+	GenericShape extends ShapeTaggedObjectStructure<GenericTaggedObject>,
+>(
+	shape: (
+		& GenericShape
+		& RequireTaggedObjectSameShape<
+			GenericTaggedObject,
+			GenericShape
+		>
+	),
+) => TaggedObjectStructure<GenericTaggedObject>;
+
+export function createTaggedObject<
+	GenericTaggedObject extends ObjectTag,
+	GenericName extends string = never,
+	GenericShape extends DDataStructure.ShapeObjectStructure = never,
+>(
+	name: GetTagValue<GenericTaggedObject> | GenericName,
+	shape: ShapeTaggedObjectStructure<GenericTaggedObject> | GenericShape,
+): TaggedObjectStructure<
+	ObjectTag extends GenericTaggedObject
+		? (
+			& ObjectTag<GenericName>
+			& DDataStructure.ShapeObjectStructureValue<GenericShape>
+		)
+		: GenericTaggedObject
+>;
+
+export function createTaggedObject(
+	...args: [string]
+		| [string, object]
+): any {
+	if (args.length === 1) {
+		const [name] = args;
+		return (shape: object) => createTaggedObject(
+			name,
+			shape,
+		) as never;
+	}
+
+	const [name, shape] = args;
+
+	return TaggedObjectStructure(name, shape);
 }
