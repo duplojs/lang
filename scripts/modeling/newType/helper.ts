@@ -8,7 +8,7 @@ export type ForbiddenTopLevelNewType<
 	? DCommon.ComputedTypeError<"NewType on top level of NewType declaration is forbidden.">
 	: never;
 
-export function createNewEntity<
+export function createNewType<
 	GenericName extends Capitalize<string>,
 	GenericStructure extends DDataStructure.Structure,
 	const GenericNewTypeConstraint extends readonly DDataStructure.Constraint<

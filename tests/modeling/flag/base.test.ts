@@ -1,7 +1,7 @@
 import { DDataStructure, DModeling, pipe, type ExpectType } from "@scripts";
 
 describe("createFlag", () => {
-	const name = DModeling.createNewEntity("UserName", DDataStructure.string());
+	const name = DModeling.createNewType("UserName", DDataStructure.string());
 	const userStructure = DModeling.createEntity("User", () => ({ name }));
 	const userName = "Jane" as DDataStructure.StructureValue<typeof name>;
 

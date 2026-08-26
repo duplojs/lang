@@ -1,8 +1,8 @@
 import { DDataStructure, DModeling, type DString, type ExpectType } from "@scripts";
 
-describe("createNewEntity", () => {
+describe("createNewType", () => {
 	it("creates a capitalized new type with optional constraints", () => {
-		const structure = DModeling.createNewEntity(
+		const structure = DModeling.createNewType(
 			"UserName",
 			DDataStructure.string(),
 			[DDataStructure.minCharacters(3)],
@@ -29,7 +29,7 @@ describe("createNewEntity", () => {
 	});
 
 	it("uses no new type constraint by default", () => {
-		const structure = DModeling.createNewEntity(
+		const structure = DModeling.createNewType(
 			"UserAge",
 			DDataStructure.number(),
 		);
@@ -44,9 +44,9 @@ describe("createNewEntity", () => {
 	});
 
 	it("rejects an existing new type as its top-level structure", () => {
-		const name = DModeling.createNewEntity("UserName", DDataStructure.string());
+		const name = DModeling.createNewType("UserName", DDataStructure.string());
 
 		// @ts-expect-error a NewType cannot be wrapped directly in another NewType.
-		DModeling.createNewEntity("UserOtherName", name);
+		DModeling.createNewType("UserOtherName", name);
 	});
 });

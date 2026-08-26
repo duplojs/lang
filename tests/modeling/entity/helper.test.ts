@@ -2,7 +2,7 @@ import { DDataStructure, DEither, DModeling, type ExpectType } from "@scripts";
 
 describe("createEntity", () => {
 	it("creates an entity composed of new types", () => {
-		const name = DModeling.createNewEntity("UserName", DDataStructure.string());
+		const name = DModeling.createNewType("UserName", DDataStructure.string());
 		const structure = DModeling.createEntity(
 			"User",
 			() => ({ name }),
@@ -24,7 +24,7 @@ describe("createEntity", () => {
 	});
 
 	it("accepts nested entities in an entity shape", () => {
-		const street = DModeling.createNewEntity("AddressStreet", DDataStructure.string());
+		const street = DModeling.createNewType("AddressStreet", DDataStructure.string());
 		const address = DModeling.createEntity("Address", () => ({ street }));
 		const structure = DModeling.createEntity("User", () => ({ address }));
 

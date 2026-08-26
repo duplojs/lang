@@ -1,7 +1,7 @@
 import type * as DCommon from "@scripts/common";
 import type * as DDataStructure from "@scripts/dataStructure";
 import type * as DKind from "@scripts/kind";
-import { createNewEntity, type ForbiddenTopLevelNewType, type NewTypeStructure } from "../newType";
+import { createNewType, type ForbiddenTopLevelNewType, type NewTypeStructure } from "../newType";
 import { createEntity, type ForbiddenMissingNewTypeInEntityShape } from "./helper";
 import { type EntityStructure } from "./base";
 import { createFlag, type FlagHandler } from "../flag";
@@ -79,7 +79,7 @@ export function createEntityNamespace<
 			name,
 			structure,
 			newTypeConstraints = [] as never,
-		) => createNewEntity(
+		) => createNewType(
 			`${entityName}${name}` as never,
 			structure,
 			newTypeConstraints,
