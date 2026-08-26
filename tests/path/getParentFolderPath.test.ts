@@ -9,23 +9,31 @@ describe("getParentFolderPath", () => {
 		expect(DPath.getParentFolderPath(secondPath)).toBe("alpha");
 	});
 
-	it.each<string & DPath.Path>([
-		DCommon.infer("alpha"),
-		DCommon.infer("."),
-		DCommon.infer(".."),
-		DCommon.infer("../.."),
-		DCommon.infer("../alpha"),
-		DCommon.infer("../../alpha"),
-	])("returns null when no safe relative parent can be extracted from %s", (path) => {
-		expect(DPath.getParentFolderPath(path)).toBeNull();
+	it.each([
+		["alpha", "."],
+		[".git", "."],
+		["...", "."],
+		[".", ".."],
+		["..", "../.."],
+		["../..", "../../.."],
+		["../../..", "../../../.."],
+		["../alpha", ".."],
+		["../../alpha", "../.."],
+		["../...", ".."],
+	] as const)("returns the relative parent of %s", (value, expected) => {
+		const path: string & DPath.Path = DCommon.infer(value);
+
+		expect(DPath.getParentFolderPath(path)).toBe(expected);
 	});
 
 	it("returns the parent folder for absolute paths", () => {
 		const firstPath: string & DPath.Path = DCommon.infer("/alpha/beta");
 		const secondPath: string & DPath.Path = DCommon.infer("/alpha");
+		const dotOnlySegmentPath: string & DPath.Path = DCommon.infer("/...");
 
 		expect(DPath.getParentFolderPath(firstPath)).toBe("/alpha");
 		expect(DPath.getParentFolderPath(secondPath)).toBe("/");
+		expect(DPath.getParentFolderPath(dotOnlySegmentPath)).toBe("/");
 	});
 
 	it("returns null for the absolute root", () => {
@@ -54,7 +62,7 @@ describe("getParentFolderPath", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string | null,
+			(string & DPath.Path) | null,
 			"strict"
 		>;
 	});
@@ -70,7 +78,7 @@ describe("getParentFolderPath", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string | null,
+			(string & DPath.Path) | null,
 			"strict"
 		>;
 	});
@@ -94,7 +102,7 @@ describe("getParentFolderPath", () => {
 
 		type _CheckResult = ExpectType<
 			typeof result,
-			string | null,
+			(string & DPath.Path) | null,
 			"strict"
 		>;
 	});

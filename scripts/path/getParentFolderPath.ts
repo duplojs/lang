@@ -1,27 +1,37 @@
 import type { Absolute, Path } from "./constraints";
 
 const parentFolderPathRegex = /^([^]*)\/[^/]+$/;
-const onlyParentsRegex = /^(?:\.\.)(?:\/\.\.)*$/;
+const onlyParentSegmentsRegex = /^(?:\.\.)(?:\/\.\.)*$/;
 
 export function getParentFolderPath<
 	GenericPath extends string & (Path | Absolute),
 >(
 	path: GenericPath,
-): string | null;
+): (string & Path) | null;
 
 export function getParentFolderPath(
 	path: string,
 ) {
+	if (path === "/") {
+		return null;
+	}
+
+	if (path === ".") {
+		return "..";
+	}
+
+	if (onlyParentSegmentsRegex.test(path)) {
+		return `${path}/..`;
+	}
+
 	const parent = parentFolderPathRegex.exec(path)?.[1];
 
-	if (
-		parent === undefined
-		|| parent === ""
-		|| onlyParentsRegex.test(parent)
-	) {
-		return path.startsWith("/") && parent === ""
-			? "/"
-			: null;
+	if (parent === undefined) {
+		return ".";
+	}
+
+	if (parent === "") {
+		return "/";
 	}
 
 	return parent;
