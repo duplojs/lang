@@ -1,4 +1,4 @@
-import { DCommon, DDataStructure, DEither, DModeling, type DString, type ExpectType } from "@scripts";
+import { DCommon, DDataStructure, DEither, type DKind, DModeling, type DString, pipe, type ExpectType } from "@scripts";
 
 describe("TaggedObjectStructure", () => {
 	it("creates a named tagged object structure from an existing interface", () => {
@@ -332,6 +332,417 @@ describe("TaggedObjectStructure", () => {
 				[DModeling.objectTagKind.runTimeKey]: "profile",
 			}),
 		);
+	});
+
+	it("maps raw properties to a tagged object after checking them", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.minCharacters(3)],
+				),
+			},
+		);
+		const result = structure.map({
+			name: "Jane",
+		});
+
+		type _CheckInput = ExpectType<
+			Parameters<typeof structure.map>[0],
+			{
+				readonly name: string;
+			},
+			"strict"
+		>;
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				& DModeling.ObjectTag<"user-created">
+				& {
+					readonly name: string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+				}
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(
+			DEither.right("map-success", structure.new({ name: "Jane" } as never)),
+		);
+		expect(DEither.isLeft(structure.map({ name: "Jo" }))).toBe(true);
+	});
+
+	it("maps raw properties to a tagged object in pipe", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.minCharacters(3)],
+				),
+			},
+		);
+		const result = pipe(
+			{
+				name: "Jane",
+			},
+			structure.map,
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				& DModeling.ObjectTag<"user-created">
+				& {
+					readonly name: string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+				}
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(
+			DEither.right("map-success", structure.new({ name: "Jane" } as never)),
+		);
+	});
+
+	it("recursively maps nested new type properties", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				profile: DDataStructure.object({
+					aliases: DDataStructure.array(
+						DModeling.NewTypeStructure(
+							"user-alias",
+							DDataStructure.string(),
+							[DDataStructure.minCharacters(3)],
+						),
+					),
+				}),
+			},
+		);
+		const result = structure.map({
+			profile: {
+				aliases: ["Jane", "Jenny"],
+			},
+		});
+
+		type _CheckInput = ExpectType<
+			Parameters<typeof structure.map>[0],
+			{
+				readonly profile: {
+					readonly aliases: readonly string[];
+				};
+			},
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(
+			DEither.right(
+				"map-success",
+				structure.new({
+					profile: {
+						aliases: ["Jane", "Jenny"],
+					},
+				} as never),
+			),
+		);
+		expect(DEither.isLeft(structure.map({
+			profile: {
+				aliases: ["Jo"],
+			},
+		}))).toBe(true);
+	});
+
+	it("maps encoded properties to a tagged object with codecs", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.minCharacters(3)],
+				),
+			},
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `Jane-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ codec });
+		const result = structure.decodeMap(codecs, {
+			name: 4,
+		});
+
+		type _CheckInput = ExpectType<
+			Parameters<typeof structure.decodeMap<typeof codecs>>[1],
+			{
+				readonly name: number;
+			},
+			"strict"
+		>;
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				& DModeling.ObjectTag<"user-created">
+				& {
+					readonly name: string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+				}
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		// @ts-expect-error codec mapping expects the encoded number property, not the raw string property.
+		structure.decodeMap(codecs, { name: "Jane" });
+		expect(result).toStrictEqual(
+			DEither.right("map-success", structure.new({ name: "Jane-4" } as never)),
+		);
+	});
+
+	it("maps encoded properties to a tagged object with codecs in pipe", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.minCharacters(3)],
+				),
+			},
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `Jane-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ codec });
+		const result = pipe(
+			{
+				name: 4,
+			},
+			structure.decodeMap(codecs),
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| DEither.Right<
+				"map-success",
+				& DModeling.ObjectTag<"user-created">
+				& {
+					readonly name: string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+				}
+			>
+			| DEither.Left<"async-error", undefined>
+			| DEither.Left<"map-error", DDataStructure.Error>,
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(
+			DEither.right("map-success", structure.new({ name: "Jane-4" } as never)),
+		);
+	});
+
+	it("returns an async error when synchronously mapping an asynchronous tagged object property", () => {
+		const asyncConstraintKind = DDataStructure.createKind("sync-tagged-object-map-async-constraint");
+		interface AsyncConstraint extends DCommon.Forward<
+			& DDataStructure.Constraint<string>
+			& DKind.Kind<typeof asyncConstraintKind>
+		> {}
+		const AsyncConstraint = DDataStructure.createConstraint(
+			asyncConstraintKind,
+			({ init }) => () => init<AsyncConstraint>(
+				{},
+				{
+					executeCheck: () => Promise.resolve(DDataStructure.SuccessSymbol),
+					isAsynchronous: () => true,
+				},
+			),
+		);
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DDataStructure.string([AsyncConstraint()]),
+			},
+		);
+
+		expect(structure.map({ name: "Jane" })).toStrictEqual(
+			DEither.left("async-error", undefined),
+		);
+	});
+
+	it("returns an async error when synchronously decoding with an asynchronous codec", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DDataStructure.string(),
+			},
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => Promise.resolve(`Jane-${data}`),
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+
+		expect(structure.decodeMap(codecs, { name: 4 })).toStrictEqual(
+			DEither.left("async-error", undefined),
+		);
+	});
+
+	it("returns map errors when runtime mapping receives a non object input", async() => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DDataStructure.string(),
+			},
+		);
+		const codecs = DDataStructure.createCodecs({});
+
+		expect(DEither.isLeft(structure.map(null as never))).toBe(true);
+		expect(DEither.isLeft(structure.decodeMap(codecs, null as never))).toBe(true);
+		expect(DEither.isLeft(await structure.asyncDecodeMap(codecs, null as never))).toBe(true);
+		expect(DEither.isLeft(await structure.asyncMap(null as never))).toBe(true);
+	});
+
+	it("asynchronously maps raw properties to a tagged object", async() => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.minCharacters(3)],
+				),
+			},
+		);
+		const result = structure.asyncMap({
+			name: "Jane",
+		});
+
+		type _CheckInput = ExpectType<
+			Parameters<typeof structure.asyncMap>[0],
+			{
+				readonly name: string;
+			},
+			"strict"
+		>;
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<
+				| DEither.Right<
+					"map-success",
+					& DModeling.ObjectTag<"user-created">
+					& {
+						readonly name: string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+					}
+				>
+				| DEither.Left<"map-error", DDataStructure.Error>
+			>,
+			"strict"
+		>;
+
+		await expect(result).resolves.toStrictEqual(
+			DEither.right("map-success", structure.new({ name: "Jane" } as never)),
+		);
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				await structure.asyncMap({ name: "Jo" }),
+				"map-error",
+			).issues[0],
+		).toMatchObject({
+			data: "Jo",
+			path: "name",
+		});
+	});
+
+	it("asynchronously maps encoded properties to a tagged object with codecs in pipe", async() => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.minCharacters(3)],
+				),
+			},
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => Promise.resolve(data.length),
+			(data) => Promise.resolve(`Jane-${data}`),
+		);
+		const codecs = DDataStructure.createCodecs({ codec });
+		const result = pipe(
+			{
+				name: 4,
+			},
+			structure.asyncDecodeMap(codecs),
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<
+				| DEither.Right<
+					"map-success",
+					& DModeling.ObjectTag<"user-created">
+					& {
+						readonly name: string & DModeling.NewType<"user-name", DString.MinCharacters<3>>;
+					}
+				>
+				| DEither.Left<"map-error", DDataStructure.Error>
+			>,
+			"strict"
+		>;
+
+		await expect(result).resolves.toStrictEqual(
+			DEither.right("map-success", structure.new({ name: "Jane-4" } as never)),
+		);
+	});
+
+	it("returns a map error when asynchronously decoding an invalid tagged object", async() => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DModeling.NewTypeStructure(
+					"user-name",
+					DDataStructure.string(),
+					[DDataStructure.minCharacters(3)],
+				),
+			},
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			() => Promise.resolve("Jo"),
+		);
+		const codecs = DDataStructure.createCodecs({ string: codec });
+		const result = await structure.asyncDecodeMap(codecs, { name: 2 });
+
+		expect(
+			DEither.unwrapByInformationOrThrow(
+				result,
+				"map-error",
+			).issues[0],
+		).toMatchObject({
+			data: "Jo",
+			path: "name",
+		});
 	});
 
 	it("supports recursive tagged object structures", () => {

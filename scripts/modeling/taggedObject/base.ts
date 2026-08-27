@@ -1,7 +1,10 @@
 import type * as DKind from "@scripts/kind";
-import type * as DCommon from "@scripts/common";
+import * as DCommon from "@scripts/common";
+import * as DEither from "@scripts/either";
 import * as DDataStructure from "@scripts/dataStructure";
+import * as DObject from "@scripts/object";
 import { createKind } from "../kind";
+import { type NewType, type NewTypeMap } from "../newType";
 
 declare module "@scripts/dataStructure" {
 	interface StructuresStore {
@@ -65,6 +68,23 @@ export interface TaggedObjectStructureDefinition extends DDataStructure.Structur
 	readonly inner: DDataStructure.ObjectStructure;
 }
 
+export type TaggedObjectMap<
+	GenericValue extends unknown,
+	GenericRawValue = DCommon.RemoveConstraint<GenericValue>,
+> = GenericRawValue extends NewType
+	? NewTypeMap<GenericRawValue>
+	: GenericRawValue extends object
+		? DCommon.Or<[
+			DCommon.IsExtends<GenericRawValue, readonly any[]>,
+			DCommon.And<[
+				DCommon.IsExtends<keyof GenericRawValue, string>,
+				DCommon.Not<DCommon.IsExtends<DCommon.AnyFunction, GenericRawValue[keyof GenericRawValue]>>,
+			]>,
+		]> extends true
+			? { [Prop in keyof GenericRawValue]: TaggedObjectMap<GenericRawValue[Prop]> }
+			: GenericRawValue
+		: GenericRawValue;
+
 export interface TaggedObjectStructure<
 	GenericTaggedObject extends ObjectTag = ObjectTag,
 > extends DCommon.Forward<
@@ -75,6 +95,119 @@ export interface TaggedObjectStructure<
 		& DKind.Kind<typeof taggedObjectStructureKind>
 	> {
 	readonly name: GetTagValue<GenericTaggedObject>;
+
+	"new"(
+		properties: DCommon.SimplifyTopLevel<DKind.Remove<GenericTaggedObject>>
+	): GenericTaggedObject;
+
+	decodeMap<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+	): (
+		data: DDataStructure.EncodedValue<
+			TaggedObjectMap<
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
+			>,
+			GenericCodecs
+		>,
+	) => (
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	);
+	decodeMap<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+		data: DDataStructure.EncodedValue<
+			TaggedObjectMap<
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
+			>,
+			GenericCodecs
+		>,
+	): (
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	);
+	map(
+		data: TaggedObjectMap<
+			DKind.Remove<
+				DDataStructure.StructureValue<this>
+			>
+		>
+	): (
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"async-error", undefined>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	);
+
+	asyncDecodeMap<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+	): (
+		data: DDataStructure.EncodedValue<
+			TaggedObjectMap<
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
+			>,
+			GenericCodecs
+		>,
+	) => Promise<
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	>;
+	asyncDecodeMap<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+		data: DDataStructure.EncodedValue<
+			TaggedObjectMap<
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
+			>,
+			GenericCodecs
+		>,
+	): Promise<
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	>;
+	asyncMap(
+		data: TaggedObjectMap<
+			DKind.Remove<
+				DDataStructure.StructureValue<this>
+			>
+		>
+	): Promise<
+		| DEither.Right<
+			"map-success",
+			DDataStructure.StructureValue<this>
+		>
+		| DEither.Left<"map-error", DDataStructure.Error>
+	>;
 }
 
 export const TaggedObjectStructure = DDataStructure.createStructure(
@@ -124,6 +257,127 @@ export const TaggedObjectStructure = DDataStructure.createStructure(
 		},
 		{
 			name,
+			new: (self, properties) => ({
+				...properties,
+				[objectTagKind.runTimeKey]: name,
+			}) as never,
+			decodeMap: (
+				self,
+				...args: | [DDataStructure.Codecs, unknown]
+					| [DDataStructure.Codecs]
+			): any => {
+				if (args.length === 1) {
+					const [codecs] = args;
+					return (value: never) => self.decodeMap(codecs, value);
+				}
+
+				const errorHandler = DDataStructure.createGetErrorHandler();
+				const [codecs, data] = args;
+
+				const result = self.executeDecode(
+					codecs.context.value,
+					DObject.isSimple(data)
+						? {
+							...data,
+							[objectTagKind.runTimeKey]: name,
+						}
+						: data,
+					errorHandler,
+				);
+
+				if (result instanceof Promise) {
+					return DEither.left("async-error", undefined);
+				}
+
+				if (result === DDataStructure.ErrorSymbol) {
+					return DEither.left("map-error", errorHandler().createError());
+				}
+
+				return DEither.right("map-success", result as never);
+			},
+			map: (
+				self,
+				data,
+			): any => {
+				const errorHandler = DDataStructure.createGetErrorHandler();
+
+				const formattedData = DObject.isSimple(data)
+					? {
+						...data,
+						[objectTagKind.runTimeKey]: name,
+					}
+					: data;
+
+				const result = self.executeCheck(
+					formattedData,
+					errorHandler,
+				);
+
+				if (result instanceof Promise) {
+					return DEither.left("async-error", undefined);
+				}
+
+				if (result === DDataStructure.ErrorSymbol) {
+					return DEither.left("map-error", errorHandler().createError());
+				}
+
+				return DEither.right("map-success", formattedData as never);
+			},
+			asyncDecodeMap: (
+				self,
+				...args: | [DDataStructure.Codecs, unknown]
+					| [DDataStructure.Codecs]
+			): any => {
+				if (args.length === 1) {
+					const [codecs] = args;
+					return (value: never) => self.asyncDecodeMap(codecs, value);
+				}
+				return DCommon.justExec(async() => {
+					const errorHandler = DDataStructure.createGetErrorHandler();
+					const [codecs, data] = args;
+
+					const result = await self.executeDecode(
+						codecs.context.value,
+						DObject.isSimple(data)
+							? {
+								...data,
+								[objectTagKind.runTimeKey]: name,
+							}
+							: data,
+						errorHandler,
+					);
+
+					if (result === DDataStructure.ErrorSymbol) {
+						return DEither.left("map-error", errorHandler().createError());
+					}
+
+					return DEither.right("map-success", result as never);
+				});
+			},
+			asyncMap: (
+				self,
+				data,
+			): any => DCommon.justExec(async() => {
+				const errorHandler = DDataStructure.createGetErrorHandler();
+
+				const formattedData = DObject.isSimple(data)
+					? {
+						...data,
+						[objectTagKind.runTimeKey]: name,
+					}
+					: data;
+
+				const result = await self.executeCheck(
+					formattedData,
+					errorHandler,
+				);
+
+				if (result === DDataStructure.ErrorSymbol) {
+					return DEither.left("map-error", errorHandler().createError());
+				}
+
+				return DEither.right("map-success", formattedData as never);
+			}),
 		},
 	) as never,
 );

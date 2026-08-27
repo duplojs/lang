@@ -65,19 +65,17 @@ export type EntityMap<
 	GenericRawValue = DCommon.RemoveConstraint<GenericValue>,
 > = GenericRawValue extends NewType
 	? NewTypeMap<GenericRawValue>
-	: GenericRawValue extends Entity
-		? GenericRawValue
-		: GenericRawValue extends object
-			? DCommon.Or<[
-				DCommon.IsExtends<GenericRawValue, readonly any[]>,
-				DCommon.And<[
-					DCommon.IsExtends<keyof GenericRawValue, string>,
-					DCommon.Not<DCommon.IsExtends<DCommon.AnyFunction, GenericRawValue[keyof GenericRawValue]>>,
-				]>,
-			]> extends true
-				? { [Prop in keyof GenericRawValue]: NewTypeMap<GenericRawValue[Prop]> }
-				: GenericRawValue
-			: GenericRawValue;
+	: GenericRawValue extends object
+		? DCommon.Or<[
+			DCommon.IsExtends<GenericRawValue, readonly any[]>,
+			DCommon.And<[
+				DCommon.IsExtends<keyof GenericRawValue, string>,
+				DCommon.Not<DCommon.IsExtends<DCommon.AnyFunction, GenericRawValue[keyof GenericRawValue]>>,
+			]>,
+		]> extends true
+			? { [Prop in keyof GenericRawValue]: EntityMap<GenericRawValue[Prop]> }
+			: GenericRawValue
+		: GenericRawValue;
 
 export interface EntityStructure<
 	GenericName extends string = string,
