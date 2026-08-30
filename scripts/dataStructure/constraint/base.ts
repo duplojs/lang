@@ -50,6 +50,39 @@ export interface CreateConstraintInitParams<
 	isAsynchronous(self: GenericConstraint): boolean;
 }
 
+export class ConstraintBase {
+	private constructor() {}
+
+	public static init(params: DKind.Remove<Constraint>) {
+		const self = new ConstraintBase();
+		DCommon.bindPrototypeMethods(self);
+		for (const key in params) {
+			self[key as never] = params[key as never];
+		}
+
+		return self as Constraint;
+	}
+
+	public static addToPrototype<
+		GenericProp extends keyof Constraint,
+	>(
+		prop: GenericProp,
+		value: Constraint[GenericProp] extends infer InferredValue
+			? InferredValue extends DCommon.AnyFunction
+				? (self: Constraint, ...rest: Parameters<InferredValue>) => ReturnType<InferredValue>
+				: Constraint[GenericProp]
+			: never,
+	) {
+		ConstraintBase.prototype[prop as never] = (
+			typeof value === "function"
+				? function(this: never, ...args: never[]) {
+					return (value as DCommon.AnyFunction)(this as never, ...args);
+				}
+				: value
+		) as never;
+	}
+}
+
 export interface CreateConstraintConstructorParams<
 	GenericKindHandler extends DKind.Handler = DKind.Handler,
 > {
@@ -87,7 +120,7 @@ export function createConstraint<
 			isAsynchronous,
 		},
 	) => {
-		const self: Constraint = {
+		const self = ConstraintBase.init({
 			definition,
 			executeCheck: (data: unknown) => executeCheck(
 				self as never,
@@ -111,7 +144,7 @@ export function createConstraint<
 			},
 			[constraintKind.runTimeKey]: null,
 			[kindHandler.runTimeKey]: null,
-		} satisfies DKind.Remove<Constraint> as never;
+		} satisfies DKind.Remove<Constraint>);
 
 		return self as never;
 	};

@@ -1,4 +1,16 @@
 import { DDataStructure, type DCommon, type DKind, type ExpectType } from "@scripts";
+import type { ConstraintDefinition } from "@scripts/dataStructure";
+
+declare module "@scripts/dataStructure" {
+	interface Constraint<
+		GenericInput extends unknown = unknown,
+		GenericChecked extends GenericInput = GenericInput,
+		GenericDefinition extends ConstraintDefinition = ConstraintDefinition,
+	> {
+		getPrototypeOverrideLabel?(prefix: string): `${string}:${string}`;
+		testedValue?: string;
+	}
+}
 
 describe("createConstraint", () => {
 	it("creates a constraint constructor that initializes definitions and delegates checks with itself", () => {
@@ -225,5 +237,68 @@ describe("createConstraint", () => {
 			"abc",
 		);
 		expect(isAsynchronous).toHaveBeenCalledWith(constraint);
+	});
+
+	it("adds methods to the constraint prototype", () => {
+		const prototype = DDataStructure.ConstraintBase.prototype as DDataStructure.Constraint;
+
+		try {
+			DDataStructure.ConstraintBase.addToPrototype(
+				"clone",
+				(() => "prototype-clone") as never,
+			);
+
+			expect(prototype.clone()).toBe("prototype-clone");
+		} finally {
+			delete (prototype as Partial<DDataStructure.Constraint>).clone;
+		}
+	});
+
+	it("adds module-augmented methods to the constraint prototype", () => {
+		const prototype = DDataStructure.ConstraintBase.prototype as DDataStructure.Constraint;
+		const testConstraintKind = DDataStructure.createKind("test-prototype-constraint");
+
+		interface TestConstraint extends DCommon.Forward<
+			& DDataStructure.Constraint<string>
+			& DKind.Kind<typeof testConstraintKind>
+		> {}
+
+		const TestConstraint = DDataStructure.createConstraint(
+			testConstraintKind,
+			({ init }) => () => init<TestConstraint>(
+				{ message: "base" },
+				{
+					executeCheck: () => DDataStructure.SuccessSymbol,
+					isAsynchronous: () => false,
+				},
+			),
+		);
+
+		try {
+			DDataStructure.ConstraintBase.addToPrototype(
+				"getPrototypeOverrideLabel",
+				(self, prefix) => `${prefix}:${self.definition.message ?? ""}`,
+			);
+			DDataStructure.ConstraintBase.addToPrototype(
+				"testedValue",
+				"test",
+			);
+
+			const constraint = TestConstraint();
+			const getPrototypeOverrideLabel = constraint.getPrototypeOverrideLabel!;
+			const result = getPrototypeOverrideLabel("message");
+
+			expect(result).toBe("message:base");
+			expect(constraint.testedValue).toBe("test");
+
+			type _CheckResult = ExpectType<
+				typeof result,
+				`${string}:${string}`,
+				"strict"
+			>;
+		} finally {
+			delete (prototype as Partial<DDataStructure.Constraint>).getPrototypeOverrideLabel;
+			delete (prototype as Partial<DDataStructure.Constraint>).testedValue;
+		}
 	});
 });
