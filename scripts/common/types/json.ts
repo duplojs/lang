@@ -6,5 +6,5 @@ export type Json = MaybeArray<
 	| boolean
 	| number
 	| null
-	| { [key: string]: Json }
+	| { readonly [key: string]: Json }
 >;
