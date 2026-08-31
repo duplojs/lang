@@ -18,6 +18,7 @@ export * from "./multipleOf";
 export * from "./negative";
 export * from "./notEmpty";
 export * from "./notZero";
+export * from "./numberInString";
 export * from "./odd";
 export * from "./path";
 export * from "./positive";

@@ -74,6 +74,12 @@ describe("infer", () => {
 				& DString.MaxCharacters<5> = DCommon.infer("hello");
 		});
 
+		it("correct infer Number constraint from number literal", () => {
+			const result: string & DString.Number = DCommon.infer("12.5");
+
+			expect(result).toBe("12.5");
+		});
+
 		it("correct infer Path constraint from literal", () => {
 			const result: string & DPath.Path = DCommon.infer("alpha/beta");
 
@@ -230,6 +236,13 @@ describe("infer", () => {
 		it("should reject incompatible LengthEqual constraints", () => {
 			const result: string & DString.LengthEqual<3> = DCommon.infer(
 			// @ts-expect-error LengthEqual<5> from the value does not induce LengthEqual<3>.
+				"hello",
+			);
+		});
+
+		it("should reject incompatible Number constraint", () => {
+			const result: string & DString.Number = DCommon.infer(
+			// @ts-expect-error a non-number literal does not induce Number.
 				"hello",
 			);
 		});

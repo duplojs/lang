@@ -92,6 +92,18 @@ export interface ComputeCastConstraintStringRule<
 			>
 		>
 		: never;
+	number: DCommon.IsExtends<GenericExpectedConstraint, DString.Number> extends true
+		? DCommon.Or<[
+			DCommon.IsExtends<GenericValue, DString.NumberInString>,
+			DCommon.IsExtends<GenericValue, DString.Number>,
+		]> extends true
+			? unknown
+			: CastError<
+				`Impossible to cast on Number because value ${GenericValue} is not a number.`,
+				GenericValue,
+				GenericExpectedConstraint
+			>
+		: never;
 	path: DCommon.IsExtends<GenericExpectedConstraint, DPath.Path> extends true
 		? DCommon.Or<[
 			DPath.IsLiteralPath<GenericValue>,

@@ -1,5 +1,3 @@
-export type * from "./types";
-
 export type * from "./allowedCharacters";
 export type * from "./email";
 export type * from "./format";
@@ -7,6 +5,8 @@ export type * from "./lengthEqual";
 export type * from "./maxCharacters";
 export type * from "./minCharacters";
 export type * from "./notEmpty";
+export type * from "./number";
 export type * from "./trimmed";
+export type * from "./types";
 export type * from "./url";
 export type * from "./uuid";

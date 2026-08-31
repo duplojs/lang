@@ -57,7 +57,7 @@ type CheckIsGreater<
 
 type toStringDecimal<
 	GenericValue extends number,
-> = `${GenericValue}` extends `${DString.Number}.${DString.Number}`
+> = `${GenericValue}` extends `${DString.NumberInString}.${DString.NumberInString}`
 	? `${GenericValue}`
 	: `${GenericValue}.0`;
 
@@ -68,8 +68,8 @@ type PrepareValues<
 	toStringDecimal<GenericValue>,
 	toStringDecimal<GenericReference>,
 ] extends readonly [
-	`${infer InferredValueInteger extends DString.Number}.${infer InferredValueDecimals extends DString.Number}`,
-	`${infer InferredReferenceInteger extends DString.Number}.${infer InferredReferenceDecimals extends DString.Number}`,
+	`${infer InferredValueInteger extends DString.NumberInString}.${infer InferredValueDecimals extends DString.NumberInString}`,
+	`${infer InferredReferenceInteger extends DString.NumberInString}.${infer InferredReferenceDecimals extends DString.NumberInString}`,
 ]
 	? DCommon.And<[
 		DCommon.IsEqual<InferredValueDecimals, "0">,
@@ -136,8 +136,8 @@ type ComputeIsGreater<
 	GenericValue,
 	GenericReference
 > extends readonly [
-	infer InferredValue extends DString.Number,
-	infer InferredReference extends DString.Number,
+	infer InferredValue extends DString.NumberInString,
+	infer InferredReference extends DString.NumberInString,
 ]
 	? DCommon.And<[
 		DString.Includes<InferredValue, "-">,

@@ -29,111 +29,110 @@ export class TheDate extends DKind.parentClass(
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setDate(_date: number): number {
+	public override setDate(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setFullYear(_year: number, _month?: number, _date?: number): number {
+	public override setFullYear(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setHours(_hours: number, _min?: number, _sec?: number, _ms?: number): number {
+	public override setHours(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setMilliseconds(_ms: number): number {
+	public override setMilliseconds(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setMinutes(_min: number, _sec?: number, _ms?: number): number {
+	public override setMinutes(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setMonth(_month: number, _date?: number): number {
+	public override setMonth(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setSeconds(_sec: number, _ms?: number): number {
+	public override setSeconds(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setTime(_time: number): number {
+	public override setTime(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCDate(_date: number): number {
+	public override setUTCDate(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCFullYear(_year: number, _month?: number, _date?: number): number {
+	public override setUTCFullYear(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCHours(_hours: number, _min?: number, _sec?: number, _ms?: number): number {
+	public override setUTCHours(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCMilliseconds(_ms: number): number {
+	public override setUTCMilliseconds(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCMinutes(_min: number, _sec?: number, _ms?: number): number {
+	public override setUTCMinutes(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCMonth(_month: number, _date?: number): number {
+	public override setUTCMonth(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @deprecated this method does not work on ImmutableDate
 	 */
-	public override setUTCSeconds(_sec: number, _ms?: number): number {
+	public override setUTCSeconds(): number {
 		return this.getTime();
 	}
 
 	/**
 	 * @internal
-	 * @deprecated use DChrono.createDate | DChrono.createDateOrThrow function
 	 */
 	public static "new"(timestamp: number): TheDate {
 		return new TheDate(makeSafeTimestamp(timestamp));

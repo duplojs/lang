@@ -30,6 +30,7 @@ export * from "./notZero";
 export * from "./null";
 export * from "./nullable";
 export * from "./number";
+export * from "./numberInString";
 export * from "./object";
 export * from "./odd";
 export * from "./optional";

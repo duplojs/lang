@@ -14,6 +14,7 @@ export * from "./isEmail";
 export * from "./isIn";
 export * from "./isKeyof";
 export * from "./isNotEmpty";
+export * from "./isNumber";
 export * from "./isUrl";
 export * from "./isUuid";
 export * from "./join";

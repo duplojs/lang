@@ -89,6 +89,26 @@ describe("cast", () => {
 		const value35: string & DString.LengthEqual<12> = cast("" as string & DString.MaxCharacters<12>);
 	});
 
+	it("cast string number", () => {
+		const value1: string & DString.Number = cast("12");
+
+		const value2: string & DString.Number = cast("" as string & DString.Number);
+
+		const value3: string & DString.Number = cast(
+			"hello" as "hello" & CastError<
+				"Impossible to cast on Number because value hello is not a number.",
+				"hello",
+				DString.Number
+			>,
+		);
+		// @ts-expect-error a non-number string cannot carry Number.
+		const value35: string & DString.Number = cast("hello");
+
+		expect(value1).toBe("12");
+		expect(value2).toBe("");
+		expect(value3).toBe("hello");
+	});
+
 	it("cast path", () => {
 		const value1: string & DPath.Path = cast("alpha/beta");
 

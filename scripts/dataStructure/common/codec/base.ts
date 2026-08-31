@@ -1,10 +1,10 @@
 import type * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
 import type * as DObject from "@scripts/object";
-import { type FundamentalTypeValue, type FundamentalType } from "../fundamentalType";
-import { createKind } from "../kind";
-import { type GetErrorHandler } from "./error";
-import { ErrorSymbol } from "./resultSymbol";
+import { type FundamentalTypeValue, type FundamentalType } from "../../fundamentalType";
+import { createKind } from "../../kind";
+import { type GetErrorHandler } from "../error";
+import { ErrorSymbol } from "../resultSymbol";
 
 export const codecKind = createKind("codec");
 
@@ -61,7 +61,10 @@ export function createCodec<
 	>,
 	decode: (
 		data: GenericEncodedValue,
-		self: Codec<GenericFundamentalType, GenericEncodedValue>,
+		self: Codec<
+			GenericFundamentalType,
+			GenericEncodedValue
+		>,
 		errorHandler?: GetErrorHandler,
 	) => DCommon.MaybePromise<
 		| FundamentalTypeValue<GenericFundamentalType>

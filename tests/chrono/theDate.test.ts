@@ -36,21 +36,21 @@ describe("TheDate", () => {
 		const baseDate = DChrono.createDate("2020-01-01");
 		const baseTimestamp = baseDate.getTime();
 
-		expect(baseDate.setDate(10)).toBe(baseTimestamp);
-		expect(baseDate.setFullYear(1999, 1, 1)).toBe(baseTimestamp);
-		expect(baseDate.setHours(12, 30, 45, 500)).toBe(baseTimestamp);
-		expect(baseDate.setMilliseconds(123)).toBe(baseTimestamp);
-		expect(baseDate.setMinutes(59, 58, 57)).toBe(baseTimestamp);
-		expect(baseDate.setMonth(6, 15)).toBe(baseTimestamp);
-		expect(baseDate.setSeconds(42, 900)).toBe(baseTimestamp);
-		expect(baseDate.setTime(123456789)).toBe(baseTimestamp);
-		expect(baseDate.setUTCDate(20)).toBe(baseTimestamp);
-		expect(baseDate.setUTCFullYear(2010, 2, 3)).toBe(baseTimestamp);
-		expect(baseDate.setUTCHours(7, 8, 9, 10)).toBe(baseTimestamp);
-		expect(baseDate.setUTCMilliseconds(777)).toBe(baseTimestamp);
-		expect(baseDate.setUTCMinutes(11, 12, 13)).toBe(baseTimestamp);
-		expect(baseDate.setUTCMonth(4, 5)).toBe(baseTimestamp);
-		expect(baseDate.setUTCSeconds(14, 15)).toBe(baseTimestamp);
+		expect(baseDate.setDate()).toBe(baseTimestamp);
+		expect(baseDate.setFullYear()).toBe(baseTimestamp);
+		expect(baseDate.setHours()).toBe(baseTimestamp);
+		expect(baseDate.setMilliseconds()).toBe(baseTimestamp);
+		expect(baseDate.setMinutes()).toBe(baseTimestamp);
+		expect(baseDate.setMonth()).toBe(baseTimestamp);
+		expect(baseDate.setSeconds()).toBe(baseTimestamp);
+		expect(baseDate.setTime()).toBe(baseTimestamp);
+		expect(baseDate.setUTCDate()).toBe(baseTimestamp);
+		expect(baseDate.setUTCFullYear()).toBe(baseTimestamp);
+		expect(baseDate.setUTCHours()).toBe(baseTimestamp);
+		expect(baseDate.setUTCMilliseconds()).toBe(baseTimestamp);
+		expect(baseDate.setUTCMinutes()).toBe(baseTimestamp);
+		expect(baseDate.setUTCMonth()).toBe(baseTimestamp);
+		expect(baseDate.setUTCSeconds()).toBe(baseTimestamp);
 
 		expect(baseDate.getTime()).toBe(baseTimestamp);
 	});

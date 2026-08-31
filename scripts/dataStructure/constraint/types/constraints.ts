@@ -11,6 +11,7 @@ export interface ConstraintsStore {
 	regex: DDefaults.RegexConstraint;
 	minCharacters: DDefaults.MinCharactersConstraint;
 	maxCharacters: DDefaults.MaxCharactersConstraint;
+	numberInString: DDefaults.NumberInStringConstraint;
 	stringLengthEqual: DDefaults.StringLengthEqualConstraint;
 
 	minElements: DDefaults.MinElementsConstraint;

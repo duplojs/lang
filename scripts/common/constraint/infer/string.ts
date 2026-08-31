@@ -33,6 +33,11 @@ export interface ComputeInferConstraintStringRule<
 			? DString.LengthEqual<InferredResult["to"]>
 			: DCommon.ComputedTypeError<`Impossible to cast on LengthEqual<${InferredResult["to"]}> because constraint LengthEqual<${InferredResult["from"]}> from the value is not equal.`>
 		: never;
+	number: DCommon.IsExtends<GenericOutput, DString.Number> extends true
+		? GenericInput extends DString.NumberInString
+			? DString.Number
+			: DCommon.ComputedTypeError<`Impossible to cast on Number because value ${GenericInput} is not a number.`>
+		: never;
 	path: DCommon.IsExtends<GenericOutput, DPath.Path> extends true
 		? DPath.IsLiteralPath<GenericInput> extends true
 			? DPath.Path
