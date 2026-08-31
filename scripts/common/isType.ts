@@ -1,3 +1,4 @@
+import { type RemoveConstraint } from "./constraint";
 import type { IsEqual, AnyFunction, AnyValue, BreakGenericLink } from "./types";
 
 interface Type {
@@ -60,7 +61,9 @@ type EligibleType<
 
 export function isType<
 	GenericInput extends AnyValue,
-	GenericType extends EligibleType<GenericInput>,
+	GenericType extends EligibleType<
+		RemoveConstraint<GenericInput>
+	>,
 >(
 	type: GenericType,
 ): (input: GenericInput) => input is ComputeResult<
@@ -70,7 +73,9 @@ export function isType<
 
 export function isType<
 	GenericInput extends AnyValue,
-	GenericType extends EligibleType<GenericInput>,
+	GenericType extends EligibleType<
+		RemoveConstraint<GenericInput>
+	>,
 >(
 	input: GenericInput,
 	type: GenericType,

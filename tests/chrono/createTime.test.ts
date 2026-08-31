@@ -30,6 +30,7 @@ describe("createTime", () => {
 
 	it("creates from a spooling object", () => {
 		const input = {
+			value: 0,
 			week: 1,
 			day: 2,
 			hour: 3,
@@ -51,17 +52,57 @@ describe("createTime", () => {
 		if (DEither.isRight(result)) {
 			expect(DChrono.serialize(DEither.unwrapRight(result))).toBe(`time${total}+`);
 		}
-		const emptyResult = DChrono.createTime({});
-		expect(DEither.isRight(emptyResult)).toBe(true);
-		if (DEither.isRight(emptyResult)) {
-			expect(DChrono.serialize(DEither.unwrapRight(emptyResult))).toBe("time0-");
-		}
 
 		type check = ExpectType<
 			typeof result,
 			DChrono.MayBeTime,
 			"strict"
 		>;
+	});
+
+	it("creates from a spooling number value", () => {
+		const result = DChrono.createTime({
+			value: 2500,
+			second: 1,
+		});
+
+		expect(result).toStrictEqual(
+			DEither.right("time-created", DChrono.TheTime.new(3500)),
+		);
+	});
+
+	it("creates from a spooling TheTime value", () => {
+		const value = DChrono.createTime(2500, "millisecond");
+		const result = DChrono.createTime({
+			value,
+			second: 1,
+		});
+
+		expect(result).toStrictEqual(
+			DEither.right("time-created", DChrono.TheTime.new(3500)),
+		);
+	});
+
+	it("creates from a spooling positive serialized time value", () => {
+		const result = DChrono.createTime({
+			value: "time2500+",
+			second: 1,
+		});
+
+		expect(result).toStrictEqual(
+			DEither.right("time-created", DChrono.TheTime.new(3500)),
+		);
+	});
+
+	it("creates from a spooling negative serialized time value", () => {
+		const result = DChrono.createTime({
+			value: "time2500-",
+			second: 1,
+		});
+
+		expect(result).toStrictEqual(
+			DEither.right("time-created", DChrono.TheTime.new(-1500)),
+		);
 	});
 
 	it("creates from ISO time value", () => {
@@ -131,25 +172,52 @@ describe("createTime", () => {
 		>;
 	});
 
-	it("ignores invalid ISO time value and uses other fields", () => {
+	it("returns an error for an invalid spooling time value", () => {
 		const input = {
 			value: "invalid",
 			minute: 1,
 		};
 
-		const total = DChrono.millisecondInOneMinute;
 		const result = DChrono.createTime(input);
 
-		expect(DEither.isRight(result)).toBe(true);
-		if (DEither.isRight(result)) {
-			expect(DChrono.serialize(DEither.unwrapRight(result))).toBe(`time${total}+`);
-		}
+		expect(result).toStrictEqual(
+			DEither.left("time-created-error", null),
+		);
 
 		type check = ExpectType<
 			typeof result,
 			DChrono.MayBeTime,
 			"strict"
 		>;
+	});
+
+	it("returns an error for a missing spooling time value", () => {
+		const result = DChrono.createTime({});
+
+		expect(result).toStrictEqual(
+			DEither.left("time-created-error", null),
+		);
+	});
+
+	it("returns an error for an unsafe spooling time value", () => {
+		const result = DChrono.createTime({
+			value: DChrono.maxTimeValue,
+		});
+
+		expect(result).toStrictEqual(
+			DEither.left("time-created-error", null),
+		);
+	});
+
+	it("returns an error when spooling offsets produce an unsafe time", () => {
+		const result = DChrono.createTime({
+			value: DChrono.maxTimeValue - 1,
+			millisecond: 2,
+		});
+
+		expect(result).toStrictEqual(
+			DEither.left("time-created-error", null),
+		);
 	});
 
 	it("creates with negative milliseconds", () => {
@@ -238,6 +306,15 @@ describe("createTime", () => {
 			DChrono.MayBeTime,
 			"strict"
 		>;
+	});
+
+	it("creates from every supported unit", () => {
+		expect(DChrono.createTime(2, "millisecond").toNative()).toBe(2);
+		expect(DChrono.createTime(2, "second").toNative()).toBe(2 * DChrono.millisecondsInOneSecond);
+		expect(DChrono.createTime(2, "minute").toNative()).toBe(2 * DChrono.millisecondInOneMinute);
+		expect(DChrono.createTime(2, "hour").toNative()).toBe(2 * DChrono.millisecondInOneHour);
+		expect(DChrono.createTime(2, "day").toNative()).toBe(2 * DChrono.millisecondsInOneDay);
+		expect(DChrono.createTime(2, "week").toNative()).toBe(2 * DChrono.millisecondInOneWeek);
 	});
 
 	it("type safe with createTime", () => {

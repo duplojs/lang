@@ -9,7 +9,7 @@ import { toNative } from "./toNative";
 import { TheDate } from "./theDate";
 import type { Hour, IsLeapYear, IsSafeYear, Millisecond, Minute, Second, MonthWithDay, SpoolingDate, SerializedTheDate } from "./types";
 
-export type MayBe = DEither.Right<"date-created", TheDate> | DEither.Left<"date-created-error", null>;
+export type MayBeDate = DEither.Right<"date-created", TheDate> | DEither.Left<"date-created-error", null>;
 
 type SafeDate = `${number}-${MonthWithDay}`;
 
@@ -55,13 +55,13 @@ export function createDate<
 	GenericInput extends TheDate | Date | number | SerializedTheDate,
 >(
 	input: GenericInput,
-): MayBe;
+): MayBeDate;
 
 export function createDate<
 	GenericInput extends SpoolingDate,
 >(
 	input: GenericInput,
-): MayBe;
+): MayBeDate;
 
 export function createDate<
 	GenericInput extends SafeDate,
@@ -73,7 +73,7 @@ export function createDate<
 export function createDate(
 	input: TheDate | Date | number | string | SpoolingDate,
 	params?: CreateSafeDateParams,
-): MayBe | TheDate {
+): MayBeDate | TheDate {
 	if (typeof input === "number") {
 		return createFromTimestamp(input);
 	}
@@ -108,24 +108,24 @@ export function createDate(
 	}
 
 	if (typeof input === "object") {
-		let inputValueResult: MayBe | undefined = undefined;
+		let resolvedDate: MayBeDate | undefined = undefined;
 
 		const serializeTheDateMatch = typeof input.value === "string" && input.value.match(serializeTheDateRegex);
 
 		if (serializeTheDateMatch) {
 			const { value, sign } = serializeTheDateMatch.groups as Record<"value" | "sign", string>;
 
-			inputValueResult = createFromTimestamp(Number(
+			resolvedDate = createFromTimestamp(Number(
 				sign === "-"
 					? `-${value}`
 					: value,
 			));
 		} else if (isDate(input.value)) {
-			inputValueResult = DEither.right("date-created", input.value);
+			resolvedDate = DEither.right("date-created", input.value);
 		} else if (input.value instanceof Date) {
-			inputValueResult = createFromTimestamp(input.value.getTime());
+			resolvedDate = createFromTimestamp(input.value.getTime());
 		} else if (typeof input.value === "number") {
-			inputValueResult = createFromTimestamp(input.value);
+			resolvedDate = createFromTimestamp(input.value);
 		} else {
 			const isoDateMatch = input.value.match(isoDateRegex);
 			if (isoDateMatch) {
@@ -136,7 +136,7 @@ export function createDate(
 					>
 				>;
 
-				inputValueResult = createFromTimestamp(
+				resolvedDate = createFromTimestamp(
 					Date.UTC(
 						Number(year),
 						Number(month) - 1,
@@ -158,12 +158,12 @@ export function createDate(
 			}
 		}
 
-		if (!inputValueResult || DEither.isLeft(inputValueResult)) {
-			return inputValueResult || DEither.left("date-created-error", null);
+		if (!resolvedDate || DEither.isLeft(resolvedDate)) {
+			return resolvedDate || DEither.left("date-created-error", null);
 		}
 
 		const date = toNative(
-			DEither.unwrapRight(inputValueResult),
+			DEither.unwrapRight(resolvedDate),
 		);
 
 		void (input.year && date.setUTCFullYear(input.year));
@@ -200,7 +200,7 @@ export function createDate(
 	return DEither.left("date-created-error", null);
 }
 
-function createFromTimestamp(timestamp: number): MayBe {
+function createFromTimestamp(timestamp: number): MayBeDate {
 	if (!isSafeTimestamp(timestamp)) {
 		return DEither.left("date-created-error", null);
 	}

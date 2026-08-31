@@ -11,7 +11,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -26,7 +26,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -38,7 +38,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -50,7 +50,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -62,7 +62,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -78,7 +78,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -94,7 +94,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -106,7 +106,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -129,7 +129,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -144,7 +144,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -156,7 +156,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -175,7 +175,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -191,7 +191,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -305,7 +305,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -321,7 +321,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -336,7 +336,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -351,7 +351,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -366,7 +366,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -381,7 +381,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -397,7 +397,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -425,7 +425,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -442,7 +442,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -487,7 +487,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -499,7 +499,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -514,7 +514,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});
@@ -526,7 +526,7 @@ describe("create", () => {
 
 		type check = ExpectType<
 			typeof result,
-			DChrono.MayBe,
+			DChrono.MayBeDate,
 			"strict"
 		>;
 	});

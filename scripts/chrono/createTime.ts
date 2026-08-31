@@ -5,6 +5,8 @@ import { TheTime } from "./theTime";
 import { isoTimeRegex, type maxTimeValue, millisecondInOneHour, millisecondInOneMinute, millisecondInOneWeek, millisecondsInOneDay, millisecondsInOneSecond, type minTimeValue, serializeTheTimeRegex } from "./constants";
 import { isSafeTimeValue } from "./isSafeTimeValue";
 import type { SerializedTheTime, SpoolingTime } from "./types";
+import { toNative } from "./toNative";
+import { isTime } from "./isTime";
 
 export type MayBeTime = DEither.Right<"time-created", TheTime> | DEither.Left<"time-created-error", null>;
 
@@ -116,13 +118,9 @@ export function createTime(
 		return createFromTimeValue(input * unitMapper[unit ?? "millisecond"]);
 	}
 
-	if (typeof input === "string") {
-		const serializeTheTimeMatch = input.match(serializeTheTimeRegex);
+	const serializeTheTimeMatch = typeof input === "string" && input.match(serializeTheTimeRegex);
 
-		if (!serializeTheTimeMatch) {
-			return DEither.left("time-created-error", null);
-		}
-
+	if (serializeTheTimeMatch) {
 		const { value, sign } = serializeTheTimeMatch.groups as Record<"value" | "sign", string>;
 
 		return createFromTimeValue(
@@ -134,55 +132,81 @@ export function createTime(
 		);
 	}
 
-	const {
-		value = 0,
-		week = 0,
-		day = 0,
-		hour = 0,
-		minute = 0,
-		second = 0,
-		millisecond = 0,
-	} = input;
+	if (typeof input === "object") {
+		let resolvedTime: MayBeTime | undefined = undefined;
 
-	let fromValue = 0;
-	if (typeof value === "number") {
-		fromValue = value;
-	} else {
-		const theTimeMatch = value.match(isoTimeRegex);
-		if (theTimeMatch) {
-			const {
-				sign = "+",
-				hour,
-				minute,
-				second = 0,
-				millisecond = 0,
-			} = theTimeMatch!.groups as Partial<
-				Record<
+		const serializeTheTimeMatch = typeof input.value === "string" && input.value.match(serializeTheTimeRegex);
+		if (serializeTheTimeMatch) {
+			const { value, sign } = serializeTheTimeMatch.groups as Record<"value" | "sign", string>;
+
+			resolvedTime = createFromTimeValue(
+				Number(
+					sign === "-"
+						? `-${value}`
+						: value,
+				),
+			);
+		} else if (typeof input.value === "number") {
+			resolvedTime = createFromTimeValue(input.value);
+		} else if (isTime(input.value)) {
+			resolvedTime = DEither.right("time-created", input.value);
+		} else {
+			const theTimeMatch = input.value?.match(isoTimeRegex);
+			if (theTimeMatch) {
+				const {
+					sign = "+",
+					hour,
+					minute,
+					second = 0,
+					millisecond = 0,
+				} = theTimeMatch!.groups as Partial<
+					Record<
 					"sign" | "hour" | "minute" | "second" | "millisecond",
 					string
-				>
-			>;
+					>
+				>;
 
-			fromValue = (Number(hour) * millisecondInOneHour)
-			+ (Number(minute) * millisecondInOneMinute)
-			+ (Number(second) * millisecondsInOneSecond)
-			+ Number(millisecond);
-
-			fromValue = sign === "-"
-				? -fromValue
-				: fromValue;
+				resolvedTime = createFromTimeValue(
+					(
+						(Number(hour) * millisecondInOneHour)
+						+ (Number(minute) * millisecondInOneMinute)
+						+ (Number(second) * millisecondsInOneSecond)
+						+ Number(millisecond)
+					)
+					* (sign === "-" ? -1 : 1),
+				);
+			}
 		}
+
+		if (!resolvedTime || DEither.isLeft(resolvedTime)) {
+			return resolvedTime || DEither.left("time-created-error", null);
+		}
+
+		const {
+			week = 0,
+			day = 0,
+			hour = 0,
+			minute = 0,
+			second = 0,
+			millisecond = 0,
+		} = input;
+
+		const time = toNative(
+			DEither.unwrapRight(resolvedTime),
+		);
+
+		return createFromTimeValue(
+			time
+			+ (week * millisecondInOneWeek)
+			+ (day * millisecondsInOneDay)
+			+ (hour * millisecondInOneHour)
+			+ (minute * millisecondInOneMinute)
+			+ (second * millisecondsInOneSecond)
+			+ millisecond,
+		);
 	}
 
-	return createFromTimeValue(
-		fromValue
-		+ (week * millisecondInOneWeek)
-		+ (day * millisecondsInOneDay)
-		+ (hour * millisecondInOneHour)
-		+ (minute * millisecondInOneMinute)
-		+ (second * millisecondsInOneSecond)
-		+ millisecond,
-	);
+	return DEither.left("time-created-error", null);
 }
 
 function createFromTimeValue(timeValue: number): MayBeTime {

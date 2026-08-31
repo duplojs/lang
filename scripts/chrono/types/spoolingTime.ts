@@ -1,5 +1,7 @@
+import { type TheTime } from "../theTime";
+
 export interface SpoolingTime {
-	value?: string | number;
+	value?: string | number | TheTime;
 	week?: number;
 	day?: number;
 	hour?: number;
