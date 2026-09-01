@@ -1,4 +1,4 @@
-import type * as DKind from "@scripts/kind";
+import * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
 import * as DEither from "@scripts/either";
 import * as DDataStructure from "@scripts/dataStructure";
@@ -208,6 +208,33 @@ export interface TaggedObjectStructure<
 		>
 		| DEither.Left<"map-error", DDataStructure.Error>
 	>;
+
+	encodeTaggedObject<
+		GenericCodecs extends DDataStructure.Codecs,
+	>(
+		codecs: GenericCodecs,
+		data: DDataStructure.StructureValue<this>,
+	): Promise<
+		DDataStructure.EncodedValue<
+			TaggedObjectMap<
+				DKind.Remove<
+					DDataStructure.StructureValue<this>
+				>
+			>,
+			GenericCodecs
+		>
+	>;
+}
+
+export class EncodeTaggedObjectError extends DKind.parentClass(
+	createKind("encode-tagged-object-error"),
+	Error,
+) {
+	public constructor(
+		public error: DDataStructure.Error,
+	) {
+		super(undefined, "An error occurred while encoding a TaggedObject. This can only happen if you are bypassing the type system.");
+	}
 }
 
 export const TaggedObjectStructure = DDataStructure.createStructure(
@@ -354,10 +381,10 @@ export const TaggedObjectStructure = DDataStructure.createStructure(
 					return DEither.right("map-success", result as never);
 				});
 			},
-			asyncMap: (
+			asyncMap: async(
 				self,
 				data,
-			): any => DCommon.justExec(async() => {
+			) => {
 				const errorHandler = DDataStructure.createGetErrorHandler();
 
 				const formattedData = DObject.isSimple(data)
@@ -377,7 +404,18 @@ export const TaggedObjectStructure = DDataStructure.createStructure(
 				}
 
 				return DEither.right("map-success", formattedData as never);
-			}),
+			},
+			encodeTaggedObject: async(self, codecs, data) => {
+				const result = await self.asyncEncode(codecs, data);
+
+				if (DEither.isLeft(result)) {
+					throw new EncodeTaggedObjectError(
+						DEither.unwrapLeft(result),
+					);
+				}
+
+				return DEither.unwrapRight(result);
+			},
 		},
 	) as never,
 );

@@ -203,6 +203,78 @@ describe("NewTypeStructure", () => {
 		expect(structureConstraintExecuteCheck).not.toHaveBeenCalled();
 	});
 
+	it("encodes a typed new type value in a promise without exposing encoding errors", async() => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.minCharacters(3)],
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => data.length,
+			(data) => `decoded-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ codec });
+		const data = DEither.unwrapByInformationOrThrow(
+			structure.map("Jane"),
+			"map-success",
+		);
+		const result = structure.encodeNewType(codecs, data);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			Promise<number>,
+			"strict"
+		>;
+
+		expect(result).toBeInstanceOf(Promise);
+		await expect(result).resolves.toBe(4);
+	});
+
+	it("asynchronously encodes a typed new type value when the codec is asynchronous", async() => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.minCharacters(3)],
+		);
+		const codec = DDataStructure.createCodec(
+			DDataStructure.TheString,
+			DDataStructure.number().is,
+			(data) => Promise.resolve(data.length),
+			(data) => `decoded-${data}`,
+		);
+		const codecs = DDataStructure.createCodecs({ codec });
+		const data = DEither.unwrapByInformationOrThrow(
+			structure.map("Jane"),
+			"map-success",
+		);
+		const result = structure.encodeNewType(codecs, data);
+
+		expect(result).toBeInstanceOf(Promise);
+		await expect(result).resolves.toBe(4);
+	});
+
+	it("rejects with an EncodeNewTypeError when a typed new type value is bypassed", async() => {
+		const structure = DModeling.NewTypeStructure(
+			"user-name",
+			DDataStructure.string(),
+			[DDataStructure.minCharacters(3)],
+		);
+		const codecs = DDataStructure.createCodecs({});
+		await expect(
+			structure.encodeNewType(codecs, "Jo" as never),
+		).rejects.toMatchObject({
+			message: "An error occurred while encoding a NewType. This can only happen if you are bypassing the type system.",
+			error: {
+				issues: [expect.objectContaining({ data: "Jo" })],
+			},
+		});
+		await expect(
+			structure.encodeNewType(codecs, "Jo" as never),
+		).rejects.toBeInstanceOf(DModeling.EncodeNewTypeError);
+	});
+
 	it("stops encoding when the inner structure rejects the value", () => {
 		const structure = DModeling.NewTypeStructure(
 			"user-name",
