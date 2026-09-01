@@ -6,25 +6,25 @@ import * as DString from "../string";
 import { type PortHandler } from "./port";
 import { createKind } from "./kind";
 
-export type UseCaseDependencies = Record<
+export type ReaderDependencies = Record<
 	string,
-	UseCaseHandler | PortHandler
+	Reader | PortHandler
 >;
 
-export type UseCaseDependenciesValue<
-	GenericDependencies extends UseCaseDependencies,
+export type ReaderDependenciesValue<
+	GenericDependencies extends ReaderDependencies,
 > = DCommon.SimplifyTopLevel<{
 	[
 	Prop in keyof GenericDependencies as Uncapitalize<Extract<Prop, string>>
 	]: GenericDependencies[Prop] extends PortHandler
 		? ReturnType<GenericDependencies[Prop]["createImplementation"]>
-		: GenericDependencies[Prop] extends UseCaseHandler
-			? ReturnType<GenericDependencies[Prop]["getUseCase"]>
+		: GenericDependencies[Prop] extends Reader
+			? ReturnType<GenericDependencies[Prop]["run"]>
 			: never
 }>;
 
 export type GetAllPorts<
-	GenericDependenciesValue extends UseCaseDependencies,
+	GenericDependenciesValue extends ReaderDependencies,
 > = GenericDependenciesValue extends any
 	? ({
 		[Prop in keyof GenericDependenciesValue]: (
@@ -35,22 +35,22 @@ export type GetAllPorts<
 						GenericDependenciesValue[Prop]["createImplementation"]
 					>,
 				]
-				: GenericDependenciesValue[Prop] extends UseCaseHandler
+				: GenericDependenciesValue[Prop] extends Reader
 					? GetAllPorts<GenericDependenciesValue[Prop]["dependencies"]>
 					: never
 		)
 	})[keyof GenericDependenciesValue]
 	: never;
 
-export const useCaseHandlerKind = createKind("use-case-handler");
+export const readerKind = createKind("reader");
 
-export interface UseCaseHandler<
-	GenericDependencies extends UseCaseDependencies = any,
-	GenericUseCase extends(input: any) => any = any,
-> extends DKind.Kind<typeof useCaseHandlerKind> {
+export interface Reader<
+	GenericDependencies extends ReaderDependencies = any,
+	GenericOutput extends unknown = unknown,
+> extends DKind.Kind<typeof readerKind> {
 	dependencies: GenericDependencies;
 
-	getUseCase(
+	run(
 		ports: DCommon.SimplifyTopLevel<
 			& (
 				GetAllPorts<
@@ -67,35 +67,35 @@ export interface UseCaseHandler<
 				{
 					[
 					Prop in keyof GenericDependencies as
-					GenericDependencies[Prop] extends UseCaseHandler
+					GenericDependencies[Prop] extends Reader
 						? Uncapitalize<Extract<Prop, string>>
 						: never
-					]?: GenericDependencies[Prop] extends UseCaseHandler
-						? ReturnType<GenericDependencies[Prop]["getUseCase"]>
+					]?: GenericDependencies[Prop] extends Reader
+						? ReturnType<GenericDependencies[Prop]["run"]>
 						: never
 				}
 			)
 		>
-	): GenericUseCase;
+	): GenericOutput;
 }
 
-export function createUseCase<
-	const GenericDependencies extends UseCaseDependencies,
-	GenericUseCase extends(...args: any[]) => any,
+export function createReader<
+	const GenericDependencies extends ReaderDependencies,
+	GenericOutput extends unknown,
 >(
 	dependencies: GenericDependencies,
-	getUseCase: (
-		dependenciesValue: UseCaseDependenciesValue<GenericDependencies>,
-	) => GenericUseCase,
-): UseCaseHandler<
+	read: (
+		dependenciesValue: ReaderDependenciesValue<GenericDependencies>,
+	) => GenericOutput,
+): Reader<
 	GenericDependencies,
-	GenericUseCase
+	GenericOutput
 > {
 	return {
 		dependencies,
-		getUseCase: (injectedDependencies: Record<string, object>) => getUseCase(
+		run: (injectedDependencies: Record<string, unknown>) => read(
 			DCommon.pipe(
-				DCommon.forward<UseCaseDependencies>(dependencies),
+				DCommon.forward<ReaderDependencies>(dependencies),
 				DObject.entries,
 				DArray.map(
 					([key, value]) => {
@@ -103,8 +103,8 @@ export function createUseCase<
 
 						return DObject.entry(
 							formattedKey,
-							useCaseHandlerKind.has(value) && !injectedDependencies[formattedKey]
-								? value.getUseCase(injectedDependencies as never)
+							readerKind.has(value) && !injectedDependencies[formattedKey]
+								? value.run(injectedDependencies as never)
 								: injectedDependencies[formattedKey]!,
 						);
 					},
@@ -112,19 +112,19 @@ export function createUseCase<
 				DObject.fromEntries,
 			) as never,
 		),
-		[useCaseHandlerKind.runTimeKey]: null,
-	} satisfies DKind.Remove<UseCaseHandler> as never;
+		[readerKind.runTimeKey]: null,
+	} satisfies DKind.Remove<Reader> as never;
 }
 
-export function wireUseCases<
-	GenericUseCases extends Record<string, UseCaseHandler>,
+export function resolveReaders<
+	GenericReaders extends Record<string, Reader>,
 >(
-	useCases: GenericUseCases,
+	readers: GenericReaders,
 	ports: DCommon.SimplifyTopLevel<
 		DCommon.UnionToIntersection<
 			{
-				[Prop in keyof GenericUseCases]: GetAllPorts<
-					GenericUseCases[Prop]["dependencies"]
+				[Prop in keyof GenericReaders]: GetAllPorts<
+					GenericReaders[Prop]["dependencies"]
 				> extends infer InferredEntriesDependenciesValue extends DCommon.ObjectEntry
 					? {
 						[
@@ -132,17 +132,17 @@ export function wireUseCases<
 						]: Entry[1]
 					}
 					: never
-			}[keyof GenericUseCases]
+			}[keyof GenericReaders]
 		>
 	>,
-): UseCaseDependenciesValue<GenericUseCases> {
+): ReaderDependenciesValue<GenericReaders> {
 	return DCommon.pipe(
-		useCases,
+		readers,
 		DObject.entries,
 		DArray.map(
-			([key, useCase]) => DObject.entry(
+			([key, reader]) => DObject.entry(
 				DString.uncapitalize(key),
-				useCase.getUseCase(ports as never),
+				reader.run(ports as never),
 			),
 		),
 		DObject.fromEntries,

@@ -1,7 +1,7 @@
 import { DInvocation, type ExpectType } from "@scripts";
 
-describe("createUseCase", () => {
-	it("should create a use case handler with injected ports", () => {
+describe("createReader", () => {
+	it("should create a reader handler with injected ports", () => {
 		interface UserRepository {
 			findName(id: string): string;
 		}
@@ -10,7 +10,7 @@ describe("createUseCase", () => {
 		const dependencies = {
 			UserRepository,
 		};
-		const getUserNameHandler = DInvocation.createUseCase(
+		const getUserNameReader = DInvocation.createReader(
 			dependencies,
 			({ userRepository }) => {
 				type _CheckUserRepository = ExpectType<
@@ -25,15 +25,15 @@ describe("createUseCase", () => {
 		const userRepository = UserRepository.createImplementation({
 			findName: (id) => `user-${id}`,
 		});
-		const getUserName = getUserNameHandler.getUseCase({ userRepository });
+		const getUserName = getUserNameReader.run({ userRepository });
 
-		expect(DInvocation.useCaseHandlerKind.has(getUserNameHandler)).toBe(true);
-		expect(getUserNameHandler.dependencies).toBe(dependencies);
+		expect(DInvocation.readerKind.has(getUserNameReader)).toBe(true);
+		expect(getUserNameReader.dependencies).toBe(dependencies);
 		expect(getUserName("42")).toBe("user-42");
 
-		type _CheckHandler = ExpectType<
-			typeof getUserNameHandler,
-			DInvocation.UseCaseHandler<
+		type _CheckReader = ExpectType<
+			typeof getUserNameReader,
+			DInvocation.Reader<
 				typeof dependencies,
 				(id: string) => string
 			>,
@@ -41,29 +41,45 @@ describe("createUseCase", () => {
 		>;
 	});
 
-	it("should inject nested use cases and allow explicit use case injection", () => {
+	it("should accept any reader value", () => {
+		const valueReader = DInvocation.createReader(
+			{},
+			() => 42 as const,
+		);
+		const value = valueReader.run({});
+
+		expect(value).toBe(42);
+
+		type _CheckValue = ExpectType<
+			typeof value,
+			42,
+			"strict"
+		>;
+	});
+
+	it("should inject nested readers and allow explicit reader injection", () => {
 		interface UserRepository {
 			findName(id: string): string;
 		}
 
 		const UserRepository = DInvocation.createPort<UserRepository>();
-		const getUserNameHandler = DInvocation.createUseCase(
+		const getUserNameReader = DInvocation.createReader(
 			{ UserRepository },
 			({ userRepository }) => (id: string) => userRepository.findName(id),
 		);
 		const dependencies = {
-			GetUserName: getUserNameHandler,
+			GetUserName: getUserNameReader,
 		};
-		const welcomeUserHandler = DInvocation.createUseCase(
+		const welcomeUserReader = DInvocation.createReader(
 			dependencies,
 			({ getUserName }) => (id: string) => `Welcome ${getUserName(id)}`,
 		);
 		const userRepository = UserRepository.createImplementation({
 			findName: (id) => `user-${id}`,
 		});
-		const welcomeUser = welcomeUserHandler.getUseCase({ userRepository });
+		const welcomeUser = welcomeUserReader.run({ userRepository });
 		const injectedGetUserName = (id: string) => `injected-${id}`;
-		const welcomeInjectedUser = welcomeUserHandler.getUseCase({
+		const welcomeInjectedUser = welcomeUserReader.run({
 			getUserName: injectedGetUserName,
 			userRepository,
 		});
@@ -71,9 +87,9 @@ describe("createUseCase", () => {
 		expect(welcomeUser("42")).toBe("Welcome user-42");
 		expect(welcomeInjectedUser("42")).toBe("Welcome injected-42");
 
-		type _CheckWelcomeUserHandler = ExpectType<
-			typeof welcomeUserHandler,
-			DInvocation.UseCaseHandler<
+		type _CheckWelcomeUserReader = ExpectType<
+			typeof welcomeUserReader,
+			DInvocation.Reader<
 				typeof dependencies,
 				(id: string) => string
 			>,
@@ -82,40 +98,47 @@ describe("createUseCase", () => {
 	});
 });
 
-describe("wireUseCases", () => {
-	it("should instantiate use cases with shared ports", () => {
+describe("resolveReaders", () => {
+	it("should resolve readers with shared ports", () => {
 		interface UserRepository {
 			findName(id: string): string;
 		}
 
 		const UserRepository = DInvocation.createPort<UserRepository>();
-		const getUserNameHandler = DInvocation.createUseCase(
+		const getUserNameReader = DInvocation.createReader(
 			{ UserRepository },
 			({ userRepository }) => (id: string) => userRepository.findName(id),
 		);
-		const welcomeUserHandler = DInvocation.createUseCase(
-			{ GetUserName: getUserNameHandler },
+		const welcomeUserReader = DInvocation.createReader(
+			{ GetUserName: getUserNameReader },
 			({ getUserName }) => (id: string) => `Welcome ${getUserName(id)}`,
+		);
+		const statusReader = DInvocation.createReader(
+			{},
+			() => "ready" as const,
 		);
 		const userRepository = UserRepository.createImplementation({
 			findName: (id) => `user-${id}`,
 		});
-		const useCases = DInvocation.wireUseCases(
+		const readers = DInvocation.resolveReaders(
 			{
-				GetUserName: getUserNameHandler,
-				WelcomeUser: welcomeUserHandler,
+				GetUserName: getUserNameReader,
+				WelcomeUser: welcomeUserReader,
+				Status: statusReader,
 			},
 			{ userRepository },
 		);
 
-		expect(useCases.getUserName("42")).toBe("user-42");
-		expect(useCases.welcomeUser("42")).toBe("Welcome user-42");
+		expect(readers.getUserName("42")).toBe("user-42");
+		expect(readers.welcomeUser("42")).toBe("Welcome user-42");
+		expect(readers.status).toBe("ready");
 
-		type _CheckUseCases = ExpectType<
-			typeof useCases,
+		type _CheckReaders = ExpectType<
+			typeof readers,
 			{
 				getUserName(id: string): string;
 				welcomeUser(id: string): string;
+				status: "ready";
 			},
 			"strict"
 		>;
