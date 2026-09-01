@@ -43,7 +43,7 @@ export type InterpretedIssues = (
 	| InterpretedDecodedIssue
 );
 
-type CreateDictionaryParams = DCommon.SimplifyTopLevel<
+type StructureDictionaryParams = DCommon.SimplifyTopLevel<
 	Omit<
 		& {
 			[
@@ -54,7 +54,7 @@ type CreateDictionaryParams = DCommon.SimplifyTopLevel<
 			) as RemoveNamespace<
 				DKind.GetName<DataStructure>
 			>
-			]?: (structure: DataStructure) => string
+			]?: (structure: DataStructure, issue: Issue) => string
 		},
 		| RemoveNamespace<DKind.GetName<Type>>
 		| RemoveNamespace<DKind.GetName<Structure>>
@@ -62,9 +62,17 @@ type CreateDictionaryParams = DCommon.SimplifyTopLevel<
 	>
 >;
 
+type CodecDictionaryParams = [
+	Codec,
+	(
+		codec: Codec,
+		issue: EncodeIssue | DecodeIssue,
+	) => string,
+][];
+
 export function createErrorInterpreter(
-	structureDictionary: CreateDictionaryParams = {},
-	codecDictionary: [Codec, string][] = [],
+	structureDictionary: StructureDictionaryParams = {},
+	codecDictionary: CodecDictionaryParams = [],
 ): (error: Error) => readonly InterpretedIssues[] {
 	const formattedStructureDictionary = DCommon.pipe(
 		structureDictionary,
@@ -76,18 +84,21 @@ export function createErrorInterpreter(
 			),
 		),
 	);
-	const getInterpretedMessageStructure = (structure: Structure | Type | Constraint) => DArray.reduce(
+	const getInterpretedMessageStructure = (structure: Structure | Type | Constraint, issue: Issue) => DArray.reduce(
 		formattedStructureDictionary,
 		DArray.reduceFrom(undefined),
 		({ element: [key, getMessage], next, exit }) => getMessage && key in structure
-			? exit(getMessage(structure as never))
+			? exit(getMessage(structure as never, issue))
 			: next(undefined),
 	);
-	const getInterpretedMessageCodec = (codec: Codec) => DArray.reduce(
+	const getInterpretedMessageCodec = (
+		codec: Codec,
+		issue: EncodeIssue | DecodeIssue,
+	) => DArray.reduce(
 		codecDictionary,
 		DArray.reduceFrom(undefined),
 		({ element: [currentCodec, message], next, exit }) => currentCodec === codec
-			? exit(message)
+			? exit(message(codec, issue))
 			: next(undefined),
 	);
 
@@ -103,8 +114,8 @@ export function createErrorInterpreter(
 					interpretedMessage: {
 						source: source.definition.message,
 						subSource: subSource?.definition.message,
-						interpretedSource: getInterpretedMessageStructure(source),
-						interpretedSubSource: subSource && getInterpretedMessageStructure(subSource),
+						interpretedSource: getInterpretedMessageStructure(source, issue),
+						interpretedSubSource: subSource && getInterpretedMessageStructure(subSource, issue),
 					},
 				}) satisfies InterpretedIssue;
 			}
@@ -114,7 +125,7 @@ export function createErrorInterpreter(
 					...issue,
 					interpretedMessage: {
 						source: issue.message,
-						interpretedSource: getInterpretedMessageCodec(issue.getSource()),
+						interpretedSource: getInterpretedMessageCodec(issue.getSource(), issue),
 					},
 				}) satisfies InterpretedEncodedIssue;
 			}
@@ -123,7 +134,7 @@ export function createErrorInterpreter(
 				...issue,
 				interpretedMessage: {
 					source: issue.message,
-					interpretedSource: getInterpretedMessageCodec(issue.getSource()),
+					interpretedSource: getInterpretedMessageCodec(issue.getSource(), issue),
 				},
 			}) satisfies InterpretedDecodedIssue;
 		},

@@ -85,11 +85,11 @@ export function createCodec<
 		) => DCommon.callThen(
 			encode(data as never, self as never, errorHandler),
 			(encodedData) => encodedData === ErrorSymbol
-				? ErrorSymbol
+				? errorHandler?.().addEncodeIssue(self as never, "encoding", data) ?? ErrorSymbol
 				: DCommon.callThen(
 					predicateEncode(encodedData),
 					(result) => result === false
-						? errorHandler?.().addEncodeIssue(self as never, encodedData) ?? ErrorSymbol
+						? errorHandler?.().addEncodeIssue(self as never, "predicate", encodedData) ?? ErrorSymbol
 						: encodedData,
 				),
 		),
@@ -99,8 +99,13 @@ export function createCodec<
 		) => DCommon.callThen(
 			predicateEncode(data),
 			(result) => result === false
-				? errorHandler?.().addDecodeIssue(self as never, data) ?? ErrorSymbol
-				: decode(data as never, self as never, errorHandler),
+				? errorHandler?.().addDecodeIssue(self as never, "predicate", data) ?? ErrorSymbol
+				: DCommon.callThen(
+					decode(data as never, self as never, errorHandler),
+					(decodedData) => decodedData === ErrorSymbol
+						? errorHandler?.().addDecodeIssue(self as never, "decoding", data) ?? ErrorSymbol
+						: decodedData,
+				),
 		),
 		[codecKind.runTimeKey]: null,
 	};

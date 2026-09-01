@@ -25,41 +25,74 @@ describe("createErrorInterpreter", () => {
 		const errorHandler = DDataStructure.createErrorHandler();
 		const interpret = DDataStructure.createErrorInterpreter(
 			{
-				"string-type": (source) => {
+				"string-type": (source, issue) => {
 					type _CheckSource = ExpectType<
 						typeof source,
 						DDataStructure.StringType,
 						"strict"
 					>;
+					type _CheckIssue = ExpectType<
+						typeof issue,
+						DDataStructure.Issue,
+						"strict"
+					>;
 
-					return `Global ${source.definition.message}`;
+					return `Global ${source.definition.message} for ${typeof issue.data}`;
 				},
-				"type-structure": (source) => {
+				"type-structure": (source, issue) => {
 					type _CheckSource = ExpectType<
 						typeof source,
 						DDataStructure.TypeStructure,
 						"strict"
 					>;
+					type _CheckIssue = ExpectType<
+						typeof issue,
+						DDataStructure.Issue,
+						"strict"
+					>;
 
-					return `Global ${source.definition.message}`;
+					return `Global ${source.definition.message} for ${typeof issue.data}`;
 				},
-				"min-characters-constraint": (source) => {
+				"min-characters-constraint": (source, issue) => {
 					type _CheckSource = ExpectType<
 						typeof source,
 						DDataStructure.MinCharactersConstraint,
 						"strict"
 					>;
+					type _CheckIssue = ExpectType<
+						typeof issue,
+						DDataStructure.Issue,
+						"strict"
+					>;
 
-					return `Global min ${source.definition.min}`;
+					return `Global min ${source.definition.min} for ${typeof issue.data}`;
 				},
 			},
-			[[codec, "Global codec message"]],
+			[
+				[
+					codec,
+					(source, issue) => {
+						type _CheckSource = ExpectType<
+							typeof source,
+							DDataStructure.Codec,
+							"strict"
+						>;
+						type _CheckIssue = ExpectType<
+							typeof issue,
+							DDataStructure.EncodeIssue | DDataStructure.DecodeIssue,
+							"strict"
+						>;
+
+						return `Global codec ${issue.from}`;
+					},
+				],
+			],
 		);
 
 		errorHandler.addIssue(structure, 123, stringType);
 		errorHandler.addIssue(structure, "ab", minCharactersConstraint);
-		errorHandler.addEncodeIssue(codec, "encode-data", "Encode message");
-		errorHandler.addDecodeIssue(unmatchedCodec, "decode-data", "Decode message");
+		errorHandler.addEncodeIssue(codec, "external", "encode-data", "Encode message");
+		errorHandler.addDecodeIssue(unmatchedCodec, "external", "decode-data", "Decode message");
 
 		const interpretedIssues = interpret(errorHandler.createError());
 
@@ -75,8 +108,8 @@ describe("createErrorInterpreter", () => {
 			interpretedMessage: {
 				source: "Expected string structure",
 				subSource: "Expected string type",
-				interpretedSource: "Global Expected string structure",
-				interpretedSubSource: "Global Expected string type",
+				interpretedSource: "Global Expected string structure for number",
+				interpretedSubSource: "Global Expected string type for number",
 			},
 			path: "",
 		});
@@ -86,23 +119,25 @@ describe("createErrorInterpreter", () => {
 			interpretedMessage: {
 				source: "Expected string structure",
 				subSource: "Expected at least three characters",
-				interpretedSource: "Global Expected string structure",
-				interpretedSubSource: "Global min 3",
+				interpretedSource: "Global Expected string structure for string",
+				interpretedSubSource: "Global min 3 for string",
 			},
 			path: "",
 		});
 		expect(interpretedIssues[1]?.getSource()).toBe(structure);
 		expect(interpretedIssues[2]).toMatchObject({
 			data: "encode-data",
+			from: "external",
 			interpretedMessage: {
 				source: "Encode message",
-				interpretedSource: "Global codec message",
+				interpretedSource: "Global codec external",
 			},
 			path: "",
 		});
 		expect(interpretedIssues[2]?.getSource()).toBe(codec);
 		expect(interpretedIssues[3]).toMatchObject({
 			data: "decode-data",
+			from: "external",
 			interpretedMessage: {
 				source: "Decode message",
 				interpretedSource: undefined,

@@ -31,11 +31,12 @@ describe("createErrorHandler", () => {
 			(data) => `value-${data}`,
 		);
 
-		errorHandler.addEncodeIssue(codec, "encode-data", "Encode message");
-		errorHandler.addDecodeIssue(codec, "decode-data", "Decode message");
+		errorHandler.addEncodeIssue(codec, "external", "encode-data", "Encode message");
+		errorHandler.addDecodeIssue(codec, "external", "decode-data", "Decode message");
 
 		expect(errorHandler.issues[0]).toMatchObject({
 			data: "encode-data",
+			from: "external",
 			message: "Encode message",
 			path: "",
 		});
@@ -43,6 +44,7 @@ describe("createErrorHandler", () => {
 		expect(DDataStructure.encodeIssueKind.has(errorHandler.issues[0])).toBe(true);
 		expect(errorHandler.issues[1]).toMatchObject({
 			data: "decode-data",
+			from: "external",
 			message: "Decode message",
 			path: "",
 		});

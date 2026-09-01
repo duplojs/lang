@@ -133,7 +133,7 @@ describe("TypeStructure", () => {
 			DDataStructure.TheString,
 			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data, self, errorHandler) => {
-				errorHandler?.().addEncodeIssue(self, data, "encoded-error");
+				errorHandler?.().addEncodeIssue(self, "external", data, "encoded-error");
 				return DDataStructure.ErrorSymbol;
 			},
 			(data) => `value-${data}`,
@@ -145,6 +145,7 @@ describe("TypeStructure", () => {
 			DEither.unwrapByInformationOrThrow(failure, "encode-error").issues[0],
 		).toMatchObject({
 			data: "abcd",
+			from: "external",
 			message: "encoded-error",
 		});
 		expect(
@@ -157,6 +158,7 @@ describe("TypeStructure", () => {
 			).issues[0],
 		).toMatchObject({
 			data: "abcd",
+			from: "external",
 			message: "encoded-error",
 		});
 		expect(
@@ -230,7 +232,7 @@ describe("TypeStructure", () => {
 			DDataStructure.TypeStructure(DDataStructure.NumberType(), []).is,
 			(data) => data.length,
 			(data, self, errorHandler) => {
-				errorHandler?.().addDecodeIssue(self, data, "decoded-error");
+				errorHandler?.().addDecodeIssue(self, "external", data, "decoded-error");
 				return DDataStructure.ErrorSymbol;
 			},
 		);
@@ -241,6 +243,7 @@ describe("TypeStructure", () => {
 			DEither.unwrapByInformationOrThrow(failure, "decode-error").issues[0],
 		).toMatchObject({
 			data: 4,
+			from: "external",
 			message: "decoded-error",
 		});
 		expect(
@@ -253,6 +256,7 @@ describe("TypeStructure", () => {
 			).issues[0],
 		).toMatchObject({
 			data: 4,
+			from: "external",
 			message: "decoded-error",
 		});
 		expect(

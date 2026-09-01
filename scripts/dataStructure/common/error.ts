@@ -19,6 +19,7 @@ export interface Issue extends DKind.Kind<typeof issueKind> {
 
 export const encodeIssueKind = createKind("encode-issue");
 export interface EncodeIssue extends DKind.Kind<typeof encodeIssueKind> {
+	readonly from: "encoding" | "predicate" | "external";
 	readonly path: string;
 	readonly data: unknown;
 	readonly message?: string;
@@ -27,6 +28,7 @@ export interface EncodeIssue extends DKind.Kind<typeof encodeIssueKind> {
 
 export const decodeIssueKind = createKind("decode-issue");
 export interface DecodeIssue extends DKind.Kind<typeof decodeIssueKind> {
+	readonly from: "decoding" | "predicate" | "external";
 	readonly path: string;
 	readonly data: unknown;
 	readonly message?: string;
@@ -58,11 +60,13 @@ export interface ErrorHandler {
 	): void;
 	addEncodeIssue(
 		source: ReturnType<EncodeIssue["getSource"]>,
+		from: EncodeIssue["from"],
 		data: unknown,
 		message?: string
 	): void;
 	addDecodeIssue(
 		source: ReturnType<DecodeIssue["getSource"]>,
+		from: DecodeIssue["from"],
 		data: unknown,
 		message?: string
 	): void;
@@ -117,8 +121,9 @@ export function createErrorHandler(defaultPath?: string[]): ErrorHandler {
 				[issueKind.runTimeKey]: null,
 			} satisfies DKind.Remove<Issue> as never);
 		},
-		addEncodeIssue: (source, data, message) => {
+		addEncodeIssue: (source, from, data, message) => {
 			issues.push({
+				from,
 				data,
 				path: currentPath.join("."),
 				message,
@@ -126,8 +131,9 @@ export function createErrorHandler(defaultPath?: string[]): ErrorHandler {
 				[encodeIssueKind.runTimeKey]: null,
 			} satisfies DKind.Remove<EncodeIssue> as never);
 		},
-		addDecodeIssue: (source, data, message) => {
+		addDecodeIssue: (source, from, data, message) => {
 			issues.push({
+				from,
 				data,
 				path: currentPath.join("."),
 				message,
