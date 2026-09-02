@@ -53,5 +53,6 @@ export * from "./time";
 export * from "./trimmed";
 export * from "./undefined";
 export * from "./union";
+export * from "./unwrapLazy";
 export * from "./url";
 export * from "./uuid";
