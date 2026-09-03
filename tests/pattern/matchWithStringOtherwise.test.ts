@@ -1,4 +1,4 @@
-import { DPattern, pipe, type ExpectType } from "@scripts";
+import { DPattern, type DString, pipe, type ExpectType } from "@scripts";
 
 describe("matchWithStringOtherwise", () => {
 	it("should match a handled string and narrow both callbacks", () => {
@@ -27,6 +27,52 @@ describe("matchWithStringOtherwise", () => {
 		);
 		expect(result).toBe("failure");
 		type check = ExpectType<typeof result, 42 | "failure", "strict">;
+	});
+
+	it("should support constrained string unions in classic and curried forms", () => {
+		const input = "failure" as ("success" | "failure") & DString.NotEmpty;
+		const classicResult = DPattern.matchWithStringOtherwise(input, {
+			success: (value) => {
+				type check = ExpectType<typeof value, "success", "strict">;
+				return value;
+			},
+		}, (value) => {
+			type check = ExpectType<
+				typeof value,
+				"failure" & DString.NotEmpty,
+				"strict"
+			>;
+			return value;
+		});
+		const curriedResult = pipe(
+			input,
+			DPattern.matchWithStringOtherwise({
+				success: (value) => {
+					type check = ExpectType<typeof value, "success", "strict">;
+					return value;
+				},
+			}, (value) => {
+				type check = ExpectType<
+					typeof value,
+					"failure" & DString.NotEmpty,
+					"strict"
+				>;
+				return value;
+			}),
+		);
+
+		expect(classicResult).toBe("failure");
+		expect(curriedResult).toBe("failure");
+		type classicCheck = ExpectType<
+			typeof classicResult,
+			"success" | ("failure" & DString.NotEmpty),
+			"strict"
+		>;
+		type curriedCheck = ExpectType<
+			typeof curriedResult,
+			"success" | ("failure" & DString.NotEmpty),
+			"strict"
+		>;
 	});
 
 	it("should reject matcher keys outside the input union", () => {

@@ -3,9 +3,9 @@ import type * as DNumber from "@scripts/number/types";
 
 type ComputeMatcher<
 	GenericInput extends number,
-> = {
+> = DCommon.SimplifyType<{
 	[Prop in GenericInput]: (value: Prop) => unknown
-};
+}>;
 
 type ForbiddenMoreKey<
 	GenericInput extends number,
@@ -20,27 +20,35 @@ type ForbiddenMoreKey<
 
 export function matchWithNumber<
 	GenericInput extends number,
-	GenericMatcher extends ComputeMatcher<GenericInput>,
+	GenericClearInput extends Extract<DCommon.RemoveConstraint<GenericInput>, number>,
+	GenericMatcher extends ComputeMatcher<GenericClearInput>,
 >(
-	matcher: GenericMatcher
-		& ComputeMatcher<NoInfer<GenericInput>>
-		& ForbiddenMoreKey<NoInfer<GenericInput>, GenericMatcher>,
+	matcher: (
+		& DCommon.FixDeepFunctionInfer<
+			ComputeMatcher<GenericClearInput>,
+			GenericMatcher
+		>
+		& ForbiddenMoreKey<GenericClearInput, GenericMatcher>
+	),
 ): (
-	input: GenericInput & DNumber.RequireSimpleLiteral<GenericInput>,
+	input: GenericInput & DNumber.RequireSimpleLiteral<GenericClearInput>,
 ) => ReturnType<
-	NoInfer<GenericMatcher>[keyof GenericMatcher]
+	GenericMatcher[keyof GenericMatcher]
 >;
 
 export function matchWithNumber<
 	GenericInput extends number,
-	GenericMatcher extends ComputeMatcher<GenericInput>,
+	GenericClearInput extends Extract<DCommon.RemoveConstraint<GenericInput>, number>,
+	GenericMatcher extends ComputeMatcher<GenericClearInput>,
 >(
-	input: GenericInput & DNumber.RequireSimpleLiteral<GenericInput>,
-	matcher: DCommon.FixDeepFunctionInfer<
-		ComputeMatcher<GenericInput>,
-		GenericMatcher
-	>
-	& ForbiddenMoreKey<GenericInput, GenericMatcher>,
+	input: GenericInput & DNumber.RequireSimpleLiteral<GenericClearInput>,
+	matcher: (
+		& DCommon.FixDeepFunctionInfer<
+			ComputeMatcher<GenericClearInput>,
+			GenericMatcher
+		>
+		& ForbiddenMoreKey<GenericClearInput, GenericMatcher>
+	),
 ): ReturnType<
 	GenericMatcher[keyof GenericMatcher]
 >;

@@ -1,4 +1,4 @@
-import { DPattern, pipe, type ExpectType } from "@scripts";
+import { DPattern, type DString, pipe, type ExpectType } from "@scripts";
 
 describe("matchWithString", () => {
 	it("should call the matching handler with the narrowed string in classic form", () => {
@@ -66,6 +66,38 @@ describe("matchWithString", () => {
 			42 | "failed",
 			"strict"
 		>;
+	});
+
+	it("should support constrained string unions in classic and curried forms", () => {
+		const input = "success" as ("success" | "failure") & DString.NotEmpty;
+		const classicResult = DPattern.matchWithString(input, {
+			success: (value) => {
+				type check = ExpectType<typeof value, "success", "strict">;
+				return value;
+			},
+			failure: (value) => {
+				type check = ExpectType<typeof value, "failure", "strict">;
+				return value;
+			},
+		});
+		const curriedResult = pipe(
+			input,
+			DPattern.matchWithString({
+				success: (value) => {
+					type check = ExpectType<typeof value, "success", "strict">;
+					return value;
+				},
+				failure: (value) => {
+					type check = ExpectType<typeof value, "failure", "strict">;
+					return value;
+				},
+			}),
+		);
+
+		expect(classicResult).toBe("success");
+		expect(curriedResult).toBe("success");
+		type classicCheck = ExpectType<typeof classicResult, "success" | "failure", "strict">;
+		type curriedCheck = ExpectType<typeof curriedResult, "success" | "failure", "strict">;
 	});
 
 	it("should reject non-literal strings in classic and curried forms", () => {

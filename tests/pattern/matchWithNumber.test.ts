@@ -1,4 +1,4 @@
-import { DPattern, pipe, type ExpectType } from "@scripts";
+import { type DNumber, DPattern, pipe, type ExpectType } from "@scripts";
 
 describe("matchWithNumber", () => {
 	it("should call the matching handler with the narrowed number in classic form", () => {
@@ -66,6 +66,38 @@ describe("matchWithNumber", () => {
 			42 | "failed",
 			"strict"
 		>;
+	});
+
+	it("should support constrained number unions in classic and curried forms", () => {
+		const input = 1 as (1 | 2) & DNumber.Positive;
+		const classicResult = DPattern.matchWithNumber(input, {
+			1: (value) => {
+				type check = ExpectType<typeof value, 1, "strict">;
+				return value;
+			},
+			2: (value) => {
+				type check = ExpectType<typeof value, 2, "strict">;
+				return value;
+			},
+		});
+		const curriedResult = pipe(
+			input,
+			DPattern.matchWithNumber({
+				1: (value) => {
+					type check = ExpectType<typeof value, 1, "strict">;
+					return value;
+				},
+				2: (value) => {
+					type check = ExpectType<typeof value, 2, "strict">;
+					return value;
+				},
+			}),
+		);
+
+		expect(classicResult).toBe(1);
+		expect(curriedResult).toBe(1);
+		type classicCheck = ExpectType<typeof classicResult, 1 | 2, "strict">;
+		type curriedCheck = ExpectType<typeof curriedResult, 1 | 2, "strict">;
 	});
 
 	it("should reject non-literal numbers in classic and curried forms", () => {
