@@ -56,17 +56,17 @@ export interface EntityNamespace<
 	>;
 
 	createFlag<
-		GenericEntityStructure extends EntityStructure<GenericEntityName>,
 		GenericName extends Capitalize<string>,
-		GenericValueStructure extends DDataStructure.Structure,
+		GenericEntityStructure extends EntityStructure<GenericEntityName>,
+		GenericPayload extends unknown = {},
 	>(
-		entityStructure: GenericEntityStructure,
-		name: GenericName,
-		valueStructure: GenericValueStructure,
+		name: DCommon.IsEqual<GenericName, Capitalize<string>> extends true
+			? never
+			: NoInfer<GenericName>,
 	): FlagHandler<
-		DDataStructure.StructureValue<GenericEntityStructure>,
 		`${GenericEntityName}${GenericName}`,
-		DDataStructure.StructureValue<GenericValueStructure>
+		DDataStructure.StructureValue<GenericEntityStructure>,
+		GenericPayload
 	>;
 }
 
@@ -91,13 +91,9 @@ export function createEntityNamespace<
 			shape,
 		),
 		createFlag: (
-			entityStructure,
 			name,
-			valueStructure,
 		) => createFlag(
-			entityStructure,
 			`${entityName}${name}` as never,
-			valueStructure,
 		),
 		[namespaceKind.runTimeKey]: null,
 	} satisfies DKind.Remove<EntityNamespace> as never;

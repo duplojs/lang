@@ -5,7 +5,11 @@ describe("createEntityNamespace", () => {
 		const namespace = DModeling.createEntityNamespace("User");
 		const name = namespace.createNewType("Name", DDataStructure.string());
 		const entity = namespace.createEntity(() => ({ name }));
-		const role = namespace.createFlag(entity, "Role", DDataStructure.string());
+		const role = namespace.createFlag<
+			"Role",
+			typeof entity,
+			string
+		>("Role");
 
 		type _CheckName = ExpectType<
 			typeof name,
@@ -23,9 +27,9 @@ describe("createEntityNamespace", () => {
 		type _CheckFlag = ExpectType<
 			typeof role,
 			DModeling.FlagHandler<
+				"UserRole",
 				& DModeling.Entity<"User">
 				& { readonly name: string & DModeling.NewType<"UserName", never> },
-				"UserRole",
 				string
 			>,
 			"strict"
@@ -35,7 +39,6 @@ describe("createEntityNamespace", () => {
 		expect(name.name).toBe("UserName");
 		expect(entity.name).toBe("User");
 		expect(role.name).toBe("UserRole");
-		expect(role.entityStructure).toBe(entity);
 	});
 
 	it("only creates flags for entities from the same namespace", () => {

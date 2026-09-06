@@ -1,7 +1,8 @@
+import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
-import * as DDataStructure from "@scripts/dataStructure";
+import type * as DDataStructure from "@scripts/dataStructure";
 import { createKind } from "../kind";
-import { type EntityStructure, type Entity, type GetEntityName } from "../entity";
+import { type EntityStructure, type Entity } from "../entity";
 
 export const flagKind = createKind<
 	"flag",
@@ -21,18 +22,11 @@ export interface Flag<
 const flagHandlerKind = createKind("flag-handler");
 
 export interface FlagHandler<
-	GenericEntity extends Entity = Entity,
 	GenericName extends string = string,
+	GenericEntity extends Entity = Entity,
 	GenericValue extends unknown = unknown,
 > extends DKind.Kind<typeof flagHandlerKind> {
 	readonly name: GenericName;
-
-	readonly entityStructure: EntityStructure<
-		GetEntityName<GenericEntity>,
-		Omit<GenericEntity, DKind.KeySymbol>
-	>;
-
-	readonly valueStructure: DDataStructure.Structure<GenericValue>;
 
 	append<
 		GenericInputEntity extends GenericEntity,
@@ -75,17 +69,17 @@ export interface FlagHandler<
 }
 
 export function createFlag<
-	GenericEntityStructure extends EntityStructure,
 	GenericName extends Capitalize<string>,
-	GenericValueStructure extends DDataStructure.Structure = DDataStructure.Structure<null>,
+	GenericEntityStructure extends EntityStructure,
+	GenericPayload extends unknown = {},
 >(
-	entityStructure: GenericEntityStructure,
-	name: GenericName,
-	valueStructure: GenericValueStructure = DDataStructure.TypeStructure(DDataStructure.NullType(), []) as never,
+	name: DCommon.IsEqual<GenericName, Capitalize<string>> extends true
+		? never
+		: NoInfer<GenericName>,
 ): FlagHandler<
-	DDataStructure.StructureValue<GenericEntityStructure>,
 	GenericName,
-	DDataStructure.StructureValue<GenericValueStructure>
+	DDataStructure.StructureValue<GenericEntityStructure>,
+	GenericPayload
 > {
 	function append(...args: [unknown] | [Entity, unknown]) {
 		if (args.length === 1) {
@@ -109,8 +103,6 @@ export function createFlag<
 
 	return {
 		name,
-		entityStructure,
-		valueStructure,
 		append,
 		getValue(entity: Entity) {
 			return flagKind.getValue(entity as never)[name];
@@ -126,8 +118,8 @@ export function createFlag<
 export type GetFlag<
 	GenericHandler extends FlagHandler<any, any, any>,
 > = GenericHandler extends FlagHandler<
-	any,
 	infer InferredName,
+	any,
 	infer InferredValue
 >
 	? Flag<InferredName, InferredValue>
