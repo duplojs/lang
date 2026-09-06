@@ -31,6 +31,21 @@ describe("removeConstraint", () => {
 		void constrained;
 	});
 
+	it("removes an allowed characters constraint with a callable payload", () => {
+		const value = "hello" as string & DString.AllowedCharacters<"a-z">;
+		const result = DCommon.removeConstraint(value);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			string,
+			"strict"
+		>;
+
+		// @ts-expect-error result does not keep the AllowedCharacters constraint.
+		const constrained: string & DString.AllowedCharacters<"a-z"> = result;
+		void constrained;
+	});
+
 	it("removes number constraints from the returned type", () => {
 		const value = 42 as number & DNumber.Positive & DNumber.GreaterThan<10>;
 		const result = DCommon.removeConstraint(value);

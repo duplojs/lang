@@ -280,6 +280,21 @@ describe("infer", () => {
 			);
 		});
 
+		it("should reject constraints that cannot be inferred from a literal", () => {
+			// @ts-expect-error infer cannot prove the Email constraint.
+			const email: string & DString.Email = DCommon.infer(
+				"contact@example.com",
+			);
+			// @ts-expect-error an inferred MaxCharacters constraint cannot hide the missing Email proof.
+			const emailWithMaxCharacters: string & DString.Email & DString.MaxCharacters<30> = DCommon.infer(
+				"contact@example.com",
+			);
+			// @ts-expect-error infer cannot prove the Trimmed constraint.
+			const trimmed: string & DString.Trimmed = DCommon.infer(
+				"hello",
+			);
+		});
+
 		it("should reject incompatible Number constraint", () => {
 			const result: string & DString.Number = DCommon.infer(
 			// @ts-expect-error a non-number literal does not induce Number.

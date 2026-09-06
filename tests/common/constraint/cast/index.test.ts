@@ -1,4 +1,4 @@
-import { cast, type DArray, type DNumber, type CastError, type DPath, type DString, shameOnYou, type ExpectType } from "@scripts";
+import { cast, type DArray, type DCommon, type DNumber, type CastError, type DPath, type DString, shameOnYou, type ExpectType } from "@scripts";
 
 describe("cast", () => {
 	it("cast maxCharacters", () => {
@@ -98,6 +98,179 @@ describe("cast", () => {
 		const value3: string & DString.AllowedCharacters<"a-z"> = cast(plainString);
 		// @ts-expect-error a-z | 0-9 does not guarantee that only a-z characters are present.
 		const value4: string & DString.AllowedCharacters<"a-z"> = cast(broaderAllowedCharacters);
+	});
+
+	it("preserves custom constraints with object and callable payloads", () => {
+		type NestedConstraint = DCommon.Constraint<
+			"custom-nested",
+			{ nested: { enabled: true } }
+		>;
+		type CallableConstraint = DCommon.Constraint<
+			"custom-callable",
+			() => { enabled: true }
+		>;
+
+		const nestedInput = "value" as string & NestedConstraint;
+		const callableInput = "value" as string & CallableConstraint;
+		const nestedValue: string & NestedConstraint = cast(nestedInput);
+		const callableValue: string & CallableConstraint = cast(callableInput);
+
+		type _CheckNestedValue = ExpectType<typeof nestedValue, string & NestedConstraint, "strict">;
+		type _CheckCallableValue = ExpectType<typeof callableValue, string & CallableConstraint, "strict">;
+	});
+
+	it("rejects missing custom constraints with object and callable payloads", () => {
+		type NestedConstraint = DCommon.Constraint<
+			"custom-nested",
+			{ nested: { enabled: true } }
+		>;
+		type CallableConstraint = DCommon.Constraint<
+			"custom-callable",
+			() => { enabled: true }
+		>;
+
+		const input = "value" as string & DString.MaxCharacters<10>;
+
+		// @ts-expect-error the input does not carry the expected custom nested constraint.
+		const nestedValue: string & NestedConstraint & DString.MaxCharacters<20> = cast(input);
+		// @ts-expect-error the input does not carry the expected custom callable constraint.
+		const callableValue: string & CallableConstraint & DString.MaxCharacters<20> = cast(input);
+	});
+
+	it("infers a string cast target through a generic function argument", () => {
+		function testInference<
+			GenericResult extends {
+				wrap: string & DString.Email & DString.MaxCharacters<250>;
+			},
+		>(
+			arg: GenericResult,
+		): GenericResult["wrap"] {
+			return arg.wrap;
+		}
+
+		const input = "contact@example.com" as string & DString.Email & DString.MaxCharacters<200>;
+		const result = testInference({ wrap: cast(input) });
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			string & DString.Email & DString.MaxCharacters<250>,
+			"strict"
+		>;
+	});
+
+	it("infers a cast target linked to another generic function argument", () => {
+		function testInference<
+			const GenericInput extends string,
+			GenericResult extends {
+				wrap:
+					& GenericInput
+					& DString.MinCharacters<3>
+					& DString.MaxCharacters<8>;
+			},
+		>(
+			input: GenericInput,
+			arg: GenericResult,
+		): GenericResult["wrap"] {
+			expect(arg.wrap).toBe(input);
+			return arg.wrap;
+		}
+
+		const input = "hello" as "hello" & DString.LengthEqual<5>;
+		const result = testInference(
+			"hello",
+			{ wrap: cast(input) },
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			"hello" & DString.MinCharacters<3> & DString.MaxCharacters<8>,
+			"strict"
+		>;
+	});
+
+	it("infers a number cast target through a generic function argument", () => {
+		function testInference<
+			GenericResult extends {
+				wrap: number & DNumber.GreaterThan<5> & DNumber.LessThan<100>;
+			},
+		>(
+			arg: GenericResult,
+		): GenericResult["wrap"] {
+			return arg.wrap;
+		}
+
+		const input = 42 as number & DNumber.GreaterThan<10> & DNumber.LessThan<50>;
+		const result = testInference({ wrap: cast(input) });
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			number & DNumber.GreaterThan<5> & DNumber.LessThan<100>,
+			"strict"
+		>;
+	});
+
+	it("infers an array cast target through a generic function argument", () => {
+		function testInference<
+			GenericResult extends {
+				wrap: readonly string[] & DArray.MinElements<2> & DArray.MaxElements<5>;
+			},
+		>(
+			arg: GenericResult,
+		): GenericResult["wrap"] {
+			return arg.wrap;
+		}
+
+		const input = ["a", "b", "c"] as unknown as
+			& readonly string[]
+			& DArray.LengthEqual<3>;
+		const result = testInference({ wrap: cast(input) });
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			readonly string[] & DArray.MinElements<2> & DArray.MaxElements<5>,
+			"strict"
+		>;
+	});
+
+	it("infers a union cast target through a generic function argument", () => {
+		function testInference<
+			GenericResult extends {
+				wrap:
+					| (string & DString.Email & DString.MaxCharacters<250>)
+					| (string & DString.Url & DString.MinCharacters<5>);
+			},
+		>(
+			arg: GenericResult,
+		): GenericResult["wrap"] {
+			return arg.wrap;
+		}
+
+		const input = "contact@example.com" as string & DString.Email & DString.MaxCharacters<200>;
+		const result = testInference({ wrap: cast(input) });
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			| (string & DString.Email & DString.MaxCharacters<250>)
+			| (string & DString.Url & DString.MinCharacters<5>),
+			"strict"
+		>;
+	});
+
+	it("rejects an inferred cast target when a required constraint is missing", () => {
+		function testInference<
+			GenericResult extends {
+				wrap: string & DString.Email & DString.MaxCharacters<250>;
+			},
+		>(
+			arg: GenericResult,
+		): GenericResult["wrap"] {
+			return arg.wrap;
+		}
+
+		const input = "contact@example.com" as string & DString.MaxCharacters<200>;
+
+		// @ts-expect-error the inferred target requires an Email constraint missing from the input.
+		const result = testInference({ wrap: cast(input) });
 	});
 
 	it("cast minCharacters", () => {
@@ -1025,6 +1198,17 @@ describe("cast", () => {
 		);
 	});
 
+	it("does not combine constraints from different expected union branches", () => {
+		type Expected =
+			| (string & DString.Email & DString.MaxCharacters<10>)
+			| (string & DString.Url & DString.MinCharacters<5>);
+
+		const input = "value" as string & DString.Email & DString.MinCharacters<5>;
+
+		// @ts-expect-error the input satisfies neither complete expected union branch.
+		const value: Expected = cast(input);
+	});
+
 	it("cast value", () => {
 		const value1: 1 | 2 | 3 = cast(1 as 1 | 2);
 
@@ -1049,6 +1233,18 @@ describe("cast", () => {
 			// @ts-expect-error cause error
 			[] as unknown as readonly (string | number)[] & DArray.LengthEqual<3>,
 		);
+	});
+
+	it("rejects incompatible values outside supported constraint domains", () => {
+		// @ts-expect-error boolean is not assignable to string.
+		const value1: string = cast(true);
+		// @ts-expect-error objects have incompatible structures.
+		const value2: { name: string } = cast({ id: 1 });
+
+		const input = "value" as string | boolean;
+
+		// @ts-expect-error every input union member must be assignable to string.
+		const value3: string = cast(input);
 	});
 
 	it("shameOnYou bypasses expected constraints while preserving the raw input contract", () => {

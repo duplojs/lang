@@ -86,15 +86,13 @@ export type ComputeCastConstraint<
 
 type ComputeTransformCastValue<
 	GenericValue extends unknown,
-> = GenericValue extends (string | number | AnyTuple)
-	? RemoveConstraint<GenericValue>
-	: GenericValue extends readonly unknown[]
-		? DArray.ExtractLengthEqual<GenericValue, unknown> extends DArray.LengthEqual<infer InferredLength>
-			? DTuple.Create<GenericValue[number], InferredLength>
-			: DArray.ExtractMinElements<GenericValue, unknown> extends DArray.MinElements<infer InferredMin>
-				? readonly [...DTuple.Create<GenericValue[number], InferredMin>, ...GenericValue]
-				: RemoveConstraint<GenericValue>
-		: never;
+> = GenericValue extends readonly unknown[]
+	? DArray.ExtractLengthEqual<GenericValue, unknown> extends DArray.LengthEqual<infer InferredLength>
+		? DTuple.Create<GenericValue[number], InferredLength>
+		: DArray.ExtractMinElements<GenericValue, unknown> extends DArray.MinElements<infer InferredMin>
+			? readonly [...DTuple.Create<GenericValue[number], InferredMin>, ...GenericValue]
+			: RemoveConstraint<GenericValue>
+	: RemoveConstraint<GenericValue>;
 
 export type ComputeCastValue<
 	GenericValue extends unknown,
