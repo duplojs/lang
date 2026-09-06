@@ -86,7 +86,7 @@ export type TaggedObjectMap<
 		: GenericRawValue;
 
 export interface TaggedObjectStructure<
-	GenericTaggedObject extends ObjectTag = ObjectTag,
+	out GenericTaggedObject extends ObjectTag = ObjectTag,
 > extends DCommon.Forward<
 		& DDataStructure.Structure<
 			GenericTaggedObject,

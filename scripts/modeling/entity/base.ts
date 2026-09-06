@@ -78,8 +78,8 @@ export type EntityMap<
 		: GenericRawValue;
 
 export interface EntityStructure<
-	GenericName extends string = string,
-	GenericProperties extends Record<string, unknown> = Record<string, unknown>,
+	out GenericName extends string = string,
+	out GenericProperties extends Record<string, unknown> = Record<string, unknown>,
 > extends DCommon.Forward<
 		& DDataStructure.Structure<
 			& Entity<GenericName>

@@ -17,8 +17,8 @@ export interface UnionStructureDefinition<
 }
 
 export interface UnionStructure<
-	GenericValue extends unknown = unknown,
-	GenericConstraints extends readonly Constraint<GenericValue>[] =
+	out GenericValue extends unknown = unknown,
+	out GenericConstraints extends readonly Constraint<GenericValue>[] =
 		readonly Constraint<GenericValue>[],
 > extends DCommon.Forward<
 		& Structure<GenericValue, UnionStructureDefinition<GenericConstraints>>

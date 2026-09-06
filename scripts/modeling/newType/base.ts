@@ -78,9 +78,9 @@ export type ComputeNewType<
 );
 
 export interface NewTypeStructure<
-	GenericName extends string = string,
-	GenericValue extends unknown = unknown,
-	GenericNewTypeConstraint extends readonly DDataStructure.Constraint<GenericValue>[] =
+	out GenericName extends string = string,
+	out GenericValue extends unknown = unknown,
+	out GenericNewTypeConstraint extends readonly DDataStructure.Constraint<GenericValue>[] =
 		readonly DDataStructure.Constraint<GenericValue>[],
 > extends DCommon.Forward<
 		& DDataStructure.Structure<

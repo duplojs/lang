@@ -15,8 +15,8 @@ export interface TypeStructureDefinition<
 }
 
 export interface TypeStructure<
-	GenericType extends unknown = unknown,
-	GenericConstraints extends readonly Constraint<GenericType>[] =
+	out GenericType extends unknown = unknown,
+	out GenericConstraints extends readonly Constraint<GenericType>[] =
 		readonly Constraint<GenericType>[],
 > extends DCommon.Forward<
 		& Structure<

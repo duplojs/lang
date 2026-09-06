@@ -49,8 +49,8 @@ export interface StructureDefinition<
 }
 
 export interface Structure<
-	GenericValue extends unknown = unknown,
-	GenericDefinition extends StructureDefinition<
+	out GenericValue extends unknown = unknown,
+	out GenericDefinition extends StructureDefinition<
 		readonly Constraint<GenericValue>[]
 	> = StructureDefinition<readonly Constraint<GenericValue>[]>,
 > extends DKind.Kind<

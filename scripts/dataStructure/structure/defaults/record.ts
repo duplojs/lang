@@ -34,8 +34,8 @@ export interface RecordStructureDefinition<
 }
 
 export interface RecordStructure<
-	GenericValue extends Record<string, unknown> = Record<string, unknown>,
-	GenericConstraints extends readonly Constraint<GenericValue>[] =
+	out GenericValue extends Record<string, unknown> = Record<string, unknown>,
+	out GenericConstraints extends readonly Constraint<GenericValue>[] =
 		readonly Constraint<GenericValue>[],
 > extends DCommon.Forward<
 		& Structure<GenericValue, RecordStructureDefinition<GenericConstraints>>

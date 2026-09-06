@@ -31,8 +31,8 @@ export interface ArrayStructureDefinition<
 }
 
 export interface ArrayStructure<
-	GenericValue extends readonly unknown[] = readonly unknown[],
-	GenericConstraints extends readonly Constraint<GenericValue>[] =
+	out GenericValue extends readonly unknown[] = readonly unknown[],
+	out GenericConstraints extends readonly Constraint<GenericValue>[] =
 		readonly Constraint<GenericValue>[],
 > extends DCommon.Forward<
 		& Structure<GenericValue, ArrayStructureDefinition<GenericConstraints>>
