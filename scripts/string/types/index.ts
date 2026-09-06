@@ -1,3 +1,4 @@
+export type * from "./IsAllowedString";
 export type * from "./at";
 export type * from "./countMinCharacters";
 export type * from "./digit";

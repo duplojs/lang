@@ -74,6 +74,39 @@ describe("infer", () => {
 				& DString.MaxCharacters<5> = DCommon.infer("hello");
 		});
 
+		it("correct infer AllowedCharacters constraint from literal", () => {
+			const result: string & DString.AllowedCharacters<"a-z"> = DCommon.infer("hello");
+
+			expect(result).toBe("hello");
+		});
+
+		it("correct infer AllowedCharacters constraint with multiple ranges from literal", () => {
+			const result: string & DString.AllowedCharacters<"a-z" | "0-9" | "A-Z"> = DCommon.infer("hello123");
+
+			expect(result).toBe("hello123");
+		});
+
+		it("correct infer compatible AllowedCharacters branch from output union", () => {
+			function testInference<
+				GenericResult extends {
+					wrap:
+						| (string & DString.AllowedCharacters<"a-z">)
+						| (string & DString.AllowedCharacters<"0-9">);
+				},
+			>(
+				arg: GenericResult,
+			): GenericResult["wrap"] {
+				return arg.wrap;
+			}
+			const result = testInference({ wrap: DCommon.infer("hello") });
+
+			type _CheckResult = ExpectType<
+				typeof result,
+				"hello" & DString.AllowedCharacters<"a-z">,
+				"strict"
+			>;
+		});
+
 		it("correct infer Number constraint from number literal", () => {
 			const result: string & DString.Number = DCommon.infer("12.5");
 
@@ -237,6 +270,13 @@ describe("infer", () => {
 			const result: string & DString.LengthEqual<3> = DCommon.infer(
 			// @ts-expect-error LengthEqual<5> from the value does not induce LengthEqual<3>.
 				"hello",
+			);
+		});
+
+		it("should reject incompatible AllowedCharacters constraint", () => {
+			const result: string & DString.AllowedCharacters<"a-z"> = DCommon.infer(
+			// @ts-expect-error a literal containing a digit does not induce AllowedCharacters<"a-z">.
+				"hello1",
 			);
 		});
 

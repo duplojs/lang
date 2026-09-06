@@ -7,14 +7,6 @@ import { ErrorSymbol, SuccessSymbol } from "../../common";
 
 export const allowedCharactersConstraintKind = createKind("allowed-characters-constraint");
 
-type AllowedCharactersConstraintValue<
-	GenericCharactersRange extends DString.CharactersRange,
-> = string & DCommon.UnionToIntersection<
-	GenericCharactersRange extends any
-		? DString.AllowedCharacters<GenericCharactersRange>
-		: never
->;
-
 export interface AllowedCharactersConstraintDefinition<
 	GenericCharactersRange extends DString.CharactersRange = DString.CharactersRange,
 > extends ConstraintDefinition {
@@ -26,7 +18,7 @@ export interface AllowedCharactersConstraint<
 > extends DCommon.Forward<
 		& Constraint<
 			string,
-			AllowedCharactersConstraintValue<GenericCharactersRange>,
+			string & DString.AllowedCharacters<GenericCharactersRange>,
 			AllowedCharactersConstraintDefinition<GenericCharactersRange>
 		>
 		& DKind.Kind<typeof allowedCharactersConstraintKind>

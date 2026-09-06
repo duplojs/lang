@@ -2,20 +2,20 @@ import { DDataStructure, type DString, type ExpectType } from "@scripts";
 
 describe("AllowedCharactersConstraint", () => {
 	it("creates a synchronous allowed characters constraint", () => {
-		const constraint = DDataStructure.AllowedCharactersConstraint("a-z");
+		const constraint = DDataStructure.AllowedCharactersConstraint(["a-z", "0-9"]);
 
 		type _CheckConstraint = ExpectType<
 			typeof constraint,
-			DDataStructure.AllowedCharactersConstraint<"a-z">,
+			DDataStructure.AllowedCharactersConstraint<"a-z" | "0-9">,
 			"strict"
 		>;
 		type _CheckConstraintValue = ExpectType<
 			DDataStructure.ConstraintValue<typeof constraint>,
-			DString.AllowedCharacters<"a-z">,
+			DString.AllowedCharacters<"a-z" | "0-9">,
 			"strict"
 		>;
 
-		expect(constraint.definition).toEqual({ charactersRange: "a-z" });
+		expect(constraint.definition).toEqual({ charactersRange: ["a-z", "0-9"] });
 		expect(constraint.isAsynchronous()).toBe(false);
 	});
 

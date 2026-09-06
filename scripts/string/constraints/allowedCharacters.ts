@@ -6,7 +6,7 @@ export interface CharactersRangeStore {
 }
 
 export type CharactersRange = Extract<
-	DObject.GetPropsWithValue<CharactersRangeStore, true>,
+	DObject.GetPropsWithValueExtends<CharactersRangeStore, string>,
 	string
 >;
 
@@ -16,7 +16,7 @@ export interface AllowedCharacters<
 	GenericCharactersRange extends CharactersRange = never,
 > extends DCommon.Constraint<
 		AllowedCharactersConstraintName,
-		Record<GenericCharactersRange, unknown>
+		() => Partial<Record<GenericCharactersRange, GenericCharactersRange>>
 	> {
 }
 
@@ -25,11 +25,13 @@ export type ExtractAllowedCharacters<
 	GenericDefault extends unknown = never,
 > = GenericConstraint extends AllowedCharacters
 	? (
-		keyof GenericConstraint[DCommon.ConstraintSymbol][AllowedCharactersConstraintName]
+		keyof ReturnType<GenericConstraint[DCommon.ConstraintSymbol][AllowedCharactersConstraintName]>
 	) extends infer InferredResult extends CharactersRange
 		? DCommon.UnionToIntersection<
 			InferredResult extends any
-				? AllowedCharacters<InferredResult>
+				? DCommon.IsNever<InferredResult> extends true
+					? AllowedCharacters
+					: AllowedCharacters<InferredResult>
 				: never
 		>
 		: GenericDefault

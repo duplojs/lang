@@ -33,6 +33,18 @@ export interface ComputeInferConstraintStringRule<
 			? DString.LengthEqual<InferredResult["to"]>
 			: DCommon.ComputedTypeError<`Impossible to cast on LengthEqual<${InferredResult["to"]}> because constraint LengthEqual<${InferredResult["from"]}> from the value is not equal.`>
 		: never;
+	allowedCharacters: GenericOutput extends DString.AllowedCharacters
+		? keyof ReturnType<
+			GenericOutput[DCommon.ConstraintSymbol][DString.AllowedCharactersConstraintName]
+		> extends infer InferredCharactersRange extends DString.CharactersRange
+			? DString.IsAllowedString<
+				GenericInput,
+				DString.CharactersRangeStore[InferredCharactersRange]
+			> extends true
+				? DString.AllowedCharacters<InferredCharactersRange>
+				: DCommon.ComputedTypeError<`Impossible to cast on AllowedCharacters because value ${GenericInput} contains forbidden characters.`>
+			: never
+		: never;
 	number: DCommon.IsExtends<GenericOutput, DString.Number> extends true
 		? GenericInput extends DString.NumberInString
 			? DString.Number

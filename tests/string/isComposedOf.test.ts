@@ -1,4 +1,4 @@
-import { DString, pipe, when, type ExpectType } from "@scripts";
+import { type DCommon, DString, pipe, when, type ExpectType } from "@scripts";
 
 describe("isComposedOf", () => {
 	it("should validate characters from one range", () => {
@@ -24,14 +24,15 @@ describe("isComposedOf", () => {
 	});
 
 	it("should narrow a constrained string with a single range predicate outside pipe", () => {
-		const source = "abc123" as (string & DString.AllowedCharacters<"a-z">) | (string & DString.AllowedCharacters<"0-9">);
+		const source = "abc123" as | (string & DString.AllowedCharacters<"a-z">)
+			| (string & DString.AllowedCharacters<"a-z" | "0-9">)
+			| (string & DString.AllowedCharacters<"0-9">);
 
 		if (DString.isComposedOf(source, "0-9")) {
 			type _CheckSource = ExpectType<
 				typeof source,
 				(
-					| (string & DString.AllowedCharacters<"a-z"> & DString.AllowedCharacters<"0-9">)
-					| string & DString.AllowedCharacters<"0-9">
+					string & DString.AllowedCharacters<"0-9">
 				),
 				"strict"
 			>;
@@ -45,7 +46,7 @@ describe("isComposedOf", () => {
 		if (predicate(source)) {
 			type _CheckSource = ExpectType<
 				typeof source,
-				string & DString.AllowedCharacters<"a-z"> & DString.AllowedCharacters<"0-9">,
+				string & DString.AllowedCharacters<"a-z" | "0-9">,
 				"strict"
 			>;
 		}
@@ -53,14 +54,14 @@ describe("isComposedOf", () => {
 
 	it("should use a single range predicate in pipe with when", () => {
 		const result = pipe(
-			"abc",
+			"abc" as string,
 			when(
 				DString.isComposedOf("a-z"),
 				(value) => {
 					type _CheckValue = ExpectType<
-							typeof value,
-							"abc" & DString.AllowedCharacters<"a-z">,
-							"strict"
+						typeof value,
+						string & DString.AllowedCharacters<"a-z">,
+						"strict"
 					>;
 
 					return "lowercase";
@@ -73,14 +74,14 @@ describe("isComposedOf", () => {
 
 	it("should use a multiple range predicate in pipe with when", () => {
 		const result = pipe(
-			"ABC123",
+			"ABC123" as "ABC123" | "abc123",
 			when(
 				DString.isComposedOf(["A-Z", "0-9"]),
 				(value) => {
 					type _CheckValue = ExpectType<
-							typeof value,
-							"ABC123" & DString.AllowedCharacters<"A-Z"> & DString.AllowedCharacters<"0-9">,
-							"strict"
+						typeof value,
+						string & DString.AllowedCharacters<"0-9" | "A-Z">,
+						"strict"
 					>;
 
 					return "uppercase-code";
@@ -89,5 +90,60 @@ describe("isComposedOf", () => {
 		);
 
 		expect(result).toBe("uppercase-code");
+	});
+
+	it("should accept a more restrictive allowed characters constraint", () => {
+		type _CheckConstraint = ExpectType<
+			DCommon.IsExtends<
+				DString.AllowedCharacters<"a-z">,
+				DString.AllowedCharacters<"a-z" | "0-9">
+			>,
+			true,
+			"strict"
+		>;
+	});
+
+	it("should accept an equal allowed characters constraint", () => {
+		type _CheckConstraint = ExpectType<
+			DCommon.IsExtends<
+				DString.AllowedCharacters<"a-z" | "0-9">,
+				DString.AllowedCharacters<"a-z" | "0-9">
+			>,
+			true,
+			"strict"
+		>;
+	});
+
+	it("should reject a broader allowed characters constraint", () => {
+		type _CheckConstraint = ExpectType<
+			DCommon.IsExtends<
+				DString.AllowedCharacters<"a-z" | "A-Z" | "0-9">,
+				DString.AllowedCharacters<"a-z" | "0-9">
+			>,
+			false,
+			"strict"
+		>;
+	});
+
+	it("should reject a partially outside allowed characters constraint", () => {
+		type _CheckConstraint = ExpectType<
+			DCommon.IsExtends<
+				DString.AllowedCharacters<"A-Z" | "0-9">,
+				DString.AllowedCharacters<"a-z" | "0-9">
+			>,
+			false,
+			"strict"
+		>;
+	});
+
+	it("should reject a fully outside allowed characters constraint", () => {
+		type _CheckConstraint = ExpectType<
+			DCommon.IsExtends<
+				DString.AllowedCharacters<"A-Z">,
+				DString.AllowedCharacters<"a-z" | "0-9">
+			>,
+			false,
+			"strict"
+		>;
 	});
 });
