@@ -52,16 +52,18 @@ export type ComputeCastConstraint<
 								Extract<
 									InferredConstraint extends any
 										? [
-											NeverCoalescing<
-												DObject.Values<
-													ComputeCastConstraintRule<GenericValue, InferredConstraint>
+											GenericValue extends InferredConstraint
+												? unknown
+												: NeverCoalescing<
+													DObject.Values<
+														ComputeCastConstraintRule<GenericValue, InferredConstraint>
+													>,
+													CastError<
+														"None of the intended constraints is possible on the current value.",
+														GenericValue,
+														InferredConstraint
+													>
 												>,
-												CastError<
-													"None of the intended constraints is possible on the current value.",
-													GenericValue,
-													InferredConstraint
-												>
-											>,
 										]
 										: never,
 									[CastError<any, any, any>]

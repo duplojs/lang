@@ -11,20 +11,22 @@ export type Split<
 	GenericValue extends unknown,
 	GenericMax extends number = 10,
 	GenericAccumulator extends readonly never[] = readonly [],
-> = GenericValue extends object
-	? GenericAccumulator["length"] extends GenericMax
-		? GenericValue
-		: {
-			[Prop in keyof GenericValue]: DCommon.NeverCoalescing<
-				CreateShape<
-					Split<
-						GenericValue[Prop],
-						GenericMax,
-						[...GenericAccumulator, never]
+> = GenericValue extends unknown
+	? DCommon.IsObject<GenericValue> extends true
+		? GenericAccumulator["length"] extends GenericMax
+			? GenericValue
+			: {
+				[Prop in keyof GenericValue]: DCommon.NeverCoalescing<
+					CreateShape<
+						Split<
+							GenericValue[Prop],
+							GenericMax,
+							[...GenericAccumulator, never]
+						>,
+						Prop
 					>,
-					Prop
-				>,
-				{ [RemapProp in Prop]: never }
-			>
-		}[keyof GenericValue]
-	: GenericValue;
+					{ [RemapProp in Prop]: never }
+				>
+			}[keyof GenericValue]
+		: GenericValue
+	: never;

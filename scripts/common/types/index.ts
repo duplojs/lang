@@ -26,6 +26,7 @@ export type * from "./forward";
 export type * from "./hasSomething";
 export type * from "./isEqual";
 export type * from "./isNever";
+export type * from "./isObject";
 export type * from "./isUnion";
 export type * from "./json";
 export type * from "./lastUnionElement";

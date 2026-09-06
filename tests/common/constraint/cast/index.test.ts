@@ -35,6 +35,71 @@ describe("cast", () => {
 		);
 	});
 
+	it("casts a computed constraint while preserving an expected constraint without a cast rule", () => {
+		const input = "contact@example.com" as string & DString.Email & DString.MaxCharacters<200>;
+		const value: string & DString.Email & DString.MaxCharacters<250> = cast(input);
+
+		type _CheckValue = ExpectType<
+			typeof value,
+			string & DString.Email & DString.MaxCharacters<250>,
+			"strict"
+		>;
+	});
+
+	it("rejects an incompatible computed constraint when another expected constraint is already present", () => {
+		const input = "contact@example.com" as string & DString.Email & DString.MaxCharacters<300>;
+
+		// @ts-expect-error MaxCharacters<300> does not guarantee MaxCharacters<250>.
+		const value: string & DString.Email & DString.MaxCharacters<250> = cast(input);
+	});
+
+	it("rejects a missing constraint without a cast rule when another expected constraint is already present", () => {
+		const input = "contact@example.com" as string & DString.Email & DString.MaxCharacters<200>;
+		const inputWithoutFormat = "value" as string & DString.MaxCharacters<200>;
+
+		// @ts-expect-error the input does not carry the expected Url constraint.
+		const value: string & DString.Email & DString.Url & DString.MaxCharacters<250> = cast(input);
+		// @ts-expect-error the input does not carry the expected Email constraint.
+		const email: string & DString.Email & DString.MaxCharacters<250> = cast(inputWithoutFormat);
+		// @ts-expect-error the input does not carry the expected Uuid constraint.
+		const uuid: string & DString.Uuid & DString.MaxCharacters<250> = cast(inputWithoutFormat);
+		// @ts-expect-error the input does not carry the expected Trimmed constraint.
+		const trimmed: string & DString.Trimmed & DString.MaxCharacters<250> = cast(inputWithoutFormat);
+	});
+
+	it("preserves allowed characters constraints already guaranteed by the input", () => {
+		const input = "hello" as string & DString.AllowedCharacters<"a-z"> & DString.MaxCharacters<200>;
+		const value1: string & DString.AllowedCharacters<"a-z"> & DString.MaxCharacters<250> = cast(input);
+		const value2: string & DString.AllowedCharacters<"a-z" | "0-9"> & DString.MaxCharacters<250> = cast(input);
+
+		type _CheckValue1 = ExpectType<
+			typeof value1,
+			string & DString.AllowedCharacters<"a-z"> & DString.MaxCharacters<250>,
+			"strict"
+		>;
+		type _CheckValue2 = ExpectType<
+			typeof value2,
+			string & DString.AllowedCharacters<"a-z" | "0-9"> & DString.MaxCharacters<250>,
+			"strict"
+		>;
+	});
+
+	it("rejects allowed characters constraints not guaranteed by the input", () => {
+		const unconstrainedInput = "hello" as string & DString.MaxCharacters<200>;
+		const broaderInput = "hello" as string & DString.AllowedCharacters<"a-z" | "0-9"> & DString.MaxCharacters<200>;
+		const plainString = "hello" as string;
+		const broaderAllowedCharacters = "hello" as string & DString.AllowedCharacters<"a-z" | "0-9">;
+
+		// @ts-expect-error the input does not carry an AllowedCharacters constraint.
+		const value1: string & DString.AllowedCharacters<"a-z"> & DString.MaxCharacters<250> = cast(unconstrainedInput);
+		// @ts-expect-error a-z | 0-9 does not guarantee that only a-z characters are present.
+		const value2: string & DString.AllowedCharacters<"a-z"> & DString.MaxCharacters<250> = cast(broaderInput);
+		// @ts-expect-error a plain string does not carry an AllowedCharacters constraint.
+		const value3: string & DString.AllowedCharacters<"a-z"> = cast(plainString);
+		// @ts-expect-error a-z | 0-9 does not guarantee that only a-z characters are present.
+		const value4: string & DString.AllowedCharacters<"a-z"> = cast(broaderAllowedCharacters);
+	});
+
 	it("cast minCharacters", () => {
 		const value1: string & DString.MinCharacters<12> = cast("" as string & DString.MinCharacters<12>);
 
