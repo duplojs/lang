@@ -1,19 +1,19 @@
-import { DDataStructure, type ExpectType } from "@scripts";
+import { DDataStructure, type ExpectType, DModeling } from "@scripts";
 
 describe("defaultErrorInterpreterDataStructureDictionary", () => {
 	it("formats default structure messages", () => {
 		const dictionary = DDataStructure.defaultErrorInterpreterDataStructureDictionary;
 
 		expect([
-			dictionary["array-structure"](),
-			dictionary["lazy-structure"](),
-			dictionary["non-encodable-string-structure"](
+			dictionary["@DuplojsLangDataStructure/array-structure"](),
+			dictionary["@DuplojsLangDataStructure/lazy-structure"](),
+			dictionary["@DuplojsLangDataStructure/non-encodable-string-structure"](
 				DDataStructure.NonEncodableStringStructure("value \"quoted\""),
 			),
-			dictionary["object-structure"](),
-			dictionary["record-structure"](),
-			dictionary["type-structure"](),
-			dictionary["union-structure"](),
+			dictionary["@DuplojsLangDataStructure/object-structure"](),
+			dictionary["@DuplojsLangDataStructure/record-structure"](),
+			dictionary["@DuplojsLangDataStructure/type-structure"](),
+			dictionary["@DuplojsLangDataStructure/union-structure"](),
 		]).toStrictEqual([
 			"Expected an array.",
 			"Expected a value matching the resolved structure.",
@@ -29,26 +29,26 @@ describe("defaultErrorInterpreterDataStructureDictionary", () => {
 		const dictionary = DDataStructure.defaultErrorInterpreterDataStructureDictionary;
 
 		expect([
-			dictionary["bigint-type"](),
-			dictionary["bigint-literal-type"](
+			dictionary["@DuplojsLangDataStructure/bigint-type"](),
+			dictionary["@DuplojsLangDataStructure/bigint-literal-type"](
 				DDataStructure.BigintLiteralType(12n),
 			),
-			dictionary["boolean-type"](),
-			dictionary["boolean-literal-type"](
+			dictionary["@DuplojsLangDataStructure/boolean-type"](),
+			dictionary["@DuplojsLangDataStructure/boolean-literal-type"](
 				DDataStructure.BooleanLiteralType(true),
 			),
-			dictionary["date-type"](),
-			dictionary["null-type"](),
-			dictionary["number-type"](),
-			dictionary["number-literal-type"](
+			dictionary["@DuplojsLangDataStructure/date-type"](),
+			dictionary["@DuplojsLangDataStructure/null-type"](),
+			dictionary["@DuplojsLangDataStructure/number-type"](),
+			dictionary["@DuplojsLangDataStructure/number-literal-type"](
 				DDataStructure.NumberLiteralType(12.5),
 			),
-			dictionary["string-type"](),
-			dictionary["string-literal-type"](
+			dictionary["@DuplojsLangDataStructure/string-type"](),
+			dictionary["@DuplojsLangDataStructure/string-literal-type"](
 				DDataStructure.StringLiteralType("value \"quoted\""),
 			),
-			dictionary["time-type"](),
-			dictionary["undefined-type"](),
+			dictionary["@DuplojsLangDataStructure/time-type"](),
+			dictionary["@DuplojsLangDataStructure/undefined-type"](),
 		]).toStrictEqual([
 			"Expected a bigint.",
 			"Expected 12n.",
@@ -69,66 +69,69 @@ describe("defaultErrorInterpreterDataStructureDictionary", () => {
 		const dictionary = DDataStructure.defaultErrorInterpreterDataStructureDictionary;
 
 		expect([
-			dictionary["absolute-path-constraint"](),
-			dictionary["allowed-characters-constraint"](
+			dictionary["@DuplojsLangDataStructure/absolute-path-constraint"](),
+			dictionary["@DuplojsLangDataStructure/allowed-characters-constraint"](
 				DDataStructure.allowedCharacters(["a-z", "0-9"]),
 			),
-			dictionary["array-length-equal-constraint"](
+			dictionary["@DuplojsLangDataStructure/array-length-equal-constraint"](
 				DDataStructure.arrayLengthEqual(3),
 			),
-			dictionary["between-than-constraint"](
+			dictionary["@DuplojsLangDataStructure/between-than-constraint"](
 				DDataStructure.betweenThan(1, 5),
 			),
-			dictionary["between-than-or-equal-constraint"](
+			dictionary["@DuplojsLangDataStructure/between-than-or-equal-constraint"](
 				DDataStructure.betweenThanOrEqual(1, 5),
 			),
-			dictionary["email-constraint"](),
-			dictionary["even-constraint"](),
-			dictionary["greater-than-constraint"](
+			dictionary["@DuplojsLangDataStructure/email-constraint"](),
+			dictionary["@DuplojsLangDataStructure/even-constraint"](),
+			dictionary["@DuplojsLangDataStructure/greater-than-constraint"](
 				DDataStructure.greaterThan(1),
 			),
-			dictionary["greater-than-or-equal-constraint"](
+			dictionary["@DuplojsLangDataStructure/greater-than-or-equal-constraint"](
 				DDataStructure.greaterThanOrEqual(1),
 			),
-			dictionary["integer-constraint"](),
-			dictionary["less-than-constraint"](DDataStructure.lessThan(5)),
-			dictionary["less-than-or-equal-constraint"](
+			dictionary["@DuplojsLangDataStructure/integer-constraint"](),
+			dictionary["@DuplojsLangDataStructure/less-than-constraint"](DDataStructure.lessThan(5)),
+			dictionary["@DuplojsLangDataStructure/less-than-or-equal-constraint"](
 				DDataStructure.lessThanOrEqual(5),
 			),
-			dictionary["max-characters-constraint"](
+			dictionary["@DuplojsLangDataStructure/max-characters-constraint"](
 				DDataStructure.maxCharacters(10),
 			),
-			dictionary["max-elements-constraint"](
+			dictionary["@DuplojsLangDataStructure/max-elements-constraint"](
 				DDataStructure.maxElements(10),
 			),
-			dictionary["min-characters-constraint"](
+			dictionary["@DuplojsLangDataStructure/min-characters-constraint"](
 				DDataStructure.minCharacters(3),
 			),
-			dictionary["min-elements-constraint"](
+			dictionary["@DuplojsLangDataStructure/min-elements-constraint"](
 				DDataStructure.minElements(3),
 			),
-			dictionary["multiple-of-constraint"](
+			dictionary["@DuplojsLangDataStructure/multiple-of-constraint"](
 				DDataStructure.multipleOf(3),
 			),
-			dictionary["negative-constraint"](),
-			dictionary["not-empty-constraint"](),
-			dictionary["not-zero-constraint"](),
-			dictionary["number-in-string-constraint"](),
-			dictionary["odd-constraint"](),
-			dictionary["path-constraint"](),
-			dictionary["positive-constraint"](),
-			dictionary["refine-constraint"](),
-			dictionary["regex-constraint"](DDataStructure.regex(/value/u)),
-			dictionary["safe-constraint"](),
-			dictionary["segment-path-constraint"](),
-			dictionary["strict-negative-constraint"](),
-			dictionary["strict-positive-constraint"](),
-			dictionary["string-length-equal-constraint"](
+			dictionary["@DuplojsLangDataStructure/negative-constraint"](),
+			dictionary["@DuplojsLangDataStructure/not-empty-constraint"](),
+			dictionary["@DuplojsLangDataStructure/not-zero-constraint"](),
+			dictionary["@DuplojsLangDataStructure/number-in-string-constraint"](),
+			dictionary["@DuplojsLangDataStructure/odd-constraint"](),
+			dictionary["@DuplojsLangDataStructure/path-constraint"](),
+			dictionary["@DuplojsLangDataStructure/positive-constraint"](),
+			dictionary["@DuplojsLangDataStructure/refine-constraint"](),
+			dictionary["@DuplojsLangDataStructure/regex-constraint"](DDataStructure.regex(/value/u)),
+			dictionary["@DuplojsLangDataStructure/safe-constraint"](),
+			dictionary["@DuplojsLangDataStructure/segment-path-constraint"](),
+			dictionary["@DuplojsLangDataStructure/strict-negative-constraint"](),
+			dictionary["@DuplojsLangDataStructure/strict-positive-constraint"](),
+			dictionary["@DuplojsLangDataStructure/string-length-equal-constraint"](
 				DDataStructure.stringLengthEqual(3),
 			),
-			dictionary["trimmed-constraint"](),
-			dictionary["url-constraint"](),
-			dictionary["uuid-constraint"](),
+			dictionary["@DuplojsLangDataStructure/trimmed-constraint"](),
+			dictionary["@DuplojsLangDataStructure/url-constraint"](),
+			dictionary["@DuplojsLangDataStructure/uuid-constraint"](),
+			dictionary["@DuplojsLangModeling/entity-structure"](),
+			dictionary["@DuplojsLangModeling/new-type-structure"](),
+			dictionary["@DuplojsLangModeling/tagged-object-structure"](DModeling.TaggedObjectStructure("test", { prop: DDataStructure.string() })),
 		]).toStrictEqual([
 			"Expected an absolute path.",
 			"Expected a string containing only characters from a-z, 0-9.",
@@ -164,6 +167,9 @@ describe("defaultErrorInterpreterDataStructureDictionary", () => {
 			"Expected a string without leading or trailing whitespace.",
 			"Expected a valid URL.",
 			"Expected a valid UUID.",
+			"Expected a valid entity object.",
+			"Expected a value matching the branded type.",
+			"Expected a plain object matching one of the tagged variants of test.",
 		]);
 	});
 });

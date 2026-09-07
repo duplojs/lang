@@ -3,19 +3,10 @@ import * as DCommon from "@scripts/common";
 import * as DArray from "@scripts/array";
 import * as DObject from "@scripts/object";
 import { type Structure, type Structures } from "../../structure";
-import { type createKind } from "../../kind";
 import { type Type, type Types } from "../../type";
 import { type Constraint, type Constraints } from "../../constraint";
 import { type Error, type DecodeIssue, type EncodeIssue, type Issue, issueKind, encodeIssueKind } from "./base";
 import { type Codec } from "../codec";
-
-const kindNamespaceName: DKind.GetNamespaceName<typeof createKind> = "DuplojsLangDataStructure";
-
-type RemoveNamespace<
-	GenericString,
-> = GenericString extends `@${typeof kindNamespaceName}/${infer InferredKindName}`
-	? InferredKindName
-	: never;
 
 export interface InterpretedMessage {
 	source?: string;
@@ -51,14 +42,12 @@ export type StructureDictionaryParams = DCommon.SimplifyTopLevel<
 				| Types
 				| Structures
 				| Constraints
-			) as RemoveNamespace<
-				DKind.GetName<DataStructure>
-			>
+			) as DKind.GetName<DataStructure>
 			]?: (structure: DataStructure, issue: Issue) => string
 		},
-		| RemoveNamespace<DKind.GetName<Type>>
-		| RemoveNamespace<DKind.GetName<Structure>>
-		| RemoveNamespace<DKind.GetName<Constraint>>
+		| DKind.GetName<Type>
+		| DKind.GetName<Structure>
+		| DKind.GetName<Constraint>
 	>
 >;
 
@@ -79,7 +68,7 @@ export function createErrorInterpreter(
 		DObject.entries,
 		DArray.map(
 			([key, value]) => DObject.entry(
-				`${DKind.keyKindPrefix}@${kindNamespaceName}/${key}`,
+				`${DKind.keyKindPrefix}${key}`,
 				value,
 			),
 		),

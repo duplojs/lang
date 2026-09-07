@@ -25,7 +25,7 @@ describe("createErrorInterpreter", () => {
 		const errorHandler = DDataStructure.createErrorHandler();
 		const interpret = DDataStructure.createErrorInterpreter(
 			{
-				"string-type": (source, issue) => {
+				"@DuplojsLangDataStructure/string-type": (source, issue) => {
 					type _CheckSource = ExpectType<
 						typeof source,
 						DDataStructure.StringType,
@@ -39,7 +39,7 @@ describe("createErrorInterpreter", () => {
 
 					return `Global ${source.definition.message} for ${typeof issue.data}`;
 				},
-				"type-structure": (source, issue) => {
+				"@DuplojsLangDataStructure/type-structure": (source, issue) => {
 					type _CheckSource = ExpectType<
 						typeof source,
 						DDataStructure.TypeStructure,
@@ -53,7 +53,7 @@ describe("createErrorInterpreter", () => {
 
 					return `Global ${source.definition.message} for ${typeof issue.data}`;
 				},
-				"min-characters-constraint": (source, issue) => {
+				"@DuplojsLangDataStructure/min-characters-constraint": (source, issue) => {
 					type _CheckSource = ExpectType<
 						typeof source,
 						DDataStructure.MinCharactersConstraint,
