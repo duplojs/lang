@@ -1,4 +1,4 @@
-export type * from "./assignObjects";
+export type * from "./assign";
 export type * from "./deepPartial";
 export type * from "./deepReadonly";
 export type * from "./deepRemoveReadonly";
@@ -9,6 +9,7 @@ export type * from "./forbiddenKey";
 export type * from "./forbiddenUndefinedProps";
 export type * from "./getPropsWithValue";
 export type * from "./getPropsWithValueExtends";
+export type * from "./override";
 export type * from "./partialKeys";
 export type * from "./requireAtLeastOne";
 export type * from "./requiredKeys";

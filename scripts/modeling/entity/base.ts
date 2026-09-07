@@ -5,6 +5,7 @@ import * as DEither from "@scripts/either";
 import * as DObject from "@scripts/object";
 import { createKind } from "../kind";
 import { type NewType, type NewTypeMap } from "../newType";
+import { objectTagKind } from "../taggedObject";
 
 declare module "@scripts/dataStructure" {
 	interface StructuresStore {
@@ -76,6 +77,29 @@ export type EntityMap<
 			? { [Prop in keyof GenericRawValue]: EntityMap<GenericRawValue[Prop]> }
 			: GenericRawValue
 		: GenericRawValue;
+
+export type EntityUpdate<
+	GenericEntity extends Entity,
+	GenericNewProperties extends object,
+> = Extract<
+	(
+		& Entity<GetEntityName<GenericEntity>>
+		& DCommon.SimplifyTopLevel<
+			DKind.Remove<GenericEntity> extends infer InferredProperties
+				? {
+					[Prop in keyof InferredProperties]: Prop extends keyof GenericNewProperties
+						? GenericNewProperties[Prop] extends infer InferredNewValue
+							? InferredNewValue extends undefined
+								? InferredProperties[Prop]
+								: InferredNewValue
+							: never
+						: InferredProperties[Prop]
+				}
+				: never
+		>
+	),
+	any
+>;
 
 export interface EntityStructure<
 	out GenericName extends string = string,
@@ -223,6 +247,29 @@ export interface EntityStructure<
 			GenericCodecs
 		>
 	>;
+
+	update<
+		GenericInputEntity extends (
+			& Entity<GenericName>
+			& GenericProperties
+		),
+		const GenericPayload extends Partial<GenericProperties>,
+	>(
+		update: GenericPayload
+	): (
+		input: GenericInputEntity,
+	) => EntityUpdate<GenericInputEntity, GenericPayload>;
+
+	update<
+		GenericInputEntity extends (
+			& Entity<GenericName>
+			& GenericProperties
+		),
+		const GenericPayload extends Partial<GenericProperties>,
+	>(
+		input: GenericInputEntity,
+		update: GenericPayload
+	): EntityUpdate<GenericInputEntity, GenericPayload>;
 }
 
 export class EncodeEntityError extends DKind.parentClass(
@@ -412,6 +459,21 @@ export const EntityStructure = DDataStructure.createStructure(
 				}
 
 				return DEither.unwrapRight(result);
+			},
+			update: (
+				self,
+				...args: | [update: object]
+					| [input: object, update: object]
+			): any => {
+				if (args.length === 1) {
+					const [update] = args;
+
+					return (input: object) => self.update(input as never, update as never);
+				}
+
+				const [input, { [objectTagKind.runTimeKey as never]: __, ...update }] = args;
+
+				return DObject.override(input, update);
 			},
 		},
 	) as never,

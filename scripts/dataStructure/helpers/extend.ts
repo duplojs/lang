@@ -8,7 +8,7 @@ export function extend<
 	structure: GenericObjectStructure,
 	shape: GenericShape,
 ): ObjectStructure<
-	DObject.AssignObjects<
+	DObject.Assign<
 		Extract<StructureInitialValue<GenericObjectStructure>, object>,
 		ShapeObjectStructureValue<GenericShape>
 	>,

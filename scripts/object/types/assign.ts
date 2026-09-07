@@ -1,6 +1,6 @@
 import type * as DCommon from "@scripts/common";
 
-export type AssignObjects<
+export type Assign<
 	GenericFirstObject extends object,
 	GenericSecondObject extends object,
 > = DCommon.SimplifyTopLevel<

@@ -716,6 +716,80 @@ describe("EntityStructure", () => {
 		});
 	});
 
+	it("updates an entity without replacing properties with undefined", () => {
+		const structure = DModeling.EntityStructure(
+			"user",
+			() => ({
+				name: DDataStructure.string(),
+				age: DDataStructure.number(),
+			}),
+		);
+		const input = structure.new({
+			name: "Jane",
+			age: 30,
+		} as const);
+		const result = structure.update(
+			input,
+			{
+				name: "John",
+				age: undefined,
+			},
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			& DModeling.Entity<"user">
+			& {
+				readonly name: "John";
+				readonly age: 30;
+			},
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(structure.new({
+			name: "John",
+			age: 30,
+		}));
+		expect(result).not.toBe(input);
+		expect(input).toStrictEqual(structure.new({
+			name: "Jane",
+			age: 30,
+		}));
+	});
+
+	it("updates an entity in pipe", () => {
+		const structure = DModeling.EntityStructure(
+			"user",
+			() => ({
+				name: DDataStructure.string(),
+				age: DDataStructure.number(),
+			}),
+		);
+		const input = structure.new({
+			name: "Jane",
+			age: 30,
+		} as const);
+		const result = pipe(
+			input,
+			structure.update({ age: 31 }),
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			& DModeling.Entity<"user">
+			& {
+				readonly name: "Jane";
+				readonly age: 31;
+			},
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(structure.new({
+			name: "Jane",
+			age: 31,
+		}));
+	});
+
 	it("is asynchronous when one of its properties is asynchronous", () => {
 		const asyncConstraintKind = DDataStructure.createKind("async-entity-property-constraint");
 		const asyncConstraintIsAsynchronous = vi.fn(() => true);

@@ -1,5 +1,5 @@
 import type * as DCommon from "@scripts/common";
-import { type AssignObjects } from "./types";
+import { type Assign } from "./types";
 
 export function assign<
 	GenericObject extends object,
@@ -8,7 +8,7 @@ export function assign<
 	value: GenericValue,
 ): (
 	object: GenericObject,
-) => AssignObjects<GenericObject, GenericValue>;
+) => Assign<GenericObject, GenericValue>;
 
 export function assign<
 	GenericObject extends object,
@@ -16,7 +16,7 @@ export function assign<
 >(
 	object: GenericObject,
 	value: GenericValue,
-): AssignObjects<GenericObject, GenericValue>;
+): Assign<GenericObject, GenericValue>;
 
 export function assign(
 	...args:

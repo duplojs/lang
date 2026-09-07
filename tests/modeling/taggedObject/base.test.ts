@@ -835,6 +835,92 @@ describe("TaggedObjectStructure", () => {
 		});
 	});
 
+	it("updates a tagged object without replacing properties with undefined", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DDataStructure.string(),
+				age: DDataStructure.number(),
+			},
+		);
+		const input = structure.new({
+			name: "Jane",
+			age: 30,
+		}) as (
+			& DModeling.ObjectTag<"user-created">
+			& {
+				readonly name: "Jane";
+				readonly age: 30;
+			}
+		);
+		const result = structure.update(
+			input,
+			{
+				name: "John",
+				age: undefined,
+			},
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			& DModeling.ObjectTag<"user-created">
+			& {
+				readonly name: "John";
+				readonly age: 30;
+			},
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(structure.new({
+			name: "John",
+			age: 30,
+		}));
+		expect(result).not.toBe(input);
+		expect(input).toStrictEqual(structure.new({
+			name: "Jane",
+			age: 30,
+		}));
+	});
+
+	it("updates a tagged object in pipe", () => {
+		const structure = DModeling.TaggedObjectStructure(
+			"user-created",
+			{
+				name: DDataStructure.string(),
+				age: DDataStructure.number(),
+			},
+		);
+		const input = structure.new({
+			name: "Jane",
+			age: 30,
+		}) as (
+			& DModeling.ObjectTag<"user-created">
+			& {
+				readonly name: "Jane";
+				readonly age: 30;
+			}
+		);
+		const result = pipe(
+			input,
+			structure.update({ age: 31 }),
+		);
+
+		type _CheckResult = ExpectType<
+			typeof result,
+			& DModeling.ObjectTag<"user-created">
+			& {
+				readonly name: "Jane";
+				readonly age: 31;
+			},
+			"strict"
+		>;
+
+		expect(result).toStrictEqual(structure.new({
+			name: "Jane",
+			age: 31,
+		}));
+	});
+
 	it("supports recursive tagged object structures", () => {
 		interface File extends DModeling.ObjectTag<"file"> {
 			readonly [key: string]: unknown;

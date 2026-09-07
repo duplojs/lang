@@ -7,7 +7,7 @@ import { type NewType } from "../newType";
 export type ForbiddenMissingNewTypeInEntityShape<
 	GenericValue extends unknown,
 	GenericPath extends readonly string[] = readonly [],
-> = GenericValue extends NewType
+> = GenericValue extends NewType | null
 	? never
 	: GenericValue extends object
 		? DCommon.Or<[
