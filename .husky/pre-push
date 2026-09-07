@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 npm run build
 npm run test:types
+npm run test:types:lib
 npm run test:lint
 npm run test:ut

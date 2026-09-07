@@ -55,19 +55,6 @@ describe("TheDate", () => {
 		expect(baseDate.getTime()).toBe(baseTimestamp);
 	});
 
-	it("creates a safe instance via TheDate.new", () => {
-		const result = DChrono.TheDate.new(1.6);
-
-		expect(result).toBeInstanceOf(DChrono.TheDate);
-		expect(result.getTime()).toBe(2);
-
-		type check = ExpectType<
-			typeof result,
-			DChrono.TheDate,
-			"strict"
-		>;
-	});
-
 	it("works inside pipe with instance methods", () => {
 		const baseDate = DChrono.createDate("2020-01-01");
 

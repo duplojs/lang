@@ -67,7 +67,7 @@ describe("createTime", () => {
 		});
 
 		expect(result).toStrictEqual(
-			DEither.right("time-created", DChrono.TheTime.new(3500)),
+			DEither.right("time-created", DChrono.createTimeOrThrow(3500)),
 		);
 	});
 
@@ -79,7 +79,7 @@ describe("createTime", () => {
 		});
 
 		expect(result).toStrictEqual(
-			DEither.right("time-created", DChrono.TheTime.new(3500)),
+			DEither.right("time-created", DChrono.createTimeOrThrow(3500)),
 		);
 	});
 
@@ -90,7 +90,7 @@ describe("createTime", () => {
 		});
 
 		expect(result).toStrictEqual(
-			DEither.right("time-created", DChrono.TheTime.new(3500)),
+			DEither.right("time-created", DChrono.createTimeOrThrow(3500)),
 		);
 	});
 
@@ -101,7 +101,7 @@ describe("createTime", () => {
 		});
 
 		expect(result).toStrictEqual(
-			DEither.right("time-created", DChrono.TheTime.new(-1500)),
+			DEither.right("time-created", DChrono.createTimeOrThrow(-1500)),
 		);
 	});
 

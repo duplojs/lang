@@ -23,7 +23,7 @@ describe("DateType", () => {
 	it("accepts chrono date values", () => {
 		const type = DDataStructure.DateType();
 
-		expect(type.executeCheck(DChrono.TheDate.new(0))).toBe(DDataStructure.SuccessSymbol);
+		expect(type.executeCheck(DChrono.createDateOrThrow(0))).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects non-chrono date values through its fundamental type", () => {

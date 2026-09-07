@@ -47,7 +47,7 @@ describe("closestTo", () => {
 
 	it("keeps TheDate paths in the reducer", () => {
 		const input = [
-			DChrono.TheDate.new(0),
+			DChrono.createDateOrThrow(0),
 			DChrono.serialize(DChrono.createDate("2024-01-01")),
 		];
 
@@ -60,7 +60,7 @@ describe("closestTo", () => {
 	});
 
 	it("executes TheDate branch when distance improves", () => {
-		const input = [DChrono.TheDate.new(0)];
+		const input = [DChrono.createDateOrThrow(0)];
 
 		const result = DChrono.closestTo(
 			input,
@@ -73,7 +73,7 @@ describe("closestTo", () => {
 	it("executes non-TheDate branch when distance improves", () => {
 		const input = [
 			DChrono.serialize(DChrono.createDate("1970-01-02")),
-			DChrono.TheDate.new(0),
+			DChrono.createDateOrThrow(0),
 		];
 
 		const result = DChrono.closestTo(

@@ -19,6 +19,7 @@
     "test:ut:watch": "./.commands/test-ut.sh --watch",
     "test:ut:update": "./.commands/test-ut.sh --update",
     "test:types": "./.commands/test-types.sh",
+    "test:types:lib": "./.commands/test-types-lib.sh",
     "test:types:target": "./.commands/test-types-target.sh",
     "test:lint": "./.commands/test-lint.sh",
     "test:lint:fix": "./.commands/test-lint.sh --fix",
@@ -128,7 +129,6 @@
     "@vitest/coverage-istanbul": "4.1.10"
   },
   "workspaces": [
-    "integrations",
     "docs"
   ],
   "files": [

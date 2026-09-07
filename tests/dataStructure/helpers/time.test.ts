@@ -3,7 +3,7 @@ import { DChrono, DDataStructure, DEither, type ExpectType } from "@scripts";
 describe("time", () => {
 	it("creates a time type structure", () => {
 		const structure = DDataStructure.time();
-		const value = DChrono.TheTime.new(0);
+		const value = DChrono.createTimeOrThrow(0);
 		const success = structure.check(value);
 		const failure = structure.check(0);
 
@@ -38,10 +38,10 @@ describe("time", () => {
 		});
 		const input = {
 			schedule: {
-				openAt: DChrono.TheTime.new(0),
+				openAt: DChrono.createTimeOrThrow(0),
 				slots: [
-					DChrono.TheTime.new(1),
-					DChrono.TheTime.new(2),
+					DChrono.createTimeOrThrow(1),
+					DChrono.createTimeOrThrow(2),
 				],
 			},
 		};

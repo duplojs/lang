@@ -31,19 +31,6 @@ describe("TheTime", () => {
 		>;
 	});
 
-	it("creates a safe instance via TheTime.new", () => {
-		const result = DChrono.TheTime.new(1.6);
-
-		expect(result).toBeInstanceOf(DChrono.TheTime);
-		expect(result.toNative()).toBe(2);
-
-		type check = ExpectType<
-			typeof result,
-			DChrono.TheTime,
-			"strict"
-		>;
-	});
-
 	it("works inside pipe with instance methods", () => {
 		const baseTime = DChrono.createTime(3_000, "millisecond");
 

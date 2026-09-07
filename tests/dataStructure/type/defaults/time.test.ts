@@ -23,7 +23,7 @@ describe("TimeType", () => {
 	it("accepts chrono time values", () => {
 		const type = DDataStructure.TimeType();
 
-		expect(type.executeCheck(DChrono.TheTime.new(0))).toBe(DDataStructure.SuccessSymbol);
+		expect(type.executeCheck(DChrono.createTimeOrThrow(0))).toBe(DDataStructure.SuccessSymbol);
 	});
 
 	it("rejects non-chrono time values through its fundamental type", () => {

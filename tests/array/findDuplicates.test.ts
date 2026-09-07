@@ -25,10 +25,10 @@ describe("findDuplicates", () => {
 	});
 
 	it("should compare chrono values by serialized value", () => {
-		const firstDate = DChrono.TheDate.new(0);
-		const secondDate = DChrono.TheDate.new(0);
-		const firstTime = DChrono.TheTime.new(0);
-		const secondTime = DChrono.TheTime.new(0);
+		const firstDate = DChrono.createDateOrThrow(0);
+		const secondDate = DChrono.createDateOrThrow(0);
+		const firstTime = DChrono.createTimeOrThrow(0);
+		const secondTime = DChrono.createTimeOrThrow(0);
 
 		expect(DArray.findDuplicates([
 			firstDate,

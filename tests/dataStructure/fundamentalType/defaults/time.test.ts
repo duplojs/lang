@@ -2,7 +2,7 @@ import { DChrono, DDataStructure, type ExpectType } from "@scripts";
 
 describe("TheTime", () => {
 	it("accepts chrono time values", () => {
-		const value = DChrono.TheTime.new(0);
+		const value = DChrono.createTimeOrThrow(0);
 		const result = DDataStructure.TheTime.executeCheck(value);
 
 		type _CheckFundamentalType = ExpectType<

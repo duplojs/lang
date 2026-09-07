@@ -3,7 +3,7 @@ import { DChrono, DDataStructure, DEither, type ExpectType } from "@scripts";
 describe("date", () => {
 	it("creates a date type structure", () => {
 		const structure = DDataStructure.date();
-		const value = DChrono.TheDate.new(0);
+		const value = DChrono.createDateOrThrow(0);
 		const success = structure.check(value);
 		const failure = structure.check(new Date(0));
 
@@ -38,10 +38,10 @@ describe("date", () => {
 		});
 		const input = {
 			calendar: {
-				start: DChrono.TheDate.new(0),
+				start: DChrono.createDateOrThrow(0),
 				holidays: [
-					DChrono.TheDate.new(1),
-					DChrono.TheDate.new(2),
+					DChrono.createDateOrThrow(1),
+					DChrono.createDateOrThrow(2),
 				],
 			},
 		};
