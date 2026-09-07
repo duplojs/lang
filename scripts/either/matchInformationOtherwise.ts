@@ -95,13 +95,16 @@ export function matchInformationOtherwise<
 	GenericOutput extends unknown,
 >(
 	input: GenericInput,
-	matcher: DCommon.FixDeepFunctionInfer<
-		ComputeMatcher<
-			Extract<GenericInput, Either>
-		>,
-		GenericMatcher
-	>
-	& ForbiddenMoreKey<GenericInput, GenericMatcher>,
+	matcher: (
+		& DCommon.FixDeepFunctionInfer<
+			ComputeMatcher<
+				Extract<GenericInput, Either>
+			>,
+			GenericMatcher
+		>
+		& ForbiddenMoreKey<GenericInput, GenericMatcher>
+		& DObject.ForbiddenUndefinedProps<GenericMatcher>
+	),
 	otherwise: (
 		value: Exclude<
 			GenericInput,
