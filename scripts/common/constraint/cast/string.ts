@@ -92,6 +92,21 @@ export interface ComputeCastConstraintStringRule<
 			>
 		>
 		: never;
+	allowedCharacters: GenericExpectedConstraint extends DString.AllowedCharacters<infer InferredCharactersRange>
+		? DCommon.Or<[
+			DString.IsAllowedString<
+				Extract<DCommon.RemoveConstraint<GenericValue>, string>,
+				DString.CharactersRangeStore[InferredCharactersRange]
+			>,
+			DCommon.IsExtends<GenericValue, GenericExpectedConstraint>,
+		]> extends true
+			? unknown
+			: CastError<
+					`Impossible to cast on AllowedCharacters because value ${GenericValue} contains forbidden characters.`,
+					GenericValue,
+					GenericExpectedConstraint
+			>
+		: never;
 	number: DCommon.IsExtends<GenericExpectedConstraint, DString.Number> extends true
 		? DCommon.Or<[
 			DCommon.IsExtends<GenericValue, DString.NumberInString>,

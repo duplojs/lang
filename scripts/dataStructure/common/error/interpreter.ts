@@ -2,12 +2,12 @@ import * as DKind from "@scripts/kind";
 import * as DCommon from "@scripts/common";
 import * as DArray from "@scripts/array";
 import * as DObject from "@scripts/object";
-import { type Structure, type Structures } from "../structure";
-import { type createKind } from "../kind";
-import { type Type, type Types } from "../type";
-import { type Constraint, type Constraints } from "../constraint";
-import { type Error, type DecodeIssue, type EncodeIssue, type Issue, issueKind, encodeIssueKind } from "./error";
-import { type Codec } from "./codec";
+import { type Structure, type Structures } from "../../structure";
+import { type createKind } from "../../kind";
+import { type Type, type Types } from "../../type";
+import { type Constraint, type Constraints } from "../../constraint";
+import { type Error, type DecodeIssue, type EncodeIssue, type Issue, issueKind, encodeIssueKind } from "./base";
+import { type Codec } from "../codec";
 
 const kindNamespaceName: DKind.GetNamespaceName<typeof createKind> = "DuplojsLangDataStructure";
 
@@ -43,7 +43,7 @@ export type InterpretedIssues = (
 	| InterpretedDecodedIssue
 );
 
-type StructureDictionaryParams = DCommon.SimplifyTopLevel<
+export type StructureDictionaryParams = DCommon.SimplifyTopLevel<
 	Omit<
 		& {
 			[
@@ -62,7 +62,7 @@ type StructureDictionaryParams = DCommon.SimplifyTopLevel<
 	>
 >;
 
-type CodecDictionaryParams = [
+export type CodecDictionaryParams = [
 	Codec,
 	(
 		codec: Codec,

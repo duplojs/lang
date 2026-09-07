@@ -100,6 +100,37 @@ describe("cast", () => {
 		const value4: string & DString.AllowedCharacters<"a-z"> = cast(broaderAllowedCharacters);
 	});
 
+	it("casts allowed characters from compatible string literals", () => {
+		const value1: string & DString.AllowedCharacters<"a-z"> = cast("hello");
+		const value2: string & DString.AllowedCharacters<"a-z" | "0-9"> = cast("hello123");
+
+		type _CheckValue1 = ExpectType<
+			typeof value1,
+			string & DString.AllowedCharacters<"a-z">,
+			"strict"
+		>;
+		type _CheckValue2 = ExpectType<
+			typeof value2,
+			string & DString.AllowedCharacters<"a-z" | "0-9">,
+			"strict"
+		>;
+	});
+
+	it("rejects allowed characters from incompatible string literals", () => {
+		const value = cast(
+			"hello1" as "hello1" & CastError<
+				"Impossible to cast on AllowedCharacters because value hello1 contains forbidden characters.",
+				"hello1",
+				DString.AllowedCharacters<"a-z">
+			>,
+		);
+
+		// @ts-expect-error the literal contains a forbidden digit.
+		const invalidValue: string & DString.AllowedCharacters<"a-z"> = cast("hello1");
+
+		expect(value).toBe("hello1");
+	});
+
 	it("preserves custom constraints with object and callable payloads", () => {
 		type NestedConstraint = DCommon.Constraint<
 			"custom-nested",

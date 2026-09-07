@@ -1,6 +1,6 @@
 import { DDataStructure, type ExpectType } from "@scripts";
 
-describe("codec", () => {
+describe("createCodec and createCodecs", () => {
 	it("creates a codec kind and delegates its encoded value predicate without error context", () => {
 		const encodedStructure = DDataStructure.TypeStructure(DDataStructure.NumberType(), []);
 		const predicateEncode = vi.fn();

@@ -475,7 +475,7 @@ describe("UnionStructure", () => {
 		expect(structure.isAsynchronous()).toBe(true);
 	});
 
-	it("cause an error on declaration constraint", () => {
+	it("infers union constraint inputs and rejects narrower constraints", () => {
 		const structure = DDataStructure.UnionStructure(
 			[
 				DDataStructure.TypeStructure(DDataStructure.StringType(), []),
@@ -509,6 +509,12 @@ describe("UnionStructure", () => {
 			),
 		);
 
+		type _CheckStructValue = ExpectType<
+			DDataStructure.StructureValue<typeof struct>,
+			string,
+			"strict"
+		>;
+
 		structure.addConstraint(
 			// @ts-expect-error wrong refine type
 			DDataStructure.RefineConstraint(
@@ -522,5 +528,43 @@ describe("UnionStructure", () => {
 				(value: string) => true,
 			),
 		);
+
+		const dataStructureContract: DDataStructure.Structure<string | number> =
+			DDataStructure
+				.TypeStructure(DDataStructure.StringType(), [])
+				.addConstraint(
+					DDataStructure.RefineConstraint(
+						(value) => true,
+					),
+				);
+
+		type _CheckDataStructureContractValue = ExpectType<
+			DDataStructure.StructureValue<typeof dataStructureContract>,
+			string | number,
+			"strict"
+		>;
+
+		dataStructureContract.addConstraint(
+			DDataStructure.RefineConstraint(
+				(value) => {
+					type _CheckValue = ExpectType<
+						typeof value,
+						string | number,
+						"strict"
+					>;
+					return true;
+				},
+			),
+		);
+
+		dataStructureContract.addConstraint(
+			// @ts-expect-error a string-only constraint cannot handle the full contract
+			DDataStructure.RefineConstraint(
+				(value: string) => true,
+			),
+		);
+
+		expect(struct.is("value")).toBe(true);
+		expect(dataStructureContract.is("value")).toBe(true);
 	});
 });

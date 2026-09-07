@@ -1,14 +1,16 @@
-type IsAllowedTail<
+import { type IsLiteral } from "./isLiteral";
+
+type _IsAllowedTail<
 	GenericValue extends string,
 	GenericAllowed extends string,
 > =
 	GenericValue extends `${infer Char}${infer Rest}`
 		? Char extends GenericAllowed
-			? IsAllowedTail<Rest, GenericAllowed>
+			? _IsAllowedTail<Rest, GenericAllowed>
 			: false
 		: true;
 
-export type IsAllowedString<
+type _IsAllowedString<
 	GenericValue extends string,
 	GenericAllowed extends string,
 > =
@@ -25,4 +27,11 @@ export type IsAllowedString<
 		) extends GenericAllowed
 			? IsAllowedString<InferredRest, GenericAllowed>
 			: false
-		: IsAllowedTail<GenericValue, GenericAllowed>;
+		: _IsAllowedTail<GenericValue, GenericAllowed>;
+
+export type IsAllowedString<
+	GenericValue extends string,
+	GenericAllowed extends string,
+> = IsLiteral<GenericValue> extends true
+	? _IsAllowedString<GenericValue, GenericAllowed>
+	: false;

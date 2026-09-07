@@ -51,8 +51,8 @@ export interface StructureDefinition<
 export interface Structure<
 	out GenericValue extends unknown = unknown,
 	out GenericDefinition extends StructureDefinition<
-		readonly Constraint<GenericValue>[]
-	> = StructureDefinition<readonly Constraint<GenericValue>[]>,
+		readonly Constraint<unknown, GenericValue>[]
+	> = StructureDefinition<readonly Constraint<unknown, GenericValue>[]>,
 > extends DKind.Kind<
 		typeof structureKind,
 		(
@@ -329,7 +329,7 @@ export function createStructure<
 					(result) => result === ErrorSymbol
 						? ErrorSymbol
 						: DCommon.callThen(
-							constraint.executeCheck(data),
+							constraint.executeCheck(data as never),
 							(constraintResult) => constraintResult === ErrorSymbol
 								? errorHandler?.().addIssue(self, data, constraint) ?? ErrorSymbol
 								: SuccessSymbol,

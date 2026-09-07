@@ -1,10 +1,10 @@
 import type * as DCommon from "@scripts/common";
 import type * as DKind from "@scripts/kind";
-import { type Constraint } from "../constraint";
-import { type Structure } from "../structure";
-import { type Type } from "../type";
-import { type Codec } from "./codec";
-import { createKind } from "../kind";
+import { type Constraint } from "../../constraint";
+import { type Structure } from "../../structure";
+import { type Type } from "../../type";
+import { type Codec } from "../codec";
+import { createKind } from "../../kind";
 
 export const issueKind = createKind("issue");
 export interface Issue extends DKind.Kind<typeof issueKind> {
