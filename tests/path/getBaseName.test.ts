@@ -96,7 +96,7 @@ describe("getBaseName", () => {
 	});
 
 	it("requires a path input", () => {
-		const path = DCommon.infer("/alpha/beta/file.txt");
+		const path = "/alpha/beta/file.txt";
 
 		// @ts-expect-error path must be validated before extraction.
 		expect(DPath.getBaseName(path)).toBe("file.txt");

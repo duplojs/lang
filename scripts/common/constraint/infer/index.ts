@@ -84,13 +84,13 @@ type ComputeInferInputRequirement<
 			: never;
 
 export function infer<
-	GenericOutput extends SupportedOutputInfer,
+	GenericOutput extends unknown,
 	const GenericInput extends DCommon.RemoveConstraint<
-		GenericOutput
+		Extract<GenericOutput, SupportedOutputInfer>
 	> = never,
 	GenericComputedOutput = ComputeInferConstraint<
 		GenericInput,
-		GenericOutput
+		Extract<GenericOutput, SupportedOutputInfer>
 	>,
 >(
 	input: (

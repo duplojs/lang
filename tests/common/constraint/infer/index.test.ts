@@ -1088,5 +1088,14 @@ describe("infer", () => {
 				source,
 			);
 		});
+
+		it("works with a union value that has an unsupported value", () => {
+			function testInference(arg?: number & DNumber.GreaterThan<12>) {}
+
+			testInference(DCommon.infer(13));
+
+			// @ts-expect-error the number member does not induce GreaterThan<12>.
+			testInference(DCommon.infer(10));
+		});
 	});
 });
