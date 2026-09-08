@@ -102,7 +102,23 @@ export type FindEvidence<
 				? FindEvidence<
 					DEither.GetValue<GenericValue>
 				>
-				: never
+				: GenericValue extends Generator<
+					infer InferredYeldValue,
+					infer InferredResult
+				>
+					? (
+						| FindEvidence<InferredYeldValue>
+						| FindEvidence<InferredResult>
+					)
+					: GenericValue extends AsyncGenerator<
+						infer InferredYeldValue,
+						infer InferredResult
+					>
+						? (
+							| FindEvidence<InferredYeldValue>
+							| FindEvidence<InferredResult>
+						)
+						: never
 ) extends infer InferredResult extends Evidence
 	? InferredResult
 	: never;
