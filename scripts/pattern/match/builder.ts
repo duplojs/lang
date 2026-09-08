@@ -117,7 +117,7 @@ export const matchBuilder = DCommon.justExec(() => {
 	const builder = DCommon.createBuilder<
 		& MatchBuilder<unknown, unknown>
 		& Pick<MatchBuilder<never, unknown>, "exhaustive">
-	>("@duplojs/utils/pattern/match");
+	>("@duplojs/lang/pattern/match");
 
 	builder.set(
 		"with",

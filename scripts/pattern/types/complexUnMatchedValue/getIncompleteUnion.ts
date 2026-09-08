@@ -46,7 +46,7 @@ export type GetIncompleteUnion<
 					: DCommon.IsEqual<InferredInput, never> extends true
 						? {}
 						: {
-							"@duplojs/utils/{object}": true;
+							"@duplojs/lang/{object}": true;
 						}
 			: never
 	)
@@ -79,8 +79,8 @@ export type GetIncompleteUnion<
 							InferredPatternValueFirst
 						> extends infer InferredResultFirst
 							? DObject.FlatObject<{
-								"@duplojs/utils/[tuple.first": InferredResultFirst;
-								"@duplojs/utils/tuple.rest]": GetIncompleteUnion<
+								"@duplojs/lang/[tuple.first": InferredResultFirst;
+								"@duplojs/lang/tuple.rest]": GetIncompleteUnion<
 									InferredInputRest,
 									InferredPatternValueRest
 								>;
@@ -90,7 +90,7 @@ export type GetIncompleteUnion<
 					: DCommon.IsEqual<InferredInput, never> extends true
 						? {}
 						: {
-							"@duplojs/utils/[tuple]": true;
+							"@duplojs/lang/[tuple]": true;
 						}
 			: never
 	)
@@ -116,8 +116,8 @@ export type GetIncompleteUnion<
 						InferredPatternValueFirst
 					> extends infer InferredResultFirst
 						? DObject.FlatObject<{
-							"@duplojs/utils/[array.first": InferredResultFirst;
-							"@duplojs/utils/array.rest]": DCommon.IsEqual<InferredResultFirst, {}> extends true
+							"@duplojs/lang/[array.first": InferredResultFirst;
+							"@duplojs/lang/array.rest]": DCommon.IsEqual<InferredResultFirst, {}> extends true
 								? GetIncompleteUnion<
 									InferredInput,
 									InferredPatternValueRest
@@ -149,7 +149,7 @@ export type GetIncompleteUnion<
 					never
 				> extends true
 					? {}
-					: { "@duplojs/utils/[array]": true }
+					: { "@duplojs/lang/[array]": true }
 			: never
 	)
 	| (
@@ -159,7 +159,7 @@ export type GetIncompleteUnion<
 		> extends infer InferredPatternValue
 			? DCommon.IsEqual<InferredPatternValue, never> extends true
 				? never
-				: { "@duplojs/utils/{maybeAll}": true }
+				: { "@duplojs/lang/{maybeAll}": true }
 			: never
 	)
 	| (
